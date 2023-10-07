@@ -116,7 +116,7 @@ std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Poin
     // RCS: robot coordinate system
     // FCS: field coordinate system
     // PCS: pixel coordinate system, applies to (reference) floor cv::Mat
-    cv::Mat transformationMatrix33 = transformationMatrixRCS2FCS(x, y, rz) * transformationMatrixFCS2PCS();
+    cv::Mat transformationMatrix33 = transformationMatrixFCS2PCS() * transformationMatrixRCS2FCS(x, y, rz);
     cv::Mat transformationMatrix32 = transformationMatrix33(cv::Rect(0, 0, 3, 2));
 
     // Transform
@@ -175,7 +175,7 @@ cv::Mat FitFunction::transformationMatrixFCS2PCS() const
 {
     MRA_TRACE_FUNCTION();
 
-    cv::Mat result = cv::Mat::eye(3, 3, CV_64FC1);
+    cv::Mat result = cv::Mat::zeros(3, 3, CV_64FC1);
     result.at<double>(1, 0) = _ppm; // flip xy and scale
     result.at<double>(0, 1) = _ppm;
     result.at<double>(0, 2) = 0.5 * _referenceFloor.cols; // put origin at center (offbyone?)

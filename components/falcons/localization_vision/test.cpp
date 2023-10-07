@@ -82,31 +82,126 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     EXPECT_EQ(pixel_count, 117051);
 }
 
-// Calculation/scoring function - 0.0 is perfect, 1.0 is worst
-TEST(FalconsLocalizationVisionTest, calc000small)
+// Template for testing calculation/scoring function - 0.0 is perfect, 1.0 is worst
+double FalconsLocalizationVisionTestCalc(std::vector<cv::Point2f> const &points, double x, double y, double rz)
 {
-    MRA_TRACE_TEST_FUNCTION();
+    int n = points.size();
+    MRA_TRACE_FUNCTION_INPUTS(n, x, y, rz);
     // Arrange
     auto m = FalconsLocalizationVision::FalconsLocalizationVision();
     auto params = m.defaultParams();
     FalconsLocalizationVision::Solver solver;
     solver.configure(params);
     cv::Mat referenceFloor = solver.createReferenceFloorMat();
-    std::vector<cv::Point2f> rcsLinePoints;
-    rcsLinePoints.push_back(cv::Point2f(0.0, 0.0)); // hit
-    rcsLinePoints.push_back(cv::Point2f(6.0, 0.0)); // other four points miss, because default is large field (14x22 instead of 12x18)
-    rcsLinePoints.push_back(cv::Point2f(-6.0, 0.0));
-    rcsLinePoints.push_back(cv::Point2f(0.0, 9.0));
-    rcsLinePoints.push_back(cv::Point2f(0.0, -9.0));
     float ppm = params.solver().pixelspermeter();
-    FalconsLocalizationVision::FitFunction fit(referenceFloor, rcsLinePoints, ppm);
+    FalconsLocalizationVision::FitFunction fit(referenceFloor, points, ppm);
+    // Act
+    double pose[3] = {x, y, rz};
+    double score = fit.calc(pose);
+    MRA_TRACE_FUNCTION_OUTPUT(score);
+    return score;
+};
+
+std::vector<cv::Point2f> makeFieldPoints(double szx, double szy)
+{
+    MRA_TRACE_FUNCTION_INPUTS(szx, szy);
+    std::vector<cv::Point2f> result;
+    double x = 0.5 * szx - 0.05; // inwards a bit, to correct for linewidth
+    double y = 0.5 * szy - 0.05; // inwards a bit, to correct for linewidth
+    result.push_back(cv::Point2f(0.0, 0.0));
+    result.push_back(cv::Point2f(x, 0.0));
+    result.push_back(cv::Point2f(-x, 0.0));
+    result.push_back(cv::Point2f(0.0, y));
+    result.push_back(cv::Point2f(0.0, -y));
+    int n = result.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(n);
+    return result;
+}
+
+std::vector<cv::Point2f> makeCirclePoints(double radius, bool diagonal)
+{
+    MRA_TRACE_FUNCTION_INPUTS(radius, diagonal);
+    std::vector<cv::Point2f> result;
+    double r = radius - 0.05; // inwards a bit, to correct for linewidth
+    result.push_back(cv::Point2f(r, 0.0));
+    result.push_back(cv::Point2f(-r, 0.0));
+    result.push_back(cv::Point2f(0.0, r));
+    result.push_back(cv::Point2f(0.0, -r));
+    if (diagonal) {
+        double s = sqrt(radius) - 0.05; // inwards a bit, to correct for linewidth
+        result.push_back(cv::Point2f(s, s));
+        result.push_back(cv::Point2f(s, -s));
+        result.push_back(cv::Point2f(-s, s));
+        result.push_back(cv::Point2f(-s, -s));
+    }
+    int n = result.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(n);
+    return result;
+}
+
+TEST(FalconsLocalizationVisionTest, calc000small)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeFieldPoints(12.0, 18.0); // legacy "small" field
 
     // Act
-    double x[3] = {0.0, 0.0, 0.0};
-    double score = fit.calc(x);
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 0.0, 0.0);
 
     // Assert
-    EXPECT_EQ(score, 0.8); // one out of 5 points hit, 20 %score, where 0.0 is perfect (minimization calc)
+    EXPECT_EQ(score, 0.4); // 3 of 5 points hit, 60 %score, where 0.0 is perfect (minimization calc)
+}
+
+TEST(FalconsLocalizationVisionTest, calc000default)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeFieldPoints(14.0, 22.0); // default large field
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 0.0, 0.0);
+
+    // Assert
+    EXPECT_EQ(score, 0.0); // 100 %score, 0.0 is perfect
+}
+
+TEST(FalconsLocalizationVisionTest, calc000circle)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeCirclePoints(2.0, true);
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 0.0, 0.0);
+
+    // Assert
+    EXPECT_EQ(score, 0.0);
+}
+
+TEST(FalconsLocalizationVisionTest, calcOffset1Circle)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeCirclePoints(2.0, true);
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 1.0, 0.0, 0.0);
+
+    // Assert
+    EXPECT_EQ(score, 0.75); // 6/8 miss
+}
+
+TEST(FalconsLocalizationVisionTest, calcOffset2Circle)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeCirclePoints(2.0, true);
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 2.0, 0.0);
+
+    // Assert
+    EXPECT_EQ(score, 0.875); // 7/8 miss
 }
 
 /*// Test core fit scoring function: fitting a reference field with itself should yield a perfect result

@@ -6,6 +6,8 @@
 
 using namespace MRA::FalconsLocalizationVision;
 
+const double RAD2DEG = 180.0 / M_PI;
+
 
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
@@ -91,8 +93,7 @@ cv::Mat FitFunction::transform3dof(cv::Mat const &m, double x, double y, double 
     MRA_TRACE_FUNCTION();
     cv::Mat result;
     // create a transformation matrix
-    float rad2deg = 180.0 / M_PI;
-    cv::Mat transformationMatrix = cv::getRotationMatrix2D(cv::Point2f(0.5 * m.cols, 0.5 * m.rows), rz * rad2deg, 1.0);
+    cv::Mat transformationMatrix = cv::getRotationMatrix2D(cv::Point2f(0.5 * m.cols, 0.5 * m.rows), rz * RAD2DEG, 1.0);
     transformationMatrix.at<double>(0, 2) += y * _ppm; // flip xy, cv::Mat is landscape mode
     transformationMatrix.at<double>(1, 2) += x * _ppm; // flip xy, cv::Mat is landscape mode
     // apply the transformation
@@ -100,22 +101,29 @@ cv::Mat FitFunction::transform3dof(cv::Mat const &m, double x, double y, double 
     return result;
 }
 
-std::vector<cv::Point2f> FitFunction::transform3dof(const std::vector<cv::Point2f> &points, double x, double y, double rz) const
+std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Point2f> &points, double x, double y, double rz) const
 {
-    MRA_TRACE_FUNCTION();
+    int n = points.size();
+    MRA_TRACE_FUNCTION_INPUTS(n);
+
     // Nothing to do?
     if (points.size() == 0)
     {
         return points;
     }
+
+    // Construct the transformation matrix, from RCS to PCS
+    // RCS: robot coordinate system
+    // FCS: field coordinate system
+    // PCS: pixel coordinate system, applies to (reference) floor cv::Mat
+    cv::Mat transformationMatrix33 = transformationMatrixRCS2FCS(x, y, rz) * transformationMatrixFCS2PCS();
+    cv::Mat transformationMatrix32 = transformationMatrix33(cv::Rect(0, 0, 3, 2));
+
+    // Transform
     std::vector<cv::Point2f> transformedPoints;
-    float rad2deg = 180.0 / M_PI;
-    // Construct the transformation matrix
-    cv::Mat transformationMatrix = cv::getRotationMatrix2D(cv::Point2f(), rz * rad2deg, 1.0);
-    transformationMatrix.at<double>(0, 2) = x;
-    transformationMatrix.at<double>(1, 2) = y;
-    // Transform each point
-    cv::transform(points, transformedPoints, transformationMatrix);
+    cv::transform(points, transformedPoints, transformationMatrix32);
+
+    MRA_TRACE_FUNCTION_OUTPUTS(transformationMatrix33, transformationMatrix32); // not really an output, but ok
     return transformedPoints;
 }
 
@@ -126,11 +134,11 @@ double FitFunction::calc(const double *v) const
     double rz = v[2];
     MRA_TRACE_FUNCTION_INPUTS(x, y, rz);
     double score = 0.0;
-    std::vector<cv::Point2f> transformed = transform3dof(_rcsLinePoints, v[0], v[1], v[2]);
+    std::vector<cv::Point2f> transformed = transformPoints(_rcsLinePoints, v[0], v[1], v[2]);
     for (size_t i = 0; i < _rcsLinePoints.size(); ++i)
     {
-        int pixelX = static_cast<int>(transformed[i].x * _ppm);
-        int pixelY = static_cast<int>(transformed[i].y * _ppm);
+        int pixelX = static_cast<int>(transformed[i].x);
+        int pixelY = static_cast<int>(transformed[i].y);
         float s = 0.0;
         // Check if the pixel is within the image bounds
         if (pixelX >= 0 && pixelX < _referenceFloor.cols && pixelY >= 0 && pixelY < _referenceFloor.rows)
@@ -139,11 +147,41 @@ double FitFunction::calc(const double *v) const
             s = static_cast<float>(_referenceFloor.at<uchar>(pixelY, pixelX)) / 255.0;
             score += s; // max 1.0 per pixel
         }
-        MRA_LOG_DEBUG("calc %3d   ix=%8.3f  iy=%8.3f  tx=%8.3f  ty=%8.3f  px=%4d py=%4d  s=%6.2f\n", (int)i, _rcsLinePoints[i].x, _rcsLinePoints[i].y, transformed[i].x, transformed[i].y, (int)(pixelX), (int)(pixelY), s);
+        MRA_LOG_DEBUG("calc %3d   rx=%8.3f  ry=%8.3f  px=%4d py=%4d  s=%6.2f", (int)i, _rcsLinePoints[i].x, _rcsLinePoints[i].y, (int)(pixelX), (int)(pixelY), s);
     }
     // final normalization to 0..1 where 0 is good (minimization)
     double result = 1.0 - score / _rcsLinePointsPixelCount;
     MRA_TRACE_FUNCTION_OUTPUT(result);
+    return result;
+}
+
+cv::Mat FitFunction::transformationMatrixRCS2FCS(double x, double y, double rz) const
+{
+    MRA_TRACE_FUNCTION_INPUTS(x, y, rz);
+
+    // see also MRA::geometry::Position::transformRcsToFcs
+    // and Floor::pointFcsToPixel
+
+    cv::Mat result = cv::Mat::eye(3, 3, CV_64FC1);
+    cv::getRotationMatrix2D(cv::Point2f(x, y), rz * RAD2DEG, 1.0).copyTo(result.rowRange(0, 2).colRange(0, 3));
+    result.at<double>(0, 2) = x;
+    result.at<double>(1, 2) = y;
+
+    MRA_TRACE_FUNCTION_OUTPUTS(result);
+    return result;
+}
+
+cv::Mat FitFunction::transformationMatrixFCS2PCS() const
+{
+    MRA_TRACE_FUNCTION();
+
+    cv::Mat result = cv::Mat::eye(3, 3, CV_64FC1);
+    result.at<double>(1, 0) = _ppm; // flip xy and scale
+    result.at<double>(0, 1) = _ppm;
+    result.at<double>(0, 2) = 0.5 * _referenceFloor.cols; // put origin at center (offbyone?)
+    result.at<double>(1, 2) = 0.5 * _referenceFloor.rows;
+
+    MRA_TRACE_FUNCTION_OUTPUTS(result);
     return result;
 }
 

@@ -82,8 +82,8 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     EXPECT_EQ(pixel_count, 117051);
 }
 
-// Calculation/scoring function
-TEST(FalconsLocalizationVisionTest, calc000)
+// Calculation/scoring function - 0.0 is perfect, 1.0 is worst
+TEST(FalconsLocalizationVisionTest, calc000small)
 {
     MRA_TRACE_TEST_FUNCTION();
     // Arrange
@@ -93,8 +93,8 @@ TEST(FalconsLocalizationVisionTest, calc000)
     solver.configure(params);
     cv::Mat referenceFloor = solver.createReferenceFloorMat();
     std::vector<cv::Point2f> rcsLinePoints;
-    rcsLinePoints.push_back(cv::Point2f(0.0, 0.0));
-    rcsLinePoints.push_back(cv::Point2f(6.0, 0.0));
+    rcsLinePoints.push_back(cv::Point2f(0.0, 0.0)); // hit
+    rcsLinePoints.push_back(cv::Point2f(6.0, 0.0)); // other four points miss, because default is large field (14x22 instead of 12x18)
     rcsLinePoints.push_back(cv::Point2f(-6.0, 0.0));
     rcsLinePoints.push_back(cv::Point2f(0.0, 9.0));
     rcsLinePoints.push_back(cv::Point2f(0.0, -9.0));
@@ -106,7 +106,7 @@ TEST(FalconsLocalizationVisionTest, calc000)
     double score = fit.calc(x);
 
     // Assert
-    EXPECT_EQ(score, 0.8);
+    EXPECT_EQ(score, 0.8); // one out of 5 points hit, 20 %score, where 0.0 is perfect (minimization calc)
 }
 
 /*// Test core fit scoring function: fitting a reference field with itself should yield a perfect result

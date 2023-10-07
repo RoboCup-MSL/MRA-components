@@ -29,14 +29,16 @@ public:
 
     // helpers, public for testing purposes and diagnostics
     double calcOverlap(cv::Mat const &m1, cv::Mat const &m2) const;
-    cv::Mat transform3dof(cv::Mat const &m, double x, double y, double rz) const;
-    std::vector<cv::Point2f> transform3dof(const std::vector<cv::Point2f> &points, double x, double y, double rz) const;
+    cv::Mat transform3dof(cv::Mat const &m, double x, double y, double rz) const; // TODO remove??
+    std::vector<cv::Point2f> transformPoints(const std::vector<cv::Point2f> &points, double x, double y, double rz) const;
 
 private:
     cv::Mat _referenceFloor;
     std::vector<cv::Point2f> _rcsLinePoints;
     double _rcsLinePointsPixelCount = 1.0; // for score normalization
     float _ppm; // needed to optimize in FCS instead of pixels
+    cv::Mat transformationMatrixRCS2FCS(double x, double y, double rz) const;
+    cv::Mat transformationMatrixFCS2PCS() const;
 }; // class FitFunction
 
 

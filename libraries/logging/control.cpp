@@ -115,7 +115,7 @@ MRA::Datatypes::LogControl getConfiguration()
     }
 
     // Map shared memory
-    void* shared_memory = mmap(NULL, SHARED_MEMORY_SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
+    void* shared_memory = mmap(nullptr, SHARED_MEMORY_SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
     if (shared_memory == MAP_FAILED) {
         close(shm_fd);
         throw std::runtime_error(std::string("Error mapping shared memory: ") + strerror(errno));
@@ -153,7 +153,7 @@ void setConfiguration(MRA::Datatypes::LogControl const &config)
     }
 
     // Map shared memory
-    void* shared_memory = mmap(NULL, SHARED_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    void* shared_memory = mmap(nullptr, SHARED_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if (shared_memory == MAP_FAILED) {
         close(shm_fd);
         throw std::runtime_error(std::string("Error mapping shared memory: ") + strerror(errno));

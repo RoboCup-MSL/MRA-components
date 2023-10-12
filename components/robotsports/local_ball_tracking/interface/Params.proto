@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+message Params
+{
+    int32 ball_filter = 1;	// ball filter to use: 0 = naive filter (closest ball in field coord distance; 1 = Turtle2 code (clustering)
+    int32 ball_vel_filter_order = 2;	// ball velocity filter order, between 3 and 7 for one-sided hybrid differentiator, other for most simple backward difference
+    
+    // interface to Turtle2 code
+    int32	cnt_iskicking = 3;
+    double	BMsigma_OV = 4;
+    double	BMsigma_kinect = 5;
+    double  BMsigma_stereo = 6;
+    double  confidence_decay = 7;
+    double  ball_time_to_forget = 8;
+    
+    
+    bool suppress_omni = 9;      
+    //  If TRUE, then whenever other sources of ball detections are available (e.g. stereo), 
+    //    the omni detections will be suppressed.          
+    //    If FALSE, all ball sources are treated equally and are included as usual
+    
+}
+

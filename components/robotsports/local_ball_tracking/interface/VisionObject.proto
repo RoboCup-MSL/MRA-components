@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+message VisionObject
+{
+	float x = 1;
+    float y = 2;
+    float z = 3;
+	float vx = 4;
+    float vy = 5;
+    float vz = 6;
+    float confidence = 7;
+    float timestamp = 8;               // timestamp 
+} 

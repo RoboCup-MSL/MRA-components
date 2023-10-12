@@ -1,0 +1,35 @@
+= LocalBallTracking Robotsports Variant
+
+== Summary
+
+LocalBallTracking is an component that tracks the ball position based on measurements from local sensors 
+(omnivision and stereo vision).
+
+== Scope and context
+
+This variant is RobotSport variant of local ball tracking.
+Heavily inspired by ball tracking algorithm of TechUnited.
+
+== Interface details
+
+* **purpose**: track the ball with local sensors
+* **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
+	** Omnivision BallFeatures  
+	** Stereo vision BallFeatures  
+
+* **outputs**:  See link:./interface/Output.proto[Output.proto] for the exact definition.  
+	** ball position
+
+* *parameters*:  
+The component has some configuration parameters.  These parameters are specific for this variant., 
+see link:./interface/Params.proto[Params.proto] and 
+link:./interface/DefaultParams.json[DefaultParams.json].
+
+== Design
+
+Calculate location of the ball based on the measurements (TODO)
+
+== History
+
+Created by Robotsports. Started with copy of TechUnited's ball tracking algorithm
+ 

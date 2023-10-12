@@ -87,7 +87,7 @@ private:
     std::string _fileName;
     int         _lineNumber;
     MRA::Datatypes::LogSpec _cfg;
-    std::ofstream *_binfile = NULL;
+    std::ofstream *_binfile = nullptr;
 
 }; // template class LogTick
 

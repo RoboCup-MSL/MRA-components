@@ -138,8 +138,8 @@ private:
 
 }; // class MraLogger
 
-static std::shared_ptr<MraLogger> s_logger = NULL;
-static std::shared_ptr<spdlog::logger> s_spdlog_logger = NULL;
+static std::shared_ptr<MraLogger> s_logger = nullptr;
+static std::shared_ptr<spdlog::logger> s_spdlog_logger = nullptr;
 
 } // namespace MRA::Logging::backend
 

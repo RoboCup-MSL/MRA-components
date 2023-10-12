@@ -21,7 +21,7 @@ std::ofstream *logTickBinFile(
     std::string const &componentName,
     int counter)
 {
-    return NULL;
+    return nullptr;
 }
 
 // tick logging: write logging/data at start of tick
@@ -100,7 +100,7 @@ void reconfigure(MRA::Datatypes::LogSpec const &cfg)
     static MRA::Datatypes::LogSpec currentCfg;
     // only reconfigure upon change
     // protobuf c++ API does not provide (in-)equality operators - use json conversion (or create a Configuration class?)
-    if (MRA::convert_proto_to_json_str(currentCfg) != MRA::convert_proto_to_json_str(cfg) || s_logger == NULL)
+    if (MRA::convert_proto_to_json_str(currentCfg) != MRA::convert_proto_to_json_str(cfg) || s_logger == nullptr)
     {
         LOGDEBUG("reconfigure %s -> %s", MRA::convert_proto_to_json_str(currentCfg).c_str(), MRA::convert_proto_to_json_str(cfg).c_str());
         MraLogger::getInstance()->setup(cfg);
@@ -126,7 +126,7 @@ spdlog::level::level_enum convert_log_level(MRA::Logging::LogLevel log_level)
 
 std::shared_ptr<MraLogger> MraLogger::getInstance()
 {
-    if (s_logger == NULL) {
+    if (s_logger == nullptr) {
         s_logger = std::shared_ptr<MraLogger>(new MraLogger());
     }
     return s_logger;
@@ -217,7 +217,7 @@ void MraLogger::setup(MRA::Datatypes::LogSpec const &cfg)
 
     // Logger construction only happens once per process.
     // No runtime reconfiguration for this part.
-    if (s_spdlog_logger == NULL) {
+    if (s_spdlog_logger == nullptr) {
         // Determine log name and file.
         m_log_name = "MRA:" + cfg.component();
         m_log_file = MRA::Logging::control::getLogFolder() + "/" + determineFileName(cfg.component());

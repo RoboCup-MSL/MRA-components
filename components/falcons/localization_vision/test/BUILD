@@ -31,6 +31,19 @@ py_binary(
     data = [
         ":pybind_ext.so",
         "@com_google_protobuf//:protobuf_python",
-    ]
+    ],
+)
+
+py_binary(
+    name = "plot",
+    srcs = [
+        "plot.py",
+        "common.py",
+    ],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//components/falcons/localization_vision/interface:interface_py",
+    ],
 )
 

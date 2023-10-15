@@ -7,7 +7,13 @@ Inputs / modes:
 1. binary file with only a CvMatProto object -> just plot it
 2. binary tick data file -> then plot the diagnostics field (local.floor)
 
-Example: see TODO example.png
+Example (demo1.png):
+* run a specific test and with tick tracing enabled:
+    ./MRA-build.py -t -T -s vision -- --test_arg=--gtest_filter=FalconsLocalizationVisionTest.jsonTest3GrabsR5BadInit
+* check that the file appeared:
+    /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_0.bin
+* plot the diagnostics image (local.floor)
+    bazel run //components/falcons/localization_vision/test:plot /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_0.bin
 """
 
 

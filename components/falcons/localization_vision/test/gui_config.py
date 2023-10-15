@@ -107,7 +107,7 @@ class ConfigurationWindow(QWidget):
         value_label.setMinimumWidth(60)
         max_label = QLabel(f'{parameter.max_value:4g}')
 
-        slider.setMinimumWidth(200)
+        slider.setMinimumWidth(250)
 
         if parameter.value_type == float:
             slider.setRange(0, SLIDER_RESOLUTION)
@@ -121,6 +121,7 @@ class ConfigurationWindow(QWidget):
         slider.valueChanged.connect(lambda value: self.on_slider_value_changed(value, parameter, value_label, value_edit))
 
         value_edit = QLineEdit()
+        value_edit.setMinimumWidth(70)
         value_edit.setAlignment(Qt.AlignRight)
         value_edit.setValidator(QtGui.QDoubleValidator())
         value_edit.editingFinished.connect(lambda: self.update_slider(parameter, value_edit, slider))
@@ -157,8 +158,8 @@ class ConfigurationWindow(QWidget):
 
     def set_label_text(self, parameter, value_label, value_edit):
         if parameter.value_type == float:
-            value_label.setText(f'{parameter.value:.3f}')
-            value_edit.setText(f'{parameter.value:.3f}')
+            value_label.setText(f'{parameter.value:.4f}')
+            value_edit.setText(f'{parameter.value:.4f}')
         else:
             value_label.setText(f'{parameter.value:d}')
             value_edit.setText(f'{parameter.value:d}')

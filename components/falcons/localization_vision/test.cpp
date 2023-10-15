@@ -165,6 +165,34 @@ TEST(FalconsLocalizationVisionTest, calc000default)
     EXPECT_EQ(score, 0.0); // 100 %score, 0.0 is perfect
 }
 
+// As calc000default, but with rotation rz=pi, should lead to same result because of field symmetry
+TEST(FalconsLocalizationVisionTest, calc00Rz)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeFieldPoints(14.0, 22.0); // default large field
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 0.0, M_PI);
+
+    // Assert
+    EXPECT_EQ(score, 0.0); // 100 %score, 0.0 is perfect
+}
+
+// As calc000default, but with rotation rz=0.5*pi, should lead to reduced fit result
+TEST(FalconsLocalizationVisionTest, calc00Rz2)
+{
+    MRA_TRACE_TEST_FUNCTION();
+    // Arrange
+    std::vector<cv::Point2f> rcsLinePoints = makeFieldPoints(14.0, 22.0); // default large field
+
+    // Act
+    double score = FalconsLocalizationVisionTestCalc(rcsLinePoints, 0.0, 0.0, 0.5*M_PI);
+
+    // Assert
+    EXPECT_EQ(score, 0.8); // 1 of 5 points hit (only center point), 20 %score
+}
+
 TEST(FalconsLocalizationVisionTest, calc000circle)
 {
     MRA_TRACE_TEST_FUNCTION();

@@ -160,6 +160,7 @@ public:
 
     MraLogger(const MraLogger& obj) = delete;
     ~MraLogger();
+    void clear();
 
     void setup(MRA::Datatypes::LogSpec const &cfg);
 
@@ -170,14 +171,14 @@ private:
 
     bool m_active = false;
     std::string m_pretext = "";
-    std::shared_ptr<spdlog::logger> m_spdlog_logger;
     std::string m_filename_pattern = "";
     std::string m_log_name;
     std::string m_log_file;
 
 }; // class MraLogger
 
-static std::shared_ptr<MraLogger> s_logger = NULL;
+static std::shared_ptr<MraLogger> s_logger = nullptr;
+static std::shared_ptr<spdlog::logger> s_spdlog_logger = nullptr;
 
 } // namespace MRA::Logging::backend
 

@@ -19,7 +19,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
     name = "MRA",
-    remote = "https://github.com/janfeitsma/MRA-prototype.git",
+    remote = "https://github.com/RoboCup-MSL/MRA-components.git",
     commit = "f6dc7daabc7b6738c1bb4505755bd0571593b34c",
     shallow_since = "1682687444 +0200",
 )

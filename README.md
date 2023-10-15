@@ -1,12 +1,12 @@
-# MRA-prototype
+# MRA
 
-MRA (Robocup MSL Reference Architecture) prototype.
+MRA (Robocup MSL Reference Architecture).
 
-After the MSL workshop 2022 at Eindhoven (material reference needed!), Jurge (from VDL RobotSports team) took initiative to drive this forward.
-
-This repository is intended to move from concept idea to demo. Connect with existing Falcons- and RobotSports code bases, facilitate the first demonstration(s) and trigger detailed discussion on how we should proceed.
+This repository contains a set of components, as well as surrounding infrastructure, common datatypes and logging/geometry facilities.
 
 See here for the [presentation (pdf)](https://drive.google.com/file/d/1-4txLCdpiMcM90y2xGZRdFGJl2T32eTw/view?usp=sharing) from May 2023.
+
+(TODO more/stable material?)
 
 # Demonstration
 
@@ -37,11 +37,17 @@ are mandatory (For details see MRA-codegen.py -h).
 After the creation of the files, the script generates the files.
 A starting point for adding own code to the component is "tick.cpp"
 
-
 # Roadmap
 
-* One or more MRA repositories could appear in the Robocup-MSL github project.
+* Some other MRA repositories could be factored out of this one, such as MRA-libraries, MRA-documents, MRA-engine, etc.
 * Releasing and dependency management
 * Connect with FMI/FMU standard?
+* ROS2 component wrappers
 * ...
+
+# Previous location
+
+https://github.com/janfeitsma/MRA-prototype
+
+(Also contains older / stale branches, history of issues and pull requests.)
 

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRoleAssigner;
+
+import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
+
+message Output
+{
+	enum DynamicRole {
+		NONE = 0;
+		GOALKEEPER = 1;
+		ATTACKSUPPORTER = 2;
+		DEFENDER = 3;
+		INTERCEPTOR = 4;
+		SWEEPER = 5;
+		SETPLAY_RECEIVER = 6;
+		SETPLAY_KICKER = 7;
+		BALLPLAYER = 8;
+		SEARCH_FOR_BALL = 9;
+		BEGIN_POSITION = 10;
+		PARKING = 11;
+		PENALTY_KICKER = 12;
+		LOB_CALIBRATION = 13;
+		PENALTY_DEFENDER = 14;
+	};
+    repeated DynamicRole dynamic_roles = 1;
+}
+

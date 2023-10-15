@@ -1,5 +1,6 @@
 # python modules
-from google.protobuf.message import Message
+import logging
+import google.protobuf.descriptor
 
 # own modules
 import gui
@@ -20,21 +21,38 @@ class ParametersProxy:
         self._init_params(params_proto)
 
     def _init_params(self, proto, parent_name=''):
-        for field, value in proto.ListFields():
-            name = f'{parent_name}.{field.name}' if parent_name else field.name
-            if isinstance(value, str):  # Handling string fields
-                raise NotImplementedError('strings not yet supported in tuning')
-                # self.add(name, str, None, None, value)
-            elif isinstance(value, int):  # Handling integer fields
-                min_val, max_val = self.range_hints_proto[name]
-                self.pb_params.add(name, int, min_val, max_val, value)
-            elif isinstance(value, float):  # Handling float fields
-                min_val, max_val = self.range_hints_proto[name]
-                self.pb_params.add(name, float, min_val, max_val, value)
-            elif isinstance(value, bool):  # Handling boolean fields
-                self.pb_params.add(name, bool, False, True, value)
-            elif isinstance(value, Message):  # Handling nested protobuf messages
-                self._init_params(value, name)
+        # protobuf v3 by default omits fields which have a default value of 0
+        # so we cannot just iterate over proto.ListFields(), instead use descriptors
+        for descriptor in proto.DESCRIPTOR.fields:
+            field_name = descriptor.name
+            if descriptor.label == descriptor.LABEL_REPEATED:
+                # ignore repeated fields, these cannot easily get sliders assigned to them anyway
+                continue
+            else:
+                value = getattr(proto, field_name)
+                name = f'{parent_name}.{field_name}' if parent_name else field_name
+                if descriptor.type == descriptor.TYPE_STRING:
+                    raise NotImplementedError('strings not yet supported in tuning')
+                    # self.add(name, str, None, None, value)
+                elif descriptor.type in [descriptor.TYPE_BOOL]:
+                    self.pb_params.add(name, bool, False, True, value)
+                elif descriptor.type == descriptor.TYPE_MESSAGE:
+                    self._init_params(value, name)
+                else:
+                    # handle numeric types
+                    NUMERIC_TYPES = [
+                        (int, [descriptor.TYPE_INT32, descriptor.TYPE_INT64, descriptor.TYPE_UINT32, descriptor.TYPE_UINT64, descriptor.TYPE_SINT32, descriptor.TYPE_SINT64]),
+                        (float, [descriptor.TYPE_FLOAT, descriptor.TYPE_DOUBLE]),
+                    ]
+                    for (tt, ptypes) in NUMERIC_TYPES:
+                        if descriptor.type in ptypes:
+                            if name not in self.range_hints_proto:
+                                logging.warning(f'ignoring {name} because of missing tuning range hint')
+                                continue
+                            slider_range = self.range_hints_proto[name]
+                            if slider_range:
+                                self.pb_params.add(name, tt, slider_range[0], slider_range[1], value)
+
 
     def get(self, name):
         if name in self.gui_params.params:

@@ -33,9 +33,8 @@ class ParametersProxy:
                 name = f'{parent_name}.{field_name}' if parent_name else field_name
                 if descriptor.type == descriptor.TYPE_STRING:
                     raise NotImplementedError('strings not yet supported in tuning')
-                    # self.add(name, str, None, None, value)
                 elif descriptor.type in [descriptor.TYPE_BOOL]:
-                    self.pb_params.add(name, bool, False, True, value)
+                    self.pb_params.add(name, bool, value, False, True)
                 elif descriptor.type == descriptor.TYPE_MESSAGE:
                     self._init_params(value, name)
                 else:
@@ -51,8 +50,7 @@ class ParametersProxy:
                                 continue
                             slider_range = self.range_hints_proto[name]
                             if slider_range:
-                                self.pb_params.add(name, tt, slider_range[0], slider_range[1], value)
-
+                                self.pb_params.add(name, tt, value, *slider_range)
 
     def get(self, name):
         if name in self.gui_params.params:

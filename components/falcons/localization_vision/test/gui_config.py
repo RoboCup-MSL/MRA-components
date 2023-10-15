@@ -3,15 +3,14 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import *
 import logging
 
-SLIDER_RESOLUTION = 100
 
 
 
 def parameter_value_float2slider(parameter):
-    return int((parameter.value - parameter.min_value) * SLIDER_RESOLUTION / (parameter.max_value - parameter.min_value))
+    return int((parameter.value - parameter.min_value) * parameter.ticks / (parameter.max_value - parameter.min_value))
 
 def parameter_value_slider2float(parameter, slider_int_value):
-    return float(slider_int_value) / SLIDER_RESOLUTION * (parameter.max_value - parameter.min_value) + parameter.min_value
+    return float(slider_int_value) / parameter.ticks * (parameter.max_value - parameter.min_value) + parameter.min_value
 
 
 class CustomToggleButton(QPushButton):
@@ -110,7 +109,7 @@ class ConfigurationWindow(QWidget):
         slider.setMinimumWidth(250)
 
         if parameter.value_type == float:
-            slider.setRange(0, SLIDER_RESOLUTION)
+            slider.setRange(0, parameter.ticks)
             slider.setSingleStep(1)
             slider.setValue(parameter_value_float2slider(parameter))
         else:

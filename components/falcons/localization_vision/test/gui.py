@@ -11,11 +11,11 @@ def create_standard_gui_params(params=None):
         params = Parameters()
     # control buttons
     params.add('active', bool, slider=False)
-    params.add('overlay', bool, slider=False, default_value=True)
+    params.add('overlay', bool, default_value=True, slider=False)
     params.add('reset', bool, slider=False)
-    # sliders: name, type, min, max, default
-    params.add('frequency', float, 0.1, 50.0, 10.0)
-    params.add('zoom', float, 0.2, 4.0, 0.7)
+    # sliders: name, type, default, min, max
+    params.add('frequency', float, 10.0, 0.1, 50.0)
+    params.add('zoom', float, 0.7, 0.2, 4.0)
     return params
 
 
@@ -61,11 +61,11 @@ def main(qargs=[]):
     # Create some dummy parameters
     params = make_gui_params(
         # name, type, min, max, default
-        ('r', int, 0, 255, 100),
-        ('g', int, 0, 255, 23),
-        ('b', int, 0, 255, 200),
-        ('factor', float, 0.0, 1.0, 1.0),
-        ('enabled', bool, False, True, True)) # min=False and max=True are obvious and could be omitted maybe ...
+        ('r', int, 100, 0, 255),
+        ('g', int,  23, 0, 255),
+        ('b', int, 200, 0, 255),
+        ('factor', float, 1.0, 0.0, 1.0),
+        ('enabled', bool, True))
 
     # Create example image generator
     def example_callback(params):

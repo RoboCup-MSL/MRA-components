@@ -26,5 +26,23 @@ Note that teams tend to borrow each others field measurements using the definiti
 
 Simplex method.
 
-Includes a little python tool to plot field (serialized `CvMatProto`).
+Includes a little python tool to plot field (serialized `CvMatProto`): `plot.py`.
+
+# Demo
+
+## plot.py
+
+After having run the test suite:
+
+`bazel run //components/falcons/localization_vision/test:plot /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_4.bin`
+
+![plottingtool](test/demo2.png)
+
+## tune.py
+
+Run tuning tool (sliders are automatically derived from `Params.proto`):
+
+`bazel run //components/falcons/localization_vision/test:tune /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_0.bin`
+
+![tuningtool](test/demo3.png)
 

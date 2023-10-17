@@ -4,6 +4,7 @@
 
 add_library(MRA-libraries-geometry
 	angles.cpp
+    point.cpp
     pose.cpp
     position.cpp
     velocity.cpp

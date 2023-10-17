@@ -280,6 +280,25 @@ void Solver::dumpDiagnosticsMat()
     MRA::OpenCVUtils::serializeCvMat(createDiagnosticsMat(), *_diag.mutable_floor());
 }
 
+void Solver::manualMode()
+{
+    MRA_TRACE_FUNCTION();
+    float ppm = _params.solver().pixelspermeter();
+    // run the core calc() function
+    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm);
+    double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
+    double score = fit.calc(pose);
+    // copy pose into _fitResult so local.floor will be properly created
+    _fitResult.pose.x = pose[0];
+    _fitResult.pose.y = pose[1];
+    _fitResult.pose.rz = pose[2];
+    // set output
+    Candidate c;
+    c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);
+    c.set_confidence(score);
+    *_output.add_candidates() = c;
+}
+
 int Solver::run()
 {
     int tick = _state.tick();
@@ -301,12 +320,20 @@ int Solver::run()
     // (having none at all is very unusual for a real robot, but not so much in test suite)
     if (_linePoints.size())
     {
+        // manual mode?
+        if (_params.solver().manual().enabled())
+        {
+            manualMode();
+        }
+        else
+        {
+            // regular mode, based on trackers
+            // setup trackers: existing from state and new from guessing configuration
+            _trackers = createTrackers();
 
-        // setup trackers: existing from state and new from guessing configuration
-        _trackers = createTrackers();
-
-        // run the fit algorithm (multithreaded), update trackers, update _fitResult
-        runFitUpdateTrackers();
+            // run the fit algorithm (multithreaded), update trackers, update _fitResult
+            runFitUpdateTrackers();
+        }
     }
 
     // create and optionally dump of diagnostics data for plotting

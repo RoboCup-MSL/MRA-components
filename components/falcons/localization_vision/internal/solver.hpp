@@ -69,6 +69,9 @@ private:
     cv::Mat createDiagnosticsMat() const;
     void dumpDiagnosticsMat();
 
+    // manual mode for tuning
+    void manualMode();
+
 }; // class Solver
 
 } // namespace MRA::FalconsLocalizationVision

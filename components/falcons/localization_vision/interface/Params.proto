@@ -62,6 +62,12 @@ message GuessingParams
     RandomGuessingParams random = 3;
 }
 
+message ManualParams
+{
+    bool enabled = 1;
+    MRA.Datatypes.Pose pose = 2;
+}
+
 message SolverParams
 {
     int32 numExtraThreads = 1;
@@ -73,6 +79,7 @@ message SolverParams
     float epsilon = 7; // required: solver accuracy
     LinePointParams linePoints = 8;
     GuessingParams guessing = 9;
+    ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver
 }
 
 message Params

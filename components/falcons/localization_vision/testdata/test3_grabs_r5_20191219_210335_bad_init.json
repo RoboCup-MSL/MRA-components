@@ -4,7 +4,7 @@
     },
     "Params": {"model":{"A":18,"B":12,"C":6.5,"D":3.5,"E":2.25,"F":0.75,"G":0.75,"H":4,"I":3,"J":0.15,"K":0.125,"L":1,"M":1,"N":7.5,"O":1,"P":0.5,"Q":3.5},"solver":{"pixelsPerMeter":80,"floorBorder":0.5,"blurFactor":0.3,"actionRadius":{"x":0.1,"y":0.1,"rz":0.3},"maxCount":400,"epsilon":0.0001,"linePoints":{"fit":{"radiusConstant":0.05,"radiusScaleFactor":-0.003},"plot":{"radius":0.07}}},"debug":true},
     "Output": {"candidates":[
-        {"pose": {"x":-3,"y":3,"rz":3}, "confidence": 0.0}
+        {"pose": {"x":0.528793156,"y":3.04470682,"rz":1.73517799}, "confidence": 0.436730176}
     ]}
 }
 

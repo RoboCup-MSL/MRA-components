@@ -163,7 +163,7 @@ cv::Mat FitFunction::transformationMatrixRCS2FCS(double x, double y, double rz) 
     // and Floor::pointFcsToPixel
 
     cv::Mat result = cv::Mat::eye(3, 3, CV_64FC1);
-    cv::getRotationMatrix2D(cv::Point2f(x, y), rz * RAD2DEG, 1.0).copyTo(result.rowRange(0, 2).colRange(0, 3));
+    cv::getRotationMatrix2D(cv::Point2f(x, y), -rz * RAD2DEG, 1.0).copyTo(result.rowRange(0, 2).colRange(0, 3));
     result.at<double>(0, 2) = x;
     result.at<double>(1, 2) = y;
 

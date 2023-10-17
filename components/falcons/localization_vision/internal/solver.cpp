@@ -245,17 +245,12 @@ cv::Mat Solver::createDiagnosticsMat() const
     cv::cvtColor(referenceFloorMat, result, cv::COLOR_GRAY2BGR);
 
     // add linepoints with blue/cyan color
-    cv::Mat linePointsMat = _floor.createMat();
-    _floor.linePointsToCvMat(_linePoints, linePointsMat, _params.solver().linepoints().plot().radius());
     float ppm = _params.solver().pixelspermeter();
     FitFunction ff(referenceFloorMat, _linePoints, ppm);
-    cv::Mat transformedLinePoints = ff.transform3dof(linePointsMat, _fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz);
-    cv::Mat transformedLinePointsColor;
-    cv::cvtColor(transformedLinePoints, transformedLinePointsColor, cv::COLOR_GRAY2BGR);
-    cv::Mat whiteMask;
-    cv::compare(transformedLinePointsColor, cv::Scalar(255, 255, 255), whiteMask, cv::CMP_EQ);
-    transformedLinePointsColor.setTo(cv::Scalar(255, 0, 0), whiteMask);
-    combineImages(result, transformedLinePointsColor);
+    std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, _fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz);
+    for (const auto &point : transformed) {
+        cv::circle(result, cv::Point(point.x, point.y), _params.solver().linepoints().plot().radius(), cv::Scalar(255, 0, 0), -1);
+    }
 
     // show robot as red circle with orientation line
     auto color = cv::Scalar(0, 0, 255);

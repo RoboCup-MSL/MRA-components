@@ -1,0 +1,4 @@
+= Documentation overview =
+
+xref:./modules/ROOT/pages/index.adoc[Design documentation]
+

@@ -1,0 +1,281 @@
+[Appendix]
+= A selection of Interface Description Languages
+
+**Supporting the exchange of MSL software components** +
+*Author*: Eric Dortmans +
+*Date*: 5 May 2023
+
+== Introduction
+
+When comparing the software architectures of MSL teams one can easily identify software components with common semantics.
+We would like to support the reuse and exchange of such components.
+To cleanly cut-out, and insert software components we need a language to describe their interfaces, i.e. their inputs and outputs.
+Several Interface Description Languages (IDLs) have already been defined for this purpose.
+This document describes a shortlist of IDLs that have a high impact in industry.
+
+== IDL requirements
+
+The primary purpose of the IDL we are looking for is to describe the inputs & outputs of a component.
+The ideal IDL we are looking for complies with following requirements:
+
+- Programming language and platform independent
+- Straightforward to map on programming language constructs
+- Straightforward to reverse engineer from existing programming language code
+- Supports primitive datatypes, constants, enums, objects and arrays of objects
+- Supports serialization/deserialization for e.g. testing, recording & playback
+
+== Common IDL concepts
+
+Most IDLs assume that the input and output of components consist of structured objects, usually called "messages".
+A message is a grouping of fields. A field is either of scalar type, or is typed by a message. A field can also be a sequence or array.
+
+The IDL contains a specification of the syntax of messages, *not* their semantic meaning.
+The semantic meaning of messages and their members could be derived from their names, informally described in comments, or described in separate documents.
+
+Message definitions can be compiled into message classes.
+Message instances can be communicated between components in various ways, e.g. via a database, blackboard, or publish/subscribe mechanism.
+They can be serialized and deserialized for recording & play-back, storage and transmission.
+
+=== Protocol Buffers (Protobuf)
+
+link:https://protobuf.dev/[Protocol Buffers (Protobuf)] are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. It started as a way of dealing with RPC messages, but meanwhile has grown into a universally applicable tool that fits multiple domains.
+
+Protobuf messages are specified in _".proto"_ files. Each .proto file contains a specification of one or more messages.
+Compilation of a .proto file, using the _"protoc"_ protocol compiler, generates a class for each message you specified, with accessors for each field, and methods to serialize (_"SerializeToString"_) and deserialize (_"ParseFromString"_) the message. Protobuf messages can be serialized/deserialized to/from a binary format or to/from JSON text.
+
+Protobuf supports a lot of languages: _C++, Java, Python, Objective-C, C#, Ruby, Go, PHP, Dart, Javascript_.+
+Protobuf deals with important software engineering concerns like e.g. message backward compatibility.
+
+=== OMG Interface Definition Language (IDL).
+
+link:https://www.omg.org/spec/IDL/[OMG IDL] is an ISO standard Interface Definition Language. IDL is a specification language, specified by the OMG (Object Management Group), which describes an interface in a language-independent way, enabling communication between software components that do not share the same language.
+
+IDL was originally defined by the OMG for use by CORBA client/server applications. OMG IDL is however mostly applied as IDL for the link:https://www.dds-foundation.org/[OMG Data Distribution Service (DDS)], an international standard, proven publish/subscribe middleware for distributed systems.
+
+OMG IDL messages are specified in _".idl"_ text files. These files are compiled to generate serialization and deserialization code.
+For storage and transmission, OMG IDL messages are serialized into a binary format, Common Data Representation (CDR).
+
+=== ROS 2 Messages
+
+ROS 2 is the de-facto standard for robotics middleware. It is build on top of OMG DDS, but uses its own, very simple language for specifying interface messages.
+link:https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html[ROS 2 messages] are specified in _".msg"_ files.
+
+During code building each ROS2 message is first translated into a link:https://design.ros2.org/articles/idl_interface_definition.html[subset of the OMG IDL] and then compiled into C++ and Python code. The generated code comprises a message class for each message, with serialization and deserialization methods.
+
+ROS 2 messages are serialized into CDR format by the configured DDS middleware. Serialized messages can be generated from YAML input or output in YAML format.
+
+ROS 2  is exclusively targeted at the robotics software domain. It includes a large collection of link:https://github.com/ros2/common_interfaces[common messages definitions], tailored for this domain.
+
+== Comparison
+In the following table we summarize the differences between the IDLs we
+have described.
+[cols="2,2,2,2,2,2"]
+|===
+|| **Domain**| **Backwards compatible**|**Codegen**| **Binary msg format**| **Text msg format**
+
+|**Protobuf**
+|    any      |   yes     | C++, Java, Python, Objective-C, C#, Ruby, Go, PHP, Dart, Javascript | protobuf |        JSON
+
+|**OMG IDL**  |  CORBA, DDS |   no     |                          C++,  Python                       |         CDR        |          -
+
+|**ROS 2 msg**|    ROS      |   no      |                          C++, Python                        |         CDR        |        YAML        |
+|===
+
+== Conclusions
+
+Following conclusions can be made:
+
+- IDLs may be large but in practice just a subset of the language suffices to specify most interfaces
+- The message definition syntax of various IDLs is quite similar. It is quite easy to manually translate one IDL into another.
+- It is quite simple to reverse engineer existing, language specific component interfaces (e.g. C++ typedefs) into any of the IDL and vice versa.
+- Some IDLs are great but platform dependent.
+
+Google's Protocol Buffers seems to be the best choice here: language and platform independent, code generation for many languages, backwards message compatibility.
+OMG IDL/CDR is very well specified but only really supported in OMG DDS.
+ROS 2 messages are simple and still powerful but code generation and generated code are tied to ROS 2 and DDS.
+
+== References
+
+- https://protobuf.dev/)[Protocol Buffers]
+- https://www.omg.org/spec/IDL/[OMG Interface Definition Language (IDL)]
+- https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html)[About ROS 2 Interfaces]
+- link:https://github.com/ros2/common_interfaces[ROS 2 common interfaces]
+- link:https://design.ros2.org/articles/idl_interface_definition.html[ROS 2 IDL subset]
+- link:https://github.com/rticommunity/ros-data-types[ROS data types in OMG IDL format]
+- link:https://en.wikipedia.org/wiki/Comparison_of_data-serialization_formats[Comparison of data-serialization formats]
+
+=== Example message definitions
+
+What follows are example message definitions in the various IDLs, as well as a definition in the form of C++ typedef structs for comparison.
+
+**Protobuf**:
+```
+syntax="proto3";
+
+message WorldState {
+	uint32 game_state	= 1;
+	Robot self = 2;
+	Ball ball =3;
+	repeated Obstacle obstacles = 4;
+}
+
+message Robot {
+	uint32 id = 1;
+	uint32 role = 2;
+	bool has_ball = 3;
+	double orientation = 4;
+	Point position = 5;
+	Vector velocity = 6;
+}
+
+message Ball {
+	float confidence = 1;
+	Point position = 2;
+	Vector velocity = 3;
+}
+
+message Obstacle {
+	float confidence = 1;
+	Point position = 2;
+	Vector velocity = 3;
+}
+
+message Point {
+	double x = 1;
+	double y = 2;
+	double z = 3;
+}
+
+message Vector {
+	double x = 1;
+	double y = 2;
+	double z = 3;
+}
+```
+
+**OMG IDL**
+```
+struct WorldState {
+	unsigned long game_state;
+	Robot self;
+	Ball ball;
+	sequence<Obstacle> obstacles;
+};
+
+struct Robot {
+	unsigned long id;
+	unsigned long role;
+	boolean has_ball;
+	double orientation;
+	Point position;
+	Vector velocity;
+};
+
+struct Ball {
+	float confidence;
+	Point position;
+	Vector velocity;
+};
+
+struct Obstacle {
+	float confidence;
+	Point position;
+	Vector velocity;
+};
+
+struct Point {
+	double x;
+	double y;
+	double z;
+};
+
+struct Vector {
+	double x;
+	double y;
+	double z;
+};
+```
+
+**ROS 2 messages**:
+```
+WorldState.msg
+	uint32 game_state
+	Robot self
+	Ball ball
+	Obstacle[] obstacles
+
+Robot.msg
+	uint32 id
+	uint32 role
+	bool has_ball
+	float64 orientation
+	Point position
+	Vector velocity
+
+Ball.msg
+	float32 confidence
+	Point position
+	Vector velocity
+
+Obstacle.msg
+	float32 confidence
+	Point position
+	Vector velocity
+
+Point.msg
+	float64 x
+	float64 y
+	float64 z
+
+Vector.msg
+	float64 x
+	float64 y
+	float64 z
+```
+
+**C++ typedefs**:
+```
+typedef struct WorldState {
+	uint32_t game_state;
+	Robot_t self;
+	Ball_t ball;
+	Obstacles_t obstacles;
+} WorldState_t;
+
+typedef struct Robot {
+	uint32_t id;
+	uint32_t role;
+	bool has_ball
+	double orientation;
+	Point_t position;
+	Vector_t velocity;
+} Robot_t;
+
+typedef struct Ball {
+	float confidence;
+	Point_t position;
+	Vector_t velocity;
+} Ball_t;
+
+typedef std::vector<Obstacle_t> Obstacles_t;
+
+typedef struct Obstacle {
+	float confidence;
+	Point_t position;
+	Vector_t velocity;
+} Obstacle_t;
+
+typedef struct Point {
+	double x;
+	double y;
+	double z;
+} Point_t;
+
+typedef struct Vector {
+	double x;
+	double y;
+	double z;
+} Vector_t;
+```
+
+

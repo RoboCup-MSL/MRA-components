@@ -1,0 +1,15 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+== Sideline
+info about sideline
+
+
+.sideline overview
+plantuml::{modelsdir}/mra_sideline_layer.puml[format=svg]
+
+The sideline package contains the components which are executed on the sideline controller.
+
+These are tools to manage the setup of the team and redirect commands from the refbox to the players.
+
+A visualizer can be executed to see where the robots are in the field.

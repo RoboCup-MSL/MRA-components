@@ -1,0 +1,38 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+ContainerDb(WorldModel, "WorldModel")
+
+Container_Boundary(Hardware, "Hardware") {
+    Component(drive, "Drive")
+    Component(kicker, "Kicker")
+    Component(goalierack, "Goalie Rack")
+    Component(ballhandler, "Ball Handler")
+}
+
+Container_Boundary( actions, "Actions") {
+ }
+
+Component(behavior_spg, "Behavior Setpoint")
+
+
+Rel_D(WorldModel, actions, "")
+Rel_R(WorldModel, ReflexActions, "")
+
+component  ReflexActions as "Reflex Actions"{
+	Component(obstacle_avoidance, "obstacle avoidance")
+	Component(cherish_ball, "cherish ball")
+}
+
+
+Rel_D(actions, ReflexActions, "")
+Rel_D(ReflexActions, behavior_spg, "")
+Rel_D(Rbehavior_spg, drive, "")
+Rel_D(Ractions, kicker, "")
+Rel_D(Ractions, goalierack, "")
+Rel_D(Ractions, ballhandler, "")
+
+
+
+@enduml
+

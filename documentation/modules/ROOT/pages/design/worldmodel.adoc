@@ -1,0 +1,44 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+== World model
+
+.behavior overview
+plantuml::{modelsdir}/mra_worldmodel_layer.puml[format=svg]
+
+===  Local obstacle tracker
+Track an obstacle using only the local (vision) sensors for it. +
+Inputs: omnivision data , stereovision data +
+Outputs: local tracked obstacles
+
+===  Local ball tracker
+Track the ball using only the local (vision) sensors for it. +
+Inputs: omnivision data , stereovision data +
+Outputs: local tracked ball
+
+===  Obstacle tracker
+Track an obstacle using  the local obstacle tracking data and the communicated team data +
+Inputs: local obstacle tracking data, communicated team data +
+Outputs: tracked obstacles
+
+===  Ball tracker
+Track the ball using the local ball tracking data and communicated ball data +
+Inputs: local ball tracking data, communicated ball data +
+Outputs: tracked ball
+
+===  Opponent with Ball Tracker
+Track opponent which controls the ball +
+Input: ball tracking and obstacle tracking +
+Output: opponent with ball
+
+=== Received communication
+handle data received from teammates and commands from sideline and refbox
+
+=== World model
+This is an interface class to abstract the internals of the world model package.
+The abstract allows easier stubbing for the packaging which using it.
+
+
+
+
+

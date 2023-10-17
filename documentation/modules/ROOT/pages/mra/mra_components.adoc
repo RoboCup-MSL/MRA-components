@@ -1,0 +1,159 @@
+= MRA Components
+
+== C4 model
+
+The link:https://www.c4model.com[C4 model] is used do described the MSL reference architecture.
+
+The C4 model is... +
+1. A set of hierarchical abstractions (software systems, containers, components, and code). +
+2. A set of hierarchical diagrams (system context, containers, components, and code). +
+3. Notation independent.
+
+**Uses and benefits** +
+The C4 model is an easy to learn, developer friendly approach to software architecture diagramming. Good software architecture diagrams assist with communication inside/outside of software development/product teams, efficient introduction of new staff, architecture reviews/evaluations, risk identification (e.g. risk-storming), threat modelling, etc. +
+(source: https://www.c4model.com)
+
+
+==  Recommendations to increasing re-usability
+
+To increase re-usability the following recommendations should be applied.
+
+* Plug and play modules; Modules should be designed that it is easy to  replace a module be another implementation of the same module.
+* License: software should have a license that supports use of (pure) open software and proprietary software (closed). Usage of an open software license is recommended, but the license should not exclude the interaction with proprietary software.
+* Multiple operating systems support (at least Linux Ubuntu) is preferred.
+* Multiple programming languages support is preferred:
+	** C++ (high performance)
+	** C (high performance)
+	** Python (rapid prototyping, AI)
+
+== Terminology
+=== Middleware
+Middleware is a type of computer software that provides services to software applications beyond those available from the operating system. It can be described as "software glue" (link:https://en.wikipedia.org/wiki/Middleware[WikiPedia])
+
+=== Hierarchy
+
+* <<Architecture>>
+** <<Container>>
+*** <<Component>>
+
+==== Architecture
+Software architecture is the set of structures needed to reason about a software system and the discipline of creating such structures and systems. Each structure comprises software elements, relations among them, and properties of both elements and relations.[1][2]
+
+==== Container
+A container is essentially a context or boundary inside which some code is executed or some data is stored. And each container is a separately deployable/runnable thing or runtime environment.
+
+==== Component
+A component is a grouping of related functionality encapsulated behind a well-defined interface. Aspects such as how those components are packaged.
+
+
+include::mra_standard_data_definitions.adoc[]
+
+include::CoordinateSystems.adoc[]
+
+include::FMI.adoc[]
+
+== Component properties
+Each MRA component will describe the runtime frequency where it was designed for.
+The frequency is important to deal with reactivity of the component and tuning sensitivity.
+
+Each component has three attributes
+
+* Input
+* Output
+* Parameters
+
+The contents of the attributes varies per MRA component.
+Each MRA component variant must have the same input and output. This is an essential requirement to be able to replace an MRA component variant by another variant. The parameter can vary per variant.
+
+
+REQ-CMP-01::
+A standard is needed for defining a component. +
+*Rationale*: Not having a standard makes it impossible to exchange models & implementations.
+
+[NOTE]
+====
+A component is partially defined by its black-box interface. The standard covers the following aspects.
+
+1. interface/data definition (compatibility)
+2. abstract base class(es)
+3. semantics, documentation
+4. testing, quality
+====
+
+REQ-CMP-02::
+It should be possible to nest components, that is, make use of others. +
+*Rationale*: This allows grouping and managing complexity.
+
+REQ-CMP-03::
+It must be possible to upgrade one component (incl. its interface), while not having to upgrade its connected ones. +
+*Rationale*: locality of change. Instead of forcing developers to do simple/useless tasks, the standard/engine shall take care of it.
+
+REQ-CMP-04::
+It shall be possible to exchange components without requiring specific platforms / middleware. +
+*Rationale*: this allow support of C++, Matlab and python; known programming languages for MSL robots. +
+It makes MRA middleware independent, MRA can be used in environment which is using ROS or RTDB or any other middleware.
+
+
+
+== Data Definition Format
+
+[#OpenIssue-01]
+====
+OpenIssue-01:: Data Definition Format rephrase by Eric
+====
+
+The interface must be described so that is portable (programming language independent) and support backwards compatibility. Data types must unambiguous.
+This can be achieved by using link:https://protobuf.dev/[Protocol buffers]
+Or an alternative.
+
+REQ-DDF-01::
+The Data definition format of the MSL Reference architecture must support serialization. Serialization is the process of translating a data structure or object state into a format that can be stored or transmitted +
+*Rationale*  Serialization allow Logging and store the data in a database.
+
+REQ-DDF-02::
+The Data Definition Format shall be compatible with or extendable towards: ROS, RTDB, FMI. +
+*Rationale*: Supporting multiple middleware makes the adaption of the MSL Reference architecture easier for teams
+
+DEC-SD-03::
+MSL Reference Architecture will use Google Protobuf (v3) for defining data types. +
+*Justification* : it is widely used, mature, supports backwards compatibility. Code can easily be generated from it.
+
+== Testability
+Setup component test: each component should have design for testing
+
+* Components tests are strongly recommended, but not mandatory.
+* A good component contains tests to prove its functionality during initial development and extending and improving functionality.
+
+TIP: Component Tests from a component which are using only the (public) external interfaces might be used to verify working of a component without or limited component tests.
+
+== MSL Reference Architecture Repository
+
+[#OpenIssue-03]
+====
+OpenIssue-03:: Agree on repository, component dependencies, versioning of components and interface
+====
+
+The MSL Reference Architecture Repository will contain the basic  definitions for the standard. For each component as defined by the MSL Reference Architecture there will repository available.
+Within the specific MRA component repository multiple variants can be published. Each variant must be self-contained.
+
+REQ-REP-01::
+There must be a central repository for MSL software datatypes.
+*Rationale*: A central repository cand to ensure consistency, correctness and provide the software datatype to teams.
+
+DEC-REP-01::
+The MSL Reference architecture will be hosted on a public repository within the link:https://github.com/RoboCup-MSL[RoboCup-MSL repository] on GitHub. The datatypes will be defined in: MRA-datatypes. +
+*Justification*: MSL gitHub repository is already available and used for sharing source code between MSL teams.
+
+== Component interface
+The interface of a component has a version. This allows to have multiple variants of a component interface.
+The Inputs and Outputs of a component are standardized for an interface version. The provides backwards complacency for the clients (provider or user) and guarantees that on interface level the component are be interchangeable.
+
+== Versioning
+
+From an MRA component multiple variants can exist. A variant created by Team X and a variant created by Team Y. For a variant a multiple versions can exists. +
+Eg.: MRA/GetBall/v1/Falcons_v1
+
+This allows providing multiple implementations of a component.
+
+== Managing Dependencies
+A component must be self-contained. This requires that all dependencies are defined by the component. The dependencies and all code for the component must be provided. This is needed to guarantee interchangeability.

@@ -249,7 +249,7 @@ cv::Mat Solver::createDiagnosticsMat() const
     FitFunction ff(referenceFloorMat, _linePoints, ppm);
     std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, _fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz);
     for (const auto &point : transformed) {
-        cv::circle(result, cv::Point(point.x, point.y), _params.solver().linepoints().plot().radius(), cv::Scalar(255, 0, 0), -1);
+        cv::circle(result, cv::Point(point.x, point.y), ppm * _params.solver().linepoints().plot().radius(), cv::Scalar(255, 0, 0), -1);
     }
 
     // show robot as red circle with orientation line

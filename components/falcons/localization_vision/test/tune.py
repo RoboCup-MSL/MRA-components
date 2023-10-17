@@ -178,7 +178,7 @@ class TuningTool():
         self.data.state = return_tuple[1]
         self.data.output = return_tuple[2]
         self.data.local = return_tuple[3] # local is a synonym for diagnostics. If too confusing, then lets bulk-rename? (Naming came from FMI standard.)
-        logging.info('output = ' + str(self.data.output))
+        #logging.info('output = ' + str(self.data.output))
         # convert CvMatProto object to opencv object
         c = self.data.local.floor
         if c.width * c.height:

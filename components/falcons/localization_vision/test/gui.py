@@ -11,7 +11,7 @@ def create_standard_gui_params(params=None):
         params = Parameters()
     # control buttons
     params.add('active', bool, slider=False)
-    params.add('overlay', bool, default_value=True, slider=False)
+    params.add('overlay', bool, default_value=False, slider=False) # disable, doesn't scale nice, why not look at terminal instead
     params.add('reset', bool, slider=False)
     # sliders: name, type, default, min, max
     params.add('frequency', float, 10.0, 0.1, 50.0)

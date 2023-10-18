@@ -97,11 +97,6 @@ It makes MRA middleware independent, MRA can be used in environment which is usi
 
 == Data Definition Format
 
-[#OpenIssue-01]
-====
-OpenIssue-01:: Data Definition Format rephrase by Eric
-====
-
 The interface must be described so that is portable (programming language independent) and support backwards compatibility. Data types must unambiguous.
 This can be achieved by using link:https://protobuf.dev/[Protocol buffers]
 Or an alternative.

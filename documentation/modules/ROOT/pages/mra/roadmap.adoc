@@ -1,16 +1,15 @@
-= MRA Open Issues & Roadmap Issues
-:sectnums!:
+[appendix]
+= MRA Roadmap Issues & Open Issues
 
+=== Roadmap Issues
 Roadmap-01::
 Describe why FMI look-a-like is selected (Jan)
 
-
-== Open Issues
+=== Open Issues
 [cols="1,4"]
 |===
 |*Open Issue ID* | *Description*
 |<<OpenIssue-01>>|   Data Definition Format rephrase by Eric
 |<<OpenIssue-02>>|  Jan: why mention minimal risk etc.? that makes it so much more complex, why not leave that responsibility at the higher level?
 |<<OpenIssue-03>>| Agree on repository, component dependencies, versioning of components and interface
-|<<OpenIssue-04>>| <<REQ-PLAT-04>> in which repo would those go?
 |===

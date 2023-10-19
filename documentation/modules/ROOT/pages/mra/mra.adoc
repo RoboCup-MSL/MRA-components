@@ -1,0 +1,159 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+= MSL Reference Architecture
+
+The MSL Reference Architecture is intended to increase the reuse of developments between the MSL teams.
+
+== Re-usability
+Re-usability can help to increase the development speed of MSL league.
+
+**Advantages:**
+
+* Re-use of proven concepts of other teams; focus on own strength instead of do everything a bit.
+* Get more balanced games between existing MSL teams.
+* New MSL teams can faster participate and start at a competitive level.
+
+**Rationale:**
+
+* Limited re-use in MSL in the last 20 years. +
+Re-use (software) clearly worked in other leagues: simulation league, standard platform league
+* New MSL teams need too much time to be able to play and are not competitive.
+
+
+== MSL league
+In RoboCup MSL teams of five fully autonomous robots play soccer with a regular size FIFA soccer ball. Teams are free to design their own hardware but all sensors have to be on-board and there is a maximum size and weight for the robots. The research focus is on mechatronics design, control and multi-agent cooperation at plan and perception levels. (source: link:https://www.robocup.org[www.robocup.org])
+
+The MSL league has its own website: https://msl.robocup.org
+
+== Standardisation within MSL
+There is no mandatory standard to be followed within the MSL.
+Standardisation has big advances for the league; it can help to accelerated innovation.
+
+=== Hardware Standardisation
+Within the MSL robots  often have a similar design. There is no standard defined, but
+most teams are using a proven common used design. The Robotic Open Platform was created to share the robot hardware design (http://roboticopenplatform.org)
+
+Many MSL teams using most similar, but not equal hardware for:
+
+- driving: omni-wheels
+- sensing: omni-vision, stereo vision
+- kicking: MSL kicker
+- Ball-handling
+
+A lot of concepts look quite similar, however most teams decided to make their own variant of a concept instead of re-use a hardware module as already designed. Re-use of existing modules could have saved time and money.
+
+The commonality in hardware is taken into account, but own versions or different concepts should be supported by the software standard.
+
+Analyse on commonality in hardware can be found in an article about: link:https://www.techunited.nl/media/images/ROP_RoboCup_Symposium_2013_Open_Hardware_Track.pdf[ROP]
+
+
+
+=== Software Standardisation
+In the period till 2023 source code of the software was often published by the MSL teams. This did not result in reuse of software.
+
+Most software was not designed for sharing:
+
+* Limited documentation
+* Strong coupling with the specific hardware
+
+Within MSL there are a few exceptions where software reuse was applied:
+
+* link:https://github.com/RoboCup-MSL/rtdb2[RTDB] – Real-Time DataBase: Widely used by most MSL teams, but with different scope
+* Simulator
+** link:https://github.com/RoboCup-MSL/MSL-Simulator/wiki[MSL Simulator]. +
+Based on the simulator from Nubot:
+*** link:https://github.com/nubot-nudt/simatch[SimMatch]
+*** https://github.com/nubot-nudt/gazebo_visual[Nubot visualizer]
+
+** link:https://pure.tue.nl/ws/portalfiles/portal/188083876/0958546_Nijland.pdf[Common Simulator] by Tech United: connecting different simulators
+
+Via the MSL rules all the teams must:
+
+* follow the instructions from the link:https://github.com/RoboCup-MSL/RefBox[MSL Refbox].
+* Log data during the game via MSL logging protocol link:https://msl.robocup.org/requirements[ (WM Data Struct)].
+
+The link:https://github.com/RoboCup-MSL/MixedTeamProtocol[MSL Mixed-Team protocol] is created to be able to play with different teams as a single team. This protocol is created by Falcons and Robotsports. It was demonstrated as a technical challenge at RoboCup 2021 (link:https://www.youtube.com/watch?v=PfD_qd239Z4&t=4330s[movie] / link:https://robotsports.nl/images/2021/RoboCup2021_MSL_Technical_challenge_Falcons_and_VDL_robotsports_MixedTeam_Protocol.pdf[presentation]).
+
+Most initiatives are published in the link:https://github.com/RoboCup-MSL[RoboCup-MSL repository] on GitHub
+
+== Scope MSL Reference Architecture
+The scope of MSL Reference Architecture is limited to software.
+
+The scope of the MSL Reference architecture is depicted in the <<MSL_Reference_Architecture_System_Context_Diagram>>.
+
+[#MSL_Reference_Architecture_System_Context_Diagram]
+.MSL Reference Architecture System Context Diagram
+plantuml::{modelsdir}/mra_system_context_diagram.puml[format=svg]
+
+== What is interesting to share
+If a module is well-designed, tested and documented it is better sharable.
+For MSL teams the following candidates for sharing and reuse have been identified:
+
+* Object Tracking
+* Self localization
+* Team strategy (comply to all MSL rules)
+* Skills
+* AI developments
+* Hardware modules:
+	** vision
+	** drive
+	** ball-handling
+	** kicker
+* Calibration tools
+* Simulator
+
+== MSL Reference Architecture platform
+The "MRA platform" is an online platform that acts as a central place where components can be uploaded and downloaded.
+It is proposed to have one repository called "MRA" in the MSL project.
+
+Decision to be made collectively, at WorldCup Bordeaux, or MSL workshop.
+Roadmap/alternative: split MRA-components repo from MRA-platform. +
+(Maintain component content similar to BazelCentralRegistry.)  +
+(Maybe even MRA-engine, etc.) +
+
+There is a distinction between MRA users and MRA developers.
+
+* *MRA users*: the MRA user simply import one or more components from the MRA platform and use it for their robots as an imported piece of software.
+* *MRA developers*: they are creating and / or improving MRA components or MRA infrastructure software which will become available for all MRA users.  By sharing the developments the MSL teams can improve their team via the MRA Platform.
+
+&nbsp;
+
+REQ-PLAT-01::
+It shall be possible (and "easy") for users to integrate MRA components in their team software repository. +
+*Rationale*: usability is key to success of this initiative.
+
+REQ-PLAT-02::
+MRA developers must have a way to make components depend on standard libraries +
+*Rationale*: reuse existing code / functionality. +
+*Example*: dependency on opencv +
+
+REQ-PLAT-03::
+MRA developers must have a way to make components depend on other components. +
+*Rationale*: reuse, modularity, testability +
+*Examples*: getball depends on multiple specific getball-* components.
+
+[#REQ-PLAT-04]
+REQ-PLAT-04::
+MRA developers must have a way to make components depend on MSL-shared libraries. +
+*Rationale*: reuse existing code / functionality, prevent re-implementation +
+*Examples* : basic common data types (refbox commands, WorldState), common geometrical operations
+
+REQ-PLAT-05::
+ A MRA components shall be independent or only depending on MRA components and/or generic general purposes components (portability). +
+*Rationale*: If a MRA components will not be portable if it depends on a team-specific implementations. +
+*Note*: developers should instead consider to contribute to MSL-shared libraries. +
+*Roadmap*: consider static library linking, FMI/FMU packaging.
+
+
+DEC-PLAT-01::
+It is decided to support teams embedding MRA as git subrepository.
+
+DEC-PLAT-02::
+It is decided to provide support for the following build tools:
+* link:https://cmake.org/[cmake]
+* link:https://bazel.build/[bazel]
+
+DEC-PLAT-03::
+It is decided to maintain MSL-shared libraries for now in the prototype MRA repository.
+*Roadmap*: split it up (as mentioned earlier).

@@ -1,0 +1,273 @@
+font:
+  catalog:
+    # Noto Serif supports Latin, Latin-1 Supplement, Latin Extended-A, Greek, Cyrillic, Vietnamese & an assortment of symbols
+    Noto Serif:
+      normal: GEM_FONTS_DIR/notoserif-regular-subset.ttf
+      bold: GEM_FONTS_DIR/notoserif-bold-subset.ttf
+      italic: GEM_FONTS_DIR/notoserif-italic-subset.ttf
+      bold_italic: GEM_FONTS_DIR/notoserif-bold_italic-subset.ttf
+    # M+ 1mn supports ASCII and the circled numbers used for conums
+    M+ 1mn:
+      normal: GEM_FONTS_DIR/mplus1mn-regular-subset.ttf
+      bold: GEM_FONTS_DIR/mplus1mn-bold-subset.ttf
+      italic: GEM_FONTS_DIR/mplus1mn-italic-subset.ttf
+      bold_italic: GEM_FONTS_DIR/mplus1mn-bold_italic-subset.ttf
+page:
+  background_color: FFFFFF
+  layout: portrait
+  initial_zoom: FitH
+  margin: [2.5cm, 2.5cm, 2.5cm, 2.5cm]
+  # margin_inner and margin_outer keys are used for recto/verso print margins when media=prepress
+  margin_inner: 2.5cm
+  margin_outer: 2.5cm
+  size: A4
+base:
+  align: left
+  font_color: #333333
+  font_family: Noto Serif
+  font_style: normal
+  font_size: 12
+  line_height_length: 14
+  line_height: $base_line_height_length / $base_font_size
+  font_size_large: round($base_font_size * 1.25)
+  font_size_small: round($base_font_size * 0.85)
+  font_size_min: $base_font_size * 0.75
+  border_color: #EEEEEE
+  border_radius: 4
+  border_width: 0.5
+vertical_spacing: $base_line_height_length
+role:
+  line-through:
+    text_decoration: line-through
+  underline:
+    text_decoration: underline
+  big:
+    font_size: $base_font_size_large
+  small:
+    font_size: $base_font_size_small
+  subtitle:
+    font_color: 999999
+    font_size: 0.8em
+    font_style: normal_italic
+  red:
+    font-color: #ff0000
+vertical_rhythm: $base_line_height_length
+horizontal_rhythm: $base_line_height_length
+link:
+  font_color: #002FA7
+  text-decoration: underline
+code_span:
+  font_color: B12146
+  font_family: Times-Roman
+button:
+  content: "[\u2009%s\u2009]"
+  font_style: bold
+kdb:
+  background_color: F5F5F5
+  border_color: CCCCCC
+  border_offset: 2
+  border_radius: 2
+  border_width: 0.5
+  font_family: $code_span_font_family
+  separator: "\u202f+\u202f"
+mark:
+  background_color: FFFF00
+  border_offset: 1
+menu:
+  caret_content: " <font size=\"1.15em\"><color rgb=\"b12146\">\u203a</color></font> "
+heading:
+  font_color: $base_font_color
+  font_style: bold
+  h1_font_size: 18
+  h2_font_size: 16
+  h3_font_size: 14
+  h4_font_size: 12
+  line_height: 1
+  margin_top: $vertical_rhythm / 1.2
+  margin_bottom: $vertical_rhythm / 1.5
+  part:
+    break-before: always
+title_page:
+  align: center
+  logo:
+    top: 10%
+  title:
+    top: 55%
+    font_size: $heading_h1_font_size
+    font_color: 999999
+    line_height: 0.9
+  subtitle:
+    font_size: $heading_h3_font_size
+    font_style: bold_italic
+    line_height: 1
+  authors:
+    margin_top: $base_font_size * 1.25
+    font_size: $base_font_size_large
+    font_color: 181818
+  revision:
+    margin_top: $base_font_size * 1.25
+block:
+  margin_top: 0
+  margin_bottom: $vertical_rhythm
+caption:
+  align: left
+  font_size: $base_font_size * 0.95
+  font_style: italic
+  margin_inside: $vertical_rhythm / 3
+  margin_outside: 0
+lead:
+  font_size: $base_font_size_large
+  line_height: 1.4
+abstract:
+  font_color: 5C6266
+  font_size: $lead_font_size
+  line_height: $lead_line_height
+  font_style: italic
+  first_line_font_style: bold
+  title:
+    align: center
+    font_color: $heading_font_color
+    font_size: $heading_h4_font_size
+    font_style: $heading_font_style
+admonition:
+  column_rule_color: $base_font_color
+  column_rule_width: $base_border_width
+  padding: [0, $horizontal_rhythm, 0, $horizontal_rhythm]
+  label:
+    text_transform: uppercase
+    font_style: bold
+    font-size: 12
+    font-color: $base_font_color
+    border-color: $base_font_color
+    border-width: 1
+    column-rule-width: 0
+  icon:
+    caution:
+      stroke-color: #BF3400
+    important:
+      stroke-color: #BF0000
+    tip:
+      stroke-color: #19407C
+    note:
+      stroke-color: #262626
+    warning:
+      stroke-color: #BF6900
+quote:
+  font_size: $base_font_size_large
+  border_color: $base_border_color
+  border_width: 0
+  border_left_width: 5
+  padding: [0, $horizontal_rhythm, $block_margin_bottom * -0.75, $horizontal_rhythm + $quote_border_left_width / 2]
+  cite_font_size: $base_font_size_small
+  cite_font_color: 999999
+verse:
+  font_size: $quote_font_size
+  border_color: $quote_border_color
+  border_width: $quote_border_width
+  border_left_width: $quote_border_left_width
+  padding: $quote_padding
+  cite_font_size: $quote_cite_font_size
+  cite_font_color: $quote_cite_font_color
+code:
+  font_color: $base_font_color
+  font_family: $code_span_font_family
+  font_size: ceil($base_font_size)
+  padding: $code_font_size
+  line_height: 1.25
+  line_gap: 3.8
+  background_color: F5F5F5
+  border_color: CCCCCC
+  border_radius: $base_border_radius
+  border_width: 0.75
+conum:
+  font_family: $code_span_font_family
+  font_color: $code_span_font_color
+  font_size: $base_font_size
+  line_height: 4 / 3
+  glyphs: circled
+example:
+  border_color: $base_border_color
+  border_radius: $base_border_radius
+  border_width: 0.75
+  background_color: $page_background_color
+  padding: [$vertical_rhythm, $horizontal_rhythm, 0, $horizontal_rhythm]
+image:
+  align: left
+prose:
+  margin_top: $block_margin_top
+  margin_bottom: $block_margin_bottom
+sidebar:
+  background_color: EEEEEE
+  border_color: E1E1E1
+  border_radius: $base_border_radius
+  border_width: $base_border_width
+  padding: [$vertical_rhythm, $vertical_rhythm * 1.25, 0, $vertical_rhythm * 1.25]
+  title:
+    align: center
+    font_color: $heading_font_color
+    font_size: $heading_h4_font_size
+    font_style: $heading_font_style
+thematic_break:
+  border_color: $base_border_color
+  border_style: solid
+  border_width: $base_border_width
+  margin_top: $vertical_rhythm * 0.5
+  margin_bottom: $vertical_rhythm * 1.5
+description_list:
+  term_font_style: bold
+  term_spacing: $vertical_rhythm / 4
+  description_indent: $horizontal_rhythm * 1.25
+list:
+  indent: $horizontal_rhythm
+  item_spacing: $vertical_rhythm / 3
+table:
+  background_color: $page_background_color
+  border_color: BFBFBF
+  border_width: $base_border_width
+  cell_padding: 3
+  head:
+    font_style: bold
+    border_bottom_width: $base_border_width
+    background_color: $table_border_color
+  body:
+    stripe_background_color: F9F9F9
+  foot:
+    background_color: F0F0F0
+toc:
+  indent: $horizontal_rhythm
+  line_height: 1.4
+  dot_leader:
+    font_color: A9A9A9
+footnotes:
+  font_size: round($base_font_size * 0.75)
+  item_spacing: $list_item_spacing / 2
+header:
+  height: $base_line_height_length * 6
+  font_size: $base_font_size_small
+  line_height: 1
+  vertical_align: middle
+  recto:
+    right:
+      content:	image:../modules/ROOT/images/MRA_logo.svg[width="100"]
+  verso:
+    right:
+      content: $header_recto_right_content
+footer:
+  font_size: $base_font_size_small
+  border_color: DDDDDD
+  border_width: 0
+  border-style: solid
+  height: $base_line_height_length * 2.5
+  line_height: 1
+  padding: [$base_line_height_length / 2, 1, 0, 1]
+  vertical_align: top
+  recto:
+    right:
+      content: 'Right page {page-number} of {page-count}'
+    left:
+      content: ''
+  verso:
+    left:
+      content: $footer_recto_left_content
+    right:
+      content: $footer_recto_right_content

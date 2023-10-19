@@ -1,0 +1,45 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+== Behavior
+
+.behavior overview
+plantuml::{modelsdir}/mra_behaviors_layer.puml[format=svg]
+
+The behavior is the layer which controls the actuators of the robots.
+
+The input for the behavior layer is the world model (storage) and its internal states as stored in the behavior storage.
+
+The behavior storage is used to store state of the behaviors for a next loop.
+
+The behavior layer has the following activities:
+
+=== Robot strategy
+This component selects the strategy based on the data from the world-model and internal states as stored in behavior store
+
+=== Role Assignment
+This component assigns a role to the robot where is running on.
+Inputs are the worldmodel, behavior storage and selected robot strategy
+
+
+=== Action Selector
+This component selects the actions to be executed for this robot. The selection depends on the assigned role
+
+=== Actions
+There are several actions defined to be executed by the robot. +
+More details can be found in: xref:actions/actions.adoc[Actions]
+
+=== Reflex Actions
+More about the reflex actions can be found in: xref:reflex_actions.adoc[Actuator]
+
+=== Sending_communication
+After the behavior the component sends the status of the robot to other robots. (can also be last component of the cycle)
+
+The behavior is the layer which controls the actuators of the robots.
+
+The input for the behavior layer is the world model (storage) and its internal states as stored in the behavior storage.
+
+The behavior storage is used to store state of the behaviors for a next loop.
+
+The behavior layer has the following activities:
+

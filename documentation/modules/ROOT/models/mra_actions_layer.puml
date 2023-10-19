@@ -1,0 +1,58 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+ComponentDb(WorldModel, "World Model")
+
+Container_Boundary(hardware, "Hardware") {
+    Component(kicker, "Kicker")
+    Component(drive, "Drive")
+    Component(goalrack, "Goalie Rack")
+    Component(ballhandler, "Ball Handler")
+}
+
+Container_Boundary(behavior, "Behavior") {
+    Component(action_selector, "Action Selector")
+}
+
+ContainerDb(behavior_storage, "Behavior Storage")
+
+
+Container_Boundary(actions, "Actions") {
+ 	Component(positioning, "positioning")
+	Component(follow_ball, "follow ball")
+	Component(get_bal, "get_bal")
+	Component(dribbling, "dribbling")
+	Component(shield_ball, "shield_ball")
+	Component(pass, "pass")
+	Component(selfpass, "self pass")
+	Component(shoot_on_target, "shoot_on_target")
+	Component(keeperMove, "keeperMove")
+ }
+
+Component(behavior_setpoint, "Behavior Setpoint")
+
+Container_Boundary(reflex, "Reflex Actions") {
+	Component(obstacle_avoidance, "obstacle avoidance")
+	Component(cherish_ball, "cherish ball")
+}
+
+BiRel_U(behavior_storage,  actions, "")
+BiRel(behavior_storage, behavior, "")
+
+Rel_R(action_selector, actions, "")
+
+Rel_R(WorldModel, behavior, "")
+Rel_D(WorldModel, actions, "")
+Rel_D(WorldModel, reflex, "")
+
+Rel_D(actions,reflex, "")
+Rel_D(reflex, behavior_setpoint, "")
+Rel_D(behavior_setpoint, drive, "")
+Rel_D(actions, kicker, "")
+Rel_D(actions, goalrack, "")
+Rel_D(actions, ballhandler, "")
+
+
+
+@enduml
+

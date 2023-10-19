@@ -1,0 +1,38 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+ContainerDb_Ext(TeamMate, "TeamMate")
+
+Container_Boundary(behavior, "Behavior") {
+    Component(robot_strategy, "robot strategy")
+    Component(role_assigner, "role assigner")
+    Component(action_selector, "action selector")
+}
+
+ContainerDb(WorldModel, "WorldModel")
+
+ContainerDb(behavior_storage, "behavior_storage")
+
+Component(Sending_communication, "Sending_communication")
+
+Container(actions, "actions")  {
+
+}
+
+Rel_D(WorldModel, behavior, "")
+Rel_R(WorldModel, actions, "")
+
+BiRel_D(behavior_storage, actions, "")
+BiRel_U(behavior_storage, behavior, "")
+
+Rel_L(robot_strategy, role_assigner, "")
+Rel_L(role_assigner, action_selector, "")
+Rel_R(action_selector, actions, "")
+
+
+Rel_U(behavior, Sending_communication, "WIFI-data")
+Rel_U(Sending_communication, TeamMate, "robot_data")
+
+
+@enduml
+

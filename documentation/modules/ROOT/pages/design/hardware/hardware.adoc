@@ -1,0 +1,31 @@
+ifndef::modelsdir[]
+:modelsdir: ../../../models
+endif::[]
+
+== Hardware
+The package defines the generic interfaces for hardware within the MSL robot.
+The generic interfaces allow the users of the package to define algorithms independent of the hardware
+
+The following hardware interfaces are defined:
+
+* drive
+* kicker
+* imu
+* lidar
+* xref:./vision.adoc[vision]
+** omni-vision
+** stereo-vision
+* timestamp (clock)
+
+.hardware package overview
+plantuml::{modelsdir}/mra_hardware_layer.puml[format=svg]
+
+
+
+=== hardware module interface
+
+A hardware driver should use the interface for an implementation.
+A hardware driver can have more methods than only the interface, but this extended interface should only be used for testing and debugging. If used for other purposes a generic usage of the driver by its clients is not possible .
+
+
+include::./vision.adoc[]

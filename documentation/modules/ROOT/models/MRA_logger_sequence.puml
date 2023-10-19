@@ -1,0 +1,57 @@
+@startuml
+
+== creating logger ==
+client -> MRA_Logger : create()
+MRA_Logger --> client : logger
+
+== set up component and attach logger ==
+client -> MyComponent : create()
+MyComponent -> MRAComponent : (baseclass)
+client -> MyComponent : attach_logger(logger)
+MyComponent -> MyComponent : get_MRA_component_id()
+MyComponent -> MRAComponent : : attach_logger(logger, MRA_component_id)
+MRAComponent -> MRAComponent : register logger
+client -> MyComponent : tick(*)
+
+== tick ==
+MyComponent -> MRAComponent : tick(*)
+MRAComponent -> MRAComponent :
+opt logger is registered
+MRAComponent -> MRA_Logger : log timestamp
+MRA_Logger --> MRAComponent
+MRAComponent -> MRA_Logger : log inputs
+MRA_Logger --> MRAComponent
+MRAComponent -> MRA_Logger : log parameters
+MRA_Logger --> MRAComponent
+MRAComponent -> MRA_Logger : log state
+MRA_Logger --> MRAComponent
+end
+
+MRAComponent -> MyComponent : calculate()
+MyComponent -> MRAComponent : log(internal-data)
+opt logger is registered and log level OK
+MRAComponent -> MRA_Logger : log(internal-data)
+MRA_Logger --> MRAComponent
+end
+MRAComponent --> MyComponent : log(internal-data)
+MyComponent --> MRAComponent : calculate()
+
+opt logger is registered
+MRAComponent -> MRA_Logger : log outputs
+MRA_Logger --> MRAComponent
+MRAComponent -> MRA_Logger : log state
+MRA_Logger --> MRAComponent
+MRAComponent -> MRA_Logger : log local
+MRA_Logger --> MRAComponent
+end
+
+MRAComponent --> MyComponent : tick()
+MyComponent --> client : tick()
+
+client -> MyComponent : detach_logger()
+
+== deattach logger ==
+MyComponent  -> MRAComponent : detach_logger()
+MyComponent -> MyComponent : get_MRA_component_id()
+
+@enduml

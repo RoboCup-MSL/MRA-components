@@ -1,0 +1,20 @@
+== Standard Data Definitions
+
+[#Pose]
+=== Pose
+
+Poses are defined in 6-DOF (x, y, z, rx, ry, rz)
+using a right hand coordinate system
+
+* x: positive direction is rightwards from the middle of an object
+* y: positive direction is forwards from the middle of an object
+* z: positive direction is upwards from the middle of an object
+* rx: rotation around x-axis. positive direction is from y-axis to z-axis. Sometimes also called: phi-x or pitch (aircraft principal axis)
+* ry: rotation around y-axis. positive direction is from x-axis to z-axis. Sometimes also called: phi-y or roll (aircraft principal axis)
+* rz: rotation around z-axis. positive direction is from x-axis to y-axis. Sometimes also called: phi or phi-z or yaw (aircraft principal axis)
+
+=== Velocity
+Velocity is defined in 6-DOF, similar to the <<Pose>>.
+
+=== set piece
+A carefully organized and practised move in a team game by which the ball is returned to play. Examples are free kicks, goal kicks, corners, penalties, and throw-ins.  (more on: link:https://en.wikipedia.org/wiki/Set_piece_(football)[wikipedia: set piece (football)])

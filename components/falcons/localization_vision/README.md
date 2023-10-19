@@ -4,6 +4,13 @@ LocalizationVision is responsible for determining location candidate(s) in FCS b
 
 It uses the Simplex Downhill solver from `opencv`.
 
+# Status
+
+Basics are mostly there, interface is finished, implementation is not yet complete. Remaining work:
+* port more tricks from Andre's code
+* integrate on robot, compare new against existing, prove it's working
+* squeeze milliseconds
+
 # Scope and context
 
 This component is responsible for fitting the observed white line pixels to the expected configured line floor layout.

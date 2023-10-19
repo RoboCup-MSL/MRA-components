@@ -27,7 +27,6 @@ class TestCheckLogFolder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # wait until folder is not growing/changing anymore, which indirectly signals all other testcases run by bazel/ctest are done
-        assert(os.path.isdir(TESTSUITE_LOG_FOLDER))
         wait_for_folder_stable(TESTSUITE_LOG_FOLDER, 0.5, 30.0)
         cls._folder_contents = get_folder_contents(TESTSUITE_LOG_FOLDER, True)
 
@@ -98,6 +97,9 @@ def wait_for_folder_stable(folder_path, interval=0.5, timeout=30.0):
     previous_state = None
     while time.time() - t0 < timeout:
         time.sleep(interval)
+        # it may take a while for folder to appear (race condition with other test cases)
+        if not os.path.isdir(TESTSUITE_LOG_FOLDER):
+            continue
         current_state = str(get_folder_contents(folder_path))
         if current_state == previous_state:
             return # converged OK
@@ -115,6 +117,8 @@ def get_folder_contents(folder_path, load_all=False):
     result = {}
     for root, _, files in os.walk(folder_path):
         for file in files:
+            if not file.endswith('.log'):
+                continue
             file_path = os.path.join(root, file)
             if load_all:
                 with open(file_path) as fh:

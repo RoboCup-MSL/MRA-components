@@ -19,6 +19,8 @@ message(FATAL_ERROR, "Protobuf could not be find. Install protobuf (e.g. sudo ap
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
+# dependency: opencv
+include_directories(/usr/include/opencv4)
 
 # dependency: json
 include(FetchContent)
@@ -48,11 +50,14 @@ include(GoogleTest)
 set(MESSAGE_PROTOS_COMMON
     datatypes/ActionResult.proto
     datatypes/Ball.proto
+    datatypes/CvMat.proto
     datatypes/Logging.proto
     datatypes/Obstacle.proto
     datatypes/Player.proto
+    datatypes/Point.proto
     datatypes/Pose.proto
     datatypes/PosVel.proto
+    datatypes/Shapes.proto
     datatypes/WorldState.proto
 )
 

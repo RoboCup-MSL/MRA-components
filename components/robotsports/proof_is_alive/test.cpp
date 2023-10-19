@@ -62,6 +62,7 @@ TEST(RobotsportsProofIsAliveTest, turnTest)
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(output.target().position().rz());
     error_value = m.tick(timeFromDouble(t0, 1.0), input, params, state, output, local);
+
     // Asserts for turn from left position to right position
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
@@ -73,6 +74,7 @@ TEST(RobotsportsProofIsAliveTest, turnTest)
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(output.target().position().rz());
     error_value = m.tick(timeFromDouble(t0, 2.0), input, params, state, output, local);
+
     // Asserts for turn from right position to middle (starting) position
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
@@ -92,7 +94,6 @@ TEST(RobotsportsProofIsAliveTest, timeoutTest)
     auto local = RobotsportsProofIsAlive::Local();
     auto params = m.defaultParams();
     google::protobuf::Timestamp t0 = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
-
     input.mutable_worldstate()->mutable_robot()->set_active(true);
 
     // start in middle, expect turn to left
@@ -107,6 +108,7 @@ TEST(RobotsportsProofIsAliveTest, timeoutTest)
 
     // start left, expect turn to right
     error_value = m.tick(timeFromDouble(t0, 11.0), input, params, state, output, local);
+
     // Asserts for turn from left position to right position
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(output.actionresult(), MRA::Datatypes::FAILED);

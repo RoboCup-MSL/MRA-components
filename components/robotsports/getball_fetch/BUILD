@@ -7,6 +7,7 @@ cc_library(
         "RobotsportsGetballFetch_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/robotsports/getball_fetch/interface:interface",
     ],

@@ -7,6 +7,7 @@ cc_library(
         "FalconsGetballFetch_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/falcons/getball_fetch/interface:interface",
     ],

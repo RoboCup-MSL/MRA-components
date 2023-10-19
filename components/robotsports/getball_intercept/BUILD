@@ -7,6 +7,7 @@ cc_library(
         "RobotsportsGetballIntercept_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/robotsports/getball_intercept/interface:interface",
     ],

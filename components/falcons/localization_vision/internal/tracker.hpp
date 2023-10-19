@@ -27,6 +27,7 @@ public:
     MRA::Geometry::Pose fitResult;
     bool fitValid;
     float fitScore;
+    std::vector<MRA::Geometry::Pose> fitPath;
 
     // score heuristic: combine fitScore, age and freshness
     float confidence() const;

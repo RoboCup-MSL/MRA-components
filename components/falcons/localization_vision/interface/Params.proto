@@ -47,6 +47,19 @@ message LinePointParams
     LinePointPlotParams plot = 2;
 }
 
+message RGB
+{
+    int32 R = 1;
+    int32 G = 2;
+    int32 B = 3;
+}
+
+message PathPointParams
+{
+    float radius = 1;
+    RGB color = 2;
+}
+
 message RandomGuessingParams
 {
     int32 count = 1; // number of random searches to attempt
@@ -80,6 +93,7 @@ message SolverParams
     LinePointParams linePoints = 8;
     GuessingParams guessing = 9;
     ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver
+    PathPointParams pathPoints = 11;
 }
 
 message Params

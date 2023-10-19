@@ -203,6 +203,7 @@ void Solver::runFitUpdateTrackers()
         _fitResult.valid = tr.fitValid;
         _fitResult.pose = tr.fitResult;
         _fitResult.score = tr.fitScore;
+        _fitResult.path = tr.fitPath;
         if (_fitResult.valid)
         {
             Candidate c;
@@ -247,9 +248,21 @@ cv::Mat Solver::createDiagnosticsMat() const
     // add linepoints with blue/cyan color
     float ppm = _params.solver().pixelspermeter();
     FitFunction ff(referenceFloorMat, _linePoints, ppm);
-    std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, _fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz);
+    std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, ff.transformationMatrixRCS2FCS(_fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz));
+    MRA_LOG_DEBUG("number of transformed points: %d", (int)transformed.size());
     for (const auto &point : transformed) {
         cv::circle(result, cv::Point(point.x, point.y), ppm * _params.solver().linepoints().plot().radius(), cv::Scalar(255, 0, 0), -1);
+    }
+
+    // add fit path
+    MRA_LOG_DEBUG("number of points in fit path: %d", (int)_fitResult.path.size());
+    std::vector<cv::Point2f> pathPoints;
+    std::transform(_fitResult.path.begin(), _fitResult.path.end(), std::back_inserter(pathPoints),
+                   [](const MRA::Geometry::Pose& obj) { return cv::Point2f(obj.x, obj.y); });
+    transformed = ff.transformPoints(pathPoints);
+    auto pathColor = _params.solver().pathpoints().color();
+    for (const auto &point : transformed) {
+        cv::circle(result, cv::Point(point.x, point.y), ppm * _params.solver().pathpoints().radius(), cv::Scalar(pathColor.b(), pathColor.g(), pathColor.r()), -1);
     }
 
     // show robot as red circle with orientation line
@@ -287,6 +300,7 @@ void Solver::manualMode()
     _fitResult.pose.x = pose[0];
     _fitResult.pose.y = pose[1];
     _fitResult.pose.rz = pose[2];
+    _fitResult.path = fit.getPath();
     // set output
     Candidate c;
     c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);

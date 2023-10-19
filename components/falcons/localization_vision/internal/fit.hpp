@@ -16,6 +16,7 @@ struct FitResult
     bool valid = false;
     float score = 0.0;
     MRA::Geometry::Pose pose;
+    std::vector<MRA::Geometry::Pose> path;
     bool operator<(FitResult const &other) { return score < other.score; }
 }; // struct FitResult
 
@@ -30,15 +31,17 @@ public:
     // helpers, public for testing purposes and diagnostics
     double calcOverlap(cv::Mat const &m1, cv::Mat const &m2) const;
     cv::Mat transform3dof(cv::Mat const &m, double x, double y, double rz) const; // TODO remove??
-    std::vector<cv::Point2f> transformPoints(const std::vector<cv::Point2f> &points, double x, double y, double rz) const;
+    std::vector<cv::Point2f> transformPoints(const std::vector<cv::Point2f> &points, cv::Mat tmat = cv::Mat::eye(3, 3, CV_64FC1)) const;
+    cv::Mat transformationMatrixRCS2FCS(double x, double y, double rz) const;
+    std::vector<MRA::Geometry::Pose> &getPath();
 
 private:
     cv::Mat _referenceFloor;
     std::vector<cv::Point2f> _rcsLinePoints;
     double _rcsLinePointsPixelCount = 1.0; // for score normalization
     float _ppm; // needed to optimize in FCS instead of pixels
-    cv::Mat transformationMatrixRCS2FCS(double x, double y, double rz) const;
     cv::Mat transformationMatrixFCS2PCS() const;
+    mutable std::vector<MRA::Geometry::Pose> _fitpath;
 }; // class FitFunction
 
 

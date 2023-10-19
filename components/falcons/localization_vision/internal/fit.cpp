@@ -21,6 +21,7 @@ void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
         tr.fitResult = fr.pose;
         tr.fitValid = fr.valid;
         tr.fitScore = fr.score;
+        tr.fitPath = fr.path;
     }
 
     // sort trackers on decreasing quality
@@ -59,6 +60,7 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     result.pose.x = (vec.at<double>(0, 0));
     result.pose.y = (vec.at<double>(0, 1));
     result.pose.rz = (vec.at<double>(0, 2));
+    result.path = f->getPath();
     return result;
 }
 
@@ -101,10 +103,10 @@ cv::Mat FitFunction::transform3dof(cv::Mat const &m, double x, double y, double 
     return result;
 }
 
-std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Point2f> &points, double x, double y, double rz) const
+std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Point2f> &points, cv::Mat const tmat) const
 {
     int n = points.size();
-    MRA_TRACE_FUNCTION_INPUTS(n);
+    MRA_TRACE_FUNCTION_INPUTS(n, tmat);
 
     // Nothing to do?
     if (points.size() == 0)
@@ -112,11 +114,12 @@ std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Poin
         return points;
     }
 
-    // Construct the transformation matrix, from RCS to PCS
+    // Transformation matrices
     // RCS: robot coordinate system
     // FCS: field coordinate system
     // PCS: pixel coordinate system, applies to (reference) floor cv::Mat
-    cv::Mat transformationMatrix33 = transformationMatrixFCS2PCS() * transformationMatrixRCS2FCS(x, y, rz);
+
+    cv::Mat transformationMatrix33 = transformationMatrixFCS2PCS() * tmat;
     cv::Mat transformationMatrix32 = transformationMatrix33(cv::Rect(0, 0, 3, 2));
 
     // Transform
@@ -127,6 +130,11 @@ std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Poin
     return transformedPoints;
 }
 
+std::vector<MRA::Geometry::Pose> &FitFunction::getPath()
+{
+    return _fitpath;
+}
+
 double FitFunction::calc(const double *v) const
 {
     double x = v[0];
@@ -134,7 +142,7 @@ double FitFunction::calc(const double *v) const
     double rz = v[2];
     MRA_TRACE_FUNCTION_INPUTS(x, y, rz);
     double score = 0.0;
-    std::vector<cv::Point2f> transformed = transformPoints(_rcsLinePoints, v[0], v[1], v[2]);
+    std::vector<cv::Point2f> transformed = transformPoints(_rcsLinePoints, transformationMatrixRCS2FCS(x, y, rz));
     for (size_t i = 0; i < _rcsLinePoints.size(); ++i)
     {
         int pixelX = static_cast<int>(transformed[i].x);
@@ -149,6 +157,7 @@ double FitFunction::calc(const double *v) const
         }
         MRA_LOG_DEBUG("calc %3d   rx=%8.3f  ry=%8.3f  px=%4d py=%4d  s=%6.2f", (int)i, _rcsLinePoints[i].x, _rcsLinePoints[i].y, (int)(pixelX), (int)(pixelY), s);
     }
+    _fitpath.push_back(MRA::Geometry::Pose(x, y, rz));
     // final normalization to 0..1 where 0 is good (minimization)
     double result = 1.0 - score / _rcsLinePointsPixelCount;
     MRA_TRACE_FUNCTION_OUTPUT(result);

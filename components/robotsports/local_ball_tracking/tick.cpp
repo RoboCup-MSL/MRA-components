@@ -143,7 +143,7 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick
 	// provide proper init for (static) ballData array; sc_bm will scan the whole list and assume all data with conf > 0.0 to be valid measurements
 	ballData[0].conf = 0.0;
 
-	bool isStereoBallAvailable = input.omnivision_balls_size() > 0;
+	bool isStereoBallAvailable = input.stereovision_balls_size() > 0;
 
 	const bool suppressOmni = params.suppress_omni();
 	const bool includeOmni = !suppressOmni || (!isStereoBallAvailable);

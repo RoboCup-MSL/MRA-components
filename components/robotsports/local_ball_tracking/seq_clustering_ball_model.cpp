@@ -30,10 +30,15 @@
               maxage clipping assumes system time (gettimeofday)
 */
 
+#include <cstring> // memcpy
+#include <cmath>
+
 #include "constants_ball_model.hpp"
 #include "seq_clustering_ball_model.hpp"
 #include "seq_clustering_ball_model_log.hpp"
 #include "seq_clustering_best_uid.hpp"
+
+
 
 /* function declaration */
 static int generate_offspring(ball_feature_t* pbfeat, sc_global_data * pscgd);
@@ -1206,8 +1211,8 @@ int seq_clustering_ball_model(ball_estimate_t* pball, ball_feature_t * pbfeat, d
 
         //logAlways("xdot = %f, ydot = %f, vel = %f", pball->xdot, pball->ydot, vel);
         if (vel < CLIP_LOWER_BALL_VELOCITY) {
-                pball->xdot = 0.; /* set velocity to zero */
-                pball->ydot = 0.;
+                pball->xdot = 0.0; /* set velocity to zero */
+                pball->ydot = 0.0;
         }
         if (vel > CLIP_UPPER_BALL_VELOCITY) {
                 alpha = CLIP_UPPER_BALL_VELOCITY / vel; /* scale velocity to match maximum */
@@ -1216,7 +1221,7 @@ int seq_clustering_ball_model(ball_estimate_t* pball, ball_feature_t * pbfeat, d
         }
 
         if (pscgd->hyp[i_mape].nobj <= 0) {
-                pball->hconf = 0.;
+                pball->hconf = 0.0;
         } else {
                 pball->hconf = pscgd->hyp[i_mape].mavg;
         }

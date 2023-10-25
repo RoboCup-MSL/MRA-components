@@ -2,23 +2,93 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
-message VisionObjectState
+import "components/robotsports/local_ball_tracking/interface/Output.proto";
+
+message BallPositionHistoryState
 {
-	float x = 1;
-    float y = 2;
-    float z = 3;
-	float vx = 4;
-    float vy = 5;
-    float vz = 6;
-    float confidence = 7;
-    float timestamp = 8;               // timestamp 
+    double x = 1;
+    double y = 2;
+}
+
+message BallObserverState
+ {
+    repeated double xh = 1; // [6] state estimate: x, xdot, y, ydot, z, zdot 
+    double tupd = 2; // time of last update
+    int32 label = 3; // type of last added feature
+    bool dupd = 4; // update flag, 0 = no update required, 1 = associate object with new feature 
+    double time = 5; // time of current state estimate 
+    int32 uid = 6; // uid set at creation */
 } 
+
+message HistoryState
+{
+    double t = 1;
+    repeated double x= 2; // [6]
+    bool association_flag = 3;
+    // ball_feature_t bfeat;
+    double p_prior = 5;
+    double p_prediction = 6;
+    double p_likelihood = 7;
+    double p_posterior = 8;
+}
+
+message FeatBufState {
+    repeated double timestamp = 1; // [MAXFEATBUF];
+    repeated double x = 2; // [MAXFEATBUF];
+    repeated double y = 3; // [MAXFEATBUF];
+    repeated double z = 4; // [MAXFEATBUF];
+    repeated double sigma = 5; // [MAXFEATBUF];
+    repeated double exp_time = 6; // [MAXFEATBUF];
+    repeated int32 isFree = 7; // [MAXFEATBUF];
+}
+
+message HypothesisState {
+    BallObserverState obs = 1; // observer representing the detected ball according to this hypothesis 
+    int32 nobj = 2; // number of detected balls (0 or 1)
+    double p = 3; // probability of this hypothesis */
+    int32 association_flag = 4; /* association of last feature (ASSOCIATE_WITH_CLUTTER or ASSOCIATE_WITH_BALL) */
+    repeated double ma_buf = 5; // [MA_N + 1]; /* MA confidence filter */
+    double mavg = 6;
+    int32 ma_idx = 7;
+    int32 ma_first = 8;
+    int32 updated_in_timestep = 9;
+    repeated HistoryState hist = 10; // [MAXHIST]
+    int32 hist_idx = 11;
+    int32 hist_full = 12;
+    FeatBufState fbuf = 13;
+    int32 fbuf_idx = 14;
+    int32 nfbuf = 15; // number of valid features in buffer, start at 0 
+} 
+
+message ParametersState 
+{
+    int32 nkeep = 1; // number of hypotheses saved for next step
+    double pfactor = 2; // reject hypotheses with p < pmax/pfactor
+    double maxage = 3; // maximum age for non-updated objects
+    double alpha = 4; /* Pnew=alpha*(1-MA) */
+    double beta = 5;
+    double min_allowed_sigma = 6; /* to prevent observer from exploding */
+    double exp_time_free = 7;
+    double exp_time_non_free = 8;
+} 
+
 
 
 message State
 {
-	VisionObjectState ball = 1;
-    VisionObjectState ball_prev = 2;
-    VisionObjectState ball_now = 3;		// ball position extrapolated to time = now (liveseconds)
+	VisionObjectOutput ball = 1;
+    VisionObjectOutput ball_prev = 2;
+    VisionObjectOutput ball_now = 3;		// ball position extrapolated to time = now (liveseconds)
+    repeated BallPositionHistoryState ball_position_history = 4;
+    repeated HypothesisState hyp = 5; //[MAXHYP];
+    repeated HypothesisState hyp2 = 6; //[MAXHYP];
+    ParametersState par = 7;
+    int32 nhyp = 8;
+    int32 new_uid = 9;
+    int32 track_uid = 10; /* ball uid to keep track off */
+    int32 next_done = 11;
+    int32 is_kicked = 12;
+    double vx0 = 13; /* initial ball speed on kick */
+    double vy0 = 14;
 }
 

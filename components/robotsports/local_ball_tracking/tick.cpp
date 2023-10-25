@@ -5,6 +5,7 @@
 #include "RobotsportsLocalBallTracking.hpp"
 #include "logging.hpp" // TODO: automate, perhaps via generated hpp
 #include <google/protobuf/util/time_util.h>
+#include <array>
 
 using namespace MRA;
 using namespace google::protobuf::util;
@@ -136,6 +137,20 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick
     MRA_LOG_TICK();
 	//example logging MRA_LOG_CRITICAL("TIMEOUT: FAILED due to too much time between phases (max: %4.2f seconds)", 1.23);
 
+//    xy_t ball_position_history[BALL_MAX_HISTORY];
+//    auto ball_pos_index = 0;
+//    for (auto ball_pos: state.ball_position_history()) {
+//    	if  (ball_pos_index < BALL_MAX_HISTORY) {
+//        	ball_position_history[ball_pos_index].x = ball_pos.x();
+//        	ball_position_history[ball_pos_index].y = ball_pos.y();
+//    	}
+//    	ball_pos_index++;
+//    }
+
+//    for (auto idx = 0; idx < state.BALL_MAX_HISTORY)
+    state.mutable_ball_prev()->CopyFrom(state.ball());
+
+
     // fill measurements just like balltrackpreproc.c does in Turtle2 code
 	int nrBallsThisTime = 0;
 	//	ball_estimate_t ball_estimate;    // TODO: use or remove
@@ -223,7 +238,7 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick
 
 	// naive filter - select closest measurement
 	// find close
-	auto use_naive_filter = true;
+	auto use_naive_filter = false;
 	if (use_naive_filter) {
 		auto min_dist = ballData[nrBallsThisTime].dist;
 		unsigned winning_idx = 0;
@@ -336,18 +351,34 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick
 	// TODO ball_prev is not updated, it seems - stays at 0
 	// calculate ball position at current time, based on position with timestamp ts and estimate of ball speed
 
-//	double timeLeap = input.ts() - output.ball().timestamp();
-//	// copy ball position to _now position
-//	output.mutable_ball_now()->CopyFrom(output.ball());
-//	if (timeLeap > 0) {
-//		// current time is actually larger than ball observation, so we can extrapolate for _now position
-//		output.mutable_ball_now()->set_x( output.ball().x() + timeLeap * output.ball().vx());	// position X extrapolated
-//		output.mutable_ball_now()->set_y( output.ball().y() + timeLeap * output.ball().vy());	// position X extrapolated
-//		output.mutable_ball_now()->set_z( output.ball().z() + timeLeap * output.ball().vz());	// position X extrapolated
-//		output.mutable_ball_now()->set_confidence(output.ball().confidence() * pow(params.confidence_decay(), timeLeap) );	// degrade confidence for extrapolation based on timeLeap
-//		output.mutable_ball_now()->set_timestamp(input.ts());     // timestamp for extrapolation is current time
-//	}
+	double timeLeap = input.ts() - output.ball().timestamp();
+	// copy ball position to _now position
+	output.mutable_ball_now()->CopyFrom(output.ball());
+	if (timeLeap > 0) {
+		// current time is actually larger than ball observation, so we can extrapolate for _now position
+		output.mutable_ball_now()->set_x( output.ball().x() + timeLeap * output.ball().vx());	// position X extrapolated
+		output.mutable_ball_now()->set_y( output.ball().y() + timeLeap * output.ball().vy());	// position X extrapolated
+		output.mutable_ball_now()->set_z( output.ball().z() + timeLeap * output.ball().vz());	// position X extrapolated
+		output.mutable_ball_now()->set_confidence(output.ball().confidence() * pow(params.confidence_decay(), timeLeap) );	// degrade confidence for extrapolation based on timeLeap
+		output.mutable_ball_now()->set_timestamp(input.ts());     // timestamp for extrapolation is current time
+	}
+	output.mutable_ball_prev()->CopyFrom(state.ball_prev());
 
-    return error_value;
+
+//	std::vector<BallPositionHistoryState> ball_pos_hist;
+//	for (auto idx = 0; idx < BALL_MAX_HISTORY; ++idx)
+//    {
+//    	BallPositionHistoryState hist;
+//    	hist.set_x(ball_position_history[ball_pos_index].x);
+//    	hist.set_y(ball_position_history[ball_pos_index].y);
+//    }
+//	*state.mutable_ball_position_history() = {ball_pos_hist.begin(), ball_pos_hist.end()};
+//	state.mutable_ball() = output.mutable_ball();
+
+	// copy output to state for the next tick
+	state.mutable_ball_now()->CopyFrom(output.ball_now());
+	state.mutable_ball()->CopyFrom(output.ball());
+
+	return error_value;
 }
 

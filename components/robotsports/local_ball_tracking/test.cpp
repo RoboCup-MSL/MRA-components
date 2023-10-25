@@ -117,6 +117,7 @@ public:
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_sv_sigma);
 			bf.set_dist(dist_robot_to_ball);
+			bf.set_timestamp(r_sample_data.rel_time);
 		    r_sample_data.stereo_features.push_back(bf);
 		}
 		if (dist_robot_to_ball < m_ov_range) {
@@ -129,6 +130,7 @@ public:
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_ov_sigma);
 			bf.set_dist(dist_robot_to_ball);
+			bf.set_timestamp(r_sample_data.rel_time);
 		    r_sample_data.omni_features.push_back(bf);
 		}
 		return object_detected;

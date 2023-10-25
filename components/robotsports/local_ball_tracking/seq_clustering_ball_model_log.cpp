@@ -4,6 +4,7 @@
  *  @curator Rene van de Molengraft
  */
 
+#include <cstring> // memcpy
 #include "seq_clustering_ball_model_log.hpp"
 #include "constants_ball_model.hpp"
 

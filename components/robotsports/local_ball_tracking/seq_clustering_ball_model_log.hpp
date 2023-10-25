@@ -8,6 +8,7 @@
 #define BM_LOG_H
 
 #include "seq_clustering_ball_model.hpp"
+#include <cstdio> // FILE
 
 int log_init(hypothesis *phyp);
 int log_write_t(double t, hypothesis *phyp);

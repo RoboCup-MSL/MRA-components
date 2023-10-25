@@ -38,10 +38,10 @@
 /* function declaration */
 static int generate_offspring(ball_feature_t* pbfeat, sc_global_data * pscgd);
 #ifdef BMDEBUG
-static int fbuf_print(phypothesis phyp);
+static int fbuf_print(hypothesis* phyp);
 #endif
-static int fbuf_init(phypothesis phyp);
-static int fbuf_add(phypothesis phyp, ball_feature_t* pbfeat, sc_global_data * pscgd);
+static int fbuf_init(hypothesis* phyp);
+static int fbuf_add(hypothesis* phyp, ball_feature_t* pbfeat, sc_global_data * pscgd);
 static void swap_index(int i, int j, int* idx);
 static void isort_descending(int *idx, double *iarr, int size);
 static void isort_ascending(int *idx, double *iarr, int size);
@@ -56,7 +56,7 @@ static int mape(sc_global_data * pscgd);
 
 #ifdef BMDEBUG
 
-static int fbuf_print(phypothesis phyp)
+static int fbuf_print(hypothesis* phyp)
 {
 // TODO
 //	logAlways("hypothesis %d has %d feature(s) in buffer:", phyp->obs.uid, phyp->nfbuf);
@@ -72,7 +72,7 @@ static int fbuf_print(phypothesis phyp)
 
 
 
-static int fbuf_init(phypothesis phyp)
+static int fbuf_init(hypothesis* phyp)
 {
         /* clear feature buf */
         memset(&(phyp->fbuf), 0, sizeof(featbuf_t));
@@ -90,7 +90,7 @@ static int fbuf_init(phypothesis phyp)
 
 
 
-static int fbuf_add(phypothesis phyp, ball_feature_t * pbfeat, sc_global_data * pscgd)
+static int fbuf_add(hypothesis* phyp, ball_feature_t * pbfeat, sc_global_data * pscgd)
 {
         phyp->fbuf.timestamp[phyp->fbuf_idx] = pbfeat->timestamp;
         phyp->fbuf.x[phyp->fbuf_idx] = pbfeat->x;
@@ -128,7 +128,7 @@ static int fbuf_add(phypothesis phyp, ball_feature_t * pbfeat, sc_global_data * 
 
 
 
-static int fbuf_cleanup(phypothesis phyp)
+static int fbuf_cleanup(hypothesis* phyp)
 {
         int idx1, idx2, i;
         
@@ -153,7 +153,7 @@ static int fbuf_cleanup(phypothesis phyp)
 
 
 
-static int ma_init(phypothesis phyp)
+static int ma_init(hypothesis* phyp)
 {
         int i;
 
@@ -178,19 +178,8 @@ static int ma_init(phypothesis phyp)
 
 
 
-static int ma_add(double val, phypothesis phyp)
+static int ma_add(double val, hypothesis* phyp)
 {
-#if 0
-        /* initialize */
-        if (phyp->ma_first) {
-                for (int i = 0; i < MA_N; i++) {
-                        phyp->ma_buf[i] = val;
-                }
-                phyp->ma_first = 0;
-                phyp->mavg = val;
-        }
-#endif
-
         /* store val in buffer */
         phyp->ma_buf[phyp->ma_idx] = val;
 
@@ -207,7 +196,7 @@ static int ma_add(double val, phypothesis phyp)
 
 
 
-static double ma_get(phypothesis phyp)
+static double ma_get(hypothesis* phyp)
 {
         int idx1, idx2;
 
@@ -249,14 +238,6 @@ static int fit_line_xy(double* theta, double* val, double* timestamp, double* si
                         break;
                 }
 
-                /* check for change free/non-free, if changed then clear memory */
-#if 0
-                if (isFree[idx[i]] != isFree[idx[0]] ) {
-                        if (i < MIN_NUMBER_OF_FEAT ) { return BM_FIT_ERROR; }     /* not enough features to fit line */
-                        break;
-                }                
-#endif
-
                 /* use inverse variance as weighting factor */
                 if (sigma[idx[i]] < pscgd->par.min_allowed_sigma ) {
                         sigma[idx[i]] = pscgd->par.min_allowed_sigma;
@@ -282,7 +263,6 @@ static int fit_line_xy(double* theta, double* val, double* timestamp, double* si
 
         /* determinant of regression matrix */
         det = a * d - b * c;
-//!!        if (det * det < MIN_ALLOWED_DET * MIN_ALLOWED_DET) { return BM_FIT_ERROR; }
         if (fabs(det) < MIN_ALLOWED_DET) { return BM_FIT_ERROR; }
 
         /* compute optimal parameters in weighted least-squares sense */
@@ -349,7 +329,6 @@ static int fit_curve_z(double* theta, double* val, double* timestamp, double* si
 
         /* determinant of regression matrix */
         det = a * d - b * c;
-//!!        if (det * det < MIN_ALLOWED_DET * MIN_ALLOWED_DET) { return BM_FIT_ERROR; }
         if (fabs(det) < MIN_ALLOWED_DET) { return BM_FIT_ERROR; }
 
         /* compute optimal parameters in weighted least-squares sense */
@@ -360,41 +339,12 @@ static int fit_curve_z(double* theta, double* val, double* timestamp, double* si
 }
 
 
-
-
-
-//static struct timeval tv0,tva;
-
-#ifndef NOCLIPTIME    // related to time_clip
-static double get_time(void)
-{
-
-        /* returns machine time in s */
-
-        double tm;
-        struct timeval tim;
- 
-        gettimeofday(&tim, NULL);
- 
-        tm = (double)tim.tv_sec + tim.tv_usec / 1000000.0;
- 
-        return tm;
-}
-#endif
-
-
-
-
 static void swap_index(int i, int j, int* idx)
 {
         int idx_bak = idx[i];
         idx[i] = idx[j];
         idx[j] = idx_bak;
 }
-
-
-
-
 
 static void isort_descending(int *idx, double *iarr, int size)
 {
@@ -411,9 +361,6 @@ static void isort_descending(int *idx, double *iarr, int size)
                 }
         }
 }
-
-
-
 
 
 static void isort_ascending(int *idx, double *iarr, int size)
@@ -437,7 +384,7 @@ static void isort_ascending(int *idx, double *iarr, int size)
 
 
 
-int seq_clustering_print_hypothesis(phypothesis phyp, int i)
+int seq_clustering_print_hypothesis(hypothesis* phyp, int i)
 {
         /* print hypothesis to screen */
 
@@ -870,27 +817,6 @@ static int normalization(sc_global_data * pscgd)
         return BM_SUCCESS;
 }
 
-
-
-
-
-#ifndef  NOCLIPTIME
-static int clip_time(sc_global_data * pscgd)
-{
-        /* clip hypotheses w.r.t. balls that have not been updated for a while */
-        for (int i = 0; i < pscgd->nhyp; i++) {
-                if (get_time() - pscgd->hyp[i].obs.tupd > pscgd->par.maxage) {
-                        pscgd->hyp[i].nobj = 0; /* throw away ball */
-                }
-        }
-        return BM_SUCCESS;
-}
-#endif
-
-
-
-
-
 #ifndef NOCLIPCONF
 static int clip_conf(sc_global_data * pscgd)
 {
@@ -903,9 +829,6 @@ static int clip_conf(sc_global_data * pscgd)
         return BM_SUCCESS;
 }
 #endif
-
-
-
 
 
 static int sequence_clustering_set_track_uid_to_best(best_uid* puid, sc_global_data * pscgd)
@@ -1223,12 +1146,6 @@ int seq_clustering_ball_model(ball_estimate_t* pball, ball_feature_t * pbfeat, d
                         iret = normalization(pscgd);
                         if (iret < 0) { return iret; }
 
-#ifndef  NOCLIPTIME
-                        /* clip objects that have not be updated for a while */
-                        iret = clip_time(pscgd);
-                        if (iret < 0) { return iret; }
-#endif
-
 #ifndef  NOCLIPCONF
                         iret = clip_conf(pscgd);
                         if (iret < 0) { return iret; }
@@ -1250,11 +1167,6 @@ int seq_clustering_ball_model(ball_estimate_t* pball, ball_feature_t * pbfeat, d
                         }
                 }
         } else {
-#ifndef NOCLIPTIME
-                /* clip objects that have not be updated for a while */
-                iret = clip_time(pscgd);
-                if (iret < 0) { return iret; }
-#endif
         }
 
         /* Maximum A Posteriori (MAP) estimate */
@@ -1275,10 +1187,6 @@ int seq_clustering_ball_model(ball_estimate_t* pball, ball_feature_t * pbfeat, d
 #endif
     
         /* return result in ball_estimate */
-#if 0   /* no estimates but features for x and y position */
-        pball->x = pscgd->hyp[i_mape].obs.xh[0];
-        pball->y = pscgd->hyp[i_mape].obs.xh[2];
-#endif
         idx = pscgd->hyp[i_mape].fbuf_idx - 1;
         if (idx < 0) { 
             idx = MAXFEATBUF - 1;

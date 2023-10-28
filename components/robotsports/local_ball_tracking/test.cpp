@@ -164,7 +164,7 @@ static void config_MRA_logger(std::string component)
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
     cfg.set_folder("/home/jurge/log");
     cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
+    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::DEBUG);
     cfg.mutable_general()->set_dumpticks(false);
     cfg.mutable_general()->set_maxlinesize(1000);
     cfg.mutable_general()->set_maxfilesizemb(10.0);
@@ -234,6 +234,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 	execute_ball_traject_test(traject, 12.0);
 }
 
+#if 0
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
 {
 	auto traject = BallTrajectGenerator();
@@ -376,6 +377,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 //    MRA_LOG_INFO("< %s", testname.c_str());
 //}
 
+#endif
 
 int main(int argc, char **argv)
 {

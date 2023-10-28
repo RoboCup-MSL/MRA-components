@@ -1,6 +1,6 @@
 {
     "ball_filter": 15.0,
-    "ball_vel_filter_order": 1.0,
+    "ball_vel_filter_order": 3,
     "cnt_iskicking": 10.0,
     "BMsigma_OV": 0.8,
     "BMsigma_kinect": 0.9,

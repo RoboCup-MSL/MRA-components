@@ -8,63 +8,63 @@
 #include "seq_clustering_ball_model_log.hpp"
 #include "constants_ball_model.hpp"
 
-#define M_STATIC 
+
 // it was static
 
-M_STATIC int log_init(hypothesis *phyp) {
+int log_init(hypothesis *phyp) {
 	phyp->hist_idx = 0;
 	phyp->hist_full = 0;
 
 	return 0;
 }
 
-M_STATIC int log_write_t(double t, hypothesis *phyp) {
+int log_write_t(double t, hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].t = t;
 
 	return 0;
 }
 
-M_STATIC int log_write_association_flag(double association_flag,
+int log_write_association_flag(double association_flag,
 		hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].association_flag = association_flag;
 
 	return 0;
 }
 
-M_STATIC int log_write_x(double *x, hypothesis *phyp) {
+int log_write_x(double *x, hypothesis *phyp) {
 	memcpy(&(phyp->hist[phyp->hist_idx].x[0]), x, 6 * sizeof(double));
 
 	return 0;
 }
 
-M_STATIC int log_write_bfeat(ball_feature_t *pbfeat, hypothesis *phyp) {
+int log_write_bfeat(ball_feature_t *pbfeat, hypothesis *phyp) {
 	memcpy(&(phyp->hist[phyp->hist_idx].bfeat), pbfeat, sizeof(ball_feature_t));
 
 	return 0;
 }
 
-M_STATIC int log_write_p_prior(double p_prior, hypothesis *phyp) {
+int log_write_p_prior(double p_prior, hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].p_prior = p_prior;
 
 	return 0;
 }
 
-M_STATIC int log_write_p_prediction(double p_prediction, hypothesis *phyp) {
+int log_write_p_prediction(double p_prediction, hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].p_prediction = p_prediction;
 	return 0;
 }
 
-M_STATIC int log_write_p_likelihood(double p_likelihood, hypothesis *phyp) {
+int log_write_p_likelihood(double p_likelihood, hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].p_likelihood = p_likelihood;
 	return 0;
 }
 
-M_STATIC int log_write_p_posterior(double p_posterior, hypothesis *phyp) {
+int log_write_p_posterior(double p_posterior, hypothesis *phyp) {
 	phyp->hist[phyp->hist_idx].p_posterior = p_posterior;
 	return 0;
 }
 
-M_STATIC int log_update(hypothesis *phyp) {
+int log_update(hypothesis *phyp) {
 	phyp->hist_idx++;
 	if (phyp->hist_idx >= MAXHIST) {
 		phyp->hist_idx = 0;
@@ -73,12 +73,12 @@ M_STATIC int log_update(hypothesis *phyp) {
 	return 0;
 }
 
-M_STATIC int logfile_open(FILE *fp) {
+int logfile_open(FILE *fp) {
 	fp = fopen("bmlog.log", "w");
 	return 0;
 }
 
-M_STATIC int logfile_close(FILE *fp) {
+int logfile_close(FILE *fp) {
 	fclose(fp);
 	return 0;
 }

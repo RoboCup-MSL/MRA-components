@@ -7,7 +7,7 @@
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
-//#define BMDEBUG
+#define BMDEBUG
 
 #include "seq_clustering_balldef.hpp"
 #include "constants_ball_model.hpp"

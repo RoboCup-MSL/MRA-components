@@ -15,7 +15,7 @@ http_archive(
     workspace_file_content = 'workspace(name = "nlohmann_json")',
 )
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+# fmt library, which is a dependency of spdlog
 git_repository(
     name = "fmt",
     branch = "master",

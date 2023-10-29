@@ -8,7 +8,7 @@
 #include <fstream>
 #include <variant>
 #include <google/protobuf/util/time_util.h>
-#define SPDLOG_ACTIVE_LEVEL TRACE
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "spdlog/spdlog.h"  // spdlog API: https://github.com/gabime/spdlog
 #include <opencv2/opencv.hpp> // apparently we cannot avoid this with templates
 

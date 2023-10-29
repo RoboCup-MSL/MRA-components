@@ -66,7 +66,7 @@ add_library(MRA-datatypes)
 target_include_directories(MRA-datatypes PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(MRA-datatypes protobuf)
 
-protobuf_generate(TARGET MRA-datatypes PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+protobuf_generate(TARGET MRA-datatypes PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
 
 
 # mark the protobuf files as generated source to ensure generation is finished by before building sources.

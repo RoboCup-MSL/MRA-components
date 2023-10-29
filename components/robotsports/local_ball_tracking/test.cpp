@@ -184,7 +184,8 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
     google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
 	const TestInfo* test_info_ = ::testing::UnitTest::GetInstance()->current_test_info();
 	std::string testname = test_info_->name();
-	std::string testsuitename = test_info_->test_suite_name();
+//	std::string testsuitename = test_info_->test_suite_name();
+    std::string testsuitename = test_info_->test_case_name();
     MRA_TRACE_TEST_FUNCTION();
     MRA_LOG_INFO("> %s::%s", testsuitename.c_str(), testname.c_str());
 	int n_samples = traject_generator.generate(distance);
@@ -229,7 +230,8 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
+   // std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
+	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
 	execute_ball_traject_test(traject, 12.0);
 }

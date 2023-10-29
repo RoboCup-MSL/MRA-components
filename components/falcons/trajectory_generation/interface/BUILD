@@ -23,12 +23,20 @@ cc_proto_library(
     ],
 )
 
+filegroup(
+    name = "default_params",
+    srcs = glob(["*DefaultParams.json"]),
+    visibility = ["//visibility:public"]
+)
+
 cc_library(
     name = "interface",
-    data = glob(["*DefaultParams.json"]),
     visibility = ["//visibility:public"],
     deps = [
         ":interface_cc_proto",
+    ],
+    data = [
+        ":default_params",
     ],
 )
 
@@ -37,6 +45,17 @@ py_proto_library(
     visibility = ["//visibility:public"],
     deps = [
         ":interface_proto",
+    ],
+)
+
+py_library(
+    name = "interface_py",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":interface_py_proto",
+    ],
+    data = [
+        ":default_params",
     ],
 )
 

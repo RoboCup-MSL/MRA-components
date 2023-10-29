@@ -7,6 +7,7 @@ cc_library(
         "FalconsTestMraLogger_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/falcons/test_mra_logger/interface:interface",
     ],

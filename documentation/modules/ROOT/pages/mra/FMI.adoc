@@ -1,0 +1,26 @@
+ifndef::imagedir[]
+:imagedir: ../../images
+endif::[]
+
+== Function Mock-up Interface (Component Interface)
+
+For the MSL Reference Architecture component interfaces are described according a variant of the Functional Mock-up Interface (FMI)
+
+[#RoadMap-01]
+====
+RoadMap-01:: add rational why FMI is selected (jan ?)
+====
+
+More on FMI can be found at:
+
+* link:https://en.wikipedia.org/wiki/Functional_Mock-up_Interface[Wikipedia]
+* link:https://fmi-standard.org/docs/3.0/[FMI standard]
+
+For the MRA the FMI definition is customized.
+
+
+image::{imagedir}/FMI_MRA.png[]
+
+By describing the component using the FMI definition a component is middleware independent. Via an adapter the component can used by the preferred middleware (e.g. ROS2, RTDB)
+
+

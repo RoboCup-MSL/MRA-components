@@ -29,11 +29,16 @@ import pathlib
 import subprocess
 import argparse
 
+try:
+    from tzlocal import get_localzone
+    TIMEZONE = str(get_localzone())
+except:
+    TIMEZONE = 'Local' # may not be resolved by bazel ...
 
 
 MRA_ROOT = pathlib.Path(__file__).parent.resolve()
 DEBUG_OPTIONS = ['--subcommands', '--verbose_failures', '--sandbox_debug']
-ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite']
+ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite', '--test_env=TZ=' + TIMEZONE]
 TEST_OPTIONS = ['--test_output', 'all', '--nocache_test_results']
 TRACING_OPTIONS = ['--test_env=MRA_LOGGER_KEEP_TESTSUITE_TRACING=1']
 TESTSUITE_SHM_FILE = '/dev/shm/testsuite_mra_logging_shared_memory'

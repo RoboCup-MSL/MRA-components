@@ -1,0 +1,38 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+Container_Boundary(Received_communication, "Received_communication") {
+    Component(received_team_data, "received team data")
+    Component(handle_commands, "handle commands")
+    Component(handle_settings, "handle settings")
+}
+
+Container_Boundary(Sending_communication, "Sending_communication") {
+    Component(send_own_data, "send own data")
+}
+
+Container_Boundary(Refbox_computer, "Refbox Computer") {
+Component_Ext(MSL_logging, "MSL Logging")
+Component_Ext(Refbox, "Refbox")
+}
+
+Container_Boundary(Sideline, "Sideline") {
+ Component(GUI, "GUI")
+ Component(visualisation, "visualisation")
+}
+
+ContainerDb_Ext(TeamMate, "TeamMate")
+
+Rel_D(Refbox, GUI, "commands")
+Rel_U(send_own_data, MSL_logging, "robot_data")
+Rel_D(GUI, handle_commands, "commands")
+
+
+Rel_D(Sending_communication, TeamMate, "robot_data")
+Rel_R(TeamMate, received_team_data, "robot_data")
+Rel_D(GUI, handle_commands, "service requests")
+Rel_D(GUI, handle_settings, "robot type setting")
+
+
+@enduml

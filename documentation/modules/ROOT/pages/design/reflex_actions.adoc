@@ -1,0 +1,29 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+== Reflex actions
+
+When the selected behavior approach requires reactive behavior reflex actions are needed.  These are often used for link:https://en.wikipedia.org/wiki/Behavior-based_robotics[Behavior-based robotics (wikipedia)] or link:https://en.wikipedia.org/wiki/Subsumption_architecture[subsumption architecture (wikipedia)]
+
+In this package the reflex actions are defined.
+
+.Reflex actions overview
+plantuml::{modelsdir}/mra_reflex_layer.puml[format=svg]
+
+
+In the reflex actions reactive adjustments are implemented. These adjustments modify to output of the  actions to achieve behavior on a lower level to avoid complexity in the actions.
+
+*Example*: drive from A to B.
+
+In the action avoiding collisions can be taken into account. This could easily increase the complexity of the action.  A complex action is harder to make robust and test for all cases.
+
+An actuator function can be used to avoid collisions. The action can be simpler and can ignore potential collisions. The collision avoidance is then a responsibility of the actuator package.
+
+
+=== reflex-actions:
+
+* Obstacle avoidance
+* Cherish ball (alternative for turn away from opponent action)
+
+
+

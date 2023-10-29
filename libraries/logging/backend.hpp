@@ -5,17 +5,19 @@
 #include "levels.hpp"
 #include <memory>
 #include <string>
+#include <fstream>
 #include <variant>
 #include <google/protobuf/util/time_util.h>
 #define SPDLOG_ACTIVE_LEVEL TRACE
 #include "spdlog/spdlog.h"  // spdlog API: https://github.com/gabime/spdlog
+#include <opencv2/opencv.hpp> // apparently we cannot avoid this with templates
 
 
 namespace MRA::Logging::backend
 {
 
 // tick logging: get binary file if configured, or NULL pointer
-std::ofstream *logTickBinFile(
+std::pair<std::ofstream *, std::string> logTickBinFile(
     MRA::Datatypes::LogSpec const &cfg,
     std::string const &componentName,
     int counter);
@@ -26,6 +28,7 @@ void logTickStart(
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
+    std::string const &binfileName,
     std::ofstream *binfile,
     int counter,
     google::protobuf::Timestamp const &timestamp,
@@ -107,6 +110,42 @@ public:
         void add_output(std::string const &varname, bool value);
         void add_output(std::string const &varname, std::string const &value);
         void add_output(std::string const &varname, google::protobuf::Message const &value);
+        // Also support objects with operator<<
+        template <typename T>
+        std::enable_if_t<std::is_convertible_v<T, std::ostream&>, void>
+        add_input(std::string const &varname, T const &value) {
+            if constexpr (std::is_convertible_v<T, std::ostream&>) {
+                std::ostringstream oss;
+                oss << value;
+                add_input(varname, oss.str());
+            } else {
+                throw std::runtime_error("cannot convert input variable " + varname + " to string");
+            }
+        }
+        template <typename T>
+        std::enable_if_t<std::is_convertible_v<T, std::ostream&>, void>
+        add_output(std::string const &varname, T const &value) {
+            if constexpr (std::is_convertible_v<T, std::ostream&>) {
+                std::ostringstream oss;
+                oss << value;
+                add_output(varname, oss.str());
+            } else {
+                throw std::runtime_error("cannot convert output variable " + varname + " to string");
+            }
+        }
+        // Unexpectedly, the templates do not work for cv::Mat, so specializations and header dealing seems needed ...
+        void add_input(std::string const &varname, cv::Mat const &value)
+        {
+            std::ostringstream oss;
+            oss << value;
+            add_input(varname, oss.str());
+        }
+        void add_output(std::string const &varname, cv::Mat const &value)
+        {
+            std::ostringstream oss;
+            oss << value;
+            add_output(varname, oss.str());
+        }
         void flush_input();
         void flush_output();
     private:

@@ -1,0 +1,133 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+ContainerDb(WorldModel, "WorldModel")
+ContainerDb(TeamMate, "TeamMate")
+Container_Boundary(Hardware, "Hardware") {
+    Component(drive, "Drive")
+    Component(kicker, "Kicker")
+    Component(goalierack, "Goalie Rack")
+    Component(ballhandler, "Ball Handler")
+    Component(stereo_vision, "Stereo Vision")
+    Component(omnivision, "Omnivision")
+    Component(imu, "IMU")
+    Component(lidar, "lidar")
+}
+
+Container_Boundary(Refbox_computer, "Refbox Computer") {
+Component_Ext(MSL_logging, "MSL Logging")
+Component_Ext(Refbox, "Refbox")
+}
+
+
+Container_Boundary(behavior, "Behavior") {
+    Component(robot_strategy, "robot strategy")
+    Component(role_assigner, "role assigner")
+    Component(action_selector, "action selector")
+}
+
+ContainerDb(behavior_storage, "behavior_storage")
+
+Container_Boundary(actions, "Actions") {
+ 	Component(positioning, "positioning")
+	Component(follow_ball, "follow ball")
+	Component(get_bal, "get_bal")
+	Component(dribbling, "dribbling")
+	Component(shield_ball, "shield_ball")
+	Component(pass, "pass")
+	Component(shoot_on_target, "shoot_on_target")
+	Component(keeperMove, "keeperMove")
+ }
+
+Component(behavior_spg, "Behavior Setpoint")
+Component(self_localisation, "Self Localisation")
+Component(local_obstacle_tracking, "local obstacle tracking") /' (in : obstacles (0:50)  out: obstacles (0:20) - pos+speed '/
+Component(Obstacle_tracking, "Obstacle Tracking")
+Component(ball_tracking, "Ball Tracking")
+Component(local_ball_tracking, "Local Ball Tracking") 
+Component(opponent_with_ball, "Opponent with ball")
+
+Container_Boundary(Received_communication, "Received_communication") {
+    Component(received_team_data, "received team data")
+    Component(handle_commands, "handle commands")
+    Component(handle_settings, "handle settings")
+}
+
+
+Component(Sending_communication, "Sending_communication")
+
+Container_Boundary(reflex_actions, "reflex Actions") {
+	Component(obstacle_avoidance, "obstacle avoidance")
+	Component(cherish_ball, "cherish ball")
+}
+
+Container_Boundary(Sideline, "Sideline") {
+ Component(gui, "GUI")
+ Component(visualisation, "visualisation")
+}
+
+Rel_U(local_obstacle_tracking, ball_tracking, "")
+
+Rel_U(Obstacle_tracking, opponent_with_ball, "")
+Rel_U(ball_tracking, opponent_with_ball, "")
+
+Rel_D(actions, reflex_actions, "")
+Rel_D(reflex_actions, behavior_spg, "")
+Rel_D(behavior_spg, drive, "Drive")
+Rel_D(actions , kicker, "Kicker")
+Rel_D(keeperMove, drive, "Goalie_rack")
+Rel_D(actions, drive, "BallHandler")
+
+
+Rel_R(imu,  omnivision, "Omnivision")
+Rel_R(imu, stereo_vision, "Stereo")
+Rel_U(omnivision, Obstacle_tracking, "")
+Rel_U(stereo_vision, local_obstacle_tracking, "")
+Rel_U(omnivision, local_ball_tracking, "")
+Rel_U(stereo_vision, local_ball_tracking, "")
+
+Rel_U(local_ball_tracking, ball_tracking, "")
+Rel_L(opponent_with_ball, WorldModel, "")
+Rel_L(self_localisation, WorldModel, "")
+Rel_U(Obstacle_tracking, WorldModel, "")
+Rel_L(ball_tracking, WorldModel, "")
+Rel_R(received_team_data, WorldModel, "")
+Rel_R(handle_commands, WorldModel, "")
+Rel_R(handle_settings, WorldModel, "")
+Rel_R(received_team_data,  ball_tracking, "")
+Rel_R(received_team_data,  Obstacle_tracking, "")
+Rel_U(behavior, Sending_communication, "WIFI")
+
+
+/' force order between WorldModel and behavior via a '/
+Rel_R(WorldModel, behavior, "")
+Rel_R(WorldModel, actions, "")
+Rel_R(WorldModel, reflex, "")
+
+
+Rel_U(omnivision, self_localisation, "")
+Rel_U(imu, self_localisation, "")
+Rel_U(stereo_vision, self_localisation, "")
+Rel_U(drive, self_localisation, "")
+Rel_U(lidar, self_localisation, "")
+
+
+Rel_R(Refbox, gui, "")
+Rel_U(Sending_communication, Sideline, "robot_data")
+Rel_L(gui, TeamMate, "commands")
+
+
+Rel_R(Sending_communication, TeamMate, "robot_data")
+Rel_L(TeamMate, Received_communication, "robot_data")
+Rel_D(gui, Received_communication, "service requests")
+Rel_D(gui, Received_communication, "robot type setting")
+
+Rel(behavior_storage, actions, "")
+Rel(behavior_storage, behavior, "")
+
+Rel_L(robot_strategy,  role_assigner, "")
+Rel_L(role_assigner,action_selector, "")
+Rel(action_selector, actions, "")
+
+@enduml

@@ -1,0 +1,32 @@
+= MSL Reference Architecture
+:doctype: book
+:icons: font
+:title-page:
+:modelsdir: ../models
+:imagedir: ../images
+:title-logo-image: {imagedir}/MRA_logo_full.svg
+:sectnumlevels: 5
+:toc: macro
+:toclevels: 4
+:pdf-page-size: book
+:toc: macro
+:!section-refsig:
+:sectnumlevels: 5
+
+
+<<<
+[discrete]
+toc::[]
+<<<
+
+
+:sectnums:
+include::mra/mra.adoc[leveloffset=+1]
+
+include::mra/mra_components.adoc[leveloffset=+1]
+
+include::design/design.adoc[Design]
+
+include::mra/roadmap.adoc[Roadmap]
+
+include::mra/interface_definition_language_evaluation.adoc[IDLs]

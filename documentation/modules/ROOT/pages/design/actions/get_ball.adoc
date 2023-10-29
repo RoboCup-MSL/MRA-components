@@ -1,0 +1,27 @@
+===  get_bal [[get_bal]]
+Robot move to have the ball will be in the beak of the robot.
+
+* *purpose*: get the ball
+* *inputs*:
+** WorldState
+** max_speed_factor [from Reasoning]
+*** set to low (say 50%), to smoothly and accurately perform a set-piece.
+*** set to high (say 120%) when the situation calls for it
+**** for example: ball is about to roll out of field, a sprint is needed, or: one minute left to play, one goal behind, take risk
+
+* *outputs*:
+** robot target set-point (type posvel in FCS) [to PathPlanning]
+** actionResult [to Reasoning]
+** estimated time to get the ball (s), for query/decisioning purpose [to Reasoning]
+
+* *subcomponents* (select exactly one):
+** getball-fetch: get a stationary ball
+** getball-follow: get a ball moving away from robot
+** getball-intercept: get a ball which is moving towards robot
+** getball-steal: get a ball which is engaged by opponent
+** getball-bounce: get a ball which is bouncing
+
+* *parameters*:
+* ball speed “stationary” and “bounce” thresholds to determine if ball is stationary or bouncing
+* combined parameters from subcomponents
+

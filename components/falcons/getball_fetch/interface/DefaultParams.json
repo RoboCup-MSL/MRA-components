@@ -1,5 +1,7 @@
 {
     "ballSpeedThreshold": 0.35,
-    "ballSpeedScaling": 0.40
+    "ballSpeedScaling": 0.40,
+    "rotation_only_distance": 1.0,
+    "rotation_only_angle": 35.0
 }
 

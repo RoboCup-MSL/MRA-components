@@ -45,11 +45,6 @@ static MRA::Geometry::Position intersectPerpendicular(const MRA::Geometry::Posit
 	return intersection;
 }
 
-static double distanceXY(const MRA::Geometry::Position& r_pose1, const MRA::Geometry::Position& r_pose2) {
-	return hypot(r_pose1.x - r_pose2.x, r_pose1.y - r_pose2.y);
-}
-
-
 int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
@@ -96,7 +91,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
         // check if not any failure mode was triggered
         if (output.actionresult() == MRA::Datatypes::RUNNING)
         {
-        	MRA::Datatypes::Pose robot_pos = ws.robot().position();
+        	MRA::Geometry::Position robot_pos = ws.robot().position();
         	MRA::Datatypes::Pose robot_vel = ws.robot().velocity();
 
         	MRA::Datatypes::Pose ball_pos_fc  = ws.ball().position();
@@ -110,15 +105,15 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
         	target_position.faceTowards(ball_pos_fc); // facing ball
 
 
-            if (distanceXY(target_position, robot_pos) > params.actionradius())
+            if (robot_pos.distanceXY(target_position) > params.actionradius())
             {
                 // To far from interception point:
                 // - Mark as failed.
                 // - Stay at current position (safe output values).
                 output.set_actionresult(MRA::Datatypes::FAILED);
-                output.mutable_target()->mutable_position()->set_x(robot_pos.x());
-                output.mutable_target()->mutable_position()->set_y(robot_pos.y());
-                output.mutable_target()->mutable_position()->set_rz(robot_pos.rz());
+                output.mutable_target()->mutable_position()->set_x(robot_pos.x);
+                output.mutable_target()->mutable_position()->set_y(robot_pos.y);
+                output.mutable_target()->mutable_position()->set_rz(robot_pos.rz);
             }
             else {
                 // write output

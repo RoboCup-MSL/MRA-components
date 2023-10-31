@@ -79,7 +79,10 @@ int FalconsGetballFetch::FalconsGetballFetch::tick
             MRA::Geometry::Position target = ball_position + ball_velocity * factor;
             target.faceAwayFrom(robot_position);
 
-            if (target.rz > MRA::Geometry::deg_to_rad(params.rotation_only_angle())
+            // get shortest angle between current robot angle and target angle.
+            auto angle_to_rotate = MRA::Geometry::min_angle(robot_position.y, target.rz);
+
+            if (fabs(angle_to_rotate) > MRA::Geometry::deg_to_rad(params.rotation_only_angle())
                 and robot_position.distanceXY(ball_position) < params.rotation_only_distance()) {
                 // only rotate to target position, x and y position stay the same
                 // write output

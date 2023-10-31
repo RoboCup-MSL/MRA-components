@@ -27,8 +27,8 @@ cc_library(
         "//base:abstract_interface",
         ":datatypes",
         "//libraries/logging",
-         "//libraries/geometry",
-   ],
+        "//libraries/geometry",
+    ],
 )
 
 cc_test(

@@ -96,8 +96,3 @@ Position& Position::faceTowards(Position const &p)
     wrap_angles();
     return *this;
 }
-
-
-double Position::distanceXY(const MRA::Geometry::Position& r_position) {
-    return hypot(x - r_position.x, y - r_position.y);
-}

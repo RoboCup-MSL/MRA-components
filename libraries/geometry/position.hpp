@@ -33,8 +33,6 @@ public:
     Position& faceAwayFrom(Position const &p);
     Position& faceTowards(Position const &p);
 
-    double distanceXY(const MRA::Geometry::Position& r_position); // xy-distance to other position
-
 }; // class Position: public Position
 
 } // namespace MRA::geometry

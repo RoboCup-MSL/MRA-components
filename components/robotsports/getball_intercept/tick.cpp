@@ -105,7 +105,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
         	target_position.faceTowards(ball_pos_fc); // facing ball
 
 
-            if (robot_pos.distanceXY(target_position) > params.actionradius())
+            if ((robot_pos -target_position).size() > params.actionradius())
             {
                 // To far from interception point:
                 // - Mark as failed.

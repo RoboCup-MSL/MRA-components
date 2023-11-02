@@ -67,6 +67,7 @@ int FalconsGetballFetch::FalconsGetballFetch::tick
         {
             MRA::Geometry::Position ball_position(ws.ball().position());
             MRA::Geometry::Velocity ball_velocity(ws.ball().velocity());
+            MRA::Geometry::Position robot_position(ws.robot().position());
 
             // if speed is low enough, then just drive on top of the ball
             // otherwise: try to catch up, by making use of ball velocity vector
@@ -76,12 +77,26 @@ int FalconsGetballFetch::FalconsGetballFetch::tick
             // set target, robot facing angle towards ball
             // (by letting target ball "face away from" robot)
             MRA::Geometry::Position target = ball_position + ball_velocity * factor;
-            target.faceAwayFrom(ws.robot().position());
+            target.faceAwayFrom(robot_position);
 
-            // write output
-            output.mutable_target()->mutable_position()->set_x(target.x);
-            output.mutable_target()->mutable_position()->set_y(target.y);
-            output.mutable_target()->mutable_position()->set_rz(target.rz);
+            // get shortest angle between current robot angle and target angle.
+            auto angle_to_rotate = MRA::Geometry::min_angle(robot_position.y, target.rz);
+
+            if (fabs(angle_to_rotate) > MRA::Geometry::deg_to_rad(params.rotationonlyangle())
+                and (robot_position-ball_position).size() < params.rotationonlydistance()) {
+                // only rotate to target position, x and y position stay the same
+                // write output
+                output.mutable_target()->mutable_position()->set_x(robot_position.x);
+                output.mutable_target()->mutable_position()->set_y(robot_position.y);
+                output.mutable_target()->mutable_position()->set_rz(target.rz);
+            }
+            else {
+                // translate and rotate to target position
+                // write output
+                output.mutable_target()->mutable_position()->set_x(target.x);
+                output.mutable_target()->mutable_position()->set_y(target.y);
+                output.mutable_target()->mutable_position()->set_rz(target.rz);
+            }
         }
     }
     return error_value;

@@ -64,6 +64,82 @@ TEST(FalconsGetballFetchTest, getStationaryBall)
     EXPECT_EQ(output.target().position().x(), 2.0);
 }
 
+// Verify target position in case of stationary ball close to robot at left side and not in front of robot
+TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnLeft)
+{
+    // Arrange
+    auto m = FalconsGetballFetch::FalconsGetballFetch();
+    auto input = FalconsGetballFetch::Input();
+    auto output = FalconsGetballFetch::Output();
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_x(-1.90);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_y(-1.90);
+
+    // Act
+    int error_value = m.tick(input, output);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    // robot should rotate on current position before translating
+    EXPECT_FLOAT_EQ(output.target().position().x(), -1.5);
+    EXPECT_FLOAT_EQ(output.target().position().y(), -1.5);
+}
+
+// Verify target position in case of stationary ball close to robot at right side and not in front of robot
+TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnRight)
+{
+    // Arrange
+    auto m = FalconsGetballFetch::FalconsGetballFetch();
+    auto input = FalconsGetballFetch::Input();
+    auto output = FalconsGetballFetch::Output();
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_x(-1.10);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_y(-1.10);
+
+    // Act
+    int error_value = m.tick(input, output);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    // robot should rotate on current position before translating
+    EXPECT_FLOAT_EQ(output.target().position().x(), -1.5);
+    EXPECT_FLOAT_EQ(output.target().position().y(), -1.5);
+}
+
+// Verify target position in case of stationary ball far from robot
+TEST(FalconsGetballFetchTest, getStationaryBallFarFromRobot)
+{
+    // Arrange
+    auto m = FalconsGetballFetch::FalconsGetballFetch();
+    auto input = FalconsGetballFetch::Input();
+    auto output = FalconsGetballFetch::Output();
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_x(1.9);
+    input.mutable_worldstate()->mutable_ball()->mutable_position()->set_y(-1.9);
+
+    // Act
+    int error_value = m.tick(input, output);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    // robot should move towards the ball
+    EXPECT_FLOAT_EQ(output.target().position().x(), 1.9);
+    EXPECT_FLOAT_EQ(output.target().position().y(), -1.9);
+}
+
+
 // When robot has the ball, the action PASSED.
 TEST(FalconsGetballFetchTest, hasBallPassed)
 {

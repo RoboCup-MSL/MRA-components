@@ -164,7 +164,7 @@ static void config_MRA_logger(std::string component)
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
     cfg.set_folder("/home/jurge/log");
     cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::DEBUG);
+    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
     cfg.mutable_general()->set_dumpticks(false);
     cfg.mutable_general()->set_maxlinesize(1000);
     cfg.mutable_general()->set_maxfilesizemb(10.0);
@@ -184,12 +184,10 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
     google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
 	const TestInfo* test_info_ = ::testing::UnitTest::GetInstance()->current_test_info();
 	std::string testname = test_info_->name();
-//	std::string testsuitename = test_info_->test_suite_name();
     std::string testsuitename = test_info_->test_case_name();
-    MRA_TRACE_TEST_FUNCTION();
+    MRA_TRACE_TEST_FUNCTION(); // enable tracing
     MRA_LOG_INFO("> %s::%s", testsuitename.c_str(), testname.c_str());
 	int n_samples = traject_generator.generate(distance);
-    MRA_LOG_INFO("n_samples = %d", n_samples);
 	int error_value = 0;
 	for (auto sample = 0; sample < n_samples; sample++)
 	{
@@ -210,6 +208,8 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
 				    input.mutable_stereovision_balls()->Add()->CopyFrom(data.stereo_features[of]);
 		    	}
 			    error_value = m.tick(timestamp, input, params, state, output, local);
+			    std::string localStr = MRA::convert_proto_to_json_str(local);
+			    MRA_LOG_INFO("diagnostics: %s", localStr.c_str());
 			    // Asserts for turn from middle to left position
 			    EXPECT_EQ(error_value, 0);
 		    }
@@ -233,7 +233,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
    // std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
+	execute_ball_traject_test(traject, 0.5);
 }
 
 #if 0

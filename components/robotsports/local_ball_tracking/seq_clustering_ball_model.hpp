@@ -7,10 +7,9 @@
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
-#define BMDEBUG
-
 #include "seq_clustering_balldef.hpp"
 #include "constants_ball_model.hpp"
+#include "RobotsportsLocalBallTracking.hpp"
 
 typedef struct tag_ball_observer {
 	double xh[6]; /* state estimate: x, xdot, y, ydot, z, zdot */
@@ -60,22 +59,10 @@ typedef struct tag_hypothesis {
 	int nfbuf; /* number of valid features in buffer, start at 0 */
 } hypothesis;
 
-typedef struct tag_sc_parameters {
-	int nkeep; /* number of hypotheses saved for next step */
-	double pfactor; /* reject hypotheses with p < pmax/pfactor */
-	double maxage; /* maximum age for non-updated objects */
-	double alpha; /* Pnew=alpha*(1-MA) */
-	double beta;
-	double min_allowed_sigma; /* to prevent observer from exploding */
-	double exp_time_free;
-	double exp_time_non_free;
-} sc_parameters;
-
 /* global data structure */
 typedef struct tag_sc_global_data {
 	hypothesis hyp[MAXHYP];
 	hypothesis hyp2[MAXHYP];
-	sc_parameters par;
 	int nhyp;
 	int new_uid;
 	int track_uid; /* ball uid to keep track off */
@@ -86,7 +73,7 @@ typedef struct tag_sc_global_data {
 } sc_global_data;
 
 // the following are external functions
-int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, double time, int inext, sc_global_data *pscgd);
+int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, double time, int inext, sc_global_data *pscg0, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 int init_seq_clustering(sc_global_data *pscgd);
 int seq_clustering_print_hypotheses(sc_global_data *pscgd);
 

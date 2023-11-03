@@ -7,8 +7,6 @@
 #ifndef CONSTANTS_BALL_MODELL_HPP
 #define CONSTANTS_BALL_MODELL_HPP
 
-#define BMDEBUG
-
 /* ball velocity estimator */
 #define CLIP_LOWER_BALL_VELOCITY    0.10 // was 0.25
 #define CLIP_UPPER_BALL_VELOCITY    12.0

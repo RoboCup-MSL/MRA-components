@@ -19,13 +19,11 @@ cc_library(
         "constants_ball_model.hpp",
         "seq_clustering_balldef.hpp",
         "seq_clustering_ball_model.hpp",
-        "seq_clustering_ball_model_log.hpp",
         "seq_clustering_best_uid.hpp",
     ],
     srcs = [
         "tick.cpp", # to be implemented by user, generated if not existing
         "seq_clustering_ball_model.cpp",
-        "seq_clustering_ball_model_log.cpp",
         "seq_clustering_best_uid.cpp",
     ],
     visibility = ["//visibility:public"],

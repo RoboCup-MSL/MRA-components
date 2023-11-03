@@ -19,9 +19,6 @@ int uid_clear(best_uid *puid)
 }
 
 
-
-
-
 int uid_add(int uid, double p, best_uid* puid)
 {
         int i = 0;

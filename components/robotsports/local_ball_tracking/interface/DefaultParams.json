@@ -1,16 +1,34 @@
 {
-    "ball_filter": 15.0,
+    "ball_filter": 0,
+    "run_native_filter": true,
+    "run_sequential_clustering_filter": false,
     "ball_vel_filter_order": 3,
-    "cnt_iskicking": 10.0,
+    "cnt_iskicking": 10,
     "BMsigma_OV": 0.8,
-    "BMsigma_kinect": 0.9,
-    "BMsigma_stereo": 0.8,
-    "confidence_decay": 0.2,
-    "ball_time_to_forget": 0.1, 
-    "suppress_omni": false
-}
-
-
-
-    
-
+    "BMsigma_kinect": 0.2,
+    "BMsigma_stereo": 0.2,
+    "confidence_decay": 0.63,
+    "ball_time_to_forget": 5.0, 
+    "suppress_omni": true,
+    "nkeep": 10,
+    "pfactor": 100.0,
+    "maxage": 0.5,
+    "alpha": 1.700,
+    "beta":  0.950,
+    "min_allowed_sigma": 0.01, 
+    "exp_time_free": 0.9,
+    "exp_time_non_free": 0.3,    
+    "max_time_delay_for_velocity_calc": 1.0,
+    "fraction_of_position_in_velocity": 0.8,
+    "ball_max_history": 10,
+    "ball_confidence_decay": 0.63,
+    "ball_found_hysteris_time": 1.0,
+    "see_ball_hysteris_time": 0.05, 
+    "min_height_in_air": 0.2,  
+    "min_dist_ball_is_free": 1.0,  
+    "max_ball_prediction_time_ms": 0, 
+    "max_ball_prediction_velocity": 10.0, 
+    "nr_samples_init_vel_during_kick": 100, 
+    "velocity_at_dutycyle_one": 10.0,
+    "max_dist_peer_to_ball_to_use_peer_ball": 4.0    
+}              

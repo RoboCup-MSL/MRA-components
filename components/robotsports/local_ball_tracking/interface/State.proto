@@ -72,8 +72,6 @@ message ParametersState
     double exp_time_non_free = 8;
 } 
 
-
-
 message State
 {
 	VisionObjectOutput ball = 1;
@@ -90,5 +88,8 @@ message State
     int32 is_kicked = 12;
     double vx0 = 13; /* initial ball speed on kick */
     double vy0 = 14;
+    Output native_filter = 15;  // store result of native filter
+    Output sequence_filter = 16;  // store result of sequential clustering filter
+    
 }
 

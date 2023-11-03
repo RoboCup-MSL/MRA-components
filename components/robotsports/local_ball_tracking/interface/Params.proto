@@ -6,20 +6,52 @@ message Params
 {
     int32 ball_filter = 1;	// ball filter to use: 0 = naive filter (closest ball in field coord distance; 1 = Turtle2 code (clustering)
     int32 ball_vel_filter_order = 2;	// ball velocity filter order, between 3 and 7 for one-sided hybrid differentiator, other for most simple backward difference
+    bool run_native_filter = 3; 
+    bool run_sequential_clustering_filter = 4;
     
     // interface to Turtle2 code
-    int32	cnt_iskicking = 3;
-    double	BMsigma_OV = 4;
-    double	BMsigma_kinect = 5;
-    double  BMsigma_stereo = 6;
-    double  confidence_decay = 7;
-    double  ball_time_to_forget = 8;
+    int32	cnt_iskicking = 5;
+    double	BMsigma_OV = 6;
+    double	BMsigma_kinect = 7;
+    double  BMsigma_stereo = 8;
+    double  confidence_decay = 9;
+    double  ball_time_to_forget = 10;
     
     
-    bool suppress_omni = 9;      
+    bool suppress_omni = 11;      
     //  If TRUE, then whenever other sources of ball detections are available (e.g. stereo), 
     //    the omni detections will be suppressed.          
     //    If FALSE, all ball sources are treated equally and are included as usual
+
+    // tunable parameters taken from tunable_pardata_strategy_bus.h in Tech United sta
+    int32 nkeep = 12; // number of hypotheses saved for next step
+    double pfactor = 13;  // reject hypotheses with p < pmax/pfactor
+    double maxage = 14; // maximum age for non-updated objects
+    double alpha = 15; // Pnew=alpha*(1-MA)
+    double beta =  16;
+    double min_allowed_sigma = 17;       // to prevent observer from exploding 
+    double exp_time_free = 18;
+    double exp_time_non_free = 19;    
+    double max_time_delay_for_velocity_calc = 20;
+    double fraction_of_position_in_velocity = 21;
+    int32 ball_max_history = 22;
+    // int32 ball_velocity_filter_order = 23;
+    double ball_confidence_decay  = 25;
+    // ball preprocessing 
+    double ball_found_hysteris_time = 26; // when feature is added to tracker within the last .. seconds, ball found = 1
+    double see_ball_hysteris_time = 27; // when feature is added to tracker within the last .. seconds, see ball = 1 
+    double min_height_in_air  = 28; // when ball is above this heigth, ball is in air 
+    double min_dist_ball_is_free = 29 ; // if ball is further from opponents than this distance, ball is free rolling 
+    int32 max_ball_prediction_time_ms = 30; // maximum number of milliseconds that the ball position is extrapolated 
+    double max_ball_prediction_velocity = 31; // maximum ball speed of the ball  during extrapolation 
+    int32 nr_samples_init_vel_during_kick = 32; // number of samples that the initial kick velocity of the ball is set 
+    double velocity_at_dutycyle_one = 33; // initial ball speed if duty cycle is one
     
+    // ball selector 
+    double max_dist_peer_to_ball_to_use_peer_ball = 34; // maximum distance between peer and ball to switch to his ball 
+                                                        // but only if I am far from the ball (see tunable par) 
+
 }
+
+
 

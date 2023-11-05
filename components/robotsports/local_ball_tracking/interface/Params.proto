@@ -8,33 +8,34 @@ message Params
     int32 ball_vel_filter_order = 2;	// ball velocity filter order, between 3 and 7 for one-sided hybrid differentiator, other for most simple backward difference
     bool run_native_filter = 3; 
     bool run_sequential_clustering_filter = 4;
+    double sample_frequency = 5; // sample frequency in Hz
     
     // interface to Turtle2 code
-    int32	cnt_iskicking = 5;
-    double	BMsigma_OV = 6;
-    double	BMsigma_kinect = 7;
-    double  BMsigma_stereo = 8;
-    double  confidence_decay = 9;
-    double  ball_time_to_forget = 10;
+    int32	cnt_iskicking = 6;
+    double	BMsigma_OV = 7;
+    double	BMsigma_kinect = 8;
+    double  BMsigma_stereo = 9;
+    double  confidence_decay = 10;
+    double  ball_time_to_forget = 11;
     
     
-    bool suppress_omni = 11;      
+    bool suppress_omni = 12;      
     //  If TRUE, then whenever other sources of ball detections are available (e.g. stereo), 
     //    the omni detections will be suppressed.          
     //    If FALSE, all ball sources are treated equally and are included as usual
 
     // tunable parameters taken from tunable_pardata_strategy_bus.h in Tech United sta
-    int32 nkeep = 12; // number of hypotheses saved for next step
-    double pfactor = 13;  // reject hypotheses with p < pmax/pfactor
-    double maxage = 14; // maximum age for non-updated objects
-    double alpha = 15; // Pnew=alpha*(1-MA)
-    double beta =  16;
-    double min_allowed_sigma = 17;       // to prevent observer from exploding 
-    double exp_time_free = 18;
-    double exp_time_non_free = 19;    
-    double max_time_delay_for_velocity_calc = 20;
-    double fraction_of_position_in_velocity = 21;
-    int32 ball_max_history = 22;
+    int32 nkeep = 13; // number of hypotheses saved for next step
+    double pfactor = 14;  // reject hypotheses with p < pmax/pfactor
+    double maxage = 15; // maximum age for non-updated objects
+    double alpha = 16; // Pnew=alpha*(1-MA)
+    double beta =  17;
+    double min_allowed_sigma = 18;       // to prevent observer from exploding 
+    double exp_time_free = 19;
+    double exp_time_non_free = 20;    
+    double max_time_delay_for_velocity_calc = 21;
+    double fraction_of_position_in_velocity = 22;
+    int32 ball_max_history = 23;
     double ball_min_confidence = 24;
     double ball_confidence_decay  = 25;
     

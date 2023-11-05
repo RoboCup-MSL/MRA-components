@@ -16,33 +16,11 @@ using namespace google::protobuf::util;
 #include "RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include <vector>
 
-// custom includes, if any
-// ...
 
 #define MAXBALLS_OV		20			/* maximum number of candidate balls found by omnivision and send to tracker NUM_BALLS defined in omni.h */
 #define MAXBALLS_FC		3			/* maximum number of candidate balls found by front_cam and send to tracker */
 #define MAXBALLS  (MAXBALLS_OV+MAXBALLS_FC+2)     /* maximum number of balls send to tracker */
 static std::vector<ball_feature_t> ballData(2 * MAXBALLS);
-
-//typedef struct tag_ball_feature_t {
-//        double conf;                    /* confidence */
-//        double dist;                    /* distance to robot */
-//        long  type;                    /* sensor label */
-//        double sigma;                   /* standard deviation of sensor noise */
-//        long  isFree;                  /* is rolling freely (0 or 1) */
-//        long  inAir;                   /* is flying in the air (0 or 1) */
-//        double timestamp;               /* timestamp */
-//        long  initializeBallVelFlag;   /* initialize ball velocity if one */
-//        double initializeBallVel_xy[2]; /* initialize ball velocity at kick vel_xy */
-//} ball_feature_t, *pball_feature_t;
-//
-////				if (processBall(getso(sm.omni_process.found_balls_fc[idx]),	&ballData[nrBallsThisTime]) ) {
-////					ballData[nrBallsThisTime].type = OV_b;
-////					ballData[nrBallsThisTime].sigma = getso(sm.ball_process.BMsigma_OV);
-////					// update distance from robot to ball for sorting
-////					putso(sm.ball_process.distance_from_self[nrBallsThisTime], ballData[nrBallsThisTime].dist);
-////					// increment nrBallsThisTime
-////					nrBallsThisTime++;
 
 int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick(google::protobuf::Timestamp timestamp, // absolute timestamp
         InputType const &input,       // input data, type generated from Input.proto

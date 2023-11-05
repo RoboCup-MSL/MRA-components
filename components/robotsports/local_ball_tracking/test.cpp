@@ -208,8 +208,8 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
 				    input.mutable_stereovision_balls()->Add()->CopyFrom(data.stereo_features[of]);
 		    	}
 			    error_value = m.tick(timestamp, input, params, state, output, local);
-			    std::string localStr = MRA::convert_proto_to_json_str(local);
-			    MRA_LOG_INFO("diagnostics: %s", localStr.c_str());
+			    MRA_LOG_INFO("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
+//                MRA_LOG_INFO("state: %s", MRA::convert_proto_to_json_str(state).c_str());
 			    // Asserts for turn from middle to left position
 			    EXPECT_EQ(error_value, 0);
 		    }

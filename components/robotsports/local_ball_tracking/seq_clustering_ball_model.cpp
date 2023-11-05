@@ -42,16 +42,16 @@
 #include "seq_clustering_best_uid.hpp"
 
 /* function declaration */
-static int generate_offspring(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+static int generate_offspring(const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 
 static int fbuf_print(hypothesis *phyp);
 static int fbuf_init(hypothesis *phyp);
-static int fbuf_add(hypothesis *phyp, ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+static int fbuf_add(hypothesis *phyp, const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static void swap_index(int i, int j, int *idx);
 static void isort_descending(int *idx, double *iarr, int size);
 static void isort_ascending(int *idx, double *iarr, int size);
-static double observer_update(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
-static int likelihood_update(ball_feature_t *pbfeat, sc_global_data *pscgd);
+static double observer_update(const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+static int likelihood_update(const ball_feature_t& pbfeat, sc_global_data *pscgd);
 static int normalization(sc_global_data *pscgd);
 static int sequence_clustering_nhyp_controller(int inext, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static int mape(sc_global_data *pscgd);
@@ -109,14 +109,14 @@ static int fbuf_init(hypothesis *phyp) {
     return BM_SUCCESS;
 }
 
-static int fbuf_add(hypothesis *phyp, ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
-    phyp->fbuf.timestamp[phyp->fbuf_idx] = pbfeat->timestamp;
-    phyp->fbuf.x[phyp->fbuf_idx] = pbfeat->x;
-    phyp->fbuf.y[phyp->fbuf_idx] = pbfeat->y;
-    phyp->fbuf.z[phyp->fbuf_idx] = pbfeat->z;
-    phyp->fbuf.sigma[phyp->fbuf_idx] = pbfeat->sigma;
+static int fbuf_add(hypothesis *phyp, const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+    phyp->fbuf.timestamp[phyp->fbuf_idx] = pbfeat.timestamp;
+    phyp->fbuf.x[phyp->fbuf_idx] = pbfeat.x;
+    phyp->fbuf.y[phyp->fbuf_idx] = pbfeat.y;
+    phyp->fbuf.z[phyp->fbuf_idx] = pbfeat.z;
+    phyp->fbuf.sigma[phyp->fbuf_idx] = pbfeat.sigma;
     /* set expiration time for feature */
-    switch (pbfeat->isFree) {
+    switch (pbfeat.isFree) {
     case 0:
         phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_non_free();
         break;
@@ -124,7 +124,7 @@ static int fbuf_add(hypothesis *phyp, ball_feature_t *pbfeat, sc_global_data *ps
         phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_free();
         break;
     }
-    phyp->fbuf.isFree[phyp->fbuf_idx] = pbfeat->isFree;
+    phyp->fbuf.isFree[phyp->fbuf_idx] = pbfeat.isFree;
 
     if (phyp->nfbuf < MAXFEATBUF) {
         phyp->nfbuf++;
@@ -261,7 +261,7 @@ static int fit_line_xy(double *theta, double *val, double *timestamp, double *si
         f += w * val[idx[i]];
     }
 
-    //         MRA_LOG_DEBUG("fit_line_xy: using history of %d features in regression.", i);
+    MRA_LOG_DEBUG("fit_line_xy: using history of %d features in regression.", i);
 
     /* regression matrix is symmetric */
     c = b;
@@ -417,7 +417,7 @@ int seq_clustering_print_hypotheses(sc_global_data *pscgd) {
     return BM_SUCCESS;
 }
 
-static int associate_with_existing_ball(int i, int j, ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static int associate_with_existing_ball(int i, int j, const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     double pexist;
 
     if (j >= MAXHYP) {
@@ -433,7 +433,7 @@ static int associate_with_existing_ball(int i, int j, ball_feature_t *pbfeat, sc
     fbuf_cleanup(&(pscgd->hyp2[j]));
 
     /* add feature conf to MA filter */
-    ma_add(pbfeat->conf, &(pscgd->hyp2[j]));
+    ma_add(pbfeat.conf, &(pscgd->hyp2[j]));
 
     /* MA confidence filter */
     ma_get(&(pscgd->hyp2[j]));
@@ -443,19 +443,19 @@ static int associate_with_existing_ball(int i, int j, ball_feature_t *pbfeat, sc
     pscgd->hyp2[j].p = pscgd->hyp2[j].p * pexist;
 
     /* store last feature type with ball */
-    pscgd->hyp2[j].obs.label = pbfeat->type;
+    pscgd->hyp2[j].obs.label = pbfeat.type;
 
     /* ball needs to be updated */
     pscgd->hyp2[j].obs.dupd = BU_TODO;
     pscgd->hyp2[j].association_flag = ASSOCIATE_WITH_BALL;
 
     /* ball inherits timestamp from feature */
-    pscgd->hyp2[j].obs.tupd = pbfeat->timestamp;
+    pscgd->hyp2[j].obs.tupd = pbfeat.timestamp;
 
     return BM_SUCCESS;
 }
 
-static int associate_with_new_ball(int i, int j, ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static int associate_with_new_ball(int i, int j, const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     if (j >= MAXHYP) {
         return BM_ERROR_MAXHYP;
     }
@@ -479,7 +479,7 @@ static int associate_with_new_ball(int i, int j, ball_feature_t *pbfeat, sc_glob
     ma_init(&(pscgd->hyp2[j]));
 
     /* add feature conf to MA filter */
-    ma_add(pbfeat->conf, &(pscgd->hyp2[j]));
+    ma_add(pbfeat.conf, &(pscgd->hyp2[j]));
 
     /* MA confidence filter */
     ma_get(&(pscgd->hyp2[j]));
@@ -494,30 +494,30 @@ static int associate_with_new_ball(int i, int j, ball_feature_t *pbfeat, sc_glob
     pscgd->hyp2[j].p = pscgd->hyp2[j].p * pnew;
 
     /* initialize filter initial condition at measurement z (zero-velocity) */
-    pscgd->hyp2[j].obs.xh[0] = pbfeat->x;
+    pscgd->hyp2[j].obs.xh[0] = pbfeat.x;
     pscgd->hyp2[j].obs.xh[1] = 0.0;
-    pscgd->hyp2[j].obs.xh[2] = pbfeat->y;
+    pscgd->hyp2[j].obs.xh[2] = pbfeat.y;
     pscgd->hyp2[j].obs.xh[3] = 0.0;
-    pscgd->hyp2[j].obs.xh[4] = pbfeat->z;
+    pscgd->hyp2[j].obs.xh[4] = pbfeat.z;
     pscgd->hyp2[j].obs.xh[5] = 0.0;
 
     /* initialize time of state estimate */
-    pscgd->hyp2[j].obs.time = pbfeat->timestamp;
+    pscgd->hyp2[j].obs.time = pbfeat.timestamp;
 
     /* store last feature type with ball */
-    pscgd->hyp2[j].obs.label = pbfeat->type;
+    pscgd->hyp2[j].obs.label = pbfeat.type;
 
     /* ball does not need update on instantiation */
     pscgd->hyp2[j].obs.dupd = BU_NONE;
     pscgd->hyp2[j].association_flag = ASSOCIATE_WITH_NEW;
 
     /* ball inherits timestamp from feature */
-    pscgd->hyp2[j].obs.tupd = pbfeat->timestamp;
+    pscgd->hyp2[j].obs.tupd = pbfeat.timestamp;
 
     return BM_SUCCESS;
 }
 
-static int associate_with_clutter(int i, int j, ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static int associate_with_clutter(int i, int j, const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     if (j >= MAXHYP) {
         return BM_ERROR_MAXHYP;
     }
@@ -537,7 +537,7 @@ static int associate_with_clutter(int i, int j, ball_feature_t *pbfeat, sc_globa
     return BM_SUCCESS;
 }
 
-static int generate_offspring(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static int generate_offspring(const ball_feature_t &pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     /* generate offspring for hypotheses */
 
     int i, j, iret;
@@ -593,7 +593,7 @@ static int generate_offspring(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA
     return BM_SUCCESS;
 }
 
-static double observer_update(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static double observer_update(const ball_feature_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     /* update ball for all hypotheses */
 
     int idx[MAXFEATBUF], i, j, n, c1, c2;
@@ -602,7 +602,7 @@ static double observer_update(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA
     double deltat;
 
     /* make copy of ball feature */
-    memcpy(&bfeat_reconstructed, pbfeat, sizeof(ball_feature_t));
+    memcpy(&bfeat_reconstructed, &pbfeat, sizeof(ball_feature_t));
     /* deltat for kick speed reconstruction */
     deltat = params.exp_time_non_free() / (MIN_NUMBER_OF_FEAT + 1);
     //        mexPrintf("deltat = %f\n", deltat);
@@ -623,10 +623,10 @@ static double observer_update(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA
                 for (j = 0; j < MIN_NUMBER_OF_FEAT; j++) {
                     /* add reconstructed features */
                     n = MIN_NUMBER_OF_FEAT - j - 1;
-                    bfeat_reconstructed.timestamp = pbfeat->timestamp - n * deltat;
-                    bfeat_reconstructed.x = pbfeat->x - n * deltat * pscgd->vx0;
-                    bfeat_reconstructed.y = pbfeat->y - n * deltat * pscgd->vy0;
-                    fbuf_add(&(pscgd->hyp[i]), &bfeat_reconstructed, pscgd, params);
+                    bfeat_reconstructed.timestamp = pbfeat.timestamp - n * deltat;
+                    bfeat_reconstructed.x = pbfeat.x - n * deltat * pscgd->vx0;
+                    bfeat_reconstructed.y = pbfeat.y - n * deltat * pscgd->vy0;
+                    fbuf_add(&(pscgd->hyp[i]), bfeat_reconstructed, pscgd, params);
                 }
                 fbuf_cleanup(&(pscgd->hyp[i]));
             }
@@ -694,13 +694,13 @@ static double observer_update(ball_feature_t *pbfeat, sc_global_data *pscgd, MRA
     return BM_SUCCESS;
 }
 
-static int likelihood_update(ball_feature_t *pbfeat, sc_global_data *pscgd) {
+static int likelihood_update(const ball_feature_t& pbfeat, sc_global_data *pscgd) {
     /* likelihood update of measurement z for all hypotheses that need to be updated */
 
     int i, j;
     double sigmax, sigmay, sigmaz, tttx, ttty, tttz, p = 0.0, pmax, pawn;
 
-    sigmax = pbfeat->sigma;
+    sigmax = pbfeat.sigma;
     sigmay = sigmax;
     sigmaz = sigmax;
 
@@ -709,9 +709,9 @@ static int likelihood_update(ball_feature_t *pbfeat, sc_global_data *pscgd) {
     for (j = 0; j < pscgd->nhyp; j++) {
         /* do not evaluate for the new balls themselves (hyp 2, 5, 8 etc) */
         if ((pscgd->nhyp > 1) && ((j + 1) % 3 > 0)) {
-            tttx = pbfeat->x - pscgd->hyp[j].obs.xh[0];
-            ttty = pbfeat->y - pscgd->hyp[j].obs.xh[2];
-            tttz = pbfeat->z - pscgd->hyp[j].obs.xh[4];
+            tttx = pbfeat.x - pscgd->hyp[j].obs.xh[0];
+            ttty = pbfeat.y - pscgd->hyp[j].obs.xh[2];
+            tttz = pbfeat.z - pscgd->hyp[j].obs.xh[4];
             p = exp(
                     -0.5
                             * ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
@@ -727,9 +727,9 @@ static int likelihood_update(ball_feature_t *pbfeat, sc_global_data *pscgd) {
     for (i = 0; i < pscgd->nhyp; i++) {
         switch (pscgd->hyp[i].association_flag) {
         case ASSOCIATE_WITH_BALL:
-            tttx = pbfeat->x - pscgd->hyp[i].obs.xh[0];
-            ttty = pbfeat->y - pscgd->hyp[i].obs.xh[2];
-            tttz = pbfeat->z - pscgd->hyp[i].obs.xh[4];
+            tttx = pbfeat.x - pscgd->hyp[i].obs.xh[0];
+            ttty = pbfeat.y - pscgd->hyp[i].obs.xh[2];
+            tttz = pbfeat.z - pscgd->hyp[i].obs.xh[4];
             p = exp(
                     -0.5
                             * ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
@@ -741,9 +741,9 @@ static int likelihood_update(ball_feature_t *pbfeat, sc_global_data *pscgd) {
 
             break;
         case ASSOCIATE_WITH_CLUTTER:
-            tttx = pbfeat->x - pscgd->hyp[i].obs.xh[0];
-            ttty = pbfeat->y - pscgd->hyp[i].obs.xh[2];
-            tttz = pbfeat->z - pscgd->hyp[i].obs.xh[4];
+            tttx = pbfeat.x - pscgd->hyp[i].obs.xh[0];
+            ttty = pbfeat.y - pscgd->hyp[i].obs.xh[2];
+            tttz = pbfeat.z - pscgd->hyp[i].obs.xh[4];
             p = 1.
                     - exp(
                             -0.5
@@ -1020,8 +1020,8 @@ int init_seq_clustering(sc_global_data *pscgd) {
     return BM_SUCCESS;
 }
 
-int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, double time, int inext,
-        sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_feature_t>& pbfeat, double time, int inext,
+        sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params, const int max_num_balls) {
     /*
      inputs:  pbfeat    - array of ball features (x, y, z, conf, dist, type, isFree, inAir, timestamp), padded with zeros
      time      - current nominal time
@@ -1034,8 +1034,8 @@ int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, do
     int n, i, j, i_mape, iret, idx;
     double vel, alpha;
 
-    int idx_t[MAXBALLS], valid[MAXBALLS];
-    double ts[MAXBALLS];
+    int idx_t[max_num_balls], valid[max_num_balls];
+    double ts[max_num_balls];
 
     pscgd->next_done = 0;
 
@@ -1043,13 +1043,13 @@ int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, do
 
     /* find number of valid features */
     n = 0;
-    for (i = 0; i < MAXBALLS; i++) {
+    for (i = 0; i < max_num_balls; i++) {
 
-        MRA_LOG_DEBUG(" feature %d: x = %f, y = %f, z = %f, conf = %f", i, (pbfeat + i)->x, (pbfeat + i)->y,
-                (pbfeat + i)->z, (pbfeat + i)->conf);
-        if ((pbfeat + i)->conf > 0.) { /* valid features have positive confidence value */
+        MRA_LOG_DEBUG(" feature %d: x = %f, y = %f, z = %f, conf = %f", i, pbfeat[i].x, pbfeat[i].y,
+                pbfeat[i].z, pbfeat[i].conf);
+        if (pbfeat[i].conf > 0.0) { /* valid features have positive confidence value */
             valid[n] = i; /* remember valid features */
-            ts[n] = (pbfeat + i)->timestamp; /* store valid timestamps */
+            ts[n] = pbfeat[i].timestamp; /* store valid timestamps */
             n++;
         }
     }
@@ -1076,14 +1076,14 @@ int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, do
         MRA_LOG_DEBUG("   time = %f s", time);
         MRA_LOG_DEBUG("   %d measurements at times:", n);
         for (i = 0; i < n; i++) {
-            MRA_LOG_DEBUG("      %f x = %f, y = %f, z = %f, conf = %f", (pbfeat + valid[idx_t[i]])->timestamp,
-                    (pbfeat + valid[idx_t[i]])->x, (pbfeat + valid[idx_t[i]])->y, (pbfeat + valid[idx_t[i]])->z,
-                    (pbfeat + valid[idx_t[i]])->conf);
+            MRA_LOG_DEBUG("      %f x = %f, y = %f, z = %f, conf = %f", pbfeat[valid[idx_t[i]]].timestamp,
+                    pbfeat[valid[idx_t[i]]].x, pbfeat[valid[idx_t[i]]].y, pbfeat[valid[idx_t[i]]].z,
+                    pbfeat[valid[idx_t[i]]].conf);
         }
 
         for (i = 0; i < n; i++) {
             /* propagate set of hypotheses */
-            iret = generate_offspring(pbfeat + valid[idx_t[i]], pscgd, params);
+            iret = generate_offspring(pbfeat[valid[idx_t[i]]], pscgd, params);
             if (iret < 0) {
                 return iret;
             }
@@ -1093,10 +1093,10 @@ int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, do
             seq_clustering_print_hypotheses(pscgd);
 
             /* apply observer update: prediction + measurement if associated */
-            iret = observer_update(pbfeat + valid[idx_t[i]], pscgd, params);
+            iret = observer_update(pbfeat[valid[idx_t[i]]], pscgd, params);
             if (iret >= 0) {
                 /* apply likelihood update */
-                iret = likelihood_update(pbfeat + valid[idx_t[i]], pscgd);
+                iret = likelihood_update(pbfeat[valid[idx_t[i]]], pscgd);
             }
             if (iret >= 0) {
                 /* normalize probability distribution */

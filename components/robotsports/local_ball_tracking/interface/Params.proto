@@ -35,8 +35,9 @@ message Params
     double max_time_delay_for_velocity_calc = 20;
     double fraction_of_position_in_velocity = 21;
     int32 ball_max_history = 22;
-    // int32 ball_velocity_filter_order = 23;
+    double ball_min_confidence = 24;
     double ball_confidence_decay  = 25;
+    
     // ball preprocessing 
     double ball_found_hysteris_time = 26; // when feature is added to tracker within the last .. seconds, ball found = 1
     double see_ball_hysteris_time = 27; // when feature is added to tracker within the last .. seconds, see ball = 1 

@@ -164,7 +164,7 @@ static void config_MRA_logger(std::string component)
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
     cfg.set_folder("/home/jurge/log");
     cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
+    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::DEBUG);
     cfg.mutable_general()->set_dumpticks(false);
     cfg.mutable_general()->set_maxlinesize(1000);
     cfg.mutable_general()->set_maxfilesizemb(10.0);

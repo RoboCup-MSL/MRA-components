@@ -7,9 +7,6 @@
 #ifndef SEQ_CLUSTERING_BALLDEF_HPP
 #define SEQ_CLUSTERING_BALLDEF_HPP
 
-/* ball preprocessing */
-#define MAXBALLS                        (MAXBALLS_OV+MAXBALLS_FC+2)     /* maximum number of balls send to tracker */
-
 /* define ball types */
 typedef enum balltype_e {
         OV_b = 1,

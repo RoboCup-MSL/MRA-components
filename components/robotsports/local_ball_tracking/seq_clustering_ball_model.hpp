@@ -73,7 +73,8 @@ typedef struct tag_sc_global_data {
 } sc_global_data;
 
 // the following are external functions
-int seq_clustering_ball_model(ball_estimate_t *pball, ball_feature_t *pbfeat, double time, int inext, sc_global_data *pscg0, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_feature_t>& pbfeat, double time, int inext, sc_global_data *pscg0, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
+        const int max_num_balls);
 int init_seq_clustering(sc_global_data *pscgd);
 int seq_clustering_print_hypotheses(sc_global_data *pscgd);
 

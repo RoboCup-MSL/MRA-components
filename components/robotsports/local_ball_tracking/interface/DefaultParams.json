@@ -22,6 +22,7 @@
     "fraction_of_position_in_velocity": 0.8,
     "ball_max_history": 10,
     "ball_confidence_decay": 0.63,
+    "ball_min_confidence": 0.05,
     "ball_found_hysteris_time": 1.0,
     "see_ball_hysteris_time": 0.05, 
     "min_height_in_air": 0.2,  

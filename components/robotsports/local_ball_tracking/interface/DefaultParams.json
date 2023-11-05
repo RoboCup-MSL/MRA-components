@@ -32,5 +32,15 @@
     "max_ball_prediction_velocity": 10.0, 
     "nr_samples_init_vel_during_kick": 100, 
     "velocity_at_dutycyle_one": 10.0,
-    "max_dist_peer_to_ball_to_use_peer_ball": 4.0    
+    "max_dist_peer_to_ball_to_use_peer_ball": 4.0,
+    "velocity_ball_clip_lower": 0.10,
+    "velocity_ball_clip_upper": 12.0,
+    "max_hypoteses": 500,
+    "gravity": 9.81,
+    "mininum_number_of_features":  4,
+    "n_samples_ma_confidence": 20,
+    "max_history":  1,
+    "max_features_buffer": 60,
+    "minimum_allowed_determinant": 0.000001, 
+    "lower_confidence_bound": 0.5 
 }              

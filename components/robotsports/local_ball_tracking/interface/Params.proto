@@ -53,6 +53,19 @@ message Params
     double max_dist_peer_to_ball_to_use_peer_ball = 34; // maximum distance between peer and ball to switch to his ball 
                                                         // but only if I am far from the ball (see tunable par) 
 
+    // ball velocity estimator 
+    double velocity_ball_clip_lower = 35;
+    double velocity_ball_clip_upper = 36;
+    
+    int32 max_hypoteses = 37; // maximum number of hypotheses
+    double gravity = 38; //  gravity constant in m/s²
+    int32 mininum_number_of_features = 39;  // minimum number of features to allow for fit
+    int32 n_samples_ma_confidence = 40; // number of samples in MA confidence
+    int32 max_history = 41;                // number of past generations to be logged 
+    int32 max_features_buffer = 42; // maximum number of stored features in a hypothesis
+    double minimum_allowed_determinant = 43; // minimum allowed determinant for least squares fit 
+    //#define ALPHA                   0.2            /* factor in best ball criterion (was 0.1) */
+    double lower_confidence_bound = 44;  // if MA of hypothesis is below this bound, ball is thrown away, if this bound is set to zero, a low confidence ball will remain to be tracked. 
 }
 
 

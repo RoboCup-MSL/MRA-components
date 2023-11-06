@@ -56,6 +56,8 @@ static int normalization(sc_global_data *pscgd);
 static int sequence_clustering_nhyp_controller(int inext, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static int mape(sc_global_data *pscgd);
 
+// 2nd alpha defintion
+#define ALPHA 0.2
 
 static int fbuf_print(hypothesis *phyp) {
     MRA_LOG_DEBUG("hypothesis %d has %d feature(s) in buffer:", phyp->obs.uid, phyp->nfbuf);
@@ -116,13 +118,11 @@ static int fbuf_add(hypothesis *phyp, const ball_feature_t& pbfeat, sc_global_da
     phyp->fbuf.z[phyp->fbuf_idx] = pbfeat.z;
     phyp->fbuf.sigma[phyp->fbuf_idx] = pbfeat.sigma;
     /* set expiration time for feature */
-    switch (pbfeat.isFree) {
-    case 0:
-        phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_non_free();
-        break;
-    case 1:
+    if (pbfeat.isFree) {
         phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_free();
-        break;
+    }
+    else {
+        phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_non_free();
     }
     phyp->fbuf.isFree[phyp->fbuf_idx] = pbfeat.isFree;
 
@@ -268,7 +268,7 @@ static int fit_line_xy(double *theta, double *val, double *timestamp, double *si
 
     /* determinant of regression matrix */
     det = a * d - b * c;
-    if (fabs(det) < MIN_ALLOWED_DET) {
+    if (fabs(det) < params.minimum_allowed_determinant()) {
         return BM_FIT_ERROR;
     }
 
@@ -290,12 +290,12 @@ static int fit_curve_z(double *theta, double *val, double *timestamp, double *si
     } /* 1 is too few, set to 4 to ignore few-points-estimate */
 
     /* initialization */
-    a = 0.;
-    b = 0.;
-    c = 0.;
-    d = 0.;
-    e = 0.;
-    f = 0.;
+    a = 0.0;
+    b = 0.0;
+    c = 0.0;
+    d = 0.0;
+    e = 0.0;
+    f = 0.0;
 
     for (i = 0; i < n; i++) {
         /* check for expiration of features in buffer and check if z is (close to ) 0 */
@@ -335,7 +335,7 @@ static int fit_curve_z(double *theta, double *val, double *timestamp, double *si
 
     /* determinant of regression matrix */
     det = a * d - b * c;
-    if (fabs(det) < MIN_ALLOWED_DET) {
+    if (fabs(det) < params.minimum_allowed_determinant()) {
         return BM_FIT_ERROR;
     }
 
@@ -387,11 +387,7 @@ int seq_clustering_print_hypothesis(hypothesis *phyp, int i) {
     /* print hypothesis to screen */
 
     MRA_LOG_DEBUG("Hypothesis: %d", i);
-    switch (phyp->nobj) {
-    case 0:
-        MRA_LOG_DEBUG("   No ball.");
-        break;
-    case 1:
+    if (phyp->ball_detected) {
         MRA_LOG_DEBUG("   Uid = %d", phyp->obs.uid);
         MRA_LOG_DEBUG("   Ball at (%f, %f, %f)", phyp->obs.xh[0], phyp->obs.xh[2], phyp->obs.xh[4]);
         MRA_LOG_DEBUG("   Type = %d", phyp->obs.label);
@@ -401,8 +397,11 @@ int seq_clustering_print_hypothesis(hypothesis *phyp, int i) {
         }
         MRA_LOG_DEBUG("   Association flag = %d.", phyp->association_flag);
         MRA_LOG_DEBUG("   Time = %f", phyp->obs.time);
-        break;
     }
+    else {
+        MRA_LOG_DEBUG("   No ball.");
+    }
+
     MRA_LOG_DEBUG("   Probability = %f", phyp->p);
     MRA_LOG_DEBUG("   Confidence  = %f", phyp->mavg);
 
@@ -484,7 +483,7 @@ static int associate_with_new_ball(int i, int j, const ball_feature_t& pbfeat, s
     /* MA confidence filter */
     ma_get(&(pscgd->hyp2[j]));
 
-    pscgd->hyp2[j].nobj = 1; /* we have a new ball... */
+    pscgd->hyp2[j].ball_detected = true; /* we have a new ball... */
 
     /* update probability of hypothesis with prediction model */
     double pnew = 1. - (params.alpha() + params.beta()) / 3.0;
@@ -547,20 +546,10 @@ static int generate_offspring(const ball_feature_t &pbfeat, sc_global_data *pscg
     for (i = 0; i < pscgd->nhyp; i++) {
 
 
-        MRA_LOG_DEBUG("hyp %d: nobj = %d   p = %f", i, pscgd->hyp[i].nobj, pscgd->hyp[i].p);
+        MRA_LOG_DEBUG("hyp %d: ball_detected = %d   p = %f", i, pscgd->hyp[i].ball_detected, pscgd->hyp[i].p);
 
-        switch (pscgd->hyp[i].nobj) {
-        case 0: /* there's no ball yet */
-
-            /* feature is new ball */
-            iret = associate_with_new_ball(i, j, pbfeat, pscgd, params);
-            if (iret < 0) {
-                return iret;
-            }
-            j++; /* increment counter */
-
-            break;
-        case 1: /* there's a ball already */
+        if (pscgd->hyp[i].ball_detected) {
+            /* there's a ball already */
 
             /* feature is existing ball */
             iret = associate_with_existing_ball(i, j, pbfeat, pscgd, params);
@@ -583,7 +572,16 @@ static int generate_offspring(const ball_feature_t &pbfeat, sc_global_data *pscg
             }
             j++; /* increment counter */
 
-            break;
+        }
+        else {
+            /* there's no ball yet */
+
+            /* feature is new ball */
+            iret = associate_with_new_ball(i, j, pbfeat, pscgd, params);
+            if (iret < 0) {
+                return iret;
+            }
+            j++; /* increment counter */
         }
     }
 
@@ -635,17 +633,15 @@ static double observer_update(const ball_feature_t& pbfeat, sc_global_data *pscg
             isort_descending(idx, pscgd->hyp[i].fbuf.timestamp, params.max_features_buffer());
 
             //                        mexPrintf("nbuf van hyp %d = %d\n", i, pscgd->hyp[i].nfbuf);
-            switch (pscgd->hyp[i].nfbuf) {
-            case 0:
-            case 1:
+            if  (pscgd->hyp[i].nfbuf == 0 || pscgd->hyp[i].nfbuf == 1) {
                 pscgd->hyp[i].obs.xh[0] = pscgd->hyp[i].fbuf.x[idx[0]];
                 pscgd->hyp[i].obs.xh[1] = 0.;
                 pscgd->hyp[i].obs.xh[2] = pscgd->hyp[i].fbuf.y[idx[0]];
                 pscgd->hyp[i].obs.xh[3] = 0.;
                 pscgd->hyp[i].obs.xh[4] = pscgd->hyp[i].fbuf.z[idx[0]];
                 pscgd->hyp[i].obs.xh[5] = 0.;
-                break;
-            default:
+            }
+            else{
                 if (fit_line_xy(theta, pscgd->hyp[i].fbuf.x, pscgd->hyp[i].fbuf.timestamp, pscgd->hyp[i].fbuf.sigma,
                         idx, pscgd->hyp[i].nfbuf, pscgd->hyp[i].fbuf.exp_time, pscgd->hyp[i].fbuf.isFree,
                         pscgd, params) == BM_SUCCESS) {
@@ -680,7 +676,6 @@ static double observer_update(const ball_feature_t& pbfeat, sc_global_data *pscg
                     pscgd->hyp[i].obs.xh[4] = pscgd->hyp[i].fbuf.z[idx[0]];
                     pscgd->hyp[i].obs.xh[5] = 0.;
                 }
-                break;
             }
 
             MRA_LOG_DEBUG("tupd = %f, time = %f", pscgd->hyp[i].obs.tupd, pscgd->hyp[i].obs.time);
@@ -730,30 +725,22 @@ static int likelihood_update(const ball_feature_t& pbfeat, sc_global_data *pscgd
             tttx = pbfeat.x - pscgd->hyp[i].obs.xh[0];
             ttty = pbfeat.y - pscgd->hyp[i].obs.xh[2];
             tttz = pbfeat.z - pscgd->hyp[i].obs.xh[4];
-            p = exp(
-                    -0.5
-                            * ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
-                                    + (tttz * tttz) / (sigmaz * sigmaz)));
-
+            p = exp(-0.5* ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
+                           + (tttz * tttz) / (sigmaz * sigmaz)));
             MRA_LOG_DEBUG("hyp %d: ASSOCIATE_WITH_BALL: p factor = %f", i, p);
             /* reset update flag */
             pscgd->hyp[i].obs.dupd = BU_DONE;
-
             break;
         case ASSOCIATE_WITH_CLUTTER:
             tttx = pbfeat.x - pscgd->hyp[i].obs.xh[0];
             ttty = pbfeat.y - pscgd->hyp[i].obs.xh[2];
             tttz = pbfeat.z - pscgd->hyp[i].obs.xh[4];
-            p = 1.
-                    - exp(
-                            -0.5
-                                    * ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
-                                            + (tttz * tttz) / (sigmaz * sigmaz)));
+            p = 1.- exp(-0.5* ((tttx * tttx) / (sigmax * sigmax) + (ttty * ttty) / (sigmay * sigmay)
+                               + (tttz * tttz) / (sigmaz * sigmaz)));
 
             MRA_LOG_DEBUG("hyp %d: ASSOCIATE_WITH_CLUTTER: p factor = %f", i, p);
             /* reset update flag */
             pscgd->hyp[i].obs.dupd = BU_NONE;
-
             break;
         case ASSOCIATE_WITH_NEW:
             p = pawn;
@@ -761,6 +748,9 @@ static int likelihood_update(const ball_feature_t& pbfeat, sc_global_data *pscgd
             MRA_LOG_DEBUG("hyp %d: ASSOCIATE_WITH_NEW: p factor = %f", i, p);
             /* reset update flag */
             pscgd->hyp[i].obs.dupd = BU_NONE;
+
+            break;
+        case ASSOCIATE_NONE:
 
             break;
         }
@@ -797,36 +787,22 @@ static int clip_conf(sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::P
     /* clip hypotheses w.r.t. balls that have been fed with low-confidence features for a while */
     for (int i = 0; i < pscgd->nhyp; i++) {
         if (pscgd->hyp[i].mavg < params.lower_confidence_bound()) {
-            pscgd->hyp[i].nobj = 0; /* throw away ball */
+            pscgd->hyp[i].ball_detected = false; /* throw away ball */
         }
     }
     return BM_SUCCESS;
 }
 #endif
 
-static int sequence_clustering_set_track_uid_to_best(best_uid *puid, sc_global_data *pscgd) {
-    //         int iret, id_valid;
-    //
-    //         /* set track_uid to best ball uid */
-    //         iret = uid_get_uid(0, puid);
-    //         id_valid = iret != UID_ERROR;
-    //         switch (id_valid) {
-    //         case 0:
-    //                 /* no valid uid found */
-    //                 return BM_ERROR_NO_HYP;
-    //                 break;
-    //         case 1:
-    //                 /* valid uid found */
-    //                 pscgd->track_uid = iret;
-    //                 break;
-    //         }
-    int iret = uid_get_uid(0, puid);
+static int sequence_clustering_set_track_uid_to_best(const best_uid_t& best_uid, sc_global_data *pscgd) {
+     /* set track_uid to best ball uid */
+    int iret = uid_get_uid(0, best_uid);
     if (iret != UID_ERROR) {
         /* valid uid found */
         pscgd->track_uid = iret;
         return UID_SUCCESS;
     } else {
-        /* no valid uid found */
+        MRA_LOG_DEBUG("BM_ERROR_NO_HYP: no valid uid found");
         return BM_ERROR_NO_HYP;
     }
 }
@@ -834,13 +810,15 @@ static int sequence_clustering_set_track_uid_to_best(best_uid *puid, sc_global_d
 static int sequence_clustering_nhyp_controller(int inext, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     /* filter discrete probability distribution of the hypotheses */
 
-    int i, j, ifilter, idx[MAXHYP],n, uid_exists, id_valid, iret, k;
+    int i, j, ifilter, idx[MAXHYP],n, iret, k;
+    bool uid_exists;
     double p[MAXHYP], psmall, pfilter, pmax;
-    best_uid buid;
+    best_uid_t buid;
 
     /* sort p */
     n = pscgd->nhyp;
     if (n == 0) {
+        MRA_LOG_DEBUG("BM_ERROR_NO_HYP: pscgd->nhyp");
         return BM_ERROR_NO_HYP;
     }
 
@@ -850,7 +828,7 @@ static int sequence_clustering_nhyp_controller(int inext, sc_global_data *pscgd,
     }
     isort_ascending(idx, p, n);
 
-    psmall = p[idx[n - 1]] / params.pfactor();
+    psmall = p[idx[n-1]] / params.pfactor();
 
     MRA_LOG_DEBUG("psmall = %f", psmall);
     ifilter = n - params.nkeep();
@@ -864,103 +842,94 @@ static int sequence_clustering_nhyp_controller(int inext, sc_global_data *pscgd,
     /* apply filter action to the system... */
     j = 0;
     for (i = 0; i < n; i++) {
-
-        MRA_LOG_DEBUG("filter hyp %d: p = %f, uid = %d", idx[n - 1 - i], pscgd->hyp[idx[n - 1 - i]].p,
-                pscgd->hyp[idx[n - 1 - i]].obs.uid);
-        if ((pscgd->hyp[idx[n - 1 - i]].p >= pfilter) && (pscgd->hyp[idx[n - 1 - i]].p > psmall)
-                && (j < params.nkeep())) {
-            memcpy(&(pscgd->hyp2[j]), &(pscgd->hyp[idx[n - 1 - i]]), sizeof(hypothesis));
+        MRA_LOG_DEBUG("filter hyp %d: p = %f, uid = %d", idx[n - 1 - i], pscgd->hyp[idx[n - 1 - i]].p, pscgd->hyp[idx[n - 1 - i]].obs.uid);
+        if ((pscgd->hyp[idx[n-1-i]].p >= pfilter) &&
+            (pscgd->hyp[idx[n-1-i]].p > psmall) &&
+            (j < params.nkeep())) {
+            memcpy(&(pscgd->hyp2[j]), &(pscgd->hyp[idx[n-1-i]]), sizeof(hypothesis));
             j++;
         }
     }
 
     if (j == 0) {
+        MRA_LOG_DEBUG("BM_ERROR_NO_HYP: apply filter action to the system, but j == 0");
         return BM_ERROR_NO_HYP;
     }
 
     /* create list of at most MAXBEST best balls */
     i = 0;
-    pmax = pscgd->hyp[idx[n - 1 - i]].p;
-    uid_clear(&buid);
-    while ((uid_get_n(&buid) < MAXBEST) && (pscgd->hyp[idx[n - 1 - i]].p >= ALPHA * pmax) && (i < n)) {
-        uid_add(pscgd->hyp[idx[n - 1 - i]].obs.uid, pscgd->hyp[idx[n - 1 - i]].p, &buid);
+    pmax = pscgd->hyp[idx[n-1-i]].p;
+    uid_clear(buid);
+    while ((uid_get_n(buid) < MAXBEST) && (pscgd->hyp[idx[n-1-i]].p >= ALPHA * pmax) && (i < n)) {
+        uid_add(pscgd->hyp[idx[n-1-i]].obs.uid, pscgd->hyp[idx[n-1-i]].p, buid);
         i++;
         if (n - 1 - i < 0) {
             break;
         }
     }
 
-    //uid_print(&buid);
+    uid_print(buid);
 
 
-    MRA_LOG_DEBUG("track_uid voor = %d", pscgd->track_uid);
+    MRA_LOG_DEBUG("track_uid for = %d", pscgd->track_uid);
     /* check inext */
     if (inext && (!pscgd->next_done)) {
         /* next best ball selected by user */
-        iret = uid_get_id(pscgd->track_uid, &buid);
+        iret = uid_get_id(pscgd->track_uid, buid);
 
         MRA_LOG_DEBUG("current track_uid = %d at id = %d", pscgd->track_uid, iret);
         uid_exists = iret != UID_ERROR;
-        switch (uid_exists) {
-        case 0:
-            /* current track_uid not valid anymore, set track_uid to best ball uid */
-
-            MRA_LOG_DEBUG("current track_uid not valid anymore, set track_uid to best ball uid.");
-            iret = sequence_clustering_set_track_uid_to_best(&buid, pscgd);
-            if (iret != UID_SUCCESS) {
-                return iret;
-            }
-            break;
-        case 1:
+        if (uid_exists) {
             /* track_uid still belongs to best balls, take next best ball */
 
             MRA_LOG_DEBUG("track_uid still belongs to best balls, take next best ball.");
             k = iret + 1;
-            if (k > uid_get_n(&buid) - 1) {
+            if (k > uid_get_n(buid) - 1) {
                 k = 0;
             }
 
             MRA_LOG_DEBUG("new id = %d", k);
             /* set track_uid to new ball uid */
-            iret = uid_get_uid(k, &buid);
+            iret = uid_get_uid(k, buid);
 
             MRA_LOG_DEBUG("Take next ball with id=%d and uid=%d", k, iret);
-            id_valid = iret != UID_ERROR;
-            switch (id_valid) {
-            case 0:
-                /* no valid uid found */
-                return BM_ERROR_NO_HYP;
-                break;
-            case 1:
+            if (iret != UID_ERROR) {
                 /* valid uid found */
                 pscgd->track_uid = iret;
                 pscgd->next_done = 1;
-                break;
             }
-            break;
+            else {
+                MRA_LOG_DEBUG("BM_ERROR_NO_HYP: no valid uid found");
+                return BM_ERROR_NO_HYP;
+            }
         }
-    } else {
-        uid_exists = uid_get_id(pscgd->track_uid, &buid) != UID_ERROR;
-        switch (uid_exists) {
-        case 0:
+        else {
             /* current track_uid not valid anymore, set track_uid to best ball uid */
-
             MRA_LOG_DEBUG("current track_uid not valid anymore, set track_uid to best ball uid.");
-            iret = sequence_clustering_set_track_uid_to_best(&buid, pscgd);
+            iret = sequence_clustering_set_track_uid_to_best(buid, pscgd);
             if (iret != UID_SUCCESS) {
                 return iret;
             }
-            break;
-        case 1:
+        }
+    } else {
+        uid_exists = uid_get_id(pscgd->track_uid, buid) != UID_ERROR;
+        if (uid_exists) {
             /* track_uid still belongs to best balls, keep current track_uid */
 
             MRA_LOG_DEBUG("track_uid still belongs to best balls, keep current track_uid.");
-            break;
+        }
+        else {
+            /* current track_uid not valid anymore, set track_uid to best ball uid */
+            MRA_LOG_DEBUG("current track_uid not valid anymore, set track_uid to best ball uid.");
+            iret = sequence_clustering_set_track_uid_to_best(buid, pscgd);
+            if (iret != UID_SUCCESS) {
+                return iret;
+            }
         }
     }
 
 
-    MRA_LOG_DEBUG("track_uid na = %d, p = %f", pscgd->track_uid, buid.p[uid_get_id(pscgd->track_uid, &buid)]);
+    MRA_LOG_DEBUG("track_uid na = %d, p = %f", pscgd->track_uid, buid.p[uid_get_id(pscgd->track_uid, buid)]);
 
     MRA_LOG_DEBUG("new number of hypotheses = %d", j);
     pscgd->nhyp = j; /* new number of active hypotheses */
@@ -996,7 +965,7 @@ static int mape(sc_global_data *pscgd) {
 static int sequence_clustering_init_hyp(hypothesis *phyp) {
     /* initialize hypotheses */
     for (int i = 0; i < MAXHYP; i++) {
-        (phyp + i)->nobj = 0;
+        (phyp + i)->ball_detected = false;
         (phyp + i)->p = 1.0;
         ma_init(phyp + i);
         fbuf_init(phyp + i);
@@ -1084,42 +1053,49 @@ int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_fea
         for (i = 0; i < n; i++) {
             /* propagate set of hypotheses */
             iret = generate_offspring(pbfeat[valid[idx_t[i]]], pscgd, params);
-            if (iret < 0) {
-                return iret;
+            MRA_LOG_DEBUG("iret generate_offspring = %d", iret);
+
+            if (iret >= 0) {
+                MRA_LOG_DEBUG("Processing feature #%d:", i);
+                iret = seq_clustering_print_hypotheses(pscgd);
+                MRA_LOG_DEBUG("iret after seq_clustering_print_hypotheses = %d", iret);
             }
 
-
-            MRA_LOG_DEBUG("Processing feature #%d:", i);
-            seq_clustering_print_hypotheses(pscgd);
-
             /* apply observer update: prediction + measurement if associated */
-            iret = observer_update(pbfeat[valid[idx_t[i]]], pscgd, params);
+            if (iret >= 0) {
+                iret = observer_update(pbfeat[valid[idx_t[i]]], pscgd, params);
+                MRA_LOG_DEBUG("iret after observer_update = %d", iret);
+            }
             if (iret >= 0) {
                 /* apply likelihood update */
                 iret = likelihood_update(pbfeat[valid[idx_t[i]]], pscgd);
+                MRA_LOG_DEBUG("iret after likelihood_update = %d", iret);
             }
             if (iret >= 0) {
                 /* normalize probability distribution */
                 iret = normalization(pscgd);
+                MRA_LOG_DEBUG("iret after normalization = %d", iret);
             }
 #ifndef NOCLIPCONF
             if (iret >= 0) {
                 iret = clip_conf(pscgd, params);
+                MRA_LOG_DEBUG("iret after clip_conf = %d", iret);
             }
 #endif
 
 
             if (iret >= 0) {
-                seq_clustering_print_hypotheses(pscgd);
+                iret = seq_clustering_print_hypotheses(pscgd);
+                MRA_LOG_DEBUG("iret after seq_clustering_print_hypotheses = %d", iret);
             }
             if (iret >= 0) {
                 /* gating of discrete probability distribution */
                 iret = sequence_clustering_nhyp_controller(inext, pscgd, params);
+                MRA_LOG_DEBUG("iret after sequence_clustering_nhyp_controller = %d", iret);
             }
 
             if (iret < 0) {
-
-                MRA_LOG_DEBUG("seq_clustering_ball_model result = %s", BM_result_to_string(iret).c_str());
+                MRA_LOG_DEBUG("seq_clustering_ball_model result = %d (= %s)", iret, BM_result_to_string(iret).c_str());
                 return iret;
             }
 
@@ -1141,15 +1117,13 @@ int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_fea
 
     MRA_LOG_DEBUG("Winning hypothesis at t = %f: i_mape = %d, uid = %d, p = %f", time, i_mape,
             pscgd->hyp[i_mape].obs.uid, pscgd->hyp[i_mape].p);
-    switch (pscgd->hyp[i_mape].nobj) {
-    case 0:
-        MRA_LOG_DEBUG("-> No ball.");
-        break;
-    case 1:
+    if (pscgd->hyp[i_mape].ball_detected) {
         MRA_LOG_DEBUG("-> Ball position: ");
         MRA_LOG_DEBUG("%f %f %f", pscgd->hyp[i_mape].obs.xh[0], pscgd->hyp[i_mape].obs.xh[2],
                 pscgd->hyp[i_mape].obs.xh[4]);
-        break;
+    }
+    else {
+        MRA_LOG_DEBUG("-> No ball.");
     }
 
     /* return result in ball_estimate */
@@ -1181,10 +1155,10 @@ int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_fea
         pball->ydot *= alpha;
     }
 
-    if (pscgd->hyp[i_mape].nobj <= 0) {
-        pball->hconf = 0.0;
-    } else {
+    if (pscgd->hyp[i_mape].ball_detected) {
         pball->hconf = pscgd->hyp[i_mape].mavg;
+    } else {
+        pball->hconf = 0.0;
     }
 
     pball->isUpd = pscgd->hyp[i_mape].updated_in_timestep > 0;

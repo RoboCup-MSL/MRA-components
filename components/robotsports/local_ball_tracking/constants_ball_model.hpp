@@ -7,30 +7,18 @@
 #ifndef CONSTANTS_BALL_MODELL_HPP
 #define CONSTANTS_BALL_MODELL_HPP
 
-#define MAXBALLS_OV		20			/* maximum number of candidate balls found by omnivision and send to tracker
- 	 	 	 	 	 	 	 	 	   NUM_BALLS defined in omni.h */
-
-#define MAXBALLS_FC		3			/* maximum number of candidate balls found by front_cam and send to tracker */
-#define MAXBALLS_LRF	10      	/* maximum number of candidate balls found by LRF-field and send to tracker*/
-
-
-#ifndef DEFASSOCFLAG
-#define DEFASSOCFLAG
 /* define options for hypothesis association flag */
-enum {  ASSOCIATE_WITH_BALL = 1,
-        ASSOCIATE_WITH_CLUTTER,
-        ASSOCIATE_WITH_NEW,
-        ASSOCIATE_NONE
-};
-#endif
+typedef enum {
+    ASSOCIATE_WITH_BALL = 1,
+    ASSOCIATE_WITH_CLUTTER,
+    ASSOCIATE_WITH_NEW,
+    ASSOCIATE_NONE
+} associate_e;
 
 #define MAXHYP                  500             /* maximum number of hypotheses */
 #define MA_N                    20              /* number of samples in MA confidence */
 #define MAXHIST                 1               /* number of past generations to be logged */
-#define ALPHA                   0.2            /* factor in best ball criterion (was 0.1) */
 #define MAXFEATBUF              60              /* maximum number of stored features in a hypothesis */
-#define MIN_ALLOWED_DET         0.000001        /* minimum allowed determinant for least squares fit */
-#define MIN_NUMBER_OF_FEAT      4               /* minimum number of features to allow for fit */
 
 #define BM_SUCCESS               0              /* success */
 #define BM_ERROR_MAXHYP         -1              /* MAXHYP exceeded */

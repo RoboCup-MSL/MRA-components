@@ -40,10 +40,10 @@ typedef struct tag_ball_feature_t {
         double z;                       /* z-position */
         double conf;                    /* confidence */
         double dist;                    /* distance to robot */
-        long  type;                    /* sensor label */
+        long  type;                     /* sensor label */
         double sigma;                   /* standard deviation of sensor noise */
-        long  isFree;                  /* is rolling freely (0 or 1) */
-        long  inAir;                   /* is flying in the air (0 or 1) */
+        bool   isFree;                  /* is rolling freely (0 or 1) */
+        bool   inAir;                   /* is flying in the air (0 or 1) */
         double timestamp;               /* timestamp */
         long  initializeBallVelFlag;   /* initialize ball velocity if one */
         double initializeBallVel_xy[2]; /* initialize ball velocity at kick vel_xy */

@@ -43,9 +43,9 @@ typedef struct tag_featbuf_t {
 
 typedef struct tag_hypothesis {
 	ball_observer obs; /* observer representing the detected ball according to this hypothesis */
-	int nobj; /* number of detected balls (0 or 1) */
+	bool ball_detected;
 	double p; /* probability of this hypothesis */
-	int association_flag; /* association of last feature (ASSOCIATE_WITH_CLUTTER or ASSOCIATE_WITH_BALL) */
+	associate_e association_flag; /* association of last feature (ASSOCIATE_WITH_CLUTTER or ASSOCIATE_WITH_BALL) */
 	double ma_buf[MA_N + 1]; /* MA confidence filter */
 	double mavg;
 	int ma_idx;

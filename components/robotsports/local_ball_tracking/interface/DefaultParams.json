@@ -6,7 +6,6 @@
     "sample_frequency": 40,
     "cnt_iskicking": 10,
     "BMsigma_OV": 0.8,
-    "BMsigma_kinect": 0.2,
     "BMsigma_stereo": 0.2,
     "confidence_decay": 0.63,
     "ball_time_to_forget": 5.0, 

@@ -388,7 +388,7 @@ int seq_clustering_print_hypothesis(hypothesis *phyp, int i) {
 
     MRA_LOG_DEBUG("Hypothesis: %d", i);
     if (phyp->ball_detected) {
-        MRA_LOG_DEBUG("   Uid = %d", phyp->obs.uid);
+        MRA_LOG_DEBUG("   Uid = %d (ball detected)", phyp->obs.uid);
         MRA_LOG_DEBUG("   Ball at (%f, %f, %f)", phyp->obs.xh[0], phyp->obs.xh[2], phyp->obs.xh[4]);
         MRA_LOG_DEBUG("   Type = %d", phyp->obs.label);
         MRA_LOG_DEBUG("   Tupd = %f", phyp->obs.tupd);
@@ -539,53 +539,56 @@ static int associate_with_clutter(int i, int j, const ball_feature_t& pbfeat, sc
 static int generate_offspring(const ball_feature_t &pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     /* generate offspring for hypotheses */
 
-    int i, j, iret;
+    int iret = 0;;
+    int nxt_gen_hyp_counter = 0;  /* counter for next generation of hypotheses */
 
-    j = 0; /* counter for next generation of hypotheses */
-
-    for (i = 0; i < pscgd->nhyp; i++) {
+    for (auto hypothese_idx = 0; hypothese_idx < pscgd->nhyp; hypothese_idx++) {
 
 
-        MRA_LOG_DEBUG("hyp %d: ball_detected = %d   p = %f", i, pscgd->hyp[i].ball_detected, pscgd->hyp[i].p);
+        MRA_LOG_DEBUG("hyp %d: ball_detected = %d   p = %f", hypothese_idx, pscgd->hyp[hypothese_idx].ball_detected, pscgd->hyp[hypothese_idx].p);
 
-        if (pscgd->hyp[i].ball_detected) {
+        if (pscgd->hyp[hypothese_idx].ball_detected) {
             /* there's a ball already */
 
             /* feature is existing ball */
-            iret = associate_with_existing_ball(i, j, pbfeat, pscgd, params);
+            iret = associate_with_existing_ball(hypothese_idx, nxt_gen_hyp_counter, pbfeat, pscgd, params);
+            MRA_LOG_DEBUG("generate_offspring::associate_with_existing_ball iret: %d", iret );
             if (iret < 0) {
                 return iret;
             }
-            j++; /* increment counter */
+            nxt_gen_hyp_counter++; /* increment counter */
 
             /* feature is clutter */
-            iret = associate_with_clutter(i, j, pbfeat, pscgd, params);
+            iret = associate_with_clutter(hypothese_idx, nxt_gen_hyp_counter, pbfeat, pscgd, params);
+            MRA_LOG_DEBUG("generate_offspring::associate_with_clutter iret: %d", iret );
             if (iret < 0) {
                 return iret;
             }
-            j++; /* increment counter */
+            nxt_gen_hyp_counter++; /* increment counter */
 
             /* feature is new ball (remove old) */
-            iret = associate_with_new_ball(i, j, pbfeat, pscgd, params);
+            iret = associate_with_new_ball(hypothese_idx, nxt_gen_hyp_counter, pbfeat, pscgd, params);
+            MRA_LOG_DEBUG("generate_offspring::associate_with_new_ball (remove old) iret: %d", iret );
             if (iret < 0) {
                 return iret;
             }
-            j++; /* increment counter */
+            nxt_gen_hyp_counter++; /* increment counter */
 
         }
         else {
             /* there's no ball yet */
 
             /* feature is new ball */
-            iret = associate_with_new_ball(i, j, pbfeat, pscgd, params);
+            iret = associate_with_new_ball(hypothese_idx, nxt_gen_hyp_counter, pbfeat, pscgd, params);
+            MRA_LOG_DEBUG("generate_offspring::associate_with_new_ball (no ball yet) iret: %d", iret );
             if (iret < 0) {
                 return iret;
             }
-            j++; /* increment counter */
+            nxt_gen_hyp_counter++; /* increment counter */
         }
     }
 
-    pscgd->nhyp = j; /* new number of active hypotheses */
+    pscgd->nhyp = nxt_gen_hyp_counter; /* new number of active hypotheses */
     memcpy(pscgd->hyp, pscgd->hyp2, pscgd->nhyp * sizeof(hypothesis)); /* copy back new generation */
 
     return BM_SUCCESS;
@@ -787,6 +790,7 @@ static int clip_conf(sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::P
     /* clip hypotheses w.r.t. balls that have been fed with low-confidence features for a while */
     for (int i = 0; i < pscgd->nhyp; i++) {
         if (pscgd->hyp[i].mavg < params.lower_confidence_bound()) {
+            MRA_LOG_DEBUG("clip_: throw away ball confidence too low. value: %6.3f < %6.3f (threshold)", pscgd->hyp[i].mavg,params.lower_confidence_bound());
             pscgd->hyp[i].ball_detected = false; /* throw away ball */
         }
     }

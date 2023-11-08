@@ -60,7 +60,7 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick(google::pro
         // naive filter - select closest measurement
         // find close
         // update previous ball
-        local_ball_tracking_native_filter(nrBallsThisTime, ballData, params, input, state, output);
+        local_ball_tracking_native_filter(nrBallsThisTime, ballData, params, input, state);
     }
 
     if (params.run_sequential_clustering_filter()) {
@@ -74,7 +74,7 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick(google::pro
     // TODO ball_prev is not updated, it seems - stays at 0
     // calculate ball position at current time, based on position with timestamp ts and estimate of ball speed
 
-    if (params.ball_filter() == 0) {
+    if (params.ball_filter() == 1) {
         // use native_filter
         output.mutable_ball_prev()->CopyFrom(state.native_filter().ball_prev());
         output.mutable_ball()->CopyFrom(state.native_filter().ball());

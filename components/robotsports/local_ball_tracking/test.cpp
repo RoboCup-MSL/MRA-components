@@ -233,7 +233,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
    // std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 0.5);
+	execute_ball_traject_test(traject, 0.05);
 }
 
 #if 0

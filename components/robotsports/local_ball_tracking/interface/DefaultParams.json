@@ -1,6 +1,6 @@
 {
     "ball_filter": 1,
-    "run_native_filter": false,
+    "run_native_filter": true,
     "run_sequential_clustering_filter": true,
     "ball_vel_filter_order": 3,
     "sample_frequency": 40,
@@ -41,5 +41,5 @@
     "max_history":  1,
     "max_features_buffer": 60,
     "minimum_allowed_determinant": 0.000001, 
-    "lower_confidence_bound": 0.5 
+    "lower_confidence_bound": 0.005 
 }              

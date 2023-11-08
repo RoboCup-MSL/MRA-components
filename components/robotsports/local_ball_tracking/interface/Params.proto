@@ -4,7 +4,7 @@ package MRA.RobotsportsLocalBallTracking;
 
 message Params
 {
-    int32 ball_filter = 1;	// ball filter to use: 0 = naive filter (closest ball in field coord distance; 1 = Turtle2 code (clustering)
+    int32 ball_filter = 1;	// ball filter to use: 1 = naive filter (closest ball in field coord distance; 2 = Turtle2 code (clustering)
     int32 ball_vel_filter_order = 2;	// ball velocity filter order, between 3 and 7 for one-sided hybrid differentiator, other for most simple backward difference
     bool run_native_filter = 3; 
     bool run_sequential_clustering_filter = 4;

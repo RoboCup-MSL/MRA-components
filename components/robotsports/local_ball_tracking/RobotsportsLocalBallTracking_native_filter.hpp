@@ -5,11 +5,10 @@
 #include "RobotsportsLocalBallTracking.hpp"
 #include "seq_clustering_balldef.hpp"
 
-void local_ball_tracking_native_filter(int nrBallsThisTime,
-                                       std::vector<ball_feature_t>& ballData,
-                                        const MRA::RobotsportsLocalBallTracking::ParamsType &params,
-                                        const MRA::RobotsportsLocalBallTracking::InputType &input,
-                                        MRA::RobotsportsLocalBallTracking::StateType &state,
-                                        MRA::RobotsportsLocalBallTracking::OutputType &output);
+void local_ball_tracking_native_filter(unsigned nrBallsThisTime,
+                                       const std::vector<ball_feature_t>& ballData,
+                                       const MRA::RobotsportsLocalBallTracking::ParamsType &params,
+                                       const MRA::RobotsportsLocalBallTracking::InputType &input,
+                                       MRA::RobotsportsLocalBallTracking::StateType &state);
 
 #endif

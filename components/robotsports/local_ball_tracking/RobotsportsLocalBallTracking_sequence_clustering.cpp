@@ -74,7 +74,7 @@ static int initialize_tracking(MRA::RobotsportsLocalBallTracking::ParamsType con
 
 
 void local_ball_tracking_sequence_clustering(int nrBallsThisTime,
-                                                std::vector<ball_feature_t>& ballData,
+                                                const std::vector<ball_feature_t>& ballData,
                                                 const MRA::RobotsportsLocalBallTracking::InputType &input,
                                                 const MRA::RobotsportsLocalBallTracking::ParamsType &params,
                                                 MRA::RobotsportsLocalBallTracking::StateType &state,

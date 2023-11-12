@@ -1,8 +1,4 @@
 {
-    "ball_filter": 1,
-    "run_native_filter": true,
-    "run_sequential_clustering_filter": true,
-    "ball_vel_filter_order": 3,
     "sample_frequency": 40,
     "cnt_iskicking": 10,
     "BMsigma_OV": 0.8,

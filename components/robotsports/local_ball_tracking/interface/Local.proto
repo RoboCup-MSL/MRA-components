@@ -6,7 +6,5 @@ import "components/robotsports/local_ball_tracking/interface/Output.proto";
 
 message Local
 {
-    Output native_filter = 1;  // store result of native filter
-    Output sequence_filter = 2;  // store result of sequential clustering filter
 }
 

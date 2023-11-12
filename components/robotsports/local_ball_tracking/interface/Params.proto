@@ -4,14 +4,10 @@ package MRA.RobotsportsLocalBallTracking;
 
 message Params
 {
-    int32 ball_filter = 1;	// ball filter to use: 1 = naive filter (closest ball in field coord distance; 2 = Turtle2 code (clustering)
-    int32 ball_vel_filter_order = 2;	// ball velocity filter order, between 3 and 7 for one-sided hybrid differentiator, other for most simple backward difference
-    bool run_native_filter = 3; 
-    bool run_sequential_clustering_filter = 4;
     double sample_frequency = 5; // sample frequency in Hz
     
     // interface to Turtle2 code
-    int32	cnt_iskicking = 6;
+    uint32	cnt_iskicking = 6;
     double	BMsigma_OV = 7;
     double  BMsigma_stereo = 8;
     double  confidence_decay = 10;
@@ -24,7 +20,7 @@ message Params
     //    If FALSE, all ball sources are treated equally and are included as usual
 
     // tunable parameters taken from tunable_pardata_strategy_bus.h in Tech United sta
-    int32 nkeep = 13; // number of hypotheses saved for next step
+    uint32 nkeep = 13; // number of hypotheses saved for next step
     double pfactor = 14;  // reject hypotheses with p < pmax/pfactor
     double maxage = 15; // maximum age for non-updated objects
     double alpha = 16; // Pnew=alpha*(1-MA)
@@ -34,7 +30,7 @@ message Params
     double exp_time_non_free = 20;    
     double max_time_delay_for_velocity_calc = 21;
     double fraction_of_position_in_velocity = 22;
-    int32 ball_max_history = 23;
+    uint32 ball_max_history = 23;
     double ball_min_confidence = 24;
     double ball_confidence_decay  = 25;
     
@@ -43,9 +39,9 @@ message Params
     double see_ball_hysteris_time = 27; // when feature is added to tracker within the last .. seconds, see ball = 1 
     double min_height_in_air  = 28; // when ball is above this heigth, ball is in air 
     double min_dist_ball_is_free = 29 ; // if ball is further from opponents than this distance, ball is free rolling 
-    int32 max_ball_prediction_time_ms = 30; // maximum number of milliseconds that the ball position is extrapolated 
+    uint32 max_ball_prediction_time_ms = 30; // maximum number of milliseconds that the ball position is extrapolated 
     double max_ball_prediction_velocity = 31; // maximum ball speed of the ball  during extrapolation 
-    int32 nr_samples_init_vel_during_kick = 32; // number of samples that the initial kick velocity of the ball is set 
+    uint32 nr_samples_init_vel_during_kick = 32; // number of samples that the initial kick velocity of the ball is set 
     double velocity_at_dutycyle_one = 33; // initial ball speed if duty cycle is one
     
     // ball selector 
@@ -56,12 +52,12 @@ message Params
     double velocity_ball_clip_lower = 35;
     double velocity_ball_clip_upper = 36;
     
-    int32 max_hypoteses = 37; // maximum number of hypotheses
+    uint32 max_hypoteses = 37; // maximum number of hypotheses
     double gravity = 38; //  gravity constant in m/s²
-    int32 mininum_number_of_features = 39;  // minimum number of features to allow for fit
-    int32 n_samples_ma_confidence = 40; // number of samples in MA confidence
-    int32 max_history = 41;                // number of past generations to be logged 
-    int32 max_features_buffer = 42; // maximum number of stored features in a hypothesis
+    uint32 mininum_number_of_features = 39;  // minimum number of features to allow for fit
+    uint32 n_samples_ma_confidence = 40; // number of samples in MA confidence
+    uint32 max_history = 41;                // number of past generations to be logged 
+    uint32 max_features_buffer = 42; // maximum number of stored features in a hypothesis
     double minimum_allowed_determinant = 43; // minimum allowed determinant for least squares fit 
     //#define ALPHA                   0.2            /* factor in best ball criterion (was 0.1) */
     double lower_confidence_bound = 44;  // if MA of hypothesis is below this bound, ball is thrown away, if this bound is set to zero, a low confidence ball will remain to be tracked. 

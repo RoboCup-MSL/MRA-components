@@ -2,23 +2,20 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
-//import "datatypes/WorldState.proto";
-
-message BallFeature
+message BallCandidate
 {
 	float x = 1;
     float y = 2;
     float z = 3;
     float confidence = 4;
-    float sigma = 5; // standard deviation of sensor noise of the measurement                  
-    float dist = 6;                    // distance to robot
-    float timestamp = 7;               // timestamp 
+    float sigma = 5;
+    float timestamp = 6;               // timestamp 
 }
 
 
 message Input
 {
     double	ts = 1;		// Time stamp of data
-    repeated BallFeature omnivision_balls = 2;
-    repeated BallFeature stereovision_balls = 3;
+    repeated BallCandidate omnivision_balls = 2;
+    repeated BallCandidate frontcamera_balls = 3;
 }

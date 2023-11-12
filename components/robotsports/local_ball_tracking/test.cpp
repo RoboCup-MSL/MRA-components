@@ -30,8 +30,8 @@ public:
 	double robot_x;
 	double robot_y;
 	double robot_rz;
-	std::vector<MRA::RobotsportsLocalBallTracking::BallFeature> omni_features;
-	std::vector<MRA::RobotsportsLocalBallTracking::BallFeature> stereo_features;
+	std::vector<MRA::RobotsportsLocalBallTracking::BallCandidate> omni_candidates;
+	std::vector<MRA::RobotsportsLocalBallTracking::BallCandidate> frontcamera_candidates;
 };
 
 class BallTrajectGenerator
@@ -61,7 +61,7 @@ public:
 		m_ov_sigma = sigma;
 		m_ov_sample_time_ms = sample_time_ms;
 	};
-	void set_stereo_camera(double range, double angle, double sigma, double sample_time_ms) {
+	void set_front_camera(double range, double angle, double sigma, double sample_time_ms) {
 		m_sv_range = range;
 		m_sv_angle = angle;
 		m_sv_sigma = sigma;
@@ -108,30 +108,28 @@ public:
 
 		auto dist_robot_to_ball = hypot(fabs(r_sample_data.ball_x - r_sample_data.robot_x), fabs(r_sample_data.ball_y - r_sample_data.robot_y));
 		if ((dist_robot_to_ball < m_sv_range) && fabs(angle_robot_to_ball) <= (0.5*m_sv_angle)) {
-			// ball with stereo-vision range and within the stereo vision angle
+			// ball with frontcamera range and within the frontcamera vision angle
 			object_detected = true;
-			auto bf = MRA::RobotsportsLocalBallTracking::BallFeature();
+			auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
 			bf.set_x(r_sample_data.ball_x);
 			bf.set_y(r_sample_data.ball_y);
 			bf.set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_sv_sigma);
-			bf.set_dist(dist_robot_to_ball);
 			bf.set_timestamp(r_sample_data.rel_time);
-		    r_sample_data.stereo_features.push_back(bf);
+		    r_sample_data.frontcamera_candidates.push_back(bf);
 		}
 		if (dist_robot_to_ball < m_ov_range) {
 			// ball with omnivision range
 			object_detected = true;
-			auto bf = MRA::RobotsportsLocalBallTracking::BallFeature();
+			auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
 			bf.set_x(r_sample_data.ball_x);
 			bf.set_y(r_sample_data.ball_y);
 			bf.set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_ov_sigma);
-			bf.set_dist(dist_robot_to_ball);
 			bf.set_timestamp(r_sample_data.rel_time);
-		    r_sample_data.omni_features.push_back(bf);
+		    r_sample_data.omni_candidates.push_back(bf);
 		}
 		return object_detected;
 	}
@@ -164,7 +162,7 @@ static void config_MRA_logger(std::string component)
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
     cfg.set_folder("/home/jurge/log");
     cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::DEBUG);
+    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
     cfg.mutable_general()->set_dumpticks(false);
     cfg.mutable_general()->set_maxlinesize(1000);
     cfg.mutable_general()->set_maxfilesizemb(10.0);
@@ -174,7 +172,7 @@ static void config_MRA_logger(std::string component)
     MRA::Logging::control::setConfiguration(cfg);
 }
 
-void execute_ball_traject_test(BallTrajectGenerator traject_generator, double distance)
+RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenerator traject_generator, double distance)
 {
 	auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
     auto output = RobotsportsLocalBallTracking::Output();
@@ -198,18 +196,18 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
 		    input.mutable_omnivision_balls()->Clear();
 		    MRA_LOG_INFO("time {\"time\": %6.4f}", data.rel_time);
 		    input.set_ts(data.rel_time);
-		    if (data.omni_features.size() > 0 || (data.stereo_features.size() > 0)) {
+		    if (data.omni_candidates.size() > 0 || (data.frontcamera_candidates.size() > 0)) {
 		    	input.mutable_omnivision_balls()->Clear();
-		    	input.mutable_stereovision_balls()->Clear();
-		    	for (unsigned of = 0; of < data.omni_features.size(); of++) {
-				    input.mutable_omnivision_balls()->Add()->CopyFrom(data.omni_features[of]);
+		    	input.mutable_frontcamera_balls()->Clear();
+		    	for (unsigned of = 0; of < data.omni_candidates.size(); of++) {
+				    input.mutable_omnivision_balls()->Add()->CopyFrom(data.omni_candidates[of]);
 		    	}
-		    	for (unsigned of = 0; of < data.stereo_features.size(); of++) {
-				    input.mutable_stereovision_balls()->Add()->CopyFrom(data.stereo_features[of]);
+		    	for (unsigned of = 0; of < data.frontcamera_candidates.size(); of++) {
+				    input.mutable_frontcamera_balls()->Add()->CopyFrom(data.frontcamera_candidates[of]);
 		    	}
 			    error_value = m.tick(timestamp, input, params, state, output, local);
 			    MRA_LOG_INFO("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
-//                MRA_LOG_INFO("state: %s", MRA::convert_proto_to_json_str(state).c_str());
+                MRA_LOG_INFO("state: %s", MRA::convert_proto_to_json_str(state).c_str());
 			    // Asserts for turn from middle to left position
 			    EXPECT_EQ(error_value, 0);
 		    }
@@ -217,7 +215,7 @@ void execute_ball_traject_test(BallTrajectGenerator traject_generator, double di
 	}
 
     MRA_LOG_INFO("< %s::%s", testsuitename.c_str(), testname.c_str());
-
+    return output;
 }
 
 // Test shall run OK and return error_value 0.
@@ -227,13 +225,15 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
    // std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 0.05);
+	auto last_output = execute_ball_traject_test(traject, 0.05);
+    EXPECT_NEAR(last_output.ball().vx(), 2.0, 0.001); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.ball().vy(), 0.0, 0.001); // check if final speed is reached: y direction
 }
 
 #if 0
@@ -243,7 +243,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
 	traject.set_ball_traject(6.0, -4.0, -2.0, 0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
@@ -258,7 +258,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_p
 	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.25);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
@@ -273,7 +273,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_m
 	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, -0.25);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
@@ -287,7 +287,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
 	traject.set_ball_traject(6.0, 4.0, -2.0, 0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
@@ -303,7 +303,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 	traject.set_ball_traject(-6.0, -4.0, 0.0, +2.0);
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_stereo_camera(13.0, 110.0, 0.2, 25);
+	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
@@ -348,7 +348,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 //
 //
 //    input.set_ts(1.0);
-//	auto bf = MRA::RobotsportsLocalBallTracking::BallFeature();
+//	auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
 //	bf.set_x(1.0);
 //	bf.set_y(2.0);
 //	bf.set_z(0.1);

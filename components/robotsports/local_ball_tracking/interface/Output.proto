@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
-message VisionObjectOutput
+message TrackedBall
 {
 	float x = 1;
     float y = 2;
@@ -16,9 +16,9 @@ message VisionObjectOutput
 
 message Output
 {
-    VisionObjectOutput ball = 1;
-    VisionObjectOutput ball_prev = 2;
-    VisionObjectOutput ball_now = 3;		// ball position extrapolated to time = now (liveseconds)
+    TrackedBall ball = 1;
+    TrackedBall ball_prev = 2;
+    TrackedBall ball_now = 3;		// ball position extrapolated to time = now (liveseconds)
 }
 
 

@@ -3,8 +3,8 @@
  *  @brief   ball unique identifier
  *  @curator Rene van de Molengraft
  */
-#include "seq_clustering_best_uid.hpp"
 #include "logging.hpp"
+#include "sequence_clustering_best_uid.hpp"
 
 int uid_clear(best_uid_t& best_uid) {
     int i;

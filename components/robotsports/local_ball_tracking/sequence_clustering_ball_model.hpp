@@ -7,14 +7,14 @@
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
-#include "seq_clustering_balldef.hpp"
 #include "constants_ball_model.hpp"
 #include "RobotsportsLocalBallTracking.hpp"
+#include "sequence_clustering_balldef.hpp"
 
 typedef struct tag_ball_observer {
 	double xh[6]; /* state estimate: x, xdot, y, ydot, z, zdot */
 	double tupd; /* time of last update */
-	int label; /* type of last added feature */
+	balltype_e label; /* type of last added feature */
 	int dupd; /* update flag, 0 = no update required, 1 = associate object with new feature */
 	double time; /* time of current state estimate */
 	int uid; /* uid set at creation */
@@ -24,7 +24,7 @@ typedef struct tag_history_t {
 	double t;
 	double x[6];
 	int association_flag;
-	ball_feature_t bfeat;
+	ball_candidate_t bfeat;
 	double p_prior;
 	double p_prediction;
 	double p_likelihood;
@@ -50,32 +50,32 @@ typedef struct tag_hypothesis {
 	double mavg;
 	int ma_idx;
 	int ma_first;
-	int updated_in_timestep;
+	unsigned updated_in_timestep;
+/*
 	history_t hist[MAXHIST];
 	int hist_idx;
 	int hist_full;
+*/
 	featbuf_t fbuf;
-	int fbuf_idx;
-	int nfbuf; /* number of valid features in buffer, start at 0 */
+	unsigned fbuf_idx;
+	unsigned nfbuf; /* number of valid features in buffer, start at 0 */
 } hypothesis;
 
 /* global data structure */
 typedef struct tag_sc_global_data {
 	hypothesis hyp[MAXHYP];
 	hypothesis hyp2[MAXHYP];
-	int nhyp;
+	unsigned nhyp;
 	int new_uid;
 	int track_uid; /* ball uid to keep track off */
-	int next_done;
-	int is_kicked;
+	bool next_done;
+	bool is_kicked;  // not in use, future usage
 	double vx0; /* initial ball speed on kick */
 	double vy0;
 } sc_global_data;
 
 // the following are external functions
-int seq_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_feature_t>& pbfeat, double time, int inext, sc_global_data *pscg0, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
-        const int max_num_balls);
-int init_seq_clustering(sc_global_data *pscgd);
-int seq_clustering_print_hypotheses(sc_global_data *pscgd);
+int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data* pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
+        const unsigned max_num_balls);
 
 #endif  // SEQ_CLUSTERING_BALL_MODEL_INCLUDE

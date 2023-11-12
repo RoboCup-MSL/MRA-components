@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build_bazel_Ubuntu_20.04:
+  build_bazel_Ubuntu_20_04:
     runs-on: ubuntu-20.04
 
     steps:
@@ -29,7 +29,7 @@ jobs:
 
       # TODO: configure a cache?
 
-  build_bazel_Ubuntu_22.04:
+  build_bazel_Ubuntu_22_04:
     runs-on: ubuntu-22.04
 
     steps:
@@ -51,7 +51,7 @@ jobs:
 
       # TODO: configure a cache?
 
-  build_cmake_Ubuntu_20.04:
+  build_cmake_Ubuntu_20_04:
     runs-on: ubuntu-20.04
 
     steps:
@@ -73,7 +73,7 @@ jobs:
     - name: Build and test with Cmake
       run: ./MRA-build.py -t --cmake
 
-  build_cmake_Ubuntu_22.04:
+  build_cmake_Ubuntu_22_04:
     runs-on: ubuntu-22.04
 
     steps:

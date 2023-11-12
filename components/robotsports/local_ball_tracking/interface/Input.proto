@@ -2,20 +2,21 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
+import "google/protobuf/timestamp.proto";
+
 message BallCandidate
 {
-	float x = 1;
-    float y = 2;
-    float z = 3;
-    float confidence = 4;
-    float sigma = 5;
-    float timestamp = 6;               // timestamp 
+	float x = 1;  // measured x position [MSL-FCS] - Pose struct with CS in name
+    float y = 2;  // measured y position [MSL-FCS]
+    float z = 3;  // measured z position [MSL-FCS]
+    float confidence = 4;  // ball confidence [0..1] from sensor system (camera)
+    float sigma = 5; // ???? ==> variance on measured position
+    google.protobuf.Timestamp timestamp = 6; // timestamp of observation 
 }
 
 
 message Input
 {
-    double	ts = 1;		// Time stamp of data
-    repeated BallCandidate omnivision_balls = 2;
-    repeated BallCandidate frontcamera_balls = 3;
+    repeated BallCandidate omnivision_balls = 1;  // ball candidates from omnivision camera (360 degrees)  - sensor type as enum - see velocity control  
+    repeated BallCandidate frontcamera_balls = 2; // ball candidates from front-camera camera
 }

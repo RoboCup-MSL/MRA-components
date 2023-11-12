@@ -2,23 +2,25 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
+import "google/protobuf/timestamp.proto";
+
 message TrackedBall
 {
-	float x = 1;
-    float y = 2;
-    float z = 3;
-	float vx = 4;
-    float vy = 5;
-    float vz = 6;
-    float confidence = 7;
-    float timestamp = 8;               // timestamp 
+	float x = 1;  // calculated ball x position [MSL-FCS]
+    float y = 2;  // calculated ball y position [MSL-FCS]
+    float z = 3;  // calculated ball z position [MSL-FCS]
+	float vx = 4; // calculated ball x velocity [MSL-FCS]
+    float vy = 5; // calculated ball y velocity [MSL-FCS]
+    float vz = 6; // calculated ball z velocity [MSL-FCS]
+    float confidence = 7; // calculated ball confidence
+    google.protobuf.Timestamp timestamp = 8;  // timestamp of tracked ball  
 } 
 
 message Output
 {
-    TrackedBall ball = 1;
-    TrackedBall ball_prev = 2;
-    TrackedBall ball_now = 3;		// ball position extrapolated to time = now (liveseconds)
+    TrackedBall ball = 1;      // tracked ball 
+    TrackedBall ball_prev = 2; // previous tracked ball
+    TrackedBall ball_now = 3;  // tracked ball extrapolated to current time
 }
 
 

@@ -78,7 +78,9 @@ void local_ball_tracking_calculate_ball_now(const MRA::RobotsportsLocalBallTrack
 }
 
 
-void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
+void local_ball_tracking_sequence_clustering(
+                            double timestamp,
+                            unsigned nrBallsThisTime,
                             const std::vector<ball_candidate_t>& ballData,
                             const MRA::RobotsportsLocalBallTracking::InputType &input,
                             const MRA::RobotsportsLocalBallTracking::ParamsType &params,
@@ -95,11 +97,15 @@ void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
     // now run sc_bm code
     ball_estimate_t ball_estimate;
     int use_next_best_ball = 0; // if 1, then go to next best ball
-    int ret = sequence_clustering_ball_model(&ball_estimate, ballData, input.ts(), use_next_best_ball, &pscgd, params, max_num_balls);
+
+    int ret = sequence_clustering_ball_model(&ball_estimate, ballData, timestamp, use_next_best_ball, &pscgd, params, max_num_balls);
     if (ret == BM_SUCCESS) {
         // update ball position in world model since a successful step has been done
+
         // update previous ball
         output.mutable_ball_prev()->CopyFrom(state.ball());
+
+        auto timestamp_obj = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ball_estimate.timestamp* 1000);
         output.mutable_ball()->set_x(ball_estimate.xhat); // position X, replaced TPB on 20161210 from ball_estimate.x
         output.mutable_ball()->set_y(ball_estimate.yhat); // position Y, replaced TPB on 20161210 from ball_estimate.y
         output.mutable_ball()->set_z(ball_estimate.z); // position Z
@@ -107,8 +113,9 @@ void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
         output.mutable_ball()->set_vy(ball_estimate.ydot); // velocity in Y
         output.mutable_ball()->set_vz(ball_estimate.zdot); // velocity in Z
         output.mutable_ball()->set_confidence(ball_estimate.hconf); // moving average confidence
-        output.mutable_ball()->set_timestamp(ball_estimate.timestamp); // timestamp based off of liveseconds
-        double age = (input.ts() - ball_estimate.timestamp);
+
+        output.mutable_ball()->mutable_timestamp()->CopyFrom(timestamp_obj); // timestamp based off of liveseconds
+        double age = (timestamp - ball_estimate.timestamp);
         if (age < 0) {
             age = 0.0;
         }
@@ -125,7 +132,7 @@ void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
         // TODO timestamp is updated when copy from ball_new to ball
         // TODO ball_prev is not updated, it seems - stays at 0
         // calculate ball position at current time, based on position with timestamp ts and estimate of ball speed
-        double timeLeap = input.ts() - output.ball().timestamp();
+        double timeLeap = timestamp - google::protobuf::util::TimeUtil::TimestampToMilliseconds(output.ball().timestamp()) / 1000.0;
         // copy ball position to _now position
         output.mutable_ball_now()->CopyFrom(output.ball());
         if (timeLeap > 0) {
@@ -135,7 +142,7 @@ void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
             output.mutable_ball_now()->set_z(output.ball().z() + timeLeap * output.ball().vz()); // position X extrapolated
             output.mutable_ball_now()->set_confidence(
                     output.ball().confidence() * pow(params.confidence_decay(), timeLeap)); // degrade confidence for extrapolation based on timeLeap
-            output.mutable_ball_now()->set_timestamp(input.ts()); // timestamp for extrapolation is current time
+            output.mutable_ball_now()->CopyFrom(timestamp_obj); // timestamp for extrapolation is current time
         }
         state.mutable_ball()->CopyFrom(output.ball());
     }

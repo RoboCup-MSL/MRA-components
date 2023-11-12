@@ -12,7 +12,7 @@ static void copy_to_ball_candidate_struct(ball_candidate_t &r_bf,
 //    r_bf.distance = observed_ball_candidate.dist();
     r_bf.type = ball_type;
     r_bf.sigma = observed_ball_candidate.sigma();
-    r_bf.timestamp = observed_ball_candidate.timestamp();
+    r_bf.timestamp = google::protobuf::util::TimeUtil::TimestampToMilliseconds(observed_ball_candidate.timestamp()) / 1000.0;
     r_bf.initializeBallVelFlag = false;
     r_bf.initializeBallVel_x = 0.0;
     r_bf.initializeBallVel_y = 0.0;

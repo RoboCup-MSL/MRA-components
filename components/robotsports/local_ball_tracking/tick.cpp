@@ -43,7 +43,8 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick(google::pro
     }
 
     // now run sc_bm code
-    local_ball_tracking_sequence_clustering(nrBallsThisTime, ballData, input, params, output, state, MAXBALLS);
+    double timestamp_as_double = google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp) / 1000.0;
+    local_ball_tracking_sequence_clustering(timestamp_as_double, nrBallsThisTime, ballData,  input, params, output, state, MAXBALLS);
 
 
     return error_value;

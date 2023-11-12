@@ -5,7 +5,9 @@
 #include "RobotsportsLocalBallTracking.hpp"
 #include "sequence_clustering_balldef.hpp"
 
-void local_ball_tracking_sequence_clustering(   unsigned nrBallsThisTime,
+void local_ball_tracking_sequence_clustering(
+                            double timestamp,
+                            unsigned nrBallsThisTime,
                             const std::vector<ball_candidate_t>& ballData,
                             const MRA::RobotsportsLocalBallTracking::InputType &input,
                             const MRA::RobotsportsLocalBallTracking::ParamsType &params,

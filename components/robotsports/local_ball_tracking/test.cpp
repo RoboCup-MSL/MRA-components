@@ -116,7 +116,7 @@ public:
 			bf.set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_sv_sigma);
-			bf.set_timestamp(r_sample_data.rel_time);
+			bf.mutable_timestamp()->CopyFrom(google::protobuf::util::TimeUtil::MillisecondsToTimestamp(r_sample_data.rel_time * 1000.0));
 		    r_sample_data.frontcamera_candidates.push_back(bf);
 		}
 		if (dist_robot_to_ball < m_ov_range) {
@@ -128,7 +128,7 @@ public:
 			bf.set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_ov_sigma);
-			bf.set_timestamp(r_sample_data.rel_time);
+			bf.mutable_timestamp()->CopyFrom(google::protobuf::util::TimeUtil::MillisecondsToTimestamp(r_sample_data.rel_time * 1000.0));;
 		    r_sample_data.omni_candidates.push_back(bf);
 		}
 		return object_detected;
@@ -168,7 +168,7 @@ static void config_MRA_logger(std::string component)
     cfg.mutable_general()->set_maxfilesizemb(10.0);
     cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
     cfg.mutable_general()->set_hotflush(true);
-    cfg.mutable_general()->set_enabled(true);
+    cfg.mutable_general()->set_enabled(false);
     MRA::Logging::control::setConfiguration(cfg);
 }
 
@@ -179,7 +179,6 @@ RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenera
     auto state = RobotsportsLocalBallTracking::State();
     auto local = RobotsportsLocalBallTracking::Local();
     auto params = m.defaultParams();
-    google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
 	const TestInfo* test_info_ = ::testing::UnitTest::GetInstance()->current_test_info();
 	std::string testname = test_info_->name();
     std::string testsuitename = test_info_->test_case_name();
@@ -195,7 +194,7 @@ RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenera
 		    input.Clear();
 		    input.mutable_omnivision_balls()->Clear();
 		    MRA_LOG_INFO("time {\"time\": %6.4f}", data.rel_time);
-		    input.set_ts(data.rel_time);
+		    google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.rel_time * 1000);
 		    if (data.omni_candidates.size() > 0 || (data.frontcamera_candidates.size() > 0)) {
 		    	input.mutable_omnivision_balls()->Clear();
 		    	input.mutable_frontcamera_balls()->Clear();
@@ -226,160 +225,178 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
 	traject.set_front_camera(13.0, 110.0, 0.2, 25);
+	double traject_dist = 0.05;
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-   // std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
-	auto last_output = execute_ball_traject_test(traject, 0.05);
+	auto last_output = execute_ball_traject_test(traject, traject_dist);
     EXPECT_NEAR(last_output.ball().vx(), 2.0, 0.001); // check if final speed is reached: x direction
     EXPECT_NEAR(last_output.ball().vy(), 0.0, 0.001); // check if final speed is reached: y direction
 }
 
-#if 0
-TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
-{
-	auto traject = BallTrajectGenerator();
-	traject.set_ball_traject(6.0, -4.0, -2.0, 0);
-	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-
-	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-    config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
-}
-
-// Test shall run OK and return error_value 0.
-TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_plus)
-{
-	auto traject = BallTrajectGenerator();
-	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
-	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.25);
-	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-
-	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-    config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
-}
-
-// Test shall run OK and return error_value 0.
-TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_min)
-{
-	auto traject = BallTrajectGenerator();
-	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
-	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, -0.25);
-	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-
-	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-    config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
-}
-
-TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
-{
-	auto traject = BallTrajectGenerator();
-	traject.set_ball_traject(6.0, 4.0, -2.0, 0);
-	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-
-	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-    config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
-}
-
-
-// Test shall run OK and return error_value 0.
-TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
-{
-	auto traject = BallTrajectGenerator();
-	traject.set_ball_traject(-6.0, -4.0, 0.0, +2.0);
-	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	traject.set_omni_camera(6.0, 0.2, 15);
-	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-
-	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-	std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
-    config_MRA_logger(testsuitename + "_" + testname);
-	execute_ball_traject_test(traject, 12.0);
-}
-
-
-//// Basic tick shall run OK and return error_value 0.
-//TEST(RobotsportsLocalBallTrackingTest, basicTick)
+//TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
 //{
+//	auto traject = BallTrajectGenerator();
+//	traject.set_ball_traject(6.0, -4.0, -2.0, 0);
+//	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+//	traject.set_omni_camera(6.0, 0.2, 15);
+//	traject.set_front_camera(13.0, 110.0, 0.2, 25);
+//    double traject_dist = 1.0;
+//
 //	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-//    config_MRA_logger(testname);
-//    MRA_LOG_INFO("> %s", testname.c_str());
-//    MRA_TRACE_TEST_FUNCTION();
+//    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+//    config_MRA_logger(testsuitename + "_" + testname);
+//    auto last_output = execute_ball_traject_test(traject, traject_dist);
+//}
 //
-//    // Arrange
-//    auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
+
+//TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
+//{
+//    auto traject = BallTrajectGenerator();
+//    traject.set_ball_traject(6.0, -4.0, 2.0, 0);
+//    traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+//    traject.set_omni_camera(6.0, 0.2, 15);
+//    traject.set_front_camera(13.0, 110.0, 0.2, 25);
+//    double traject_dist = 1.0;
 //
-//    // Act
-//    int error_value = m.tick();
+//    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+//    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+//    config_MRA_logger(testsuitename + "_" + testname);
+//    auto last_output = execute_ball_traject_test(traject, traject_dist);
+//}
+
+//// Test shall run OK and return error_value 0.
+//TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_plus)
+//{
+//	auto traject = BallTrajectGenerator();
+//	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
+//	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.25);
+//	traject.set_omni_camera(6.0, 0.2, 15);
+//	traject.set_front_camera(13.0, 110.0, 0.2, 25);
+//    double traject_dist = 1.0;
 //
-//    // Assert
-//    EXPECT_EQ(error_value, 0);
-//    MRA_LOG_INFO("< %s", testname.c_str());
+//    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+//    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+//    config_MRA_logger(testsuitename + "_" + testname);
+//    auto last_output = execute_ball_traject_test(traject, traject_dist);
 //}
 //
 //// Test shall run OK and return error_value 0.
-//TEST(RobotsportsLocalBallTrackingTest, non_moving_ball_in_back_of_robot)
+//TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_min)
 //{
+//	auto traject = BallTrajectGenerator();
+//	traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
+//	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, -0.25);
+//	traject.set_omni_camera(6.0, 0.2, 15);
+//	traject.set_front_camera(13.0, 110.0, 0.2, 25);
+//
 //	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-//    config_MRA_logger(testname);
-//    MRA_TRACE_TEST_FUNCTION();
-//    MRA_LOG_INFO("> %s", testname.c_str());
-//    auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
-//    auto input = RobotsportsLocalBallTracking::Input();
-//    auto output = RobotsportsLocalBallTracking::Output();
-//    auto state = RobotsportsLocalBallTracking::State();
-//    auto local = RobotsportsLocalBallTracking::Local();
-//    auto params = m.defaultParams();
-//    google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
+//	    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+//
+//    config_MRA_logger(testsuitename + "_" + testname);
+//	execute_ball_traject_test(traject, 12.0);
+//}
+//
+//TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
+//{
+//	auto traject = BallTrajectGenerator();
+//	traject.set_ball_traject(6.0, 4.0, -2.0, 0);
+//	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+//	traject.set_omni_camera(6.0, 0.2, 15);
+//	traject.set_front_camera(13.0, 110.0, 0.2, 25);
+//
+//	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+//	    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+//
+//    config_MRA_logger(testsuitename + "_" + testname);
+//	execute_ball_traject_test(traject, 12.0);
+//}
 //
 //
-//    input.set_ts(1.0);
-//	auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
-//	bf.set_x(1.0);
-//	bf.set_y(2.0);
-//	bf.set_z(0.1);
-//	bf.set_confidence(0.8);
-//	bf.set_sigma(0.2);
-//	bf.set_dist(hypot(bf.x(), bf.y()));
-//    input.mutable_omnivision_balls()->Add()->CopyFrom(bf);;
+//// Test shall run OK and return error_value 0.
+//TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
+//{
+//	auto traject = BallTrajectGenerator();
+//	traject.set_ball_traject(-6.0, -4.0, 0.0, +2.0);
+//	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+//	traject.set_omni_camera(6.0, 0.2, 15);
+//	traject.set_front_camera(13.0, 110.0, 0.2, 25);
 //
-//    // start in middle, expect turn to left
-//    std::string stateInStr = MRA::convert_proto_to_json_str(state);
-//    int error_value = m.tick(timestamp, input, params, state, output, local);
+//	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+//	    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
 //
-//	// second tick
-//    input.set_ts(1.1);
-//    input.mutable_omnivision_balls(0)->set_x(1.0);
-//    input.mutable_omnivision_balls(0)->set_y(2.0);
-//    input.mutable_omnivision_balls(0)->set_z(0.1);
-//    input.mutable_omnivision_balls(0)->set_confidence(0.8);
-//    input.mutable_omnivision_balls(0)->set_sigma(0.2);
-//    input.mutable_omnivision_balls(0)->set_dist(hypot(bf.x(), bf.y()));
-//
-//    // start in middle, expect turn to left
-//    stateInStr = MRA::convert_proto_to_json_str(state);
-//    error_value = m.tick(timestamp, input, params, state, output, local);
-//
-//    // Asserts for turn from middle to left position
-//    EXPECT_EQ(error_value, 0);
-//    MRA_LOG_INFO("< %s", testname.c_str());
+//    config_MRA_logger(testsuitename + "_" + testname);
+//	execute_ball_traject_test(traject, 12.0);
 //}
 
-#endif
+
+// Basic tick shall run OK and return error_value 0.
+TEST(RobotsportsLocalBallTrackingTest, basicTick)
+{
+	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    config_MRA_logger(testname);
+    MRA_LOG_INFO("> %s", testname.c_str());
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Arrange
+    auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
+
+    // Act
+    int error_value = m.tick();
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    MRA_LOG_INFO("< %s", testname.c_str());
+}
+
+//// Test shall run OK and return error_value 0.
+TEST(RobotsportsLocalBallTrackingTest, non_moving_ball_in_back_of_robot)
+{
+	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    config_MRA_logger(testname);
+    MRA_TRACE_TEST_FUNCTION();
+    MRA_LOG_INFO("> %s", testname.c_str());
+    auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
+    auto input = RobotsportsLocalBallTracking::Input();
+    auto output = RobotsportsLocalBallTracking::Output();
+    auto state = RobotsportsLocalBallTracking::State();
+    auto local = RobotsportsLocalBallTracking::Local();
+    auto params = m.defaultParams();
+
+    google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(1.0 * 1000);
+
+	auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
+	bf.set_x(1.0);
+	bf.set_y(2.0);
+	bf.set_z(0.1);
+	bf.set_confidence(0.8);
+	bf.set_sigma(0.2);
+	bf.mutable_timestamp()->CopyFrom(timestamp);
+    input.mutable_omnivision_balls()->Add()->CopyFrom(bf);
+
+    // start in middle, expect turn to left
+    std::string stateInStr = MRA::convert_proto_to_json_str(state);
+    int error_value = m.tick(timestamp, input, params, state, output, local);
+
+	// second tick
+    timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(1.1 * 1000);
+    input.mutable_omnivision_balls(0)->set_x(1.0);
+    input.mutable_omnivision_balls(0)->set_y(2.0);
+    input.mutable_omnivision_balls(0)->set_z(0.1);
+    input.mutable_omnivision_balls(0)->set_confidence(0.8);
+    input.mutable_omnivision_balls(0)->set_sigma(0.2);
+    input.mutable_omnivision_balls(0)->mutable_timestamp()->CopyFrom(timestamp);
+
+    // start in middle, expect turn to left
+    stateInStr = MRA::convert_proto_to_json_str(state);
+    error_value = m.tick(timestamp, input, params, state, output, local);
+
+    // Asserts for turn from middle to left position
+    EXPECT_EQ(error_value, 0);
+    MRA_LOG_INFO("< %s", testname.c_str());
+}
+
 
 int main(int argc, char **argv)
 {

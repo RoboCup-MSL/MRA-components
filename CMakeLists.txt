@@ -20,8 +20,8 @@ endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
 # dependency: opencv
-# include_directories(/usr/local/include/opencv4)
-include_directories(/usr/local)
+include_directories(/usr/include/opencv4)
+#include_directories(/usr/local)
 
 # dependency gtest 
 find_package(GTest)

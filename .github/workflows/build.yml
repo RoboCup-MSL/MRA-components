@@ -51,3 +51,25 @@ jobs:
     - name: Build and test with Cmake
       run: ./MRA-build.py -t --cmake
 
+  build_cmake:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up CMake
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+
+    - name: Create build folder
+      run: mkdir build
+
+    - name: Build and test with Cmake
+      run: ./MRA-build.py -t --cmake
+

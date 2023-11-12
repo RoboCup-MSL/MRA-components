@@ -162,13 +162,13 @@ static void config_MRA_logger(std::string component)
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
     cfg.set_folder("/home/jurge/log");
     cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::CRITICAL);
+    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
     cfg.mutable_general()->set_dumpticks(false);
     cfg.mutable_general()->set_maxlinesize(1000);
     cfg.mutable_general()->set_maxfilesizemb(10.0);
     cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
     cfg.mutable_general()->set_hotflush(true);
-    cfg.mutable_general()->set_enabled(false);
+    cfg.mutable_general()->set_enabled(true);
     MRA::Logging::control::setConfiguration(cfg);
 }
 
@@ -243,15 +243,13 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
 	traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	traject.set_omni_camera(6.0, 0.2, 15);
 	traject.set_front_camera(13.0, 110.0, 0.2, 25);
-    double traject_dist = 1.0;
+    double traject_dist = 12.0;
 
 	std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
     std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
-
-
 TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
 {
     auto traject = BallTrajectGenerator();
@@ -259,7 +257,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     traject.set_omni_camera(6.0, 0.2, 15);
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
-    double traject_dist = 1.0;
+    double traject_dist = 12.0;
 
     std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
     std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();

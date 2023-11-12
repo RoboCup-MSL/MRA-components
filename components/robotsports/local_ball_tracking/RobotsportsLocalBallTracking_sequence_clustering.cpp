@@ -142,7 +142,7 @@ void local_ball_tracking_sequence_clustering(
             output.mutable_ball_now()->set_z(output.ball().z() + timeLeap * output.ball().vz()); // position X extrapolated
             output.mutable_ball_now()->set_confidence(
                     output.ball().confidence() * pow(params.confidence_decay(), timeLeap)); // degrade confidence for extrapolation based on timeLeap
-            output.mutable_ball_now()->CopyFrom(timestamp_obj); // timestamp for extrapolation is current time
+            output.mutable_ball_now()->mutable_timestamp()->CopyFrom(timestamp_obj); // timestamp for extrapolation is current time
         }
         state.mutable_ball()->CopyFrom(output.ball());
     }

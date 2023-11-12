@@ -145,9 +145,11 @@ static int fbuf_add(hypothesis *phyp, const ball_candidate_t& pbfeat, sc_global_
 static int fbuf_cleanup(hypothesis *phyp, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     int idx1, idx2;
 
-    idx1 = phyp->fbuf_idx - 1;
-    if (idx1 < 0) {
+    if (phyp->fbuf_idx ==  0) {
         idx1 = params.max_features_buffer() - 1;
+    }
+    else {
+        idx1 = phyp->fbuf_idx - 1;
     }
 
     idx2 = idx1 - 1;
@@ -1131,11 +1133,15 @@ int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<bal
         MRA_LOG_DEBUG("-> No ball.");
     }
 
+
     /* return result in ball_estimate */
-    idx = pscgd->hyp[i_mape].fbuf_idx - 1;
-    if (idx < 0) {
+    if (pscgd->hyp[i_mape].fbuf_idx == 0) {
         idx = params.max_features_buffer() - 1;
     }
+    else {
+        idx = pscgd->hyp[i_mape].fbuf_idx - 1;
+    }
+
     pball->x = pscgd->hyp[i_mape].fbuf.x[idx]; /* the most recent feature */
     pball->y = pscgd->hyp[i_mape].fbuf.y[idx];
     pball->xhat = pscgd->hyp[i_mape].obs.xh[0];

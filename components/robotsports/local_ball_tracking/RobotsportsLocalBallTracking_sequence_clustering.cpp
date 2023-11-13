@@ -49,7 +49,7 @@ static int init_hyp(hypothesis* p_phyp) {
     /* initialize hypotheses */
     for (int i = 0; i < MAXHYP; i++) {
         (p_phyp + i)->ball_detected = false;
-        (p_phyp + i)->p = 1.0;
+        (p_phyp + i)->probability = 1.0;
         ma_init(*(p_phyp + i));
         fbuf_init(*(p_phyp + i));
     }

@@ -13,23 +13,12 @@
 
 typedef struct tag_ball_observer {
 	double xh[6]; /* state estimate: x, xdot, y, ydot, z, zdot */
-	double tupd; /* time of last update */
+	double time_last_update; /* time of last update */
 	balltype_e label; /* type of last added feature */
-	int dupd; /* update flag, 0 = no update required, 1 = associate object with new feature */
+	ball_update_e ball_update; /* update flag, 0 = no update required, 1 = associate object with new feature */
 	double time; /* time of current state estimate */
 	int uid; /* uid set at creation */
 } ball_observer;
-
-typedef struct tag_history_t {
-	double t;
-	double x[6];
-	int association_flag;
-	ball_candidate_t bfeat;
-	double p_prior;
-	double p_prediction;
-	double p_likelihood;
-	double p_posterior;
-} history_t;
 
 typedef struct tag_featbuf_t {
 	double timestamp[MAXFEATBUF];
@@ -44,18 +33,13 @@ typedef struct tag_featbuf_t {
 typedef struct tag_hypothesis {
 	ball_observer obs; /* observer representing the detected ball according to this hypothesis */
 	bool ball_detected;
-	double p; /* probability of this hypothesis */
+	double probability; /* probability of this hypothesis */
 	associate_e association_flag; /* association of last feature (ASSOCIATE_WITH_CLUTTER or ASSOCIATE_WITH_BALL) */
 	double ma_buf[MA_N + 1]; /* MA confidence filter */
 	double mavg;
 	int ma_idx;
 	int ma_first;
 	unsigned updated_in_timestep;
-/*
-	history_t hist[MAXHIST];
-	int hist_idx;
-	int hist_full;
-*/
 	featbuf_t fbuf;
 	unsigned fbuf_idx;
 	unsigned nfbuf; /* number of valid features in buffer, start at 0 */

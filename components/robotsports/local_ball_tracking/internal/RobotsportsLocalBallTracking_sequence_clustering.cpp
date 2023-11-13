@@ -1,5 +1,3 @@
-
-// generated protobuf types from interface of this component
 #include "RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include "RobotsportsLocalBallTracking_preprocessing.hpp"
 #include "sequence_clustering_best_uid.hpp"
@@ -31,8 +29,8 @@ void local_ball_tracking_sequence_clustering(
     ball_estimate_t ball_estimate;
     int use_next_best_ball = 0; // if 1, then go to next best ball
 
-    int ret = sequence_clustering_track_ball(ball_estimate, ballData, timestamp, use_next_best_ball, pscgd, params, max_num_balls);
-    if (ret == BM_SUCCESS) {
+    sc_result_e ret = sequence_clustering_track_ball(ball_estimate, ballData, timestamp, use_next_best_ball, pscgd, params, max_num_balls);
+    if (ret == SC_SUCCESS) {
         // update ball position in world model since a successful step has been done
 
         // update previous ball

@@ -16,12 +16,15 @@ typedef enum {
 #define MA_N                    20              /* number of samples in MA confidence */
 #define MAXFEATBUF              60              /* maximum number of stored features in a hypothesis */
 
-const int BM_SUCCESS              =  0;              /* success */
-const int BM_ERROR_MAXHYP         = -1;              /* MAXHYP exceeded */
-const int BM_ERROR_NORM           = -2;              /* normalization error */
-const int BM_ERROR_NO_HYP         = -3;              /* no hypotheses */
-const int BM_ASSOCIATION_ERROR    = -4;              /* association not allowed */
-const int BM_FIT_ERROR            = -5;              /* fit not possible */
+typedef enum sc_result {
+    SC_SUCCESS           =  0, /* success */
+    SC_ERROR_MAXHYP      = -1, /* MAXHYP exceeded */
+    SC_ERROR_NORM        = -2, /* normalization error */
+    SC_ERROR_NO_HYP      = -3, /* no hypotheses */
+    SC_ASSOCIATION_ERROR = -4, /* association not allowed */
+    SC_FIT_ERROR         = -5, /* fit not possible */
+    SC_UID_ERROR         = -6, /* uid adminstration issue */
+} sc_result_e;
 
 typedef struct tag_ball_observer {
 	double        xh[6]; /* state estimate: x, xdot, y, ydot, z, zdot */
@@ -71,9 +74,9 @@ typedef struct tag_sc_global_data {
 } sc_global_data_t;
 
 // the following are external functions
-int sequence_clustering_initialize(sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params);
+sc_result_e sequence_clustering_initialize(sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params);
 
-int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params,
+sc_result_e sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params,
         const unsigned max_num_balls);
 
 #endif  // SEQ_CLUSTERING_BALL_MODEL_INCLUDE

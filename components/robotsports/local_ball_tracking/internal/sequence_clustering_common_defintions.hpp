@@ -18,15 +18,6 @@ typedef enum ball_update_e {
         BU_DONE
 } ball_update_e;
 
-/* DEFINITION OF BALL INFORMATION IN BALLSHARED.H */
-/* mergedBall_xyz_xyzdot contains the ball from the turtles own tracker, extrapolated to the current time.
- * seeBall is one if a all candidate is found very recently ( about 50 ms )
- * confidence of the merged ball is the confidence of the ball from the tracker. 
- * This confidence will go to zero if no ball is added to the tracker for 1 second
- * usedBallTurtleID contains the turtleID of the used ball in the software. When you want to know which ball is used
- * in the software of a given robot, this value has to be checked. By checking this variable, one can also
- * see if a communicated ball is used or the ball seen by the turtle itself */
-
 /* struct definition of ball candidate */
 typedef struct tag_ball_candidate_t {
         double x;                       /* x-position */

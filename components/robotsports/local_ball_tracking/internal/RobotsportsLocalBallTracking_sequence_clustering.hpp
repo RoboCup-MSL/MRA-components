@@ -1,7 +1,6 @@
 #ifndef MRA_ROBOTSPORTS_LOCAL_BALL_TRACKING_SEQUENCE_CLUSTERING_HPP
 #define MRA_ROBOTSPORTS_LOCAL_BALL_TRACKING_SEQUENCE_CLUSTERING_HPP
 
-// generated protobuf types from interface of this component
 #include "../RobotsportsLocalBallTracking_datatypes.hpp"
 #include "sequence_clustering_track_ball.hpp"
 

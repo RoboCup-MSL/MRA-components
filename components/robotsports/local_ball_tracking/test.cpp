@@ -21,6 +21,23 @@ using namespace ::testing;
 using namespace MRA;
 using namespace std;
 
+static void config_MRA_logger(std::string component)
+{
+//    auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
+//    //    cfg.set_folder("xxxx");
+//    cfg.mutable_general()->set_component(component.c_str());
+//    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
+//    cfg.mutable_general()->set_dumpticks(false);
+//    cfg.mutable_general()->set_maxlinesize(1000);
+//    cfg.mutable_general()->set_maxfilesizemb(10.0);
+//    cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
+//    cfg.mutable_general()->set_hotflush(true);
+//    cfg.mutable_general()->set_enabled(false);
+//    MRA::Logging::control::setConfiguration(cfg);
+}
+
+
+
 class BallTrajectData
 {
 public:
@@ -157,20 +174,6 @@ public:
 		int m_nr_samples;
 };
 
-static void config_MRA_logger(std::string component)
-{
-    auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
-    //    cfg.set_folder("xxxx");
-    cfg.mutable_general()->set_component(component.c_str());
-    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
-    cfg.mutable_general()->set_dumpticks(false);
-    cfg.mutable_general()->set_maxlinesize(1000);
-    cfg.mutable_general()->set_maxfilesizemb(10.0);
-    cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
-    cfg.mutable_general()->set_hotflush(true);
-    cfg.mutable_general()->set_enabled(false);
-    MRA::Logging::control::setConfiguration(cfg);
-}
 
 RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenerator traject_generator, double distance)
 {

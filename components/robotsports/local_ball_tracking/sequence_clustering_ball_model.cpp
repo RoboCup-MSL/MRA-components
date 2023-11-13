@@ -46,11 +46,11 @@
 static int generate_offspring(const ball_candidate_t& pbfeat, sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 
 static int fbuf_print(hypothesis& r_hypothesis);
-static int fbuf_init(hypothesis& phyp);
+static int fbuf_init(hypothesis& r_hypothesis);
 static int fbuf_add(hypothesis& r_hypothesis, const ball_candidate_t& pbfeat, sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static void swap_index(int i, int j, int *idx);
-static void isort_descending(int *idx, double *iarr, int size);
-static void isort_ascending(int *idx, double *iarr, int size);
+static void isort_descending(int *idx, double *iarr, unsigned size);
+static void isort_ascending(int *idx, double *iarr, unsigned size);
 static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static int likelihood_update(const ball_candidate_t& pbfeat, sc_global_data& r_global_data);
 static int normalization(sc_global_data& r_global_data);
@@ -142,14 +142,14 @@ static int fbuf_add(hypothesis& r_hypothesis, const ball_candidate_t& pbfeat, sc
     return BM_SUCCESS;
 }
 
-static int fbuf_cleanup(hypothesis *phyp, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+static int fbuf_cleanup(hypothesis& r_hypothesis, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     int idx1, idx2;
 
-    if (phyp->fbuf_idx ==  0) {
+    if (r_hypothesis.fbuf_idx ==  0) {
         idx1 = params.max_features_buffer() - 1;
     }
     else {
-        idx1 = phyp->fbuf_idx - 1;
+        idx1 = r_hypothesis.fbuf_idx - 1;
     }
 
     idx2 = idx1 - 1;
@@ -157,54 +157,54 @@ static int fbuf_cleanup(hypothesis *phyp, MRA::RobotsportsLocalBallTracking::Par
         idx2 = params.max_features_buffer() - 1;
     }
 
-    if (phyp->fbuf.exp_time[idx1] > phyp->fbuf.exp_time[idx2]) {
+    if (r_hypothesis.fbuf.exp_time[idx1] > r_hypothesis.fbuf.exp_time[idx2]) {
         /* transition from short to long expiration time */
         for (unsigned i = 0; i < params.max_features_buffer(); i++) {
-            if (phyp->fbuf.timestamp[i] < (phyp->fbuf.timestamp[idx1] - phyp->fbuf.exp_time[idx2])) {
-                phyp->fbuf.timestamp[i] -= phyp->fbuf.exp_time[idx1];
+            if (r_hypothesis.fbuf.timestamp[i] < (r_hypothesis.fbuf.timestamp[idx1] - r_hypothesis.fbuf.exp_time[idx2])) {
+                r_hypothesis.fbuf.timestamp[i] -= r_hypothesis.fbuf.exp_time[idx1];
             }
         }
     }
     return BM_SUCCESS;
 }
 
-static int ma_init(hypothesis *phyp) {
+static int ma_init(hypothesis& r_hypothesis) {
     int i;
 
-    phyp->ma_first = 1;
+    r_hypothesis.ma_first = 1;
 
-    phyp->ma_idx = MA_N;
-    if (phyp->ma_idx >= MA_N + 1) {
-        phyp->ma_idx = phyp->ma_idx - (MA_N + 1);
+    r_hypothesis.ma_idx = MA_N;
+    if (r_hypothesis.ma_idx >= MA_N + 1) {
+        r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
     }
 
     /* initialize buffer */
     for (i = 0; i < MA_N + 1; i++) {
-        phyp->ma_buf[i] = 0.01;
+        r_hypothesis.ma_buf[i] = 0.01;
     }
 
-    phyp->mavg = 0.01;
+    r_hypothesis.mavg = 0.01;
 
     return BM_SUCCESS;
 }
 
-static int ma_add(double val, hypothesis *phyp) {
+static int ma_add(double val, hypothesis& r_hypothesis) {
     /* store val in buffer */
-    phyp->ma_buf[phyp->ma_idx] = val;
+    r_hypothesis.ma_buf[r_hypothesis.ma_idx] = val;
 
     /* next index */
-    phyp->ma_idx++;
-    if (phyp->ma_idx >= MA_N + 1) {
-        phyp->ma_idx = phyp->ma_idx - (MA_N + 1);
+    r_hypothesis.ma_idx++;
+    if (r_hypothesis.ma_idx >= MA_N + 1) {
+        r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
     }
 
     return BM_SUCCESS;
 }
 
-static double ma_get(hypothesis *phyp) {
+static double ma_get(hypothesis & r_hypothesis) {
     int idx1, idx2;
 
-    idx1 = phyp->ma_idx - 1;
+    idx1 = r_hypothesis.ma_idx - 1;
     if (idx1 < 0) {
         idx1 += MA_N + 1;
     }
@@ -214,9 +214,9 @@ static double ma_get(hypothesis *phyp) {
         idx2 += MA_N + 1;
     }
 
-    phyp->mavg += (phyp->ma_buf[idx1] - phyp->ma_buf[idx2]) / MA_N;
+    r_hypothesis.mavg += (r_hypothesis.ma_buf[idx1] - r_hypothesis.ma_buf[idx2]) / MA_N;
 
-    return phyp->mavg;
+    return r_hypothesis.mavg;
 }
 
 static int fit_line_xy(double *theta, double *val, double *timestamp, double *sigma, int *idx, unsigned n, double *exp_time,
@@ -355,8 +355,8 @@ static void swap_index(int i, int j, int *idx) {
     idx[j] = idx_bak;
 }
 
-static void isort_descending(int *idx, double *iarr, int size) {
-    int i, j;
+static void isort_descending(int *idx, double *iarr, unsigned size) {
+    unsigned i, j;
 
     for (i = 0; i < size; i++) {
         idx[i] = i;
@@ -370,8 +370,8 @@ static void isort_descending(int *idx, double *iarr, int size) {
     }
 }
 
-static void isort_ascending(int *idx, double *iarr, int size) {
-    int i, j;
+static void isort_ascending(int *idx, double *iarr, unsigned size) {
+    unsigned i, j;
 
     for (i = 0; i < size; i++) {
         idx[i] = i;
@@ -386,27 +386,27 @@ static void isort_ascending(int *idx, double *iarr, int size) {
     }
 }
 
-int seq_clustering_print_hypothesis(hypothesis *phyp, int i) {
+int seq_clustering_print_hypothesis(hypothesis& r_hypothesis, int i) {
     /* print hypothesis to screen */
 
     MRA_LOG_DEBUG("Hypothesis: %d", i);
-    if (phyp->ball_detected) {
-        MRA_LOG_DEBUG("   Uid = %d (ball detected)", phyp->obs.uid);
-        MRA_LOG_DEBUG("   Ball at (%f, %f, %f)", phyp->obs.xh[0], phyp->obs.xh[2], phyp->obs.xh[4]);
-        MRA_LOG_DEBUG("   Type = %d", phyp->obs.label);
-        MRA_LOG_DEBUG("   time_last_update = %f", phyp->obs.time_last_update);
-        if (phyp->obs.ball_update == BU_TODO) {
+    if (r_hypothesis.ball_detected) {
+        MRA_LOG_DEBUG("   Uid = %d (ball detected)", r_hypothesis.obs.uid);
+        MRA_LOG_DEBUG("   Ball at (%f, %f, %f)", r_hypothesis.obs.xh[0], r_hypothesis.obs.xh[2], r_hypothesis.obs.xh[4]);
+        MRA_LOG_DEBUG("   Type = %d", r_hypothesis.obs.label);
+        MRA_LOG_DEBUG("   time_last_update = %f", r_hypothesis.obs.time_last_update);
+        if (r_hypothesis.obs.ball_update == BU_TODO) {
             MRA_LOG_DEBUG("   Ball will be updated.");
         }
-        MRA_LOG_DEBUG("   Association flag = %d.", phyp->association_flag);
-        MRA_LOG_DEBUG("   Time = %f", phyp->obs.time);
+        MRA_LOG_DEBUG("   Association flag = %d.", r_hypothesis.association_flag);
+        MRA_LOG_DEBUG("   Time = %f", r_hypothesis.obs.time);
     }
     else {
         MRA_LOG_DEBUG("   No ball.");
     }
 
-    MRA_LOG_DEBUG("   Probability = %f", phyp->probability);
-    MRA_LOG_DEBUG("   Confidence  = %f", phyp->mavg);
+    MRA_LOG_DEBUG("   Probability = %f", r_hypothesis.probability);
+    MRA_LOG_DEBUG("   Confidence  = %f", r_hypothesis.mavg);
 
     return BM_SUCCESS;
 }
@@ -414,7 +414,7 @@ int seq_clustering_print_hypothesis(hypothesis *phyp, int i) {
 int seq_clustering_print_hypotheses(sc_global_data& r_global_data) {
     /* print overview to screen */
     for (unsigned i = 0; i < r_global_data.nhyp; i++) {
-        seq_clustering_print_hypothesis(&(r_global_data.hyp[i]), i);
+        seq_clustering_print_hypothesis(r_global_data.hyp[i], i);
     }
     return BM_SUCCESS;
 }
@@ -432,13 +432,13 @@ static int associate_with_existing_ball(int i, int j, const ball_candidate_t& pb
     /* add feature to buffer */
     fbuf_add(r_global_data.hyp2[j], pbfeat, r_global_data, params);
 
-    fbuf_cleanup(&(r_global_data.hyp2[j]), params);
+    fbuf_cleanup(r_global_data.hyp2[j], params);
 
     /* add feature conf to MA filter */
-    ma_add(pbfeat.confidence, &(r_global_data.hyp2[j]));
+    ma_add(pbfeat.confidence, r_global_data.hyp2[j]);
 
     /* MA confidence filter */
-    ma_get(&(r_global_data.hyp2[j]));
+    ma_get(r_global_data.hyp2[j]);
 
     /* update probability of hypothesis with prediction model */
     pexist = params.alpha() / 3.0;
@@ -475,16 +475,16 @@ static int associate_with_new_ball(int i, unsigned j, const ball_candidate_t& pb
     /* add feature to buffer */
     fbuf_add(r_global_data.hyp2[j], pbfeat, r_global_data, params);
 
-    fbuf_cleanup(&(r_global_data.hyp2[j]), params);
+    fbuf_cleanup(r_global_data.hyp2[j], params);
 
     /* clear moving average for new ball */
-    ma_init(&(r_global_data.hyp2[j]));
+    ma_init(r_global_data.hyp2[j]);
 
     /* add feature conf to MA filter */
-    ma_add(pbfeat.confidence, &(r_global_data.hyp2[j]));
+    ma_add(pbfeat.confidence, r_global_data.hyp2[j]);
 
     /* MA confidence filter */
-    ma_get(&(r_global_data.hyp2[j]));
+    ma_get(r_global_data.hyp2[j]);
 
     r_global_data.hyp2[j].ball_detected = true; /* we have a new ball... */
 
@@ -632,7 +632,7 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_
                     bfeat_reconstructed.y = pbfeat.y - n * deltat * r_global_data.vy0;
                     fbuf_add(r_global_data.hyp[i], bfeat_reconstructed, r_global_data, params);
                 }
-                fbuf_cleanup(&(r_global_data.hyp[i]), params);
+                fbuf_cleanup(r_global_data.hyp[i], params);
             }
 
             /* sort stored features */

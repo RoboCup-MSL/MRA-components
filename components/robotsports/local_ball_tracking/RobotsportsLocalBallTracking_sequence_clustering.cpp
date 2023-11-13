@@ -98,7 +98,7 @@ void local_ball_tracking_sequence_clustering(
     ball_estimate_t ball_estimate;
     int use_next_best_ball = 0; // if 1, then go to next best ball
 
-    int ret = sequence_clustering_ball_model(&ball_estimate, ballData, timestamp, use_next_best_ball, &pscgd, params, max_num_balls);
+    int ret = sequence_clustering_ball_model(&ball_estimate, ballData, timestamp, use_next_best_ball, pscgd, params, max_num_balls);
     if (ret == BM_SUCCESS) {
         // update ball position in world model since a successful step has been done
 

@@ -3,13 +3,16 @@
 == Summary
 
 LocalBallTracking is an component that tracks the ball position based on measurements from local sensors 
-(omnivision and stereo vision).
+(omnivision and frontcamera). 
 
 == Scope and context
 
-This variant is RobotSport variant of local ball tracking.
-Heavily inspired by ball tracking algorithm of TechUnited.
+This variant is RobotSport variant of local ball tracking. 
+The original code is written by: Rene van de Molengraft (TechUnited), March, 2008
 
+The code is limited to track the ball with ball candidates from an omnivision-camera and frontcamera. 
+Extending to other types of measurement is prepared (e.g. Lidar).
+ 
 == Interface details
 
 * **purpose**: track the ball with local sensors
@@ -27,9 +30,56 @@ link:./interface/DefaultParams.json[DefaultParams.json].
 
 == Design
 
-Calculate location of the ball based on the measurements (TODO)
+Calculate location of the ball based on the measurements
+
+Component consist of two steps:
+
+* <<Preprocessing>>
+* <<Sequential Clustering algorithm>>
+
+Note: The component has own internal state data administration and does not store it a protobuf state structure.
+It is not following the MSL Reference Architecture as intended. 
+
+=== Preprocessing
+In this step the provided measured ball candidates are filtered. 
+Only the best ball candidates remain.
+
+Currently if there are front camera ball candidates, then the ball candidates from omnivision are not provided to the <<Sequential Clustering algorithm>>
+
+=== Sequential Clustering algorithm
+
+Inspired by Schubert & Sidenblath, Sequential clustering with particle filters - Estimating the number of clusters from data, Proc. 8th Int. Conf. Information Fusion, 2005
+
+Instead of using a particle filter, a discrete filter to the set of hypotheses is applies, which is of itself already a discrete stochast.
+
+As the ball is likely to move,  a constant-velocity model-based Kalman filter is used to estimate the state of the ball.
+
+== Testing
+The component has several tests to validate the working of the component.
+A basic ball trajectory generator provides input data for tests.
+Currently simple linear ball paths are tested.
+
+The trajectory generator can be extended to (future work):
+
+* add noise on measurement (simulating measurement noise)
+* add noise on own position (simulating self-localisation noise)
+* add multiple ball candidates (simulating fake balls or ball furhter away)
+* add ball velocity increasing (pass, kick) or decreasing (ball bounced or catched) 
+
+== Visualizing ball tracking
+The output of the algorithm can be visualized with some simple plots.  
+(future work)
+
 
 == History
 
-Created by Robotsports. Started with copy of TechUnited's ball tracking algorithm
+Used by Robotsports since 2013, started as a copy of TechUnited's ball tracking algorithm
+
+* March, 19th, 2008, added bound checking and error handling
+* February, 13th, 2009, adapted for sorted measurements with varying time interval in between (kalman_update) added object labeling on creation of new object
+* May, 8th, 2011, adapted for ball model
+* May, 13th, 2011, assume a single ball; removed all book keeping for multiple objects
+* June, 26th, 2011, exchanged recursive Kalman filter for batch-wise least-squares estimator (integral formulation)
+* May, 20th, 2012, smooth free/non-free transition and kick-aware speed estimation
+
  

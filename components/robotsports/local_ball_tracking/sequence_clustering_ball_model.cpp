@@ -967,7 +967,7 @@ static int mape(sc_global_data& r_global_data) {
     return i_mape;
 }
 
-int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext,
+int sequence_clustering_ball_model(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext,
         sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params, const unsigned max_num_balls)
 {
 
@@ -977,7 +977,7 @@ int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<bal
      inext     - if 1, then go to next best ball
      r_global_data     - pointer to global workspace
 
-     outputs: pball     - ball estimate (x, y, z, xdot, ydot, zdot, hconf, isUpd, label, timestamp), x, y are last feature
+     outputs: const ball_estimate_t& ball_estimates     - ball estimate (x, y, z, xdot, ydot, zdot, hconf, isUpd, label, timestamp), x, y are last feature
      pball2    - ball estimate, x,y are estimates
      */
     unsigned n, i, j, i_mape, iret, idx;
@@ -1115,42 +1115,42 @@ int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<bal
         idx = r_global_data.hyp[i_mape].fbuf_idx - 1;
     }
 
-    pball->x = r_global_data.hyp[i_mape].fbuf.x[idx]; /* the most recent feature */
-    pball->y = r_global_data.hyp[i_mape].fbuf.y[idx];
-    pball->xhat = r_global_data.hyp[i_mape].obs.xh[0];
-    pball->yhat = r_global_data.hyp[i_mape].obs.xh[2];
+    r_ball_estimates.x = r_global_data.hyp[i_mape].fbuf.x[idx]; /* the most recent feature */
+    r_ball_estimates.y = r_global_data.hyp[i_mape].fbuf.y[idx];
+    r_ball_estimates.xhat = r_global_data.hyp[i_mape].obs.xh[0];
+    r_ball_estimates.yhat = r_global_data.hyp[i_mape].obs.xh[2];
 
-    pball->z = r_global_data.hyp[i_mape].obs.xh[4];
-    pball->xdot = r_global_data.hyp[i_mape].obs.xh[1];
-    pball->ydot = r_global_data.hyp[i_mape].obs.xh[3];
-    pball->zdot = r_global_data.hyp[i_mape].obs.xh[5];
+    r_ball_estimates.z = r_global_data.hyp[i_mape].obs.xh[4];
+    r_ball_estimates.xdot = r_global_data.hyp[i_mape].obs.xh[1];
+    r_ball_estimates.ydot = r_global_data.hyp[i_mape].obs.xh[3];
+    r_ball_estimates.zdot = r_global_data.hyp[i_mape].obs.xh[5];
 
     /* apply ball velocity clipping */
-    vel = hypot(pball->xdot, pball->ydot);
+    vel = hypot(r_ball_estimates.xdot, r_ball_estimates.ydot);
 
-    MRA_LOG_DEBUG("xdot = %f, ydot = %f, vel = %f", pball->xdot, pball->ydot, vel);
+    MRA_LOG_DEBUG("xdot = %f, ydot = %f, vel = %f", r_ball_estimates.xdot, r_ball_estimates.ydot, vel);
     if (vel < params.velocity_ball_clip_lower()) {
-        pball->xdot = 0.0; /* set velocity to zero */
-        pball->ydot = 0.0;
+        r_ball_estimates.xdot = 0.0; /* set velocity to zero */
+        r_ball_estimates.ydot = 0.0;
     }
     if (vel > params.velocity_ball_clip_upper()) {
         alpha = params.velocity_ball_clip_upper() / vel; /* scale velocity to match maximum */
-        pball->xdot *= alpha;
-        pball->ydot *= alpha;
+        r_ball_estimates.xdot *= alpha;
+        r_ball_estimates.ydot *= alpha;
     }
 
     if (r_global_data.hyp[i_mape].ball_detected) {
-        pball->hconf = r_global_data.hyp[i_mape].mavg;
+        r_ball_estimates.hconf = r_global_data.hyp[i_mape].mavg;
     } else {
-        pball->hconf = 0.0;
+        r_ball_estimates.hconf = 0.0;
     }
 
-    pball->isUpd = r_global_data.hyp[i_mape].updated_in_timestep > 0;
-    MRA_LOG_DEBUG("Winning hypothesis updated_in_timestep = %d", pball->isUpd);
+    r_ball_estimates.isUpd = r_global_data.hyp[i_mape].updated_in_timestep > 0;
+    MRA_LOG_DEBUG("Winning hypothesis updated_in_timestep = %d", r_ball_estimates.isUpd);
 
-    pball->label = r_global_data.hyp[i_mape].obs.label;
+    r_ball_estimates.label = r_global_data.hyp[i_mape].obs.label;
 
-    pball->timestamp = r_global_data.hyp[i_mape].obs.time;
+    r_ball_estimates.timestamp = r_global_data.hyp[i_mape].obs.time;
 
     //        MRA_LOG_DEBUG("cputime = %d ms", (int) ((get_time() - t1) * 1000) );
 

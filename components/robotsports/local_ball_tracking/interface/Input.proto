@@ -8,8 +8,8 @@ import "datatypes/Pose.proto";
 message BallCandidate
 {
 	MRA.Datatypes.Pose measured_pose_fcs = 1; 
-    float confidence = 4;  // ball confidence [0..1] from sensor system (camera)
-    float sigma = 5; // ???? ==> variance on measured position
+    double confidence = 4;  // ball confidence [0..1] from sensor system (camera)
+    double sigma = 5; // ???? ==> variance on measured position
     google.protobuf.Timestamp timestamp = 6; // timestamp of observation 
 }
 

@@ -160,7 +160,7 @@ public:
 static void config_MRA_logger(std::string component)
 {
     auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
-    cfg.set_folder("/home/jurge/log");
+    //    cfg.set_folder("xxxx");
     cfg.mutable_general()->set_component(component.c_str());
     cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
     cfg.mutable_general()->set_dumpticks(false);
@@ -168,7 +168,7 @@ static void config_MRA_logger(std::string component)
     cfg.mutable_general()->set_maxfilesizemb(10.0);
     cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
     cfg.mutable_general()->set_hotflush(true);
-    cfg.mutable_general()->set_enabled(true);
+    cfg.mutable_general()->set_enabled(false);
     MRA::Logging::control::setConfiguration(cfg);
 }
 

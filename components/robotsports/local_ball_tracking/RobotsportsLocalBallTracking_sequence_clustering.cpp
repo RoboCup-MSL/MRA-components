@@ -2,75 +2,12 @@
 // generated protobuf types from interface of this component
 #include "RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include "RobotsportsLocalBallTracking_preprocessing.hpp"
-#include "sequence_clustering_ball_model.hpp"
 #include "sequence_clustering_balldef.hpp"
 #include "sequence_clustering_best_uid.hpp"
+#include "sequence_clustering_track_ball.hpp"
 
 static sc_global_data pscgd;
-static bool initialized = false;
 
-static int fbuf_init(hypothesis_t& r_hypothesis)
-{
-        /* clear feature buf */
-        memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
-
-        /* no valid features yet */
-        r_hypothesis.number_valid_buffers = 0;
-
-        /* start position in buffer */
-        r_hypothesis.fbuf_idx = 0;
-
-        return BM_SUCCESS;
-}
-
-static int ma_init(hypothesis_t& r_hypothesis)
-{
-        int i;
-
-        r_hypothesis.ma_first = 1;
-
-        r_hypothesis.ma_idx = MA_N;
-        if (r_hypothesis.ma_idx >= MA_N + 1) {
-            r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
-        }
-
-        /* initialize buffer */
-        for (i = 0; i < MA_N + 1; i++) {
-            r_hypothesis.ma_buf[i] = 0.01;
-        }
-
-        r_hypothesis.mavg = 0.01;
-
-        return BM_SUCCESS;
-}
-
-
-static int init_hyp(hypothesis_t hypothesises[MAXHYP]) {
-    /* initialize hypotheses */
-    for (int i = 0; i < MAXHYP; i++) {
-        hypothesises[i].ball_detected = false;
-        hypothesises[i].probability = 1.0;
-        ma_init(hypothesises[i]);
-        fbuf_init(hypothesises[i]);
-    }
-
-    return BM_SUCCESS;
-}
-
-static int initialize_tracking(MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
-    /* initial number of hypotheses */
-    pscgd.number_of_hypothesis = 1;
-
-    /* initialize hypotheses */
-    init_hyp(pscgd.hypothesis);
-    init_hyp(pscgd.hypothesis2);
-
-    pscgd.new_uid = 0;
-
-    pscgd.track_uid = INVALID_UID;
-
-    return BM_SUCCESS;
-}
 
 void local_ball_tracking_calculate_ball_now(const MRA::RobotsportsLocalBallTracking::InputType &input,
                                const MRA::RobotsportsLocalBallTracking::ParamsType &params,
@@ -89,16 +26,16 @@ void local_ball_tracking_sequence_clustering(
                             unsigned max_num_balls)
 {
 
-    if (not initialized) {
-        initialize_tracking(params);
-        initialized = true;
+    if (not state.is_initialized()) {
+        sequence_clustering_initialize(pscgd, params);
+        state.set_is_initialized(true);
     }
 
     // now run sc_bm code
     ball_estimate_t ball_estimate;
     int use_next_best_ball = 0; // if 1, then go to next best ball
 
-    int ret = sequence_clustering_ball_model(ball_estimate, ballData, timestamp, use_next_best_ball, pscgd, params, max_num_balls);
+    int ret = sequence_clustering_track_ball(ball_estimate, ballData, timestamp, use_next_best_ball, pscgd, params, max_num_balls);
     if (ret == BM_SUCCESS) {
         // update ball position in world model since a successful step has been done
 

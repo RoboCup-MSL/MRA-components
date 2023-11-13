@@ -25,6 +25,8 @@
  maxage clipping assumes system time (gettimeofday)
  */
 
+#include "sequence_clustering_track_ball.hpp"
+
 #include <cstring> // memcpy
 #include <cmath>
 #include "logging.hpp"
@@ -33,8 +35,6 @@
 #include "RobotsportsLocalBallTracking.hpp"
 
 #include "constants_ball_model.hpp"
-#include "sequence_clustering_ball_model.hpp"
-
 #include "sequence_clustering_best_uid.hpp"
 
 /* function declaration */
@@ -64,6 +64,55 @@ static int fbuf_print(hypothesis_t& r_hypothesis) {
     return BM_SUCCESS;
 }
 
+static int fbuf_init(hypothesis_t& r_hypothesis)
+{
+        /* clear feature buf */
+        memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
+
+        /* no valid features yet */
+        r_hypothesis.number_valid_buffers = 0;
+
+        /* start position in buffer */
+        r_hypothesis.fbuf_idx = 0;
+
+        return BM_SUCCESS;
+}
+
+static int ma_init(hypothesis_t& r_hypothesis)
+{
+        int i;
+
+        r_hypothesis.ma_first = 1;
+
+        r_hypothesis.ma_idx = MA_N;
+        if (r_hypothesis.ma_idx >= MA_N + 1) {
+            r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
+        }
+
+        /* initialize buffer */
+        for (i = 0; i < MA_N + 1; i++) {
+            r_hypothesis.ma_buf[i] = 0.01;
+        }
+
+        r_hypothesis.mavg = 0.01;
+
+        return BM_SUCCESS;
+}
+
+
+static int init_hyp(hypothesis_t hypothesises[MAXHYP]) {
+    /* initialize hypotheses */
+    for (int i = 0; i < MAXHYP; i++) {
+        hypothesises[i].ball_detected = false;
+        hypothesises[i].probability = 1.0;
+        ma_init(hypothesises[i]);
+        fbuf_init(hypothesises[i]);
+    }
+
+    return BM_SUCCESS;
+}
+
+
 
 static std::string BM_result_to_string(int result) {
     std::string result_string = "";
@@ -92,19 +141,6 @@ static std::string BM_result_to_string(int result) {
     }
 
     return result_string;
-}
-
-static int fbuf_init(hypothesis_t& r_hypothesis) {
-    /* clear feature buf */
-    memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
-
-    /* no valid features yet */
-    r_hypothesis.number_valid_buffers = 0;
-
-    /* start position in buffer */
-    r_hypothesis.fbuf_idx = 0;
-
-    return BM_SUCCESS;
 }
 
 static int fbuf_add(hypothesis_t& r_hypothesis, const ball_candidate_t& pbfeat, sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
@@ -160,26 +196,6 @@ static int fbuf_cleanup(hypothesis_t& r_hypothesis, MRA::RobotsportsLocalBallTra
             }
         }
     }
-    return BM_SUCCESS;
-}
-
-static int ma_init(hypothesis_t& r_hypothesis) {
-    int i;
-
-    r_hypothesis.ma_first = 1;
-
-    r_hypothesis.ma_idx = MA_N;
-    if (r_hypothesis.ma_idx >= MA_N + 1) {
-        r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
-    }
-
-    /* initialize buffer */
-    for (i = 0; i < MA_N + 1; i++) {
-        r_hypothesis.ma_buf[i] = 0.01;
-    }
-
-    r_hypothesis.mavg = 0.01;
-
     return BM_SUCCESS;
 }
 
@@ -958,7 +974,23 @@ static int mape(sc_global_data& r_global_data) {
     return i_mape;
 }
 
-int sequence_clustering_ball_model(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext,
+int sequence_clustering_initialize(sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+    /* initial number of hypotheses */
+    r_global_data.number_of_hypothesis = 1;
+
+    /* initialize hypotheses */
+    init_hyp(r_global_data.hypothesis);
+    init_hyp(r_global_data.hypothesis2);
+
+    r_global_data.new_uid = 0;
+
+    r_global_data.track_uid = INVALID_UID;
+
+    return BM_SUCCESS;
+}
+
+
+int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext,
         sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params, const unsigned max_num_balls)
 {
 

@@ -5,7 +5,7 @@ add_library(MRA-components-robotsports-local-ball-tracking
     tick.cpp
     RobotsportsLocalBallTracking_preprocessing.cpp
     RobotsportsLocalBallTracking_sequence_clustering.cpp
-    sequence_clustering_ball_model.cpp
+    sequence_clustering_track_ball.cpp
 	sequence_clustering_best_uid.cpp
 )
 target_include_directories(MRA-components-robotsports-local-ball-tracking PUBLIC

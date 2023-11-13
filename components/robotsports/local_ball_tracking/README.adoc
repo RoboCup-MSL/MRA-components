@@ -63,7 +63,8 @@ The trajectory generator can be extended to (future work):
 
 * add noise on measurement (simulating measurement noise)
 * add noise on own position (simulating self-localisation noise)
-* add multiple ball candidates (simulating fake balls or ball furhter away)
+* add camera offset (misalignment)
+* add multiple ball candidates (simulating fake balls or ball further away)
 * add ball velocity increasing (pass, kick) or decreasing (ball bounced or catched) 
 
 == Visualizing ball tracking

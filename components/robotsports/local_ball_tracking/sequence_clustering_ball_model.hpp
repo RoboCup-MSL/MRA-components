@@ -63,8 +63,10 @@ typedef struct tag_hypothesis {
 
 /* global data structure */
 typedef struct tag_sc_global_data {
-	hypothesis hyp[MAXHYP];
-	hypothesis hyp2[MAXHYP];
+//	std::vector<>hypothesis> hyp;
+//	std::vector<hypothesis> hyp2;
+    hypothesis hyp[MAXHYP];
+    hypothesis hyp2[MAXHYP];
 	unsigned nhyp;
 	int new_uid;
 	int track_uid; /* ball uid to keep track off */

@@ -45,9 +45,9 @@
 /* function declaration */
 static int generate_offspring(const ball_candidate_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 
-static int fbuf_print(hypothesis *phyp);
-static int fbuf_init(hypothesis *phyp);
-static int fbuf_add(hypothesis *phyp, const ball_candidate_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+static int fbuf_print(hypothesis& r_hypothesis);
+static int fbuf_init(hypothesis& phyp);
+static int fbuf_add(hypothesis& r_hypothesis, const ball_candidate_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 static void swap_index(int i, int j, int *idx);
 static void isort_descending(int *idx, double *iarr, int size);
 static void isort_ascending(int *idx, double *iarr, int size);
@@ -60,11 +60,11 @@ static int mape(sc_global_data *pscgd);
 // 2nd alpha defintion
 #define ALPHA 0.2
 
-static int fbuf_print(hypothesis *phyp) {
-    MRA_LOG_DEBUG("hypothesis %d has %d feature(s) in buffer:", phyp->obs.uid, phyp->nfbuf);
-    for (unsigned i = 0; i < phyp->nfbuf; i++) {
-        MRA_LOG_DEBUG("feature %d: t=%f, x=%f, y=%f, z=%f, sigma=%f", i, phyp->fbuf.timestamp[i], phyp->fbuf.x[i],
-                phyp->fbuf.y[i], phyp->fbuf.z[i], phyp->fbuf.sigma[i]);
+static int fbuf_print(hypothesis& r_hypothesis) {
+    MRA_LOG_DEBUG("hypothesis %d has %d feature(s) in buffer:", r_hypothesis.obs.uid, r_hypothesis.nfbuf);
+    for (unsigned i = 0; i < r_hypothesis.nfbuf; i++) {
+        MRA_LOG_DEBUG("feature %d: t=%f, x=%f, y=%f, z=%f, sigma=%f", i, r_hypothesis.fbuf.timestamp[i], r_hypothesis.fbuf.x[i],
+                r_hypothesis.fbuf.y[i], r_hypothesis.fbuf.z[i], r_hypothesis.fbuf.sigma[i]);
     }
     return BM_SUCCESS;
 }
@@ -99,46 +99,46 @@ static std::string BM_result_to_string(int result) {
     return result_string;
 }
 
-static int fbuf_init(hypothesis *phyp) {
+static int fbuf_init(hypothesis& r_hypothesis) {
     /* clear feature buf */
-    memset(&(phyp->fbuf), 0, sizeof(featbuf_t));
+    memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
 
     /* no valid features yet */
-    phyp->nfbuf = 0;
+    r_hypothesis.nfbuf = 0;
 
     /* start position in buffer */
-    phyp->fbuf_idx = 0;
+    r_hypothesis.fbuf_idx = 0;
 
     return BM_SUCCESS;
 }
 
-static int fbuf_add(hypothesis *phyp, const ball_candidate_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
-    phyp->fbuf.timestamp[phyp->fbuf_idx] = pbfeat.timestamp;
-    phyp->fbuf.x[phyp->fbuf_idx] = pbfeat.x;
-    phyp->fbuf.y[phyp->fbuf_idx] = pbfeat.y;
-    phyp->fbuf.z[phyp->fbuf_idx] = pbfeat.z;
-    phyp->fbuf.sigma[phyp->fbuf_idx] = pbfeat.sigma;
+static int fbuf_add(hypothesis& r_hypothesis, const ball_candidate_t& pbfeat, sc_global_data *pscgd, MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
+    r_hypothesis.fbuf.timestamp[r_hypothesis.fbuf_idx] = pbfeat.timestamp;
+    r_hypothesis.fbuf.x[r_hypothesis.fbuf_idx] = pbfeat.x;
+    r_hypothesis.fbuf.y[r_hypothesis.fbuf_idx] = pbfeat.y;
+    r_hypothesis.fbuf.z[r_hypothesis.fbuf_idx] = pbfeat.z;
+    r_hypothesis.fbuf.sigma[r_hypothesis.fbuf_idx] = pbfeat.sigma;
     /* set expiration time for feature */
     if (pbfeat.isFree) {
-        phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_free();
+        r_hypothesis.fbuf.exp_time[r_hypothesis.fbuf_idx] = params.exp_time_free();
     }
     else {
-        phyp->fbuf.exp_time[phyp->fbuf_idx] = params.exp_time_non_free();
+        r_hypothesis.fbuf.exp_time[r_hypothesis.fbuf_idx] = params.exp_time_non_free();
     }
-    phyp->fbuf.isFree[phyp->fbuf_idx] = pbfeat.isFree;
+    r_hypothesis.fbuf.isFree[r_hypothesis.fbuf_idx] = pbfeat.isFree;
 
-    if (phyp->nfbuf < params.max_features_buffer()) {
-        phyp->nfbuf++;
+    if (r_hypothesis.nfbuf < params.max_features_buffer()) {
+        r_hypothesis.nfbuf++;
     }
 
     /* to next position in ring buffer */
-    phyp->fbuf_idx++;
-    if (phyp->fbuf_idx >= params.max_features_buffer()) {
-        phyp->fbuf_idx = 0;
+    r_hypothesis.fbuf_idx++;
+    if (r_hypothesis.fbuf_idx >= params.max_features_buffer()) {
+        r_hypothesis.fbuf_idx = 0;
     }
 
 
-    fbuf_print(phyp);
+    fbuf_print(r_hypothesis);
     return BM_SUCCESS;
 }
 
@@ -430,7 +430,7 @@ static int associate_with_existing_ball(int i, int j, const ball_candidate_t& pb
     memcpy(&(pscgd->hyp2[j]), &(pscgd->hyp[i]), sizeof(hypothesis));
 
     /* add feature to buffer */
-    fbuf_add(&(pscgd->hyp2[j]), pbfeat, pscgd, params);
+    fbuf_add(pscgd->hyp2[j], pbfeat, pscgd, params);
 
     fbuf_cleanup(&(pscgd->hyp2[j]), params);
 
@@ -466,14 +466,14 @@ static int associate_with_new_ball(int i, unsigned j, const ball_candidate_t& pb
     memcpy(&(pscgd->hyp2[j]), &(pscgd->hyp[i]), sizeof(hypothesis));
 
     /* no valid features yet for new ball */
-    fbuf_init(&(pscgd->hyp2[j]));
+    fbuf_init(pscgd->hyp2[j]);
 
     /* assign unique label */
     pscgd->hyp2[j].obs.uid = pscgd->new_uid;
     pscgd->new_uid++; /* uid for next ball... */
 
     /* add feature to buffer */
-    fbuf_add(&(pscgd->hyp2[j]), pbfeat, pscgd, params);
+    fbuf_add(pscgd->hyp2[j], pbfeat, pscgd, params);
 
     fbuf_cleanup(&(pscgd->hyp2[j]), params);
 
@@ -622,7 +622,7 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data *ps
             if (pscgd->is_kicked) {
 
                 /* clear history for this hypothesis */
-                fbuf_init(&(pscgd->hyp[i]));
+                fbuf_init(pscgd->hyp[i]);
 
                 for (unsigned j = 0; j < params.mininum_number_of_features(); j++) {
                     /* add reconstructed features */
@@ -630,7 +630,7 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data *ps
                     bfeat_reconstructed.timestamp = pbfeat.timestamp - n * deltat;
                     bfeat_reconstructed.x = pbfeat.x - n * deltat * pscgd->vx0;
                     bfeat_reconstructed.y = pbfeat.y - n * deltat * pscgd->vy0;
-                    fbuf_add(&(pscgd->hyp[i]), bfeat_reconstructed, pscgd, params);
+                    fbuf_add(pscgd->hyp[i], bfeat_reconstructed, pscgd, params);
                 }
                 fbuf_cleanup(&(pscgd->hyp[i]), params);
             }
@@ -965,33 +965,6 @@ static int mape(sc_global_data *pscgd) {
         }
     }
     return i_mape;
-}
-
-static int sequence_clustering_init_hyp(hypothesis *phyp) {
-    /* initialize hypotheses */
-    for (int i = 0; i < MAXHYP; i++) {
-        (phyp + i)->ball_detected = false;
-        (phyp + i)->p = 1.0;
-        ma_init(phyp + i);
-        fbuf_init(phyp + i);
-    }
-
-    return BM_SUCCESS;
-}
-
-int init_seq_clustering(sc_global_data *pscgd) {
-    /* initial number of hypotheses */
-    pscgd->nhyp = 1;
-
-    /* initialize hypotheses */
-    sequence_clustering_init_hyp(pscgd->hyp);
-    sequence_clustering_init_hyp(pscgd->hyp2);
-
-    pscgd->new_uid = 0;
-
-    pscgd->track_uid = INVALID_UID;
-
-    return BM_SUCCESS;
 }
 
 int sequence_clustering_ball_model(ball_estimate_t *pball, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext,

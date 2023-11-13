@@ -9,37 +9,37 @@
 static sc_global_data pscgd;
 static bool initialized = false;
 
-static int fbuf_init(hypothesis* phyp)
+static int fbuf_init(hypothesis& r_hypothesis)
 {
         /* clear feature buf */
-        memset(&(phyp->fbuf), 0, sizeof(featbuf_t));
+        memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
 
         /* no valid features yet */
-        phyp->nfbuf = 0;
+        r_hypothesis.nfbuf = 0;
 
         /* start position in buffer */
-        phyp->fbuf_idx = 0;
+        r_hypothesis.fbuf_idx = 0;
 
         return BM_SUCCESS;
 }
 
-static int ma_init(hypothesis* phyp)
+static int ma_init(hypothesis& r_hypothesis)
 {
         int i;
 
-        phyp->ma_first = 1;
+        r_hypothesis.ma_first = 1;
 
-        phyp->ma_idx = MA_N;
-        if (phyp->ma_idx >= MA_N + 1) {
-                phyp->ma_idx = phyp->ma_idx - (MA_N + 1);
+        r_hypothesis.ma_idx = MA_N;
+        if (r_hypothesis.ma_idx >= MA_N + 1) {
+            r_hypothesis.ma_idx = r_hypothesis.ma_idx - (MA_N + 1);
         }
 
         /* initialize buffer */
         for (i = 0; i < MA_N + 1; i++) {
-               phyp->ma_buf[i] = 0.01;
+            r_hypothesis.ma_buf[i] = 0.01;
         }
 
-        phyp->mavg = 0.01;
+        r_hypothesis.mavg = 0.01;
 
         return BM_SUCCESS;
 }
@@ -50,8 +50,8 @@ static int init_hyp(hypothesis* p_phyp) {
     for (int i = 0; i < MAXHYP; i++) {
         (p_phyp + i)->ball_detected = false;
         (p_phyp + i)->p = 1.0;
-        ma_init(p_phyp + i);
-        fbuf_init(p_phyp + i);
+        ma_init(*(p_phyp + i));
+        fbuf_init(*(p_phyp + i));
     }
 
     return BM_SUCCESS;

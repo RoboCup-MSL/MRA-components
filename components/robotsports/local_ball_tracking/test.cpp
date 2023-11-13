@@ -111,9 +111,9 @@ public:
 			// ball with frontcamera range and within the frontcamera vision angle
 			object_detected = true;
 			auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
-			bf.set_x(r_sample_data.ball_x);
-			bf.set_y(r_sample_data.ball_y);
-			bf.set_z(0.1);
+			bf.mutable_measured_pose_fcs()->set_x(r_sample_data.ball_x);
+			bf.mutable_measured_pose_fcs()->set_y(r_sample_data.ball_y);
+			bf.mutable_measured_pose_fcs()->set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_sv_sigma);
 			bf.mutable_timestamp()->CopyFrom(google::protobuf::util::TimeUtil::MillisecondsToTimestamp(r_sample_data.rel_time * 1000.0));
@@ -123,9 +123,9 @@ public:
 			// ball with omnivision range
 			object_detected = true;
 			auto bf = MRA::RobotsportsLocalBallTracking::BallCandidate();
-			bf.set_x(r_sample_data.ball_x);
-			bf.set_y(r_sample_data.ball_y);
-			bf.set_z(0.1);
+			bf.mutable_measured_pose_fcs()->set_x(r_sample_data.ball_x);
+			bf.mutable_measured_pose_fcs()->set_y(r_sample_data.ball_y);
+			bf.mutable_measured_pose_fcs()->set_z(0.1);
 			bf.set_confidence(0.8);
 			bf.set_sigma(m_ov_sigma);
 			bf.mutable_timestamp()->CopyFrom(google::protobuf::util::TimeUtil::MillisecondsToTimestamp(r_sample_data.rel_time * 1000.0));;
@@ -232,8 +232,8 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
     std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
     config_MRA_logger(testsuitename + "_" + testname);
 	auto last_output = execute_ball_traject_test(traject, traject_dist);
-    EXPECT_NEAR(last_output.ball().vx(), 2.0, 0.001); // check if final speed is reached: x direction
-    EXPECT_NEAR(last_output.ball().vy(), 0.0, 0.001); // check if final speed is reached: y direction
+    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
 }
 
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)

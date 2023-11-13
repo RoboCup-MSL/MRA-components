@@ -5,9 +5,9 @@ static void copy_to_ball_candidate_struct(ball_candidate_t &r_bf,
         const ::MRA::RobotsportsLocalBallTracking::BallCandidate observed_ball_candidate,
         balltype_e ball_type,
         const MRA::RobotsportsLocalBallTracking::ParamsType &params) {
-    r_bf.x = observed_ball_candidate.x();
-    r_bf.y = observed_ball_candidate.y();
-    r_bf.z = observed_ball_candidate.z();
+    r_bf.x = observed_ball_candidate.measured_pose_fcs().x();
+    r_bf.y = observed_ball_candidate.measured_pose_fcs().y();
+    r_bf.z = observed_ball_candidate.measured_pose_fcs().z();
     r_bf.confidence = observed_ball_candidate.confidence();
 //    r_bf.distance = observed_ball_candidate.dist();
     r_bf.type = ball_type;
@@ -16,7 +16,7 @@ static void copy_to_ball_candidate_struct(ball_candidate_t &r_bf,
     r_bf.initializeBallVelFlag = false;
     r_bf.initializeBallVel_x = 0.0;
     r_bf.initializeBallVel_y = 0.0;
-    r_bf.inAir = observed_ball_candidate.z() > params.min_height_in_air();
+    r_bf.inAir = observed_ball_candidate.measured_pose_fcs().z() > params.min_height_in_air();
     r_bf.isFree = 1; /* is rolling freely (0 or 1) */   // TODO implement check if ball is free. Disable in original
 };
 

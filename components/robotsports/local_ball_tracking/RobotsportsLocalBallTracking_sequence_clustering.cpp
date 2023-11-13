@@ -106,12 +106,12 @@ void local_ball_tracking_sequence_clustering(
         output.mutable_ball_prev()->CopyFrom(state.ball());
 
         auto timestamp_obj = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ball_estimate.timestamp* 1000);
-        output.mutable_ball()->set_x(ball_estimate.xhat); // position X, replaced TPB on 20161210 from ball_estimate.x
-        output.mutable_ball()->set_y(ball_estimate.yhat); // position Y, replaced TPB on 20161210 from ball_estimate.y
-        output.mutable_ball()->set_z(ball_estimate.z); // position Z
-        output.mutable_ball()->set_vx(ball_estimate.xdot); // velocity in X
-        output.mutable_ball()->set_vy(ball_estimate.ydot); // velocity in Y
-        output.mutable_ball()->set_vz(ball_estimate.zdot); // velocity in Z
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_position()->set_x(ball_estimate.xhat); // position X, replaced TPB on 20161210 from ball_estimate.x
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_position()->set_y(ball_estimate.yhat); // position Y, replaced TPB on 20161210 from ball_estimate.y
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_position()->set_z(ball_estimate.z); // position Z
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_velocity()->set_x(ball_estimate.xdot); // velocity in X
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_velocity()->set_y(ball_estimate.ydot); // velocity in Y
+        output.mutable_ball()->mutable_pos_vel_fcs()->mutable_velocity()->set_z(ball_estimate.zdot); // velocity in Z
         output.mutable_ball()->set_confidence(ball_estimate.hconf); // moving average confidence
 
         output.mutable_ball()->mutable_timestamp()->CopyFrom(timestamp_obj); // timestamp based off of liveseconds
@@ -137,9 +137,11 @@ void local_ball_tracking_sequence_clustering(
         output.mutable_ball_now()->CopyFrom(output.ball());
         if (timeLeap > 0) {
             // current time is actually larger than ball observation, so we can extrapolate for _now position
-            output.mutable_ball_now()->set_x(output.ball().x() + timeLeap * output.ball().vx()); // position X extrapolated
-            output.mutable_ball_now()->set_y(output.ball().y() + timeLeap * output.ball().vy()); // position X extrapolated
-            output.mutable_ball_now()->set_z(output.ball().z() + timeLeap * output.ball().vz()); // position X extrapolated
+            auto ball_pos = output.ball().pos_vel_fcs().position();
+            auto ball_vel = output.ball().pos_vel_fcs().velocity();
+            output.mutable_ball_now()->mutable_pos_vel_fcs()->mutable_position()->set_x(ball_pos.x() + timeLeap * ball_vel.x()); // position X extrapolated
+            output.mutable_ball_now()->mutable_pos_vel_fcs()->mutable_position()->set_y(ball_pos.y() + timeLeap * ball_vel.y()); // position X extrapolated
+            output.mutable_ball_now()->mutable_pos_vel_fcs()->mutable_position()->set_z(ball_pos.z() + timeLeap * ball_vel.z()); // position X extrapolated
             output.mutable_ball_now()->set_confidence(
                     output.ball().confidence() * pow(params.confidence_decay(), timeLeap)); // degrade confidence for extrapolation based on timeLeap
             output.mutable_ball_now()->mutable_timestamp()->CopyFrom(timestamp_obj); // timestamp for extrapolation is current time

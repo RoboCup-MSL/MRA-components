@@ -3,12 +3,11 @@ syntax = "proto3";
 package MRA.RobotsportsLocalBallTracking;
 
 import "google/protobuf/timestamp.proto";
+import "datatypes/Pose.proto";
 
 message BallCandidate
 {
-	float x = 1;  // measured x position [MSL-FCS] - Pose struct with CS in name
-    float y = 2;  // measured y position [MSL-FCS]
-    float z = 3;  // measured z position [MSL-FCS]
+	MRA.Datatypes.Pose measured_pose_fcs = 1; 
     float confidence = 4;  // ball confidence [0..1] from sensor system (camera)
     float sigma = 5; // ???? ==> variance on measured position
     google.protobuf.Timestamp timestamp = 6; // timestamp of observation 

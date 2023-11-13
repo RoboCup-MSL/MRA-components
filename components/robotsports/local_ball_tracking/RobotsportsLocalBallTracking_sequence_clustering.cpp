@@ -45,13 +45,13 @@ static int ma_init(hypothesis_t& r_hypothesis)
 }
 
 
-static int init_hyp(hypothesis_t* p_phyp) {
+static int init_hyp(hypothesis_t hypothesises[MAXHYP]) {
     /* initialize hypotheses */
     for (int i = 0; i < MAXHYP; i++) {
-        (p_phyp + i)->ball_detected = false;
-        (p_phyp + i)->probability = 1.0;
-        ma_init(*(p_phyp + i));
-        fbuf_init(*(p_phyp + i));
+        hypothesises[i].ball_detected = false;
+        hypothesises[i].probability = 1.0;
+        ma_init(hypothesises[i]);
+        fbuf_init(hypothesises[i]);
     }
 
     return BM_SUCCESS;

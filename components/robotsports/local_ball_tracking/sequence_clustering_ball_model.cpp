@@ -1,12 +1,7 @@
 /**
- *  @file
- *  @brief   sequential clustering algorithm
- *  @curator Ton Peijnenburg
- */
+ Sequential clustering algorithm
 
-/* sequential clustering algorithm, Rene van de Molengraft, March, 2008 */
-
-/*
+ Original author: Rene van de Molengraft, March, 2008
 
  Inspired by Schubert & Sidenblath, Sequential clustering with particle filters - Estimating the number of clusters from data,
  Proc. 8th Int. Conf. Information Fusion, 2005
@@ -609,7 +604,6 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_
     memcpy(&bfeat_reconstructed, &pbfeat, sizeof(ball_candidate_t));
     /* deltat for kick speed reconstruction */
     deltat = params.exp_time_non_free() / (params.mininum_number_of_features() + 1);
-    //        mexPrintf("deltat = %f\n", deltat);
 
     for (unsigned i = 0; i < r_global_data.number_of_hypothesis; i++) {
 
@@ -638,7 +632,6 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_
             /* sort stored features */
             isort_descending(idx, r_global_data.hypothesis[i].fbuf.timestamp, params.max_features_buffer());
 
-            //                        mexPrintf("nbuf van hyp %d = %d\n", i, r_global_data.hyp[i].number_valid_buffers);
             if  (r_global_data.hypothesis[i].number_valid_buffers == 0 || r_global_data.hypothesis[i].number_valid_buffers == 1) {
                 r_global_data.hypothesis[i].observer.xh[0] = r_global_data.hypothesis[i].fbuf.x[idx[0]];
                 r_global_data.hypothesis[i].observer.xh[1] = 0.;
@@ -653,7 +646,6 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_
                         r_global_data, params) == BM_SUCCESS) {
                     r_global_data.hypothesis[i].observer.xh[0] = theta[1];
                     r_global_data.hypothesis[i].observer.xh[1] = theta[0];
-                    //                                        mexPrintf("hyp %d vx = %f\n", i, theta[0]);
                 } else {
                     MRA_LOG_DEBUG("observer_update: fit_line_xy failed (x).");
                     r_global_data.hypothesis[i].observer.xh[0] = r_global_data.hypothesis[i].fbuf.x[idx[0]];
@@ -665,7 +657,6 @@ static double observer_update(const ball_candidate_t& pbfeat, sc_global_data& r_
                         r_global_data, params) == BM_SUCCESS) {
                     r_global_data.hypothesis[i].observer.xh[2] = theta[1];
                     r_global_data.hypothesis[i].observer.xh[3] = theta[0];
-                    //                                        mexPrintf("hyp %d vy = %f\n", i, theta[0]);
                 } else {
                     MRA_LOG_DEBUG("observer_update: fit_line_xy failed (y).");
                     r_global_data.hypothesis[i].observer.xh[2] = r_global_data.hypothesis[i].fbuf.y[idx[0]];
@@ -1149,10 +1140,8 @@ int sequence_clustering_ball_model(ball_estimate_t& r_ball_estimates, const std:
     MRA_LOG_DEBUG("Winning hypothesis updated_in_timestep = %d", r_ball_estimates.is_updated);
 
     r_ball_estimates.label = r_global_data.hypothesis[i_mape].observer.label;
-
     r_ball_estimates.timestamp = r_global_data.hypothesis[i_mape].observer.time;
 
-    //        MRA_LOG_DEBUG("cputime = %d ms", (int) ((get_time() - t1) * 1000) );
 
     return BM_SUCCESS;
 }

@@ -2,27 +2,23 @@
 // generated protobuf types from interface of this component
 #include "RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include "RobotsportsLocalBallTracking_preprocessing.hpp"
-#include "sequence_clustering_balldef.hpp"
 #include "sequence_clustering_best_uid.hpp"
 #include "sequence_clustering_track_ball.hpp"
+#include <cmath>
+#include <google/protobuf/util/time_util.h>
+#include "sequence_clustering_common_defintions.hpp"
 
 static sc_global_data_t pscgd;
-
-
-void local_ball_tracking_calculate_ball_now(const MRA::RobotsportsLocalBallTracking::InputType &input,
-                               const MRA::RobotsportsLocalBallTracking::ParamsType &params,
-                               MRA::RobotsportsLocalBallTracking::StateType &state) {
-}
 
 
 void local_ball_tracking_sequence_clustering(
                             double timestamp,
                             unsigned nrBallsThisTime,
                             const std::vector<ball_candidate_t>& ballData,
-                            const MRA::RobotsportsLocalBallTracking::InputType &input,
-                            const MRA::RobotsportsLocalBallTracking::ParamsType &params,
-                            MRA::RobotsportsLocalBallTracking::OutputType &output,
-                            MRA::RobotsportsLocalBallTracking::StateType &state,
+                            const MRA::RobotsportsLocalBallTracking::Input& input,
+                            const MRA::RobotsportsLocalBallTracking::Params& params,
+                            MRA::RobotsportsLocalBallTracking::Output& output,
+                            MRA::RobotsportsLocalBallTracking::State& state,
                             unsigned max_num_balls)
 {
 
@@ -66,8 +62,6 @@ void local_ball_tracking_sequence_clustering(
 
         // Calculate ball_now()
         // Check usage : Seems not in use outside ball_process
-        // TODO timestamp is updated when copy from ball_new to ball
-        // TODO ball_prev is not updated, it seems - stays at 0
         // calculate ball position at current time, based on position with timestamp ts and estimate of ball speed
         double timeLeap = timestamp - google::protobuf::util::TimeUtil::TimestampToMilliseconds(output.ball().timestamp()) / 1000.0;
         // copy ball position to _now position

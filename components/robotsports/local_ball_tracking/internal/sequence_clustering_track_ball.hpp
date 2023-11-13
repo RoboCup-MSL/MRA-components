@@ -1,9 +1,27 @@
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
-#include "constants_ball_model.hpp"
-#include "RobotsportsLocalBallTracking.hpp"
-#include "sequence_clustering_balldef.hpp"
+#include "../RobotsportsLocalBallTracking_datatypes.hpp"
+#include "sequence_clustering_common_defintions.hpp"
+
+/* define options for hypothesis association flag */
+typedef enum {
+    ASSOCIATE_WITH_BALL = 1,
+    ASSOCIATE_WITH_CLUTTER,
+    ASSOCIATE_WITH_NEW,
+    ASSOCIATE_NONE
+} associate_e;
+
+#define MAXHYP                  500             /* maximum number of hypotheses */
+#define MA_N                    20              /* number of samples in MA confidence */
+#define MAXFEATBUF              60              /* maximum number of stored features in a hypothesis */
+
+const int BM_SUCCESS              =  0;              /* success */
+const int BM_ERROR_MAXHYP         = -1;              /* MAXHYP exceeded */
+const int BM_ERROR_NORM           = -2;              /* normalization error */
+const int BM_ERROR_NO_HYP         = -3;              /* no hypotheses */
+const int BM_ASSOCIATION_ERROR    = -4;              /* association not allowed */
+const int BM_FIT_ERROR            = -5;              /* fit not possible */
 
 typedef struct tag_ball_observer {
 	double        xh[6]; /* state estimate: x, xdot, y, ydot, z, zdot */
@@ -53,9 +71,9 @@ typedef struct tag_sc_global_data {
 } sc_global_data_t;
 
 // the following are external functions
-int sequence_clustering_initialize(sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+int sequence_clustering_initialize(sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params);
 
-int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
+int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::Params const &params,
         const unsigned max_num_balls);
 
 #endif  // SEQ_CLUSTERING_BALL_MODEL_INCLUDE

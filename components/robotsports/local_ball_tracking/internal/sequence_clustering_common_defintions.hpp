@@ -1,9 +1,3 @@
-/**
- *  @file
- *  @brief   ball definitions
- *  @curator Ton Peijnenburg
- */
-
 #ifndef SEQ_CLUSTERING_BALLDEF_HPP
 #define SEQ_CLUSTERING_BALLDEF_HPP
 
@@ -41,8 +35,8 @@ typedef struct tag_ball_candidate_t {
         double confidence;              /* confidence */
         balltype_e  type;               /* sensor label */
         double sigma;                   /* standard deviation of sensor noise */
-        bool   is_free;                  /* is rolling freely (0 or 1) */
-        bool   in_air;                   /* is flying in the air (0 or 1) */
+        bool   is_free;                 /* is rolling freely (0 or 1) */
+        bool   in_air;                  /* is flying in the air (0 or 1) */
         double timestamp;               /* timestamp */
 } ball_candidate_t;
 
@@ -57,8 +51,8 @@ typedef struct tag_ball_estimate_t {
         double ydot;            /* y-velocity */
         double zdot;            /* z-velocity */
         double hconf;           /* Moving Average confidence of winning hypothesis */
-        bool is_updated;            /* is winning hypothesis updated with candidate in last sample */
-        balltype_e label;            /* type of last added candidate in winning hypothesis */
+        bool is_updated;        /* is winning hypothesis updated with candidate in last sample */
+        balltype_e label;       /* type of last added candidate in winning hypothesis */
         double timestamp;       /* ball timestamp */
 } ball_estimate_t;
 

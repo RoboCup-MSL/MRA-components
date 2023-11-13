@@ -1,26 +1,28 @@
 #include "RobotsportsLocalBallTracking_preprocessing.hpp"
+#include "sequence_clustering_track_ball.hpp"
+#include <google/protobuf/util/time_util.h>
+#include "sequence_clustering_common_defintions.hpp"
 
 
 static void copy_to_ball_candidate_struct(ball_candidate_t &r_bf,
         const ::MRA::RobotsportsLocalBallTracking::BallCandidate observed_ball_candidate,
         balltype_e ball_type,
-        const MRA::RobotsportsLocalBallTracking::ParamsType &params) {
+        const MRA::RobotsportsLocalBallTracking::Params &params) {
     r_bf.x = observed_ball_candidate.measured_pose_fcs().x();
     r_bf.y = observed_ball_candidate.measured_pose_fcs().y();
     r_bf.z = observed_ball_candidate.measured_pose_fcs().z();
     r_bf.confidence = observed_ball_candidate.confidence();
-//    r_bf.distance = observed_ball_candidate.dist();
     r_bf.type = ball_type;
     r_bf.sigma = observed_ball_candidate.sigma();
     r_bf.timestamp = google::protobuf::util::TimeUtil::TimestampToMilliseconds(observed_ball_candidate.timestamp()) / 1000.0;
     r_bf.in_air = observed_ball_candidate.measured_pose_fcs().z() > params.min_height_in_air();
-    r_bf.is_free = 1; /* is rolling freely (0 or 1) */   // TODO implement check if ball is free. Disable in original
+    r_bf.is_free = true; /* is rolling freely (false or true) */   // TODO implement check if ball is free. Disable in original
 };
 
 
 int local_ball_tracking_preprocessing(std::vector<ball_candidate_t>& ballData,
-                                      const MRA::RobotsportsLocalBallTracking::InputType &input,
-                                      const MRA::RobotsportsLocalBallTracking::ParamsType &params) {
+                                      const MRA::RobotsportsLocalBallTracking::Input &input,
+                                      const MRA::RobotsportsLocalBallTracking::Params &params) {
 
     // fill measurements
     unsigned nrBallsThisTime = 0;
@@ -60,7 +62,7 @@ int local_ball_tracking_preprocessing(std::vector<ball_candidate_t>& ballData,
         }
     }
 
-    // other sensors may be added here
+    // other sensors may be added here (FUTURE)
 
 
     // administration, make sure confidence of non-updated slots is set to 0

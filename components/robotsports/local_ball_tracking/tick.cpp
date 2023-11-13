@@ -11,8 +11,8 @@
 using namespace MRA;
 using namespace google::protobuf::util;
 
-#include "RobotsportsLocalBallTracking_preprocessing.hpp"
-#include "RobotsportsLocalBallTracking_sequence_clustering.hpp"
+#include "./internal/RobotsportsLocalBallTracking_preprocessing.hpp"
+#include "./internal/RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include <vector>
 
 

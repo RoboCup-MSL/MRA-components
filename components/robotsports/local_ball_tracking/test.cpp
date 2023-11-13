@@ -6,11 +6,11 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "test_factory.hpp"
-#include "logging.hpp"
 #include <unistd.h>
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 #include "angles.hpp"
 
@@ -18,25 +18,9 @@ using namespace ::testing;
 
 // System under test:
 #include "RobotsportsLocalBallTracking.hpp"
+#include "logging.hpp"
 using namespace MRA;
 using namespace std;
-
-static void config_MRA_logger(std::string component)
-{
-//    auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
-//    //    cfg.set_folder("xxxx");
-//    cfg.mutable_general()->set_component(component.c_str());
-//    cfg.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
-//    cfg.mutable_general()->set_dumpticks(false);
-//    cfg.mutable_general()->set_maxlinesize(1000);
-//    cfg.mutable_general()->set_maxfilesizemb(10.0);
-//    cfg.mutable_general()->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%n] [%^%l%$] %v");
-//    cfg.mutable_general()->set_hotflush(true);
-//    cfg.mutable_general()->set_enabled(false);
-//    MRA::Logging::control::setConfiguration(cfg);
-}
-
-
 
 class BallTrajectData
 {
@@ -99,7 +83,7 @@ public:
         // calculate sample tick time in milliseconds
         if (m_ov_sample_time_ms - m_sv_sample_time_ms == 0)
         {
-            MRA_LOG_ERROR("currenlty only supporting of same sample rate for vision devices");
+            throw std::logic_error("currenlty only supporting of same sample rate for vision devices");
             return 0;
         }
         sim_sample_time = greatest_common_divisor(m_sv_sample_time_ms, m_ov_sample_time_ms) / 1000.0;
@@ -175,18 +159,13 @@ public:
 };
 
 
-RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenerator traject_generator, double distance)
+static RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenerator traject_generator, double distance)
 {
     auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
     auto output = RobotsportsLocalBallTracking::Output();
     auto state = RobotsportsLocalBallTracking::State();
     auto local = RobotsportsLocalBallTracking::Local();
     auto params = m.defaultParams();
-    const TestInfo* test_info_ = ::testing::UnitTest::GetInstance()->current_test_info();
-    std::string testname = test_info_->name();
-    std::string testsuitename = test_info_->test_case_name();
-    MRA_TRACE_TEST_FUNCTION(); // enable tracing
-    MRA_LOG_INFO("> %s::%s", testsuitename.c_str(), testname.c_str());
     int n_samples = traject_generator.generate(distance);
     int error_value = 0;
     for (auto sample = 0; sample < n_samples; sample++)
@@ -196,7 +175,7 @@ RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenera
             auto input = RobotsportsLocalBallTracking::Input();
             input.Clear();
             input.mutable_omnivision_balls()->Clear();
-            MRA_LOG_INFO("time {\"time\": %6.4f}", data.rel_time);
+            MRA_LOG_DEBUG("time {\"time\": %6.4f}", data.rel_time);
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.rel_time * 1000);
             if (data.omni_candidates.size() > 0 || (data.frontcamera_candidates.size() > 0)) {
                 input.mutable_omnivision_balls()->Clear();
@@ -209,21 +188,21 @@ RobotsportsLocalBallTracking::Output execute_ball_traject_test(BallTrajectGenera
                 }
 
                 error_value = m.tick(timestamp, input, params, state, output, local);
-                MRA_LOG_INFO("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
-                MRA_LOG_INFO("state: %s", MRA::convert_proto_to_json_str(state).c_str());
+                MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
+                MRA_LOG_DEBUG("state: %s", MRA::convert_proto_to_json_str(state).c_str());
                 // Asserts for turn from middle to left position
                 EXPECT_EQ(error_value, 0);
             }
         }
     }
 
-    MRA_LOG_INFO("< %s::%s", testsuitename.c_str(), testname.c_str());
     return output;
 }
 
 // Test shall run OK and return error_value 0.
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -231,9 +210,6 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
     double traject_dist = 0.05;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
     EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction
     EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
@@ -241,6 +217,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
 
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(6.0, -4.0, -2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -248,13 +225,12 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
     double traject_dist = 12.0;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
+
 TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(6.0, -4.0, 2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -262,15 +238,13 @@ TEST(RobotsportsLocalBallTrackingTest, ball_plus_y_right_to_left)
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
     double traject_dist = 12.0;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
 // Test shall run OK and return error_value 0.
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_plus)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.25);
@@ -278,15 +252,13 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_p
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
     double traject_dist = 1.0;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
 // Test shall run OK and return error_value 0.
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_min)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(-6.0, -4.0, 2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, -0.25);
@@ -295,9 +267,6 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_m
 
     double traject_dist = 1.0;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
@@ -305,6 +274,7 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right_robot_rotating_m
 // Test shall run OK and return error_value 0.
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 {
+    MRA_TRACE_TEST_FUNCTION();
     auto traject = BallTrajectGenerator();
     traject.set_ball_traject(-6.0, -4.0, 0.0, +2.0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -313,9 +283,6 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 
     double traject_dist = 1.0;
 
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string testsuitename = ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
-    config_MRA_logger(testsuitename + "_" + testname);
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
@@ -323,10 +290,8 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_to_plus_y_left)
 // Basic tick shall run OK and return error_value 0.
 TEST(RobotsportsLocalBallTrackingTest, basicTick)
 {
-    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    config_MRA_logger(testname);
-    MRA_LOG_INFO("> %s", testname.c_str());
     MRA_TRACE_TEST_FUNCTION();
+    std::string testname = ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
     // Arrange
     auto m = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
@@ -336,8 +301,10 @@ TEST(RobotsportsLocalBallTrackingTest, basicTick)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    MRA_LOG_INFO("< %s", testname.c_str());
 }
+
+
+
 
 int main(int argc, char **argv)
 {

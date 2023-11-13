@@ -9,8 +9,8 @@ import "datatypes/PosVel.proto";
 message TrackedBall
 {
     MRA.Datatypes.PosVel pos_vel_fcs = 1;  // calculated ball x position [MSL-FCS]
-    double confidence = 7; // calculated ball confidence
-    google.protobuf.Timestamp timestamp = 8;  // timestamp of tracked ball  
+    double confidence = 2; // calculated ball confidence
+    google.protobuf.Timestamp timestamp = 3;  // timestamp of tracked ball  
 } 
 
 message Output

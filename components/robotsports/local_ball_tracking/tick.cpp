@@ -3,7 +3,6 @@
 
 // generated component header:
 #include "RobotsportsLocalBallTracking.hpp"
-#include "logging.hpp" // TODO: automate, perhaps via generated hpp
 #include <google/protobuf/util/time_util.h>
 #include <array>
 #include <string>
@@ -14,6 +13,7 @@ using namespace google::protobuf::util;
 #include "./internal/RobotsportsLocalBallTracking_preprocessing.hpp"
 #include "./internal/RobotsportsLocalBallTracking_sequence_clustering.hpp"
 #include <vector>
+#include "logging.hpp" // TODO: automate, perhaps via generated hpp
 
 
 const unsigned MAXBALLS_OV = 20; /* maximum number of candidate balls found by omnivision and send to tracker NUM_BALLS defined in omni.h */

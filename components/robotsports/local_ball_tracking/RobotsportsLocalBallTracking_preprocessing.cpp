@@ -13,11 +13,8 @@ static void copy_to_ball_candidate_struct(ball_candidate_t &r_bf,
     r_bf.type = ball_type;
     r_bf.sigma = observed_ball_candidate.sigma();
     r_bf.timestamp = google::protobuf::util::TimeUtil::TimestampToMilliseconds(observed_ball_candidate.timestamp()) / 1000.0;
-    r_bf.initializeBallVelFlag = false;
-    r_bf.initializeBallVel_x = 0.0;
-    r_bf.initializeBallVel_y = 0.0;
-    r_bf.inAir = observed_ball_candidate.measured_pose_fcs().z() > params.min_height_in_air();
-    r_bf.isFree = 1; /* is rolling freely (0 or 1) */   // TODO implement check if ball is free. Disable in original
+    r_bf.in_air = observed_ball_candidate.measured_pose_fcs().z() > params.min_height_in_air();
+    r_bf.is_free = 1; /* is rolling freely (0 or 1) */   // TODO implement check if ball is free. Disable in original
 };
 
 

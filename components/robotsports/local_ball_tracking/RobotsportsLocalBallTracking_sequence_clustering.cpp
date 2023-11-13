@@ -59,11 +59,11 @@ static int init_hyp(hypothesis_t* p_phyp) {
 
 static int initialize_tracking(MRA::RobotsportsLocalBallTracking::ParamsType const &params) {
     /* initial number of hypotheses */
-    pscgd.nhyp = 1;
+    pscgd.number_of_hypothesis = 1;
 
     /* initialize hypotheses */
-    init_hyp(pscgd.hyp);
-    init_hyp(pscgd.hyp2);
+    init_hyp(pscgd.hypothesis);
+    init_hyp(pscgd.hypothesis2);
 
     pscgd.new_uid = 0;
 

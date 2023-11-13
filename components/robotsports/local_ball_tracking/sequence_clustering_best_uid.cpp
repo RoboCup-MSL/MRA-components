@@ -11,7 +11,7 @@ int uid_clear(best_uid_t& best_uid) {
 
     for (i = 0; i < MAXBEST; i++) {
         best_uid.ball_uid[i] = INVALID_UID;
-        best_uid.p[i] = 0.0;
+        best_uid.probability[i] = 0.0;
     }
     best_uid.nbest_uid = 0;
 
@@ -27,7 +27,7 @@ int uid_add(int uid, double p, best_uid_t& best_uid) {
     if (i == best_uid.nbest_uid) {
         if (best_uid.nbest_uid < MAXBEST) {
             best_uid.ball_uid[best_uid.nbest_uid] = uid;
-            best_uid.p[best_uid.nbest_uid] = p;
+            best_uid.probability[best_uid.nbest_uid] = p;
             best_uid.nbest_uid += 1;
         } else {
             return UID_ERROR; /* MAXBEST exceeded */
@@ -65,7 +65,7 @@ int uid_print(const best_uid_t& best_uid) {
     MRA_LOG_DEBUG("Total of %d uid's:", best_uid.nbest_uid);
 
     for (int i = 0; i < MAXBEST; i += 1) {
-        MRA_LOG_DEBUG("id = %d, uid = %d, p = %f", i, best_uid.ball_uid[i], best_uid.p[i]);
+        MRA_LOG_DEBUG("id = %d, uid = %d, probability = %f", i, best_uid.ball_uid[i], best_uid.probability[i]);
     }
     return UID_SUCCESS;
 }

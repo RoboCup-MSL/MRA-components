@@ -41,12 +41,9 @@ typedef struct tag_ball_candidate_t {
         double confidence;              /* confidence */
         balltype_e  type;               /* sensor label */
         double sigma;                   /* standard deviation of sensor noise */
-        bool   isFree;                  /* is rolling freely (0 or 1) */
-        bool   inAir;                   /* is flying in the air (0 or 1) */
+        bool   is_free;                  /* is rolling freely (0 or 1) */
+        bool   in_air;                   /* is flying in the air (0 or 1) */
         double timestamp;               /* timestamp */
-        bool   initializeBallVelFlag;   /* initialize ball velocity if one */
-        double initializeBallVel_x ;    /* initialize ball velocity at kick vel_x */
-        double initializeBallVel_y;     /* initialize ball velocity at kick vel_y */
 } ball_candidate_t;
 
 /* struct definition of ball estimate */
@@ -60,7 +57,7 @@ typedef struct tag_ball_estimate_t {
         double ydot;            /* y-velocity */
         double zdot;            /* z-velocity */
         double hconf;           /* Moving Average confidence of winning hypothesis */
-        bool isUpd;            /* is winning hypothesis updated with candidate in last sample */
+        bool is_updated;            /* is winning hypothesis updated with candidate in last sample */
         balltype_e label;            /* type of last added candidate in winning hypothesis */
         double timestamp;       /* ball timestamp */
 } ball_estimate_t;

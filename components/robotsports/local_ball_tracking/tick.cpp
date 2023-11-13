@@ -17,8 +17,8 @@ using namespace google::protobuf::util;
 
 
 const unsigned MAXBALLS_OV = 20; /* maximum number of candidate balls found by omnivision and send to tracker NUM_BALLS defined in omni.h */
-const unsigned MAXBALLS_FC = 3;			/* maximum number of candidate balls found by front_cam and send to tracker */
-const unsigned MAXBALLS = MAXBALLS_OV+MAXBALLS_FC+2;     /* maximum number of balls send to tracker */
+const unsigned MAXBALLS_FC = 3;  /* maximum number of candidate balls found by front_cam and send to tracker */
+const unsigned MAXBALLS = MAXBALLS_OV+MAXBALLS_FC+2;  /* maximum number of balls send to tracker */
 
 static std::vector<ball_candidate_t> ballData(2 * MAXBALLS);
 

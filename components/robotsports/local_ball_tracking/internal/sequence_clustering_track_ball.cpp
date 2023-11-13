@@ -654,7 +654,7 @@ static sc_result_e observer_update(const ball_candidate_t& pbfeat, sc_global_dat
 
         if (c1 && c2) { /* do ball update */
 
-            /*	if ball is kicked, reset ball buffer and set initial speed via reconstructed past features */
+            /* if ball is kicked, reset ball buffer and set initial speed via reconstructed past features */
             if (r_global_data.is_kicked) {
 
                 /* clear history for this hypothesis */

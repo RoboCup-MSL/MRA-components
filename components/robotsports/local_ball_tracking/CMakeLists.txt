@@ -6,7 +6,7 @@ add_library(MRA-components-robotsports-local-ball-tracking
     internal/RobotsportsLocalBallTracking_preprocessing.cpp
     internal/RobotsportsLocalBallTracking_sequence_clustering.cpp
     internal/sequence_clustering_track_ball.cpp
-	internal/sequence_clustering_best_uid.cpp
+    internal/sequence_clustering_best_uid.cpp
 )
 include_directories(${CMAKE_SOURCE_DIR})
 target_include_directories(MRA-components-robotsports-local-ball-tracking PUBLIC

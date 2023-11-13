@@ -7,11 +7,11 @@ message Params
     double sample_frequency = 5; // sample frequency in Hz
     
     // interface to Turtle2 code
-    uint32	cnt_iskicking = 6;
-    double	BMsigma_OV = 7;
-    double  BMsigma_stereo = 8;
-    double  confidence_decay = 10;
-    double  ball_time_to_forget = 11;
+    uint32 cnt_iskicking = 6;
+    double BMsigma_OV = 7;
+    double BMsigma_stereo = 8;
+    double confidence_decay = 10;
+    double ball_time_to_forget = 11;
     
     
     bool suppress_omni = 12;      

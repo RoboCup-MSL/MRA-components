@@ -1,9 +1,3 @@
-/**
- *  @file
- *  @brief   sequential clustering header
- *  @curator Ton Peijnenburg
- */
-
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
@@ -47,8 +41,6 @@ typedef struct tag_hypothesis {
 
 /* global data structure */
 typedef struct tag_sc_global_data {
-//	std::vector<>hypothesis> hyp;
-//	std::vector<hypothesis> hyp2;
     hypothesis_t hypothesis[MAXHYP];
     hypothesis_t hypothesis2[MAXHYP];
 	unsigned number_of_hypothesis;
@@ -58,12 +50,12 @@ typedef struct tag_sc_global_data {
 	bool is_kicked;  // not in use, future usage
 	double vx0; /* initial ball speed on kick */
 	double vy0;
-} sc_global_data;
+} sc_global_data_t;
 
 // the following are external functions
-int sequence_clustering_initialize(sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
+int sequence_clustering_initialize(sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params);
 
-int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
+int sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates, const std::vector<ball_candidate_t>& pbfeat, double time, unsigned inext, sc_global_data_t& r_global_data, MRA::RobotsportsLocalBallTracking::ParamsType const &params,
         const unsigned max_num_balls);
 
 #endif  // SEQ_CLUSTERING_BALL_MODEL_INCLUDE

@@ -6,7 +6,7 @@
 #include "sequence_clustering_best_uid.hpp"
 #include "sequence_clustering_track_ball.hpp"
 
-static sc_global_data pscgd;
+static sc_global_data_t pscgd;
 
 
 void local_ball_tracking_calculate_ball_now(const MRA::RobotsportsLocalBallTracking::InputType &input,

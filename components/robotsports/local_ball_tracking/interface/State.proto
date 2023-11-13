@@ -2,11 +2,8 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalBallTracking;
 
-import "components/robotsports/local_ball_tracking/interface/Output.proto";
-
 message State
 {
     bool is_initialized = 1; // is component initialized  
-    TrackedBall ball = 2;
 }
 

@@ -6,18 +6,11 @@ import "google/protobuf/timestamp.proto";
 
 import "datatypes/PosVel.proto";
 
-message TrackedBall
+message Output
 {
     MRA.Datatypes.PosVel pos_vel_fcs = 1;  // calculated ball x position [MSL-FCS]
     double confidence = 2; // calculated ball confidence
     google.protobuf.Timestamp timestamp = 3;  // timestamp of tracked ball  
-} 
-
-message Output
-{
-    TrackedBall ball = 1;      // tracked ball 
-    TrackedBall ball_prev = 2; // previous tracked ball
-    TrackedBall ball_now = 3;  // tracked ball extrapolated to current time  
 }
 
 

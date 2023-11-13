@@ -17,8 +17,8 @@ Extending to other types of measurement is prepared (e.g. Lidar).
 
 * **purpose**: track the ball with local sensors
 * **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
-    ** Omnivision BallFeatures  
-    ** Stereo vision BallFeatures  
+    ** Omnivision BallCandidates  
+    ** Stereo vision BallCandidates  
 
 * **outputs**:  See link:./interface/Output.proto[Output.proto] for the exact definition.  
     ** ball position

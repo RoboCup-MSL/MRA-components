@@ -211,8 +211,8 @@ TEST(RobotsportsLocalBallTrackingTest, ball_min_y_left_to_right)
     double traject_dist = 0.05;
 
     auto last_output = execute_ball_traject_test(traject, traject_dist);
-    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction
-    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
+    EXPECT_NEAR(last_output.pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
 }
 
 TEST(RobotsportsLocalBallTrackingTest, ball_min_y_right_to_left)

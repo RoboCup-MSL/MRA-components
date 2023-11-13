@@ -14,7 +14,7 @@ namespace MRA::Logging::control
 // get the logging folder, may create if needed
 std::string getLogFolder();
 
-// logger file name pattern, something like "<maincomponent>_<pid>.log"
+// logger file name pattern, something like "<maincomponent>_<pid>.spdlog"
 std::string getFileNamePattern();
 
 // configure

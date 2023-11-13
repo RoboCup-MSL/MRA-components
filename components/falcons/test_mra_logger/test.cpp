@@ -9,7 +9,7 @@
 #include "logging.hpp"
 #include "FalconsTestMraLogger.hpp"
 
-std::string EXPECTED_LOG_FILE = LOG_FOLDER_TEST "/FalconsTestMraLogger.log";
+std::string EXPECTED_LOG_FILE = LOG_FOLDER_TEST "/FalconsTestMraLogger.spdlog";
 
 
 // Helper function: manipulate logger to run independent of everything else, via environment

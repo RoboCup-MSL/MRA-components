@@ -16,6 +16,17 @@ double wrap_pi(double rotation_in_radians);
 // example: when robot at x=2 takes a kickoff, the angle towards ball is 0.5*pi
 double calc_facing_angle_fcs(double from_x, double from_y, double to_x, double to_y);
 
+// convert degrees to radians
+double deg_to_rad(double degrees);
+
+
+// convert radians to degrees
+double rad_to_deg(double radians);
+
+// get shortest angle between two angle [rad]
+double min_angle(double start_angle, double end_angle);
+
+
 } // namespace MRA::Geometry
 
 

@@ -31,7 +31,7 @@ typedef struct tag_featbuf_t {
 } featbuf_t;
 
 typedef struct tag_hypothesis {
-	ball_observer obs; /* observer representing the detected ball according to this hypothesis */
+	ball_observer observer; /* observer representing the detected ball according to this hypothesis */
 	bool ball_detected;
 	double probability; /* probability of this hypothesis */
 	associate_e association_flag; /* association of last feature (ASSOCIATE_WITH_CLUTTER or ASSOCIATE_WITH_BALL) */
@@ -42,15 +42,15 @@ typedef struct tag_hypothesis {
 	unsigned updated_in_timestep;
 	featbuf_t fbuf;
 	unsigned fbuf_idx;
-	unsigned nfbuf; /* number of valid features in buffer, start at 0 */
-} hypothesis;
+	unsigned number_valid_buffers; /* number of valid features in buffer, start at 0 */
+} hypothesis_t;
 
 /* global data structure */
 typedef struct tag_sc_global_data {
 //	std::vector<>hypothesis> hyp;
 //	std::vector<hypothesis> hyp2;
-    hypothesis hyp[MAXHYP];
-    hypothesis hyp2[MAXHYP];
+    hypothesis_t hyp[MAXHYP];
+    hypothesis_t hyp2[MAXHYP];
 	unsigned nhyp;
 	int new_uid;
 	int track_uid; /* ball uid to keep track off */

@@ -9,13 +9,13 @@
 static sc_global_data pscgd;
 static bool initialized = false;
 
-static int fbuf_init(hypothesis& r_hypothesis)
+static int fbuf_init(hypothesis_t& r_hypothesis)
 {
         /* clear feature buf */
         memset(&(r_hypothesis.fbuf), 0, sizeof(featbuf_t));
 
         /* no valid features yet */
-        r_hypothesis.nfbuf = 0;
+        r_hypothesis.number_valid_buffers = 0;
 
         /* start position in buffer */
         r_hypothesis.fbuf_idx = 0;
@@ -23,7 +23,7 @@ static int fbuf_init(hypothesis& r_hypothesis)
         return BM_SUCCESS;
 }
 
-static int ma_init(hypothesis& r_hypothesis)
+static int ma_init(hypothesis_t& r_hypothesis)
 {
         int i;
 
@@ -45,7 +45,7 @@ static int ma_init(hypothesis& r_hypothesis)
 }
 
 
-static int init_hyp(hypothesis* p_phyp) {
+static int init_hyp(hypothesis_t* p_phyp) {
     /* initialize hypotheses */
     for (int i = 0; i < MAXHYP; i++) {
         (p_phyp + i)->ball_detected = false;

@@ -39,7 +39,6 @@ typedef struct tag_ball_candidate_t {
         double y;                       /* y-position */
         double z;                       /* z-position */
         double confidence;              /* confidence */
-//        double distance;                /* distance to robot */
         balltype_e  type;               /* sensor label */
         double sigma;                   /* standard deviation of sensor noise */
         bool   isFree;                  /* is rolling freely (0 or 1) */

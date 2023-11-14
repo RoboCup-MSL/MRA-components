@@ -114,7 +114,7 @@ git_repository(
 git_repository(
     name = "extendedlogging",
     remote = "https://github.com/janfeitsma/extendedlogging.git",
-    commit = "2602efe3790fdd97f2b22808f7f35da0272fc83c",
+    commit = "9e969e3b4dee599c506d8603f0e46edbd53a0f5f",
     build_file = "//dependencies/bazel:BUILD.extendedlogging",
 )
 

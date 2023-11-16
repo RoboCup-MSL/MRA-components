@@ -83,9 +83,9 @@ void Solver::setInput(Input const &in)
     _input = in;
 }
 
-cv::Mat Solver::createReferenceFloorMat(float blurFactor) const
+cv::Mat Solver::createReferenceFloorMat(bool withBlur) const
 {
-    MRA_TRACE_FUNCTION_INPUTS(blurFactor);
+    MRA_TRACE_FUNCTION_INPUTS(withBlur);
     cv::Mat result;
 
     // given the configured field (letter model and optional custom shapes),
@@ -102,7 +102,16 @@ cv::Mat Solver::createReferenceFloorMat(float blurFactor) const
 
     // create cv::Mat such that field is rotated screen-friendly: more columns than rows
     result = _floor.createMat();
-    _floor.shapesToCvMat(shapes, blurFactor, result);
+    _floor.shapesToCvMat(shapes, result);
+
+    // apply blur
+    if (withBlur)
+    {
+        float blurFactor = _params.solver().blur().factor();
+        int blurMaxDepth = _params.solver().blur().maxdepth();
+        uchar blurMinValue = _params.solver().blur().minvalue();
+        result = _floor.applyBlur(result, blurFactor, blurMaxDepth, blurMinValue);
+    }
 
     return result;
 }
@@ -129,7 +138,7 @@ void Solver::reinitialize()
     MRA_LOG_DEBUG("cache miss, creating reference floor");
 
     // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
-    _referenceFloorMat = createReferenceFloorMat(_params.solver().blurfactor());
+    _referenceFloorMat = createReferenceFloorMat(true);
     MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
 
     // store params into state

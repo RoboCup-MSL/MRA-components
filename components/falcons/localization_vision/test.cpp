@@ -56,7 +56,7 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     // use high resolution
     params.mutable_solver()->set_pixelspermeter(80);
     // disable blur
-    params.mutable_solver()->set_blurfactor(0.0);
+    params.mutable_solver()->mutable_blur()->set_factor(0.0);
     // optional debug mode
     params.set_debug(exportForPlot);
 
@@ -92,7 +92,7 @@ double FalconsLocalizationVisionTestCalc(std::vector<cv::Point2f> const &points,
     auto params = m.defaultParams();
     FalconsLocalizationVision::Solver solver;
     solver.configure(params);
-    cv::Mat referenceFloor = solver.createReferenceFloorMat();
+    cv::Mat referenceFloor = solver.createReferenceFloorMat(false);
     float ppm = params.solver().pixelspermeter();
     FalconsLocalizationVision::FitFunction fit(referenceFloor, points, ppm);
     // Act

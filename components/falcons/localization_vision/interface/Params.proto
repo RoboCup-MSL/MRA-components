@@ -81,12 +81,20 @@ message ManualParams
     MRA.Datatypes.Pose pose = 2;
 }
 
+message BlurParams
+{
+    float factor = 1; // factor to reduce white pixel intensity value
+    int32 maxDepth = 2; // max number of steps to apply from original full-intensity pixels
+    int32 minValue = 3; // stop when minimum intensity value is reached
+}
+
+
 message SolverParams
 {
     int32 numExtraThreads = 1;
     float pixelsPerMeter = 2; // [40.0] used to create cv::Mat
     float floorBorder = 3; // like 'L': how far to extend outside field
-    float blurFactor = 4; // blur factor, zero is no blur
+    BlurParams blur = 4; // reference floor blurring, to allow calibration inaccuracies
     MRA.Datatypes.Pose actionRadius = 5; // required: robot action radius (roughly max velocity * dt), for local optimization of previous result
     int32 maxCount = 6; // required: solver max iterations
     float epsilon = 7; // required: solver accuracy

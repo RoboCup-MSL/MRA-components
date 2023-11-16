@@ -109,3 +109,12 @@ git_repository(
     commit = "b2e7687baf5773cfafcea12d6928991605b14b0d", # 2023-08-11
     remote = "https://github.com/pybind/pybind11_protobuf.git",
 )
+
+# extendedlogging python library for traceviewer and python autologging
+git_repository(
+    name = "extendedlogging",
+    remote = "https://github.com/janfeitsma/extendedlogging.git",
+    commit = "9e969e3b4dee599c506d8603f0e46edbd53a0f5f",
+    build_file = "//dependencies/bazel:BUILD.extendedlogging",
+)
+

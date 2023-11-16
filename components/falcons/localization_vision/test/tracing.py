@@ -2,19 +2,8 @@ import sys, os
 import inspect
 from types import FunctionType, ModuleType
 
+import extendedlogging.extendedlogging as extendedlogging
 
-IMPORT_SUCCESS = False
-try:
-    import extendedlogging
-    IMPORT_SUCCESS = True
-except ImportError:
-    p = '/home/jan/hobby/extendedlogging'
-    if os.path.isdir(p):
-        sys.path.append(p)
-        import extendedlogging
-        IMPORT_SUCCESS = True
-    else:
-        print('WARNING: could not find extendedlogging module')
 
 
 # MAGIC!
@@ -69,7 +58,7 @@ def auto_decorate():
         decorate_module(m)
 
 
-if IMPORT_SUCCESS:
+if True:
     # Now call the decorate_all function here so that the decorator is automatically applied
     auto_decorate()
     decorate_module(get_parent_module())

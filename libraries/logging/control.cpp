@@ -83,7 +83,7 @@ MRA::Datatypes::LogControl defaultConfiguration()
 {
     MRA::Datatypes::LogControl result;
     result.set_folder(_mkLogFolder());
-    result.set_filename("<maincomponent>_<pid>.log");
+    result.set_filename("<maincomponent>_<pid>.spdlog");
     result.mutable_general()->set_component("MRA");
     std::string level_str = "INFO";
     char const *cp = getenv(LOG_LEVEL_KEY.c_str());

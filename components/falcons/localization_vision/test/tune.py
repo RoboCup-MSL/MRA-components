@@ -171,6 +171,13 @@ class TuningTool():
 
     def tick_call(self):
         t = self.data.t
+        # feed previous guess
+        if len(self.data.output.candidates):
+            c = self.data.output.candidates[0]
+            self.data.input.guess.x = c.pose.x
+            self.data.input.guess.y = c.pose.y
+            self.data.input.guess.rz = c.pose.rz
+        # call tick
         return_tuple = pybind_ext.tick(
             #t,
             self.data.input,

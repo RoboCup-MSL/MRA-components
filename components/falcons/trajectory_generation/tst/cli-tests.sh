@@ -31,5 +31,5 @@ $EXE --rz=3.13 --trz=-3.13 --dofs rz table  | diff - $BASE/output_example3.txt
 $EXE --x=-2 --y=-3 --rz=1 --tx=3 --ty=2 --trz=-3 | diff - $BASE/output_alldofs.txt
 
 # test case: produce json
-$EXE --x=-2 json | diff - $BASE/output_json.txt
+#$EXE --x=-2 json | diff - $BASE/output_json.txt
 

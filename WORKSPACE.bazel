@@ -48,8 +48,7 @@ http_archive(
 # opencv (as system dependency!)
 new_local_repository(
     name = "opencv",
-    #path = "/usr/local/include/opencv4",
-    path = "/usr/local",
+    path = "/usr",
     build_file = "dependencies/bazel/BUILD.opencv",
 )
 

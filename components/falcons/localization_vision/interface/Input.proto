@@ -7,8 +7,8 @@ import "datatypes/Pose.proto";
 // "landmark" is a generalized name, in practice we use white pixels and match against a generated reference floor
 message Landmark
 {
-    float x = 1;
-    float y = 2;
+    double x = 1;
+    double y = 2;
 }
 
 message Input

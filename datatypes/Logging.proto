@@ -30,7 +30,7 @@ message LogSpec
 message LogControl
 {
     string folder = 1; // folder to write to, default auto-create in /tmp, something like /tmp/mra_logging
-    string filename = 2; // filename to use, default "<maincomponent>_<pid>.log" (supports logging nested components into same file)
+    string filename = 2; // filename to use, default "<maincomponent>_<pid>.spdlog" (supports logging nested components into same file)
     LogSpec general = 3; // settings to use if no component overrule is specified
     repeated LogSpec overrules = 4; // component overrules, when not specified, use general settings
 }

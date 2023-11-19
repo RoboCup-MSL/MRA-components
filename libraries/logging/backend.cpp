@@ -217,7 +217,7 @@ void replaceAll(std::string &s, const std::string &search, const std::string &re
 
 std::string MraLogger::determineFileName(std::string const &cname)
 {
-    // Default file name configuration is something like "<maincomponent>_<pid>.log".
+    // Default file name configuration is something like "<maincomponent>_<pid>.spdlog".
     // The <placeholders> need to be filled in.
     // Get the pattern. It may be customized at start of main execution using logger setFileName.
     std::string result = m_filename_pattern;

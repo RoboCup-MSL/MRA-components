@@ -233,8 +233,8 @@ def main(args: argparse.Namespace) -> None:
     Run the tuning tool.
     """
     if args.debug:
-        # JFEI-private debugging (based on autologging extensions in my repo https://github.com/janfeitsma/extendedlogging)
         # slap some tracing decorators onto our code, automagically!
+        # (based on autologging extensions in my repo https://github.com/janfeitsma/extendedlogging)
         import tracing
     else:
         logging.basicConfig(format=LOGGING_FORMAT)

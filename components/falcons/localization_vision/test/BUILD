@@ -31,6 +31,7 @@ py_binary(
     data = [
         ":pybind_ext.so",
         "@com_google_protobuf//:protobuf_python",
+        "@extendedlogging//:extendedlogging",
     ],
 )
 

@@ -1,11 +1,14 @@
 syntax = "proto3";
 
-package MRA.RobotsportsLocalBallTracking;
+package MRA.RobotsportsLocalBallPreprocessor;
 
 import "datatypes/BallCandidate.proto";
 
-
-message Input
+message Output
 {
     repeated MRA.Datatypes.BallCandidate candidates = 1;
 }
+
+
+
+

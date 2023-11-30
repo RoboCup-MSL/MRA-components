@@ -1,0 +1,53 @@
+= LocalBall Robotsports Variant
+
+== Summary
+
+LocalBall is a component that tracks the ball position based on measurements from local sensors
+(omnivision and frontcamera). It combines the local ball preprocessor and the local ball tracking.
+
+== Scope and context
+
+This variant is RobotSport variant of local ball. 
+ 
+== Interface details
+
+* **purpose**: track the ball with local sensors
+* **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
+    ** Omnivision BallCandidates  
+    ** Stereo vision BallCandidates  
+
+* **outputs**:  See link:./interface/Output.proto[Output.proto] for the exact definition.  
+    ** ball position
+
+* *parameters*:  
+The component has some configuration parameters.  These parameters are specific for this variant., 
+see link:./interface/Params.proto[Params.proto] and 
+link:./interface/DefaultParams.json[DefaultParams.json].
+
+== Design
+
+Calculate location of the ball based on the measurements
+
+Component consist of two steps:
+
+* link:../local_ball_preprocessor/README.adoc[Robotsport Local Ball preprocessor]
+* link:../local_ball_tracking/README.adoc[Robotsport Local Ball tracking]
+
+Note: The component has own internal state data administration and does not store it a protobuf state structure.
+It is not following the MSL Reference Architecture as intended. 
+
+== Testing
+The component has several tests to validate the working of the component.
+A basic ball trajectory generator provides input data for tests.
+Currently simple linear ball paths are tested.
+
+The trajectory generator can be extended to (future work):
+
+* add noise on measurement (simulating measurement noise)
+* add noise on own position (simulating self-localisation noise)
+* add multiple ball candidates (simulating fake balls or ball furhter away)
+* add ball velocity increasing (pass, kick) or decreasing (ball bounced or catched) 
+
+== Visualizing ball tracking
+The output of the algorithm can be visualized with some simple plots.  
+(future work)

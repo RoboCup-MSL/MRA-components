@@ -44,10 +44,10 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     cvSolver->setFunction(f);
     cv::Mat stepVec = (cv::Mat_<double>(3, 1) << step.x, step.y, step.rz);
     cvSolver->setInitStep(stepVec);
-	cv::TermCriteria criteria = cvSolver->getTermCriteria();
-	criteria.maxCount = settings.maxcount();
-	criteria.epsilon = settings.epsilon();
-	cvSolver->setTermCriteria(criteria);
+    cv::TermCriteria criteria = cvSolver->getTermCriteria();
+    criteria.maxCount = settings.maxcount();
+    criteria.epsilon = settings.epsilon();
+    cvSolver->setTermCriteria(criteria);
 
     // set initial guess
     cv::Mat vec = (cv::Mat_<double>(1, 3) << guess.x, guess.y, guess.rz);

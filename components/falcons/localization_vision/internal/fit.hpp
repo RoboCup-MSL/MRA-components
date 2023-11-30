@@ -25,7 +25,7 @@ class FitFunction: public cv::MinProblemSolver::Function
 {
 public:
     FitFunction(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, float ppm);
-	double calc(const double *x) const; // this is the main scoring function to be minimized, x is a tuple (x,y,rz)
+    double calc(const double *x) const; // this is the main scoring function to be minimized, x is a tuple (x,y,rz)
     int getDims() const { return 3; }
 
     // helpers, public for testing purposes and diagnostics

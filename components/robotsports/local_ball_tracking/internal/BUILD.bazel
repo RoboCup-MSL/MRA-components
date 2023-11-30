@@ -2,7 +2,6 @@ cc_library(
     name = "LocalBallTracking",
     srcs = [
         "sequence_clustering_track_ball.cpp",
-        "RobotsportsLocalBallTracking_preprocessing.cpp",
         "RobotsportsLocalBallTracking_sequence_clustering.cpp",
         "sequence_clustering_best_uid.cpp"
         
@@ -10,7 +9,6 @@ cc_library(
     hdrs = [
         "sequence_clustering_track_ball.hpp",
         "sequence_clustering_common_defintions.hpp",
-        "RobotsportsLocalBallTracking_preprocessing.hpp",
         "RobotsportsLocalBallTracking_sequence_clustering.hpp",
         "sequence_clustering_best_uid.hpp"
     ],

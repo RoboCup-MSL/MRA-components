@@ -41,12 +41,12 @@ int FalconsVelocityControl::FalconsVelocityControl::tick
     }
     catch (const std::exception& e)
     {
-		MRA_LOG_ERROR("ERROR: Caught a standard exception: %s", e.what());
+        MRA_LOG_ERROR("ERROR: Caught a standard exception: %s", e.what());
         error_value = -1;
     }
     catch (...)
     {
-		MRA_LOG_ERROR("ERROR: Caught an unknown exception.");
+        MRA_LOG_ERROR("ERROR: Caught an unknown exception.");
         error_value = -1;
     }
 

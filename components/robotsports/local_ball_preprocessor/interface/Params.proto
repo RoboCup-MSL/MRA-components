@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallPreprocessor;
+
+message Params
+{
+    double BMsigma_omnivision_camera = 1;
+    double BMsigma_front_camera = 2;
+    
+    bool suppress_omni = 3;      
+    //  If TRUE, then whenever other sources of ball detections are available (e.g. stereo), 
+    //    the omni detections will be suppressed.          
+    //    If FALSE, all ball sources are treated equally and are included as usual
+
+    double ball_min_confidence = 4;
+    double min_height_in_air = 5;
+}
+
+
+

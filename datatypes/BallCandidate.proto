@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package MRA.Datatypes;
+
+import "datatypes/Pose.proto";
+import "google/protobuf/timestamp.proto";
+
+message BallCandidate
+{
+    MRA.Datatypes.Pose measured_pose_fcs = 1; 
+    double confidence = 2;  // ball confidence [0..1] from sensor system (camera)
+    double sigma = 3; // ???? ==> variance on measured position
+    google.protobuf.Timestamp timestamp = 4; // timestamp of observation 
+    int32 source = 5;     // measurement source
+    bool  is_free = 6;  // is rolling freely (0 or 1) */
+    bool  in_air = 7;   // is flying in the air (0 or 1)
+}

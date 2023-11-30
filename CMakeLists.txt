@@ -13,14 +13,15 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-arr
 # dependency: ProtoBuf
 # check if ProtoBuf is installed
 # install on Ubuntu: sudo apt-get install protobuf-compiler
-find_package(Protobuf REQUIRED)
+find_package(Protobuf)
 if(NOT PROTOBUF_FOUND)
 message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
 # dependency: opencv
-include_directories(/usr/include/opencv4)
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # dependency gtest 
 find_package(GTest)

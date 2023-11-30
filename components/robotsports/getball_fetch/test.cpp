@@ -114,9 +114,10 @@ TEST(RobotsportsGetballFetchTest, hasBallPassed)
 // Match setup, full/realistic data, kickoff-prepare.
 TEST(RobotsportsGetballFetchTest, matchKickoff)
 {
+    double tolerance = 1e-5;
     // A test vector contains Input, Output, Params
     // The factory will run a tick with provided data and compare against expected output
-    auto output = TestFactory::run_testvector<RobotsportsGetballFetch::RobotsportsGetballFetch>(std::string("components/robotsports/getball_fetch/testdata/kickoff_prepare.json"));
+    auto output = TestFactory::run_testvector<RobotsportsGetballFetch::RobotsportsGetballFetch>(std::string("components/robotsports/getball_fetch/testdata/kickoff_prepare.json"), tolerance);
 
     EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
 }

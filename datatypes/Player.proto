@@ -13,7 +13,7 @@ message Player
     Pose position = 4;
     Pose velocity = 5;
     bool hasball = 6;
-    // float energy, competence? Reasoning should take it account when choosing player to pass to
+    // double energy, competence? Reasoning should take it account when choosing player to pass to
     // radius?
 }
 

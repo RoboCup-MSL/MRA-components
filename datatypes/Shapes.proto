@@ -19,7 +19,7 @@ message Rectangle
 message Circle
 {
     MRA.Datatypes.Point center = 1;
-    float radius = 2; // use radius=0 for a dot
+    double radius = 2; // use radius=0 for a dot
 }
 
 message Arc
@@ -27,14 +27,14 @@ message Arc
     // modeled as cv::ellipse, see its documentation for some nice pictures
     MRA.Datatypes.Point center = 1;
     MRA.Datatypes.Point size = 2;
-    float angle = 3; // all angles in radians (unlike opencv)
-    float startAngle = 4;
-    float endAngle = 5;
+    double angle = 3; // all angles in radians (unlike opencv)
+    double startAngle = 4;
+    double endAngle = 5;
 }
 
 message Shape
 {
-    float linewidth = 1;
+    double linewidth = 1;
     oneof shape
     {
         Line line = 2;

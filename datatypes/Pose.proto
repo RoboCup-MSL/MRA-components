@@ -4,11 +4,11 @@ package MRA.Datatypes;
 
 message Pose
 {
-    float x = 1;
-    float y = 2;
-    float z = 3;
-    float rx = 4;
-    float ry = 5;
-    float rz = 6;
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double rx = 4;
+    double ry = 5;
+    double rz = 6;
 }
 

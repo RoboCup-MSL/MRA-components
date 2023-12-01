@@ -39,18 +39,16 @@ http_archive(
 # gtest
 # https://github.com/google/googletest
 http_archive(
-    name = "com_google_googletest",
-    sha256 = "0fb00ff413f6b9b80ccee44a374ca7a18af7315aea72a43c62f2acd1ca74e9b5",
-    strip_prefix = "googletest-f13bbe2992d188e834339abe6f715b2b2f840a77",
-    urls = [
-        "https://github.com/google/googletest/archive/f13bbe2992d188e834339abe6f715b2b2f840a77.tar.gz",
-    ],
+  name = "com_google_googletest",
+  sha256 = "b976cf4fd57b318afdb1bdb27fc708904b3e4bed482859eb94ba2b4bdd077fe2",
+  urls = ["https://github.com/google/googletest/archive/f8d7d77c06936315286eb55f8de22cd23c188571.zip"],
+  strip_prefix = "googletest-f8d7d77c06936315286eb55f8de22cd23c188571",
 )
 
 # opencv (as system dependency!)
 new_local_repository(
     name = "opencv",
-    path = "/usr/include/opencv4",
+    path = "/usr",
     build_file = "dependencies/bazel/BUILD.opencv",
 )
 
@@ -58,17 +56,18 @@ new_local_repository(
 # See https://github.com/pybind/pybind11_bazel
 http_archive(
     name = "pybind11_bazel",
-    strip_prefix = "pybind11_bazel-72cbbf1fbc830e487e3012862b7b720001b70672",
-    sha256 = "516c1b3a10d87740d2b7de6f121f8e19dde2c372ecbfe59aef44cd1872c10395",
-    urls = ["https://github.com/pybind/pybind11_bazel/archive/72cbbf1fbc830e487e3012862b7b720001b70672.tar.gz"],
+    sha256 = "ca401da77da9712bb585595796c4d8ec5253e55292f5ecf7773db1b33b26715e",
+    strip_prefix = "pybind11_bazel-fd7d88857cca3d7435b06f3ac6abab77cd9983b2",
+    urls = ["https://github.com/pybind/pybind11_bazel/archive/fd7d88857cca3d7435b06f3ac6abab77cd9983b2.zip"],
 )
 http_archive(
     name = "pybind11",
     build_file = "@pybind11_bazel//:pybind11.BUILD",
-    strip_prefix = "pybind11-2.9.0",
-    sha256 = "057fb68dafd972bc13afb855f3b0d8cf0fa1a78ef053e815d9af79be7ff567cb",
-    urls = ["https://github.com/pybind/pybind11/archive/refs/tags/v2.9.0.tar.gz"],
+    sha256 = "d475978da0cdc2d43b73f30910786759d593a9d8ee05b1b6846d1eb16c6d2e0c",
+    strip_prefix = "pybind11-2.11.1",
+    urls = ["https://github.com/pybind/pybind11/archive/v2.11.1.tar.gz"],
 )
+
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 python_configure(name = "local_config_python")
 

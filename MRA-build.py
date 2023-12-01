@@ -132,7 +132,7 @@ class CmakeBuilder(Builder):
         self.run_cmd('cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
         self.run_cmd(f'cd build; make -j {jobs}')
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
-        cmd = f'cd build; ctest'
+        cmd = f'cd build; ctest --rerun-failed --output-on-failure'
         self.run_cmd(cmd)
 
 

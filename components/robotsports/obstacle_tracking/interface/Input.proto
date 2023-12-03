@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package MRA.RobotsportsObstacleTracking;
+
+import "datatypes/BallCandidate.proto";
+
+message Input
+{
+    repeated MRA.Datatypes.BallCandidate frontcamera_balls = 2; // obstacle candidates
+}

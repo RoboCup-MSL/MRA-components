@@ -34,7 +34,8 @@ Component consist of two steps:
 * link:../local_ball_tracking/README.adoc[Robotsport Local Ball tracking]
 
 Note: The component has own internal state data administration and does not store it a protobuf state structure.
-It is not following the MSL Reference Architecture as intended. 
+It is not following the MSL Reference Architecture as intended; it makes it harder to observe the state externally.
+ 
 
 == Testing
 The component has several tests to validate the working of the component.
@@ -45,8 +46,8 @@ The trajectory generator can be extended to (future work):
 
 * add noise on measurement (simulating measurement noise)
 * add noise on own position (simulating self-localisation noise)
-* add multiple ball candidates (simulating fake balls or ball furhter away)
-* add ball velocity increasing (pass, kick) or decreasing (ball bounced or catched) 
+* add multiple ball candidates (simulating fake balls or ball further away)
+* add ball velocity increasing (pass, kick) or decreasing (ball bounced or caught) 
 
 == Visualizing ball tracking
 The output of the algorithm can be visualized with some simple plots.  

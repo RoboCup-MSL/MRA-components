@@ -2,7 +2,7 @@
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
 #include "RobotsportsLocalBallTracking_datatypes.hpp"
-#include "sequence_clustering_common_defintions.hpp"
+#include "sequence_clustering_common_definitions.hpp"
 
 /* define options for hypothesis association flag */
 typedef enum {

@@ -3,7 +3,8 @@
 #include "sequence_clustering_track_ball.hpp"
 #include <cmath>
 #include <google/protobuf/util/time_util.h>
-#include "sequence_clustering_common_defintions.hpp"
+
+#include "sequence_clustering_common_definitions.hpp"
 
 static sc_global_data_t pscgd;
 

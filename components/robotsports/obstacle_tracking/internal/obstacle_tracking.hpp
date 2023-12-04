@@ -79,7 +79,6 @@ typedef struct object_process_s
     long		nobj;
     long		use_shared_selves;		// if true, use self positions of team mates shared through network
     double		min_conf_shared_selves;	// minimum confidence level to include shared selves
-    long		use_primitive;			// use plain copy of omni_process output to object_process output, for debugging
 
     // interface to Turtle2 code
     int             cnt_iskicking;

@@ -82,8 +82,7 @@ typedef struct tag_scw_global_data {
 
 // the following are external functions
 int init_sc_wm(scw_global_data* pscgd, double time);
-int sc_wm(double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pmypos, double* pobst, int maxobst,  double time, scw_global_data* pscgd);
-int print_hypotheses_w(scw_global_data* pscgd);
+int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pmypos, double* pobst, int maxobst,  scw_global_data* pscgd);
 
 #ifdef __cplusplus
 }

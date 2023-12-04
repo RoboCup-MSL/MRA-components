@@ -46,19 +46,14 @@ static double pobj_label[MAX_TURTLES*MAXNOBJ_LOCAL];
 
 obstacle_tracking_t object_process;
 
-double getdistance(pos_t x, pos_t y)
-{
-    return hypot(y.x - x.x, y.y - x.y);
-}
-
-int processObjects(object_t object_xyz, double* objectData)
+static int processObjects(MRA::RobotsportsObstacleTracking::ObstacleCandidate obstacle_candidate, double* objectData)
 {
     /* copy object position */
-    objectData[0] = object_xyz.pos.x;			// x position in extrapolated coordinates
-    objectData[1] = object_xyz.pos.y;			// y position in extrapolated coordinates
-    objectData[2] = object_xyz.size; 			// radius of object
+    objectData[0] = obstacle_candidate.measured_pose_fcs().x();			// x position in extrapolated coordinates
+    objectData[1] = obstacle_candidate.measured_pose_fcs().y();			// y position in extrapolated coordinates
+    objectData[2] = obstacle_candidate.radius(); 			// radius of object
     objectData[3] = 0;							// label = 0 is for unknown (default)
-    objectData[4] = object_xyz.ts;				// timestamp
+    objectData[4] = google::protobuf::util::TimeUtil::TimestampToMilliseconds(obstacle_candidate.timestamp()) / 1000.0;				// timestamp
 
     return 1;
 }
@@ -97,7 +92,6 @@ int obstacle_tracking_initialize(double timestamp)
     // default minimum confidence level for shared selves
     object_process.use_shared_selves = 1;
     object_process.min_conf_shared_selves = 0.5;
-    object_process.use_primitive = 0;		// use advanced object filter default (set to 1 to plainly copy objects)
 
     // initialize parameters
     // parameters for Turtle2 code
@@ -176,21 +170,8 @@ void obstacle_tracking(double timestamp,
     // initialize obstacle counter
     int obstacles_this_time = 0;
 
-    int nr_obstacles = 5; //jve-TODO: (int) omni_process.nr_obstacles;
+    int nr_obstacles = input.obstacle_candidates_size();
 
-    if (object_process.use_primitive) {
-    	// just copy the objects reported by omni-vision; this is to check the object filter input, or to switch to a simple no-frills method when debugging
-    	int i;
-    	object_t	zero_object = { 0, zero_pos, zero_pos, 0.0, 0.0, 0.0 };
-    	for (i = 0; (i < nr_obstacles) && (i < MAXNOBJ_GLOBAL); i++) {
-    		//jve-TODO object_process.out[i] = omni_process.found_obstacles_fc[i];
-    	}
-    	while (i < MAXNOBJ_GLOBAL) {
-    		object_process.out[i] = zero_object;
-    		i++;
-    	}
-    	return;
-    }
 
     // start with omni vision reports
     // process when > 0 obstacles have been reported
@@ -199,9 +180,9 @@ void obstacle_tracking(double timestamp,
         // get time stamp for new information
         double last_omni_timestamp = 0.0;
         for (int i = 0; i < nr_obstacles; i++) {
-// jve-TODO:
-//            if (omni_process.found_obstacles_fc[i].ts > last_omni_timestamp)
-//                last_omni_timestamp = omni_process.found_obstacles_fc[i].ts;
+            double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
+            if (obstacle_ts > last_omni_timestamp)
+                last_omni_timestamp = obstacle_ts;
         }
         // check for new features from omni camera - a sinle new obstacle is enough!
         //printf("object_process: objects %d last_omni %f last_object_process %f\n", nr_obstacles, last_omni_timestamp, last_processed_vision_timestamp);
@@ -213,14 +194,18 @@ void obstacle_tracking(double timestamp,
             for (i = 0; i < nr_obstacles; i++) {
                 // processObjects will move the data to the Tech United data structure
             	// add only observations that are newer than (last update + interval)
-// jve-TODO
-//            	if (omni_process.found_obstacles_fc[i].ts > (last_processed_vision_timestamp + object_process.update_interval_vision)) {
-//					processObjects(omni_process.found_obstacles_fc[i], &objects_detected[obstacles_this_time*DIM]);
-//					//printf("process_objects has added obstacle at (%f,%f) with label %f and timestamp %f\n", objects_detected[obstacles_this_time*DIM], objects_detected[obstacles_this_time*DIM+1], objects_detected[obstacles_this_time*DIM+3], objects_detected[obstacles_this_time*DIM+4]);
-//					obstacles_this_time++;
-//					// only update last_processed_vision_ts if at least one omni object has been used for updating the filter
-//		            object_process.last_processed_vision_ts, last_omni_timestamp);
-//            	}
+                double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
+            	if (obstacle_ts > (last_processed_vision_timestamp + object_process.update_interval_vision)) {
+					processObjects(input.obstacle_candidates(i), &objects_detected[obstacles_this_time*DIM]);
+					MRA_LOG_DEBUG("process_objects has added obstacle at (%f,%f) with label %f and timestamp %f\n",
+					            objects_detected[obstacles_this_time*DIM],
+					            objects_detected[obstacles_this_time*DIM+1],
+					            objects_detected[obstacles_this_time*DIM+3],
+					            objects_detected[obstacles_this_time*DIM+4]);
+					obstacles_this_time++;
+					// only update last_processed_vision_ts if at least one omni object has been used for updating the filter
+		            object_process.last_processed_vision_ts = last_omni_timestamp;
+            	}
             }
         }
     }
@@ -247,7 +232,7 @@ void obstacle_tracking(double timestamp,
 //						// add it if still room
 //						processObjects(getso(wm.shared[j].self), &objects_detected[obstacles_this_time*DIM]);
 //						objects_detected[obstacles_this_time*DIM+3] = (j+1); // label field replaced by robot ID (array index + 1)
-//						objects_detected[obstacles_this_time*DIM+4] = getso(timestamp); // TODO remove when proper timestamp is communicated
+//						objects_detected[obstacles_this_time*DIM+4] = timestamp; // TODO remove when proper timestamp is communicated
 //						//printf("process_objects has added player   at (%f,%f) with label %f and timestamp %f\n", objects_detected[obstacles_this_time*DIM], objects_detected[obstacles_this_time*DIM+1], objects_detected[obstacles_this_time*DIM+3], objects_detected[obstacles_this_time*DIM+4]);
 //						obstacles_this_time++;
 //						// only update last_processed_selves_ts if at least one shared self has been used for updating the filter
@@ -263,8 +248,9 @@ void obstacle_tracking(double timestamp,
 	}
 
     // stub with zero objects;
+    auto zero_obstacle = MRA::RobotsportsObstacleTracking::ObstacleCandidate();
     for (int k = obstacles_this_time; k < MAX_TURTLES*MAXNOBJ_LOCAL; k++) {
-		processObjects(zero_object, &objects_detected[k*DIM]);
+		processObjects(zero_obstacle, &objects_detected[k*DIM]);
     }
 
     // update administration
@@ -275,7 +261,7 @@ void obstacle_tracking(double timestamp,
     if (obstacles_this_time > -1) {
         int    pnobj;
         double self_pos[3]; //jve-TODO:  = &(getso(wm.self.pos.x))
-        int ret = sc_wm(pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, &pnobj, self_pos, objects_detected, obstacles_this_time, timestamp, &pscgd);
+        int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, &pnobj, self_pos, objects_detected, obstacles_this_time,  &pscgd);
         MRA_LOG_DEBUG("object process | %6.3f %3d %3d %3d %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
         if (ret == BM_SUCCESS) {
             // update object positions in world model since a successful step has been done
@@ -310,19 +296,6 @@ void obstacle_tracking(double timestamp,
         	// include time stamp
         	object_process.ts = timestamp;
         } // if return is successful, otherwise no update
-
-        if (object_process.dump_sc > 0 ) {
-            if (object_process.dump_sc > 1) {
-            	ret = print_hypotheses_w(&pscgd);
-            }
-            for (int j = 0; j < obstacles_this_time; j++) {
-                MRA_LOG_DEBUG("obstacle in  %d on %f %f with label %f", j, objects_detected[DIM*j], objects_detected[DIM*j+1], objects_detected[DIM*j+3]);
-            }
-            for (int k = 0; k < pnobj; k++) {
-                MRA_LOG_DEBUG("obstacle out %d on %f %f with label %f", k, pobj[4*k], pobj[4*k+2], pobj_label[k]);
-            }
-            object_process.dump_sc = 0;
-        }
 
     }
     // and exit normal

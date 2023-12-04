@@ -2,9 +2,21 @@ syntax = "proto3";
 
 package MRA.RobotsportsObstacleTracking;
 
-import "datatypes/BallCandidate.proto";
+import "google/protobuf/timestamp.proto";
+import "datatypes/Pose.proto";
+
+message ObstacleCandidate
+{
+    MRA.Datatypes.Pose measured_pose_fcs = 1; 
+    double confidence = 2;  // ball confidence [0..1] from sensor system (camera)
+    double radius = 3; // measured radius of object
+    google.protobuf.Timestamp timestamp = 4; // timestamp of observation 
+}
+
 
 message Input
 {
-    repeated MRA.Datatypes.BallCandidate frontcamera_balls = 2; // obstacle candidates
+    repeated ObstacleCandidate obstacle_candidates = 1; // obstacle candidates  [FCS]
+    repeated ObstacleCandidate communicated_teammates = 2; // obstacle candidates [FCS]
+    ObstacleCandidate self = 3; // own position in the field [FCS]
 }

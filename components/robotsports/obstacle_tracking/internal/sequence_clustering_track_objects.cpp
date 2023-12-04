@@ -21,40 +21,7 @@
 
 #include "logging.hpp"
 
-static struct timeval tv0;
 
-int reset_time(void)
-{
-    gettimeofday(&tv0,NULL);
-    
-    return 0;
-}
-
-
-
-/*static double get_time(void)
-{
-    double t,wrk;
-    
-    gettimeofday(&tva,NULL);
-    
-    t=(double) (tva.tv_sec-tv0.tv_sec)+((double) (tva.tv_usec-tv0.tv_usec))/1000000.0;
-    
-    return t;
-}*/
-
-
-static double get_time(void)
-{
-    double tm;
-    struct timeval tim;
- 
-    gettimeofday(&tim, NULL);
- 
-    tm=(double)tim.tv_sec + tim.tv_usec/1000000.0;
- 
-    return tm;
-}
 
 static void swap_index(int i, int j, int* idx)
 {
@@ -66,34 +33,6 @@ static void swap_index(int i, int j, int* idx)
     
     return;
 }
-
-
-
-
-
-
-void isort_descending(int *idx, double *iarr, int size)
-{
-    int i, j;
-    
-    for (i=0; i<size; i++) {
-        idx[i]=i;
-        
-    }
-    
-    for (i=0; i<size; i++) {
-        for (j=i; j<size; j++) {
-            if ( iarr[idx[j]]>iarr[idx[i]] ) {
-                swap_index(i, j, idx);
-            }
-        }
-    }
-    
-    return;
-}
-
-
-
 
 
 static void isort_ascending(int *idx, double *iarr, int size)
@@ -118,47 +57,39 @@ static void isort_ascending(int *idx, double *iarr, int size)
 
 
 
-
-
-int print_hypothesis_w(hypothesis_w* phyp, int i, scw_global_data*  pscgd)
-{
-/*  print hypothesis to screen */
-    
-    int j, idx;
-    
-    MRA_LOG_DEBUG("Hypothesis: %d", i);
-    MRA_LOG_DEBUG("   Number of objects = %d", phyp->number_of_objects);
-    if ( phyp->number_of_objects>0 ) {
-        for (j=0; j<pscgd->hyp[i].number_of_objects; j++) {
-        	idx=phyp->filter_id[j];
-        	MRA_LOG_DEBUG("   Object %d at (%f, %f)", j, pscgd->kal[idx].xh[0], pscgd->kal[idx].xh[2]);
-        	MRA_LOG_DEBUG("   Label = %d", pscgd->kal[idx].label);
-        }
-    }
-    MRA_LOG_DEBUG("   Probability = %f", phyp->probalility);
-    
-    return 0;
-}
-
-
-
-
-
-int print_hypotheses_w(scw_global_data* pscgd)
-{
-/* print overview to screen */
-    
-    int i;
-    
-    for (i=0; i<pscgd->number_hypotheses; i++) {
-        print_hypothesis_w(&(pscgd->hyp[i]), i, pscgd);
-    }
-    
-    return 0;
-}
-
-
-
+//static int print_hypothesis_w(hypothesis_w* phyp, int i, scw_global_data*  pscgd)
+//{
+///*  print hypothesis to screen */
+//
+//    int j, idx;
+//
+//    MRA_LOG_DEBUG("Hypothesis: %d", i);
+//    MRA_LOG_DEBUG("   Number of objects = %d", phyp->number_of_objects);
+//    if ( phyp->number_of_objects>0 ) {
+//        for (j=0; j<pscgd->hyp[i].number_of_objects; j++) {
+//        	idx=phyp->filter_id[j];
+//        	MRA_LOG_DEBUG("   Object %d at (%f, %f)", j, pscgd->kal[idx].xh[0], pscgd->kal[idx].xh[2]);
+//        	MRA_LOG_DEBUG("   Label = %d", pscgd->kal[idx].label);
+//        }
+//    }
+//    MRA_LOG_DEBUG("   Probability = %f", phyp->probalility);
+//
+//    return 0;
+//}
+//
+//
+//static int print_hypotheses_w(scw_global_data* pscgd)
+//{
+///* print overview to screen */
+//
+//    int i;
+//
+//    for (i=0; i<pscgd->number_hypotheses; i++) {
+//        print_hypothesis_w(&(pscgd->hyp[i]), i, pscgd);
+//    }
+//
+//    return 0;
+//}
 
 
 static int free_unused_filters(scw_global_data*  pscgd)
@@ -536,40 +467,27 @@ static int generate_offspring(double* z, scw_global_data*  pscgd)
 }
 
 
-static int printAssocId(scw_global_data*  pscgd, int id)
-{
-/*  Print kalman filter with id 'int id' with its association buffer */
-    MRA_LOG_DEBUG("Id: %i \t Label: %i \t State: %f x %f x %f x %f \t Assoc: %i %i %i %i %i %i %i %i \t birth: %f \t active: %i \t assoc_ptr: %i", id, pscgd->kal[id].label,
-                pscgd->kal[id].xh[0],
-                pscgd->kal[id].xh[1],
-                pscgd->kal[id].xh[2],
-                pscgd->kal[id].xh[3],
-                pscgd->kal[id].associations[0],
-                pscgd->kal[id].associations[1],
-                pscgd->kal[id].associations[2],
-                pscgd->kal[id].associations[3],
-                pscgd->kal[id].associations[4],
-                pscgd->kal[id].associations[5],
-                pscgd->kal[id].associations[6],
-                pscgd->kal[id].associations[7],
-                pscgd->kal[id].time_birth,
-                pscgd->kal[id].active,
-                pscgd->kal[id].assoc_ptr);
-    return 0;
-}
-
-int printAssoc(scw_global_data*  pscgd)
-{
-/*  Print all kalman filters with their association buffers */
-    MRA_LOG_DEBUG("Printing all filters:");
-    int i;
-    for(i = 0; i < MAXFIL; ++i) {
-        if(!pscgd->kal[i].active) continue;
-        printAssocId(pscgd, i);
-    }
-    
-    return 0;
-}
+//static int printAssocId(scw_global_data*  pscgd, int id)
+//{
+///*  Print kalman filter with id 'int id' with its association buffer */
+//    MRA_LOG_DEBUG("Id: %i \t Label: %i \t State: %f x %f x %f x %f \t Assoc: %i %i %i %i %i %i %i %i \t birth: %f \t active: %i \t assoc_ptr: %i", id, pscgd->kal[id].label,
+//                pscgd->kal[id].xh[0],
+//                pscgd->kal[id].xh[1],
+//                pscgd->kal[id].xh[2],
+//                pscgd->kal[id].xh[3],
+//                pscgd->kal[id].associations[0],
+//                pscgd->kal[id].associations[1],
+//                pscgd->kal[id].associations[2],
+//                pscgd->kal[id].associations[3],
+//                pscgd->kal[id].associations[4],
+//                pscgd->kal[id].associations[5],
+//                pscgd->kal[id].associations[6],
+//                pscgd->kal[id].associations[7],
+//                pscgd->kal[id].time_birth,
+//                pscgd->kal[id].active,
+//                pscgd->kal[id].assoc_ptr);
+//    return 0;
+//}
 
 static double kalman_update(double t, double* z, scw_global_data*  pscgd)
 {
@@ -755,13 +673,11 @@ static int clip_circ(double bound, double* pmypos, scw_global_data*  pscgd)
 
 
 
-static int clip_time(scw_global_data*  pscgd)
+static int clip_time(double timestamp, scw_global_data*  pscgd)
 {
 /*  clip hypotheses w.r.t. objects that have not been updated for a while */
     
     int i, j, k, m, idx, x[MAXNOBJ_GLOBAL];
-    
-    double timestamp = get_time(); // jve-TODO
     
     for (i=0; i<pscgd->number_hypotheses; i++) {
         k=0;
@@ -1002,7 +918,7 @@ static int select_n_obstacles(double* z, int* pn, double* pobst, int maxobst, do
 
 
 
-int sc_wm(double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pmypos, double* pobst, int maxobst,  double time, scw_global_data*  pscgd)
+int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pmypos, double* pobst, int maxobst, scw_global_data*  pscgd)
 {
 /*
       inputs:  pmypos    - (x, y) position of turtle
@@ -1085,7 +1001,7 @@ int sc_wm(double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_b
             }
             
 /*        	clip objects that have not be updated for a while */
-            if ( clip_time(pscgd)<0 ) {return -1;}
+            if ( clip_time(timestamp, pscgd)<0 ) {return -1;}
             
 /*        	gating of discrete probability distribution */
             if ( nhyp_controller(pscgd)<0 ) {return -1;}
@@ -1095,7 +1011,7 @@ int sc_wm(double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_b
         }
     } else {
         /*      clip objects that have not be updated for a while */
-        if ( clip_time(pscgd)<0 ) {return -1;}
+        if ( clip_time(timestamp, pscgd)<0 ) {return -1;}
         
 /*              clear unused filters */
         if ( free_unused_filters(pscgd)<0 ) {return -1;}
@@ -1172,27 +1088,6 @@ int init_sc_wm(scw_global_data*  pscgd, double time)
     init_hyp(pscgd->hyp2);
     
 /*    initialize free filter index */
-    free_unused_filters(pscgd);
-    
-    return 0;
-}
-
-int init_sc_nopar(scw_global_data*  pscgd)
-{
-//  struct timeval tim; // tpb - not used
-    
-    /* initial number of hypotheses */
-    pscgd->number_hypotheses=1;
-    
-    /* initialize time */
-    pscgd->current_time=get_time();
-    /* pscgd->current_time=0.0; */
-    
-    /* initialize hypotheses */
-    init_hyp(pscgd->hyp);
-    init_hyp(pscgd->hyp2);
-    
-    /* initialize free filter index */
     free_unused_filters(pscgd);
     
     return 0;

@@ -43,15 +43,16 @@ int RobotsportsLocalBallTracking::RobotsportsLocalBallTracking::tick(google::pro
         auto input_candidate = MRA::Datatypes::BallCandidate();
         input_candidate.CopyFrom(input.candidates(idx));
         ball_candidate_t candidate;
-        candidate.x = input_candidate.measured_pose_fcs().x();
-        candidate.y = input_candidate.measured_pose_fcs().y();
-        candidate.z = input_candidate.measured_pose_fcs().z();
+        candidate.x = input_candidate.pose_fcs().x();
+        candidate.y = input_candidate.pose_fcs().y();
+        candidate.z = input_candidate.pose_fcs().z();
         candidate.confidence = input_candidate.confidence();
         candidate.type  = input_candidate.source();
         candidate.sigma  = input_candidate.sigma();
-        candidate.is_free =  input_candidate.is_free();
-        candidate.in_air =  input_candidate.in_air();
         candidate.timestamp = (google::protobuf::util::TimeUtil::TimestampToMilliseconds(input_candidate.timestamp()) / 1000.0);
+        candidate.is_free = true;  /* is rolling freely (bool). In future check can be added to verify if ball is truely rolling freely */
+        candidate.in_air = candidate.z > 0.2;  /* is flying in the air (bool) */
+
         ballData.push_back(candidate);
     }
 

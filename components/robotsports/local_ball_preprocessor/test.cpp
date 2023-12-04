@@ -41,18 +41,18 @@ TEST(RobotsportsLocalBallPreprocessorTest, FourMeasurements)
 
 
     auto front_candidate_1 = MRA::Datatypes::BallCandidate();
-    front_candidate_1.mutable_measured_pose_fcs()->set_x(1.0);
-    front_candidate_1.mutable_measured_pose_fcs()->set_y(1.0);
-    front_candidate_1.mutable_measured_pose_fcs()->set_z(0.1);
+    front_candidate_1.mutable_pose_fcs()->set_x(1.0);
+    front_candidate_1.mutable_pose_fcs()->set_y(1.0);
+    front_candidate_1.mutable_pose_fcs()->set_z(0.1);
     front_candidate_1.set_confidence(0.8);
     front_candidate_1.set_sigma(0.6);
     front_candidate_1.mutable_timestamp()->CopyFrom(timestamp);
     input.mutable_frontcamera_balls()->Add()->CopyFrom(front_candidate_1);
 
     auto front_candidate_2 = MRA::Datatypes::BallCandidate();
-    front_candidate_2.mutable_measured_pose_fcs()->set_x(1.2);
-    front_candidate_2.mutable_measured_pose_fcs()->set_y(8.0);
-    front_candidate_2.mutable_measured_pose_fcs()->set_z(0.1);
+    front_candidate_2.mutable_pose_fcs()->set_x(1.2);
+    front_candidate_2.mutable_pose_fcs()->set_y(8.0);
+    front_candidate_2.mutable_pose_fcs()->set_z(0.1);
     front_candidate_2.set_confidence(0.1);
     front_candidate_2.set_sigma(0.6);
     front_candidate_2.mutable_timestamp()->CopyFrom(timestamp);
@@ -60,18 +60,18 @@ TEST(RobotsportsLocalBallPreprocessorTest, FourMeasurements)
 
 
     auto omnivision_candidate_1 = MRA::Datatypes::BallCandidate();
-    omnivision_candidate_1.mutable_measured_pose_fcs()->set_x(1.0);
-    omnivision_candidate_1.mutable_measured_pose_fcs()->set_y(1.0);
-    omnivision_candidate_1.mutable_measured_pose_fcs()->set_z(0.1);
+    omnivision_candidate_1.mutable_pose_fcs()->set_x(1.0);
+    omnivision_candidate_1.mutable_pose_fcs()->set_y(1.0);
+    omnivision_candidate_1.mutable_pose_fcs()->set_z(0.1);
     omnivision_candidate_1.set_confidence(0.8);
     omnivision_candidate_1.set_sigma(0.46);
     omnivision_candidate_1.mutable_timestamp()->CopyFrom(timestamp);
     input.mutable_omnivision_balls()->Add()->CopyFrom(omnivision_candidate_1);
 
     auto omnivision_candidate_2 = MRA::Datatypes::BallCandidate();
-    omnivision_candidate_2.mutable_measured_pose_fcs()->set_x(1.2);
-    omnivision_candidate_2.mutable_measured_pose_fcs()->set_y(8.0);
-    omnivision_candidate_2.mutable_measured_pose_fcs()->set_z(0.1);
+    omnivision_candidate_2.mutable_pose_fcs()->set_x(1.2);
+    omnivision_candidate_2.mutable_pose_fcs()->set_y(8.0);
+    omnivision_candidate_2.mutable_pose_fcs()->set_z(0.1);
     omnivision_candidate_2.set_confidence(0.1);
     omnivision_candidate_2.set_sigma(0.4);
     omnivision_candidate_2.mutable_timestamp()->CopyFrom(timestamp);

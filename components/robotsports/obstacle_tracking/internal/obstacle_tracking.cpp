@@ -49,8 +49,8 @@ obstacle_tracking_t object_process;
 static int processObjects(MRA::RobotsportsObstacleTracking::ObstacleCandidate obstacle_candidate, double* objectData)
 {
     /* copy object position */
-    objectData[0] = obstacle_candidate.measured_pose_fcs().x();			// x position in extrapolated coordinates
-    objectData[1] = obstacle_candidate.measured_pose_fcs().y();			// y position in extrapolated coordinates
+    objectData[0] = obstacle_candidate.pose_fcs().x();			// x position in extrapolated coordinates
+    objectData[1] = obstacle_candidate.pose_fcs().y();			// y position in extrapolated coordinates
     objectData[2] = obstacle_candidate.radius(); 			// radius of object
     objectData[3] = 0;							// label = 0 is for unknown (default)
     objectData[4] = google::protobuf::util::TimeUtil::TimestampToMilliseconds(obstacle_candidate.timestamp()) / 1000.0;				// timestamp
@@ -214,31 +214,32 @@ void obstacle_tracking(double timestamp,
     if (object_process.use_shared_selves) {
     	double last_shared_selves_timestamp = 0.0;
         // check against last updated timestamp for shared selves information
-        for (int m = 0; m < NRPLAYERS_COMPLETE_TEAM; m++) {
-// jve-TODO
-//        	if (getso(wm.shared[m].self.ts) > last_shared_selves_timestamp)
-//        		last_shared_selves_timestamp = getso(wm.shared[m].self.ts);
+        for (int m = 0; m < input.communicated_teammates_size(); m++) {
+            auto player_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.communicated_teammates(m).timestamp()) / 1000.0;
+            if (player_ts > last_shared_selves_timestamp) {
+                last_shared_selves_timestamp = player_ts;
+            }
+
         }
         // last_processed_selves_timestamp was previously initialized
         if (last_shared_selves_timestamp > last_processed_selves_timestamp) {
-			for (int j = 0; j < NRPLAYERS_COMPLETE_TEAM; j++) {
-				// only pick if player is active, sufficient confidence and time stamp more recent than (last update + interval)
-// jve-TODO:
-//				if ((getso(wm.shared[j].active_role) != static_cast<int>(player_type_e::RESERVE))
-//				        && (getso(wm.shared[j].self.confidence) > object_process.min_conf_shared_selves)
-//				        && (getso(wm.shared[j].self.ts) > (last_processed_selves_timestamp + object_process.update_interval_selves))) {
-//					// we have a valid shared self
-//					if (obstacles_this_time < MAX_TURTLES*MAXNOBJ_LOCAL) {
-//						// add it if still room
-//						processObjects(getso(wm.shared[j].self), &objects_detected[obstacles_this_time*DIM]);
-//						objects_detected[obstacles_this_time*DIM+3] = (j+1); // label field replaced by robot ID (array index + 1)
-//						objects_detected[obstacles_this_time*DIM+4] = timestamp; // TODO remove when proper timestamp is communicated
-//						//printf("process_objects has added player   at (%f,%f) with label %f and timestamp %f\n", objects_detected[obstacles_this_time*DIM], objects_detected[obstacles_this_time*DIM+1], objects_detected[obstacles_this_time*DIM+3], objects_detected[obstacles_this_time*DIM+4]);
-//						obstacles_this_time++;
-//						// only update last_processed_selves_ts if at least one shared self has been used for updating the filter
-//						object_process.last_processed_selves_ts, last_shared_selves_timestamp);
-//					}
-//				}
+			for (int j = 0; j < input.communicated_teammates_size(); j++) {
+				// only pick if player has sufficient confidence and time stamp more recent than (last update + interval)
+	            auto player_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.communicated_teammates(j).timestamp()) / 1000.0;
+				if ((input.communicated_teammates(j).confidence() > object_process.min_conf_shared_selves)
+				    and (player_ts > (last_processed_selves_timestamp + object_process.update_interval_selves))) {
+					// we have a valid shared self
+					if (obstacles_this_time < MAX_TURTLES*MAXNOBJ_LOCAL) {
+						// add it if still room
+						processObjects(input.communicated_teammates(j), &objects_detected[obstacles_this_time*DIM]);
+						objects_detected[obstacles_this_time*DIM+3] = (j+1); // label field replaced by robot ID (array index + 1)
+						objects_detected[obstacles_this_time*DIM+4] = timestamp; // TODO remove when proper timestamp is communicated
+						//printf("process_objects has added player   at (%f,%f) with label %f and timestamp %f\n", objects_detected[obstacles_this_time*DIM], objects_detected[obstacles_this_time*DIM+1], objects_detected[obstacles_this_time*DIM+3], objects_detected[obstacles_this_time*DIM+4]);
+						obstacles_this_time++;
+						// only update last_processed_selves_ts if at least one shared self has been used for updating the filter
+						object_process.last_processed_selves_ts = last_shared_selves_timestamp;
+					}
+				}
 			}
         }
     }
@@ -257,46 +258,41 @@ void obstacle_tracking(double timestamp,
     object_process.nr_objects = obstacles_this_time;
 
     // now run sc_bm code if obstacles are found
-    // TODO remove stub to run filter always (expressed by "> -1" since 0 will be default value for obstacles_this_time
-    if (obstacles_this_time > -1) {
-        int    pnobj;
-        double self_pos[3]; //jve-TODO:  = &(getso(wm.self.pos.x))
-        int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, &pnobj, self_pos, objects_detected, obstacles_this_time,  &pscgd);
-        MRA_LOG_DEBUG("object process | %6.3f %3d %3d %3d %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
-        if (ret == BM_SUCCESS) {
-            // update object positions in world model since a successful step has been done
-        	// copy position and velocity data, and size, for all objects reported by filter
-    //    	printf("#objects clustered %d\n", pnobj);
-        	int i;
-        	for (i = 0; i < pnobj; i++) {
-        			object_process.out[i].pos.x = pobj[4*i];
-        			object_process.out[i].vel.x = pobj[4*i+1];
-        			object_process.out[i].pos.y = pobj[4*i+2];
-        			object_process.out[i].vel.y = pobj[4*i+3];
-        			object_process.out[i].size =  pobj_radius[i];
-        			object_process.out[i].ts = timestamp;
-        			if (pobj_label[i] < OBJECT_LABEL_OWNTEAM) {
-        				object_process.out[i].type = OBJECT_PLAYER_US;
-        			}
-        			else {
-        				object_process.out[i].type = OBJECT_PLAYER_THEM;
-        			}
-        			object_process.out[i].confidence = 0.8;
-        			// TODO temporary assignment of object filter label to col.r for debugging purposes
-        			//      may be used for association of opponent robot detections - this is reported but may be difficult due to noise
-        			object_process.out[i].col.r = pobj_label[i];
-        	}
-        	// stub remaining out fields with zero objects
-            while (i < MAXNOBJ_GLOBAL) {
-    			object_process.out[i] = zero_object;
-                i++;
+    int    pnobj;
+    int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, &pnobj, objects_detected, obstacles_this_time,  &pscgd);
+    MRA_LOG_DEBUG("object process | %6.3f %3d %3d %3d %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
+    if (ret == BM_SUCCESS) {
+        // update object positions in world model since a successful step has been done
+        // copy position and velocity data, and size, for all objects reported by filter
+        //    	printf("#objects clustered %d\n", pnobj);
+        int i;
+        for (i = 0; i < pnobj; i++) {
+            object_process.out[i].pos.x = pobj[4*i];
+            object_process.out[i].vel.x = pobj[4*i+1];
+            object_process.out[i].pos.y = pobj[4*i+2];
+            object_process.out[i].vel.y = pobj[4*i+3];
+            object_process.out[i].size =  pobj_radius[i];
+            object_process.out[i].ts = timestamp;
+            if (pobj_label[i] < OBJECT_LABEL_OWNTEAM) {
+                object_process.out[i].type = OBJECT_PLAYER_US;
             }
-        	// include number of (valid) objects
-        	object_process.nobj = (long)pnobj;
-        	// include time stamp
-        	object_process.ts = timestamp;
-        } // if return is successful, otherwise no update
+            else {
+                object_process.out[i].type = OBJECT_PLAYER_THEM;
+            }
+            object_process.out[i].confidence = 0.8;
+            // TODO temporary assignment of object filter label to col.r for debugging purposes
+            //      may be used for association of opponent robot detections - this is reported but may be difficult due to noise
+            object_process.out[i].col.r = pobj_label[i];
+        }
+        // stub remaining out fields with zero objects
+        while (i < MAXNOBJ_GLOBAL) {
+            object_process.out[i] = zero_object;
+            i++;
+        }
+        // include number of (valid) objects
+        object_process.nobj = (long)pnobj;
+        // include time stamp
+        object_process.ts = timestamp;
+    } // if return is successful, otherwise no update
 
-    }
-    // and exit normal
 }

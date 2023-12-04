@@ -7,7 +7,7 @@ import "datatypes/Pose.proto";
 
 message ObstacleCandidate
 {
-    MRA.Datatypes.Pose measured_pose_fcs = 1; 
+    MRA.Datatypes.Pose pose_fcs = 1; 
     double confidence = 2;  // ball confidence [0..1] from sensor system (camera)
     double radius = 3; // measured radius of object
     google.protobuf.Timestamp timestamp = 4; // timestamp of observation 
@@ -17,6 +17,10 @@ message ObstacleCandidate
 message Input
 {
     repeated ObstacleCandidate obstacle_candidates = 1; // obstacle candidates  [FCS]
-    repeated ObstacleCandidate communicated_teammates = 2; // obstacle candidates [FCS]
+    repeated ObstacleCandidate communicated_teammates = 2; // obstacle candidates [FCS]. Only participating team mates must be added (no reserves)
     ObstacleCandidate self = 3; // own position in the field [FCS]
+    
+    // PREFERRED: but no timestamp
+    //   repeated MRA.Datatypes.Player communicated_teammates = 2; // obstacle candidates [FCS]
+    //   MRA.Datatypes.Player self = 3; // own position in the field [FCS]
 }

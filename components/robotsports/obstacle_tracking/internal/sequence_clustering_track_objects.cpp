@@ -133,39 +133,34 @@ static int free_unused_filters(scw_global_data*  pscgd)
 /*  reset free filter start index */
     pscgd->ff.ifree=0;
     
-    switch (pscgd->par.mode) {
-        case MODE_GLOBL:
-/*      build activity array for opponent labels */
-            for (i=0; i<MAXFIL; i++) {
-                label_in_use[i]=0;
-            }
-            for (i=0; i<MAXFIL; i++) {
-                if ( pscgd->kal[i].active==1 ) {
-                    if ( pscgd->kal[i].label>=LABEL_OFFSET ) {
-/*                      this is a labeled opponent object */
-                        label_in_use[pscgd->kal[i].label-LABEL_OFFSET]=1;
-                    }
-                }
-            }
-            
-/*      build free label index */
-            j=0;
-            for (i=0; i<MAXFIL; i++) {
-                if ( label_in_use[i]==0 ) {
-                    pscgd->fl.index[j]=i+LABEL_OFFSET;
-                    j++;
-                }
-            }
-            
-/*      number of free labels */
-            pscgd->fl.nfree=j;
-//          MRA_LOG_DEBUG("Just marked %d free labels", j);
-            
-/*      reset free label start index */
-            pscgd->fl.ifree=0;
-            
-            break;
+    /*      build activity array for opponent labels */
+    for (i=0; i<MAXFIL; i++) {
+        label_in_use[i]=0;
     }
+    for (i=0; i<MAXFIL; i++) {
+        if ( pscgd->kal[i].active==1 ) {
+            if ( pscgd->kal[i].label>=LABEL_OFFSET ) {
+                /*                      this is a labeled opponent object */
+                label_in_use[pscgd->kal[i].label-LABEL_OFFSET]=1;
+            }
+        }
+    }
+
+    /*      build free label index */
+    j=0;
+    for (i=0; i<MAXFIL; i++) {
+        if ( label_in_use[i]==0 ) {
+            pscgd->fl.index[j]=i+LABEL_OFFSET;
+            j++;
+        }
+    }
+
+    /*      number of free labels */
+    pscgd->fl.nfree=j;
+    //          MRA_LOG_DEBUG("Just marked %d free labels", j);
+
+    /*      reset free label start index */
+    pscgd->fl.ifree=0;
     
     return 0;
 }
@@ -285,27 +280,23 @@ static int associate_with_existing_object(int i, int j, int iobj, double* z, scw
     pscgd->hyp2[j].hypothesis_id=j; /* label hypothesis */
     
     filter_id=pscgd->hyp2[j].filter_id[iobj];
-    switch (pscgd->par.mode) {
-        case MODE_GLOBL:
-            if ( z[3]>0 ) {
-/*          inherit measurement label for known object */
-                pscgd->kal[filter_id].label=z[3];
-                //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, pscgd->kal[filter_id].label);
-                /* number of objects in this hypothesis */
-                nobj=pscgd->hyp2[j].number_of_objects;
-                /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
-                for (m=0; m<nobj; m++) {
-                    if ( m!=iobj ) {
-                        idx=pscgd->hyp2[j].filter_id[m];
-                        if ( pscgd->kal[idx].label==(int) z[3] ) {
-                            //MRA_LOG_DEBUG("---> hyp %d: EXIST OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
-                            pscgd->kal[idx].label=get_free_label(pscgd);
-                            //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", pscgd->kal[idx].label);
-                        }
-                    }
+    if ( z[3]>0 ) {
+        /*          inherit measurement label for known object */
+        pscgd->kal[filter_id].label=z[3];
+        //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, pscgd->kal[filter_id].label);
+        /* number of objects in this hypothesis */
+        nobj=pscgd->hyp2[j].number_of_objects;
+        /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
+        for (m=0; m<nobj; m++) {
+            if ( m!=iobj ) {
+                idx=pscgd->hyp2[j].filter_id[m];
+                if ( pscgd->kal[idx].label==(int) z[3] ) {
+                    //MRA_LOG_DEBUG("---> hyp %d: EXIST OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
+                    pscgd->kal[idx].label=get_free_label(pscgd);
+                    //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", pscgd->kal[idx].label);
                 }
             }
-            break;
+        }
     }
     
     return 0;
@@ -367,58 +358,54 @@ static int associate_with_new_object(int i, int j, double* z, scw_global_data*  
         pscgd->kal[free_id].active=1;
     }
     
-/*  create new object */
+    /*  create new object */
     filter_id=get_free_filter(pscgd);
     if ( (filter_id<0) || ((pscgd->hyp2[j].number_of_objects-1)>=MAXNOBJ_GLOBAL) ) {return -1;}
     pscgd->hyp2[j].filter_id[pscgd->hyp2[j].number_of_objects-1]=filter_id;
     
-/*  initialize filter initial condition at measurement z (zero-velocity) and activate filter */
+    /*  initialize filter initial condition at measurement z (zero-velocity) and activate filter */
     pscgd->kal[filter_id].xh[0]=z[0];
     pscgd->kal[filter_id].xh[2]=z[1];
     //MRA_LOG_DEBUG("new filter and new object with x %f and y %f", z[0], z[1]);
     
-    switch (pscgd->par.mode) {
-        case MODE_GLOBL:
-            if ( z[3]>0 ) {
-/*          inherit measurement label for known object */
-                pscgd->kal[filter_id].label=z[3];
-                //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, pscgd->kal[filter_id].label);
-                /* number of objects in this hypothesis */
-                nobj=pscgd->hyp2[j].number_of_objects;
-                /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
-                for (m=0; m<(nobj-1); m++) {
-                    idx=pscgd->hyp2[j].filter_id[m];
-                    if ( pscgd->kal[idx].label==(int) z[3] ) {
-                        //MRA_LOG_DEBUG("---> hyp %d: NEW OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
-                        pscgd->kal[idx].label=get_free_label(pscgd);
-                        //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", pscgd->kal[idx].label);
-                    }
-                }
-            } else {
-/*          check if this new object associates with an existing object */
-                assoc_id=find_associating_object(z, pscgd);
-                if ( assoc_id<0 ) {
-/*              no object found, assign new label */
-                    free_id=get_free_label(pscgd);
-                    if ( free_id<0 ) {return -1;}
-                    pscgd->kal[filter_id].label=free_id;
-                    pscgd->kal[filter_id].time_birth=z[4];
-                    //MRA_LOG_DEBUG("---> New label for object %d, label is %d.", filter_id, free_id);
-                } else {
-/*              inherit label from associating object */
-                    pscgd->kal[filter_id].label=pscgd->kal[assoc_id].label;
-/*                  inherit birth date from associating object */
-                    pscgd->kal[filter_id].time_birth = pscgd->kal[assoc_id].time_birth;
-/*                  merge associations */
-                    for( k=0; k<ASSOC_BUFFER_LENGTH; k++ ) {
-                        filter1_assoc_ptr = (k+pscgd->kal[filter_id].assoc_ptr)%ASSOC_BUFFER_LENGTH;
-                        filter2_assoc_ptr = (k+pscgd->kal[assoc_id].assoc_ptr)%ASSOC_BUFFER_LENGTH;
-                        pscgd->kal[filter_id].associations[filter1_assoc_ptr] += pscgd->kal[assoc_id].associations[filter2_assoc_ptr];
-                    }
-                    //MRA_LOG_DEBUG("---> Label for object %d inherited from existing object, label is %d.", filter_id, pscgd->kal[filter_id].label);
-                }
+    if ( z[3]>0 ) {
+        /*          inherit measurement label for known object */
+        pscgd->kal[filter_id].label=z[3];
+        //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, pscgd->kal[filter_id].label);
+        /* number of objects in this hypothesis */
+        nobj=pscgd->hyp2[j].number_of_objects;
+        /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
+        for (m=0; m<(nobj-1); m++) {
+            idx=pscgd->hyp2[j].filter_id[m];
+            if ( pscgd->kal[idx].label==(int) z[3] ) {
+                //MRA_LOG_DEBUG("---> hyp %d: NEW OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
+                pscgd->kal[idx].label=get_free_label(pscgd);
+                //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", pscgd->kal[idx].label);
             }
-            break;
+        }
+    } else {
+        /*          check if this new object associates with an existing object */
+        assoc_id=find_associating_object(z, pscgd);
+        if ( assoc_id<0 ) {
+            /*              no object found, assign new label */
+            free_id=get_free_label(pscgd);
+            if ( free_id<0 ) {return -1;}
+            pscgd->kal[filter_id].label=free_id;
+            pscgd->kal[filter_id].time_birth=z[4];
+            //MRA_LOG_DEBUG("---> New label for object %d, label is %d.", filter_id, free_id);
+        } else {
+            /*              inherit label from associating object */
+            pscgd->kal[filter_id].label=pscgd->kal[assoc_id].label;
+            /*                  inherit birth date from associating object */
+            pscgd->kal[filter_id].time_birth = pscgd->kal[assoc_id].time_birth;
+            /*                  merge associations */
+            for( k=0; k<ASSOC_BUFFER_LENGTH; k++ ) {
+                filter1_assoc_ptr = (k+pscgd->kal[filter_id].assoc_ptr)%ASSOC_BUFFER_LENGTH;
+                filter2_assoc_ptr = (k+pscgd->kal[assoc_id].assoc_ptr)%ASSOC_BUFFER_LENGTH;
+                pscgd->kal[filter_id].associations[filter1_assoc_ptr] += pscgd->kal[assoc_id].associations[filter2_assoc_ptr];
+            }
+            //MRA_LOG_DEBUG("---> Label for object %d inherited from existing object, label is %d.", filter_id, pscgd->kal[filter_id].label);
+        }
     }
     
     pscgd->kal[filter_id].active=1;
@@ -539,23 +526,6 @@ static double kalman_update(double t, double* z, scw_global_data*  pscgd)
 }
 
 
-
-
-
-static double norm(double* x)
-{
-    double d;
-    
-    d=sqrt(x[0]*x[0]+x[1]*x[1]);
-    
-    return d;
-}
-
-
-
-
-
-
 static int likelihood_update(double *z, scw_global_data*  pscgd)
 {
 /*  likelihood update of measurement z for all hypotheses */
@@ -575,9 +545,6 @@ static int likelihood_update(double *z, scw_global_data*  pscgd)
     
     return 0;
 }
-
-
-
 
 
 static int normalization(scw_global_data*  pscgd)
@@ -626,49 +593,6 @@ static int buffer_sum(scw_global_data*  pscgd, int id)
     }
     return sum;
 }
-
-
-
-
-static int clip_circ(double bound, double* pmypos, scw_global_data*  pscgd)
-{
-/*  clip hypotheses at circular state space boundary */
-    
-    int i, j, k, m, idx, x[MAXNOBJ_GLOBAL];
-    double p[2];
-    
-    for (i=0; i<pscgd->number_hypotheses; i++) {
-        k=0;
-        while ( k<pscgd->hyp[i].number_of_objects ) {
-            if ( k>=MAXNOBJ_GLOBAL ) {return -1;}
-            idx=pscgd->hyp[i].filter_id[k];
-            p[0]=pscgd->kal[idx].xh[0]-pmypos[0];
-            p[1]=pscgd->kal[idx].xh[2]-pmypos[1];
-            if ( norm(p)>bound) {
-                
-/*              rebuild filter_id array */
-                j=0;
-                for (m=0; m<pscgd->hyp[i].number_of_objects; m++) {
-                    if ( m!=k ) {
-                        if ( (m>=MAXNOBJ_GLOBAL) || (j>=MAXNOBJ_GLOBAL) ) {return -1;}
-                        x[j]=pscgd->hyp[i].filter_id[m];
-                        j++;
-                    }
-                }
-                
-                pscgd->hyp[i].number_of_objects=pscgd->hyp[i].number_of_objects-1; /* throw away object */
-                memcpy(pscgd->hyp[i].filter_id, x, pscgd->hyp[i].number_of_objects*sizeof(int));
-                k=-1;
-                //MRA_LOG_DEBUG("sc_wm: threw away object outside circle");
-
-            }
-            k=k+1;
-        }
-    }
-    
-    return 0;
-}
-
 
 
 
@@ -918,11 +842,10 @@ static int select_n_obstacles(double* z, int* pn, double* pobst, int maxobst, do
 
 
 
-int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pmypos, double* pobst, int maxobst, scw_global_data*  pscgd)
+int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, double* pobj_assoc_buffer, double* plabel, int* pnobj, double* pobst, int maxobst, scw_global_data*  pscgd)
 {
 /*
-      inputs:  pmypos    - (x, y) position of turtle
-               pobst     - (x, y, r, label, t) tuples of detected obstacles, padded with zeros
+      inputs:  pobst     - (x, y, r, label, t) tuples of detected obstacles, padded with zeros
                maxobst   - maximum number of detected obstacles
                time      - actual time
                pscgd     - pointer to global workspace
@@ -942,14 +865,7 @@ int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, do
     
     n=pscgd->par.nselect;
 //  MRA_LOG_DEBUG("new iteration of sc_wm with %d obstacles detected", maxobst);
-    switch (pscgd->par.mode) {
-        case MODE_LOCAL:
-            select_n_obstacles(zm, &n, pobst, maxobst, pmypos, pscgd->par.clipradius);
-            break;
-        case MODE_GLOBL:
-            select_n_obstacles(zm, &n, pobst, maxobst, x, 1000.0); /* select all obstacles */
-            break;
-    }
+    select_n_obstacles(zm, &n, pobst, maxobst, x, 1000.0); /* select all obstacles */
 
     if (n>0) {
 /*      sort obstacles with respect to ascending time */
@@ -989,16 +905,8 @@ int sc_wm(double timestamp, double* pobj, double* pr, double* pobj_birthdate, do
 /*        	normalize probability distribution */
             if ( normalization(pscgd)<0 ) {return -1;}
             
-            switch (pscgd->par.mode) {
-                case MODE_LOCAL:
-/*            		clip objects outside radius */
-                    if ( clip_circ(pscgd->par.clipradius, pmypos, pscgd)<0 ) {return -1;}
-                    break;
-                case MODE_GLOBL:
-/*            		clip objects outside field */
-                    if ( clip_rect(-FIELDWIDTH/2.0-FIELDMARGIN, FIELDWIDTH/2.0+FIELDMARGIN, -FIELDLENGTH/2.0-FIELDMARGIN, FIELDLENGTH/2.0+FIELDMARGIN, pscgd)<0 ) {return -1;} /* clip outside rectangular box */
-                    break;
-            }
+            /*            		clip objects outside field */
+            if ( clip_rect(-FIELDWIDTH/2.0-FIELDMARGIN, FIELDWIDTH/2.0+FIELDMARGIN, -FIELDLENGTH/2.0-FIELDMARGIN, FIELDLENGTH/2.0+FIELDMARGIN, pscgd)<0 ) {return -1;} /* clip outside rectangular box */
             
 /*        	clip objects that have not be updated for a while */
             if ( clip_time(timestamp, pscgd)<0 ) {return -1;}
@@ -1073,7 +981,6 @@ int init_sc_wm(scw_global_data*  pscgd, double time)
     pscgd->par.clipradius=10.0;
     pscgd->par.kscale=0.1;
     pscgd->par.maxage=0.5;
-    pscgd->par.mode=MODE_GLOBL;
     pscgd->par.labelbound=0.95;
     
 /*    initial number of hypotheses */

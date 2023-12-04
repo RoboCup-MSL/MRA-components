@@ -206,16 +206,14 @@ RobotsportsLocalBall::Output execute_ball_traject_test(BallTrajectGenerator traj
                 input.mutable_omnivision_balls()->Clear();
                 for (unsigned idx = 0; idx < data.omni_candidates.size(); idx++) {
                     auto  candidate = MRA::Datatypes::BallCandidate();
-                    candidate.mutable_measured_pose_fcs()->set_x(data.omni_candidates[idx].x);
-                    candidate.mutable_measured_pose_fcs()->set_y(data.omni_candidates[idx].y);
-                    candidate.mutable_measured_pose_fcs()->set_z(data.omni_candidates[idx].z);
+                    candidate.mutable_pose_fcs()->set_x(data.omni_candidates[idx].x);
+                    candidate.mutable_pose_fcs()->set_y(data.omni_candidates[idx].y);
+                    candidate.mutable_pose_fcs()->set_z(data.omni_candidates[idx].z);
                     candidate.set_confidence(data.omni_candidates[idx].confidence);
                     candidate.set_sigma(data.omni_candidates[idx].sigma);
                     google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.omni_candidates[idx].ts*1000.0);
                     candidate.mutable_timestamp()->CopyFrom(timestamp);
                     candidate.set_source(data.omni_candidates[idx].source);
-                    candidate.set_is_free(data.omni_candidates[idx].is_free);
-                    candidate.set_in_air (data.omni_candidates[idx].in_air);
 
                     input.mutable_omnivision_balls()->Add()->CopyFrom(candidate);
                 }
@@ -224,16 +222,14 @@ RobotsportsLocalBall::Output execute_ball_traject_test(BallTrajectGenerator traj
                 input.mutable_frontcamera_balls()->Clear();
                 for (unsigned idx = 0; idx < data.frontcamera_candidates.size(); idx++) {
                     auto  candidate = MRA::Datatypes::BallCandidate();
-                    candidate.mutable_measured_pose_fcs()->set_x(data.frontcamera_candidates[idx].x);
-                    candidate.mutable_measured_pose_fcs()->set_y(data.frontcamera_candidates[idx].y);
-                    candidate.mutable_measured_pose_fcs()->set_z(data.frontcamera_candidates[idx].z);
+                    candidate.mutable_pose_fcs()->set_x(data.frontcamera_candidates[idx].x);
+                    candidate.mutable_pose_fcs()->set_y(data.frontcamera_candidates[idx].y);
+                    candidate.mutable_pose_fcs()->set_z(data.frontcamera_candidates[idx].z);
                     candidate.set_confidence(data.frontcamera_candidates[idx].confidence);
                     candidate.set_sigma(data.frontcamera_candidates[idx].sigma);
                     google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.frontcamera_candidates[idx].ts*1000.0);
                     candidate.mutable_timestamp()->CopyFrom(timestamp);
                     candidate.set_source(data.frontcamera_candidates[idx].source);
-                    candidate.set_is_free(data.frontcamera_candidates[idx].is_free);
-                    candidate.set_in_air (data.frontcamera_candidates[idx].in_air);
 
                     input.mutable_frontcamera_balls()->Add()->CopyFrom(candidate);
                 }
@@ -250,7 +246,7 @@ RobotsportsLocalBall::Output execute_ball_traject_test(BallTrajectGenerator traj
     return output;
 }
 
-// Test shall run OK and return error_value 0.
+// Test with ball moving from left to right behind the robot. Runs for a few ticks and the final speed is verified.
 TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -266,6 +262,8 @@ TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right)
     EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
 }
 
+// Test with ball moving from right to left behind the robot over longer distance.
+// This test is used to check if no effects are present related to direction and orientation together with similar tests
 TEST(RobotsportsLocalBallTest, ball_min_y_right_to_left)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -279,6 +277,8 @@ TEST(RobotsportsLocalBallTest, ball_min_y_right_to_left)
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
+// Test with ball moving from right to left behind the robot over longer distance.
+// This test is used to check if no effects are present related to direction and orientation together with similar tests
 TEST(RobotsportsLocalBallTest, ball_plus_y_right_to_left)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -292,7 +292,8 @@ TEST(RobotsportsLocalBallTest, ball_plus_y_right_to_left)
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
-// Test shall run OK and return error_value 0.
+// Test with ball moving from left to right behind the robot over longer distance while robot is rotating in positive direction.
+// This test is used to check if no effects are present related to direction and orientation together with similar tests
 TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right_robot_rotating_plus)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -306,7 +307,8 @@ TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right_robot_rotating_plus)
     auto last_output = execute_ball_traject_test(traject, traject_dist);
 }
 
-// Test shall run OK and return error_value 0.
+// Test with ball moving from left to right behind the robot over longer distance while robot is rotating in negative direction.
+// This test is used to check if no effects are present related to direction and orientation together with similar tests
 TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right_robot_rotating_min)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -322,7 +324,8 @@ TEST(RobotsportsLocalBallTest, ball_min_y_left_to_right_robot_rotating_min)
 }
 
 
-// Test shall run OK and return error_value 0.
+// Test with ball moving from back to front side at left side of the robot.
+// This test is used to check if no effects are present related to direction and orientation together with similar tests
 TEST(RobotsportsLocalBallTest, ball_min_y_to_plus_y_left)
 {
     MRA_TRACE_TEST_FUNCTION();

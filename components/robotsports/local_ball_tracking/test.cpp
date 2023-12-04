@@ -46,9 +46,6 @@ int main(int argc, char **argv)
 {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();
-    auto cfg = MRA::Logging::control::getConfiguration(); // return type: Logging.proto
-    cfg.mutable_general()->set_enabled(false);
-    MRA::Logging::control::setConfiguration(cfg);
 
     return r;
 }

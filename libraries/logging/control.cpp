@@ -109,6 +109,7 @@ MRA::Datatypes::LogControl getConfiguration()
     // Open shared memory, initialize if not existing
     int shm_fd = shm_open(_mkShmFile().c_str(), O_RDONLY, 0666);
     if (shm_fd == -1) {
+        LOGDEBUG("shm init");
         auto cfg = defaultConfiguration();
         setConfiguration(cfg);
         return cfg;

@@ -8,7 +8,7 @@ cc_library(
     ],
     hdrs = [
         "sequence_clustering_track_ball.hpp",
-        "sequence_clustering_common_defintions.hpp",
+        "sequence_clustering_common_definitions.hpp",
         "RobotsportsLocalBallTracking_sequence_clustering.hpp",
         "sequence_clustering_best_uid.hpp"
     ],

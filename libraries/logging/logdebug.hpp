@@ -5,7 +5,7 @@
 // uncomment to enable internal debug logging
 // this is intended only for developing libraries/logging
 
-#define LOGDEBUG_ENABLED
+//#define LOGDEBUG_ENABLED
 
 #ifdef LOGDEBUG_ENABLED
 #include <cstdio>

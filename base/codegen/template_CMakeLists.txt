@@ -1,5 +1,5 @@
 # CODEGEN_NOTE
-# it should NOT be modified by user
+# with the intent of allowing user to modify it
 
 add_library(MRA-components-CMAKE_COMPONENT_LIBRARY_NAME
     tick.cpp

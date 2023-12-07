@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+import "components/robotsports/local_ball_tracking/interface/Output.proto";
+
+message Local
+{
+}
+

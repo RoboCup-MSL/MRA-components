@@ -9,6 +9,6 @@ message Obstacle
     // typically on the floor, so z,rx,ry unused
     Pose position = 1;
     Pose velocity = 2;
-    float radius = 3;
+    double radius = 3;
 }
 

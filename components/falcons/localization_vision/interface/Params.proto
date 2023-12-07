@@ -10,35 +10,35 @@ import "datatypes/Shapes.proto";
 // defaults in [brackets] in meters according to official WorldCup size (large field)
 message StandardLetterModel
 {
-    float A = 1;  // [22.0]   field length including lines (y)
-    float B = 2;  // [14.0]   field width including lines (x)
-    float C = 3;  // [ 6.9]   penalty area width including lines (x)
-    float D = 4;  // [ 3.9]   goal area width including lines (x)
-    float E = 5;  // [ 2.25]  penalty area length including lines (y)
-    float F = 6;  // [ 0.75]  goal area length including lines (y)
-    float G = 7;  // [ 0.75]  corner circle radius including lines
-    float H = 8;  // [ 4.0]   inner circle diameter including lines
-    float I = 9;  // [ 3.6]   penalty mark distance (y) including line to mark center (?)
-    float J = 10; // [ 0.15]  penalty- and center mark diameter
-    float K = 11; // [ 0.125] line width
-    float L = 12; // [ 1.0]   field border (x) (between outer line and black safety border)
-    float M = 13; // [ 1.0]   TTA width (x)
-    float N = 14; // [ 7.5]   TTA length (y) (between safety borders)
-    float O = 15; // [ 1.0]   TTA ramp length (y)
-    float P = 16; // [ 0.5]   TTA ramp width (x)
-    float Q = 17; // [ 3.5]   off-center distance to restart spots (x)
+    double A = 1;  // [22.0]   field length including lines (y)
+    double B = 2;  // [14.0]   field width including lines (x)
+    double C = 3;  // [ 6.9]   penalty area width including lines (x)
+    double D = 4;  // [ 3.9]   goal area width including lines (x)
+    double E = 5;  // [ 2.25]  penalty area length including lines (y)
+    double F = 6;  // [ 0.75]  goal area length including lines (y)
+    double G = 7;  // [ 0.75]  corner circle radius including lines
+    double H = 8;  // [ 4.0]   inner circle diameter including lines
+    double I = 9;  // [ 3.6]   penalty mark distance (y) including line to mark center (?)
+    double J = 10; // [ 0.15]  penalty- and center mark diameter
+    double K = 11; // [ 0.125] line width
+    double L = 12; // [ 1.0]   field border (x) (between outer line and black safety border)
+    double M = 13; // [ 1.0]   TTA width (x)
+    double N = 14; // [ 7.5]   TTA length (y) (between safety borders)
+    double O = 15; // [ 1.0]   TTA ramp length (y)
+    double P = 16; // [ 0.5]   TTA ramp width (x)
+    double Q = 17; // [ 3.5]   off-center distance to restart spots (x)
 }
 
 message LinePointFitParams
 {
-    float radiusConstant = 1; // required: radius size of linepoints in FCS (used to create white pixels for fitting)
-    float radiusScaleFactor = 2; // optional: scaling factor based on distance to robot
-    float radiusMinimum = 3; // optional: limit in meters
+    double radiusConstant = 1; // required: radius size of linepoints in FCS (used to create white pixels for fitting)
+    double radiusScaleFactor = 2; // optional: scaling factor based on distance to robot
+    double radiusMinimum = 3; // optional: limit in meters
 }
 
 message LinePointPlotParams
 {
-    float radius = 1;
+    double radius = 1;
 }
 
 message LinePointParams
@@ -56,15 +56,15 @@ message RGB
 
 message PathPointParams
 {
-    float radius = 1;
+    double radius = 1;
     RGB color = 2;
 }
 
 message RandomGuessingParams
 {
     int32 count = 1; // number of random searches to attempt
-    float searchRadius = 2; // a random search happens around a random point (x,y) with this search radius (solver step)
-    float exclusionRadius = 3; // random point cannot be this close to existing trackers
+    double searchRadius = 2; // a random search happens around a random point (x,y) with this search radius (solver step)
+    double exclusionRadius = 3; // random point cannot be this close to existing trackers
     int32 maxTries = 4; // number of attempts to find a random point that satisfies exclusionRadius
 }
 
@@ -83,21 +83,20 @@ message ManualParams
 
 message BlurParams
 {
-    float factor = 1; // factor to reduce white pixel intensity value
+    double factor = 1; // factor to reduce white pixel intensity value
     int32 maxDepth = 2; // max number of steps to apply from original full-intensity pixels
     int32 minValue = 3; // stop when minimum intensity value is reached
 }
 
-
 message SolverParams
 {
     int32 numExtraThreads = 1;
-    float pixelsPerMeter = 2; // [40.0] used to create cv::Mat
-    float floorBorder = 3; // like 'L': how far to extend outside field
+    double pixelsPerMeter = 2; // [40.0] used to create cv::Mat
+    double floorBorder = 3; // like 'L': how far to extend outside field
     BlurParams blur = 4; // reference floor blurring, to allow calibration inaccuracies
     MRA.Datatypes.Pose actionRadius = 5; // required: robot action radius (roughly max velocity * dt), for local optimization of previous result
     int32 maxCount = 6; // required: solver max iterations
-    float epsilon = 7; // required: solver accuracy
+    double epsilon = 7; // required: solver accuracy
     LinePointParams linePoints = 8;
     GuessingParams guessing = 9;
     ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver

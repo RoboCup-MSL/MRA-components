@@ -274,7 +274,8 @@ TEST(FalconsLocalizationVisionTest, jsonTest2ShiftXY)
 TEST(FalconsLocalizationVisionTest, jsonTest3GrabsR5BadInit)
 {
     MRA_TRACE_TEST_FUNCTION();
-    auto output = TestFactory::run_testvector<FalconsLocalizationVision::FalconsLocalizationVision>(std::string("components/falcons/localization_vision/testdata/test3_grabs_r5_20191219_210335_bad_init.json"));
+    double tolerance = 1e-5;
+    auto output = TestFactory::run_testvector<FalconsLocalizationVision::FalconsLocalizationVision>(std::string("components/falcons/localization_vision/testdata/test3_grabs_r5_20191219_210335_bad_init.json"), tolerance);
 }
 
 int main(int argc, char **argv)

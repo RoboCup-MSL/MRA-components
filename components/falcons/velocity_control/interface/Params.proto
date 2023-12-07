@@ -5,32 +5,32 @@ package MRA.FalconsVelocityControl;
 message SpgConfig
 {
     bool synchronizeRotation = 1; // true means smearing out the rotation (non-greedy), but not always facing ball
-    float weightFactorClosedLoopVel = 2; // tuning parameter
-    float weightFactorClosedLoopPos = 3; // tuning parameter
-    float latencyOffset = 4; // [seconds] tuning parameter
+    double weightFactorClosedLoopVel = 2; // tuning parameter
+    double weightFactorClosedLoopPos = 3; // tuning parameter
+    double latencyOffset = 4; // [seconds] tuning parameter
     bool convergenceWorkaround = 5; // intended for simulation
 }
 
 message DribbleConfig
 {
     bool applyLimitsToBall = 1;
-    float radiusRobotToBall = 2;
+    double radiusRobotToBall = 2;
 }
 
 message DeadzoneConfig
 {
     bool enabled = 1;
-    float toleranceXY = 2; // [m] only calculate if robot is not yet close enough
-    float toleranceRz = 3; // [rad] only calculate if robot is not yet close enough
+    double toleranceXY = 2; // [m] only calculate if robot is not yet close enough
+    double toleranceRz = 3; // [rad] only calculate if robot is not yet close enough
 }
 
 message XYRzLimits
 {
-    float X = 1;
-    float Y = 2;
-    float Rz = 3;
-    float Yforward = 4; // optional Y split, ballHandling is easier driving forward than backward
-    float Ybackward = 5;
+    double X = 1;
+    double Y = 2;
+    double Rz = 3;
+    double Yforward = 4; // optional Y split, ballHandling is easier driving forward than backward
+    double Ybackward = 5;
 }
 
 message Limits
@@ -44,8 +44,8 @@ message Limits
 
 message Params
 {
-    float dt = 1; // [seconds] timestep to use, typically 1/motionfrequency
-    float timeout = 2; // [seconds] after which to reset SPG state (watchdog)
+    double dt = 1; // [seconds] timestep to use, typically 1/motionfrequency
+    double timeout = 2; // [seconds] after which to reset SPG state (watchdog)
     SpgConfig spg = 3;
     DribbleConfig dribble = 4;
     DeadzoneConfig deadzone = 5;

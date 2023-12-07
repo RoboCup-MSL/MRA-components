@@ -4,12 +4,12 @@ package MRA.FalconsGetballFetch;
 
 message Params
 {
-    float ballSpeedThreshold = 1; // when ball speed is higher, then extrapolate target
-    float ballSpeedScaling = 2; // extrapolation factor
+    double ballSpeedThreshold = 1; // when ball speed is higher, then extrapolate target
+    double ballSpeedScaling = 2; // extrapolation factor
     
     // to avoid pushing the ball away when it is close to the robot, it rotates before drives to it.
-    // ball must be in pie-shaped area (defined by distance and angle) before it can drive to it. 
-    float rotationOnlyDistance = 3; // rotate only if distance to ball [meters]  
-    float rotationOnlyAngle = 4; // // rotate only if max angle to ball [degrees) - applied to both sides of the front 
+    // ball must be in pie-shaped area (defined by distance and angle) before it can drive to it.
+    double rotationOnlyDistance = 3; // rotate only if distance to ball [meters]
+    double rotationOnlyAngle = 4;    // rotate only if max angle to ball [degrees) - applied to both sides of the front
 }
 

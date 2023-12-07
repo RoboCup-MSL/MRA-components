@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+message State
+{
+    bool is_initialized = 1; // is component initialized  
+}
+

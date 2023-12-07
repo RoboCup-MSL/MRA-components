@@ -6,7 +6,7 @@ message Input
 {
     repeated int32 intArray = 1;
     string myString = 2;
-    float timeToSleep = 3;
+    double timeToSleep = 3;
     bool generateCriticalMessage = 4;
     bool generateErrorMessage = 5;
     bool generateWarningMessage = 6;

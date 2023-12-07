@@ -7,7 +7,7 @@ import "components/falcons/getball_intercept/interface/Params.proto";
 
 message Params
 {
-    float ballSpeedStationaryThreshold = 1;
+    double ballSpeedStationaryThreshold = 1;
     FalconsGetballFetch.Params fetch = 2;
     FalconsGetballIntercept.Params intercept = 3;
 }

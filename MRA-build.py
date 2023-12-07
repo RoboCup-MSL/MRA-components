@@ -61,24 +61,26 @@ class Builder():
         """
         if clean:
             self.run_clean()
-        self.run_build(scope, tracing, jobs)
+        self.run_build(scope, jobs)
         if test or tracing:
-            self.run_pre_test()
+            self.run_pre_test(tracing)
+        if test:
             self.run_test(scope, tracing, extra_args)
     def run_clean(self) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
-    def run_pre_test(self) -> None:
+    def run_pre_test(self, tracing: bool = False) -> None:
         # wipe /tmp/testsuite_mra_logging, used via MRA_LOGGER_CONTEXT action_env, for post-testsuite inspection
         # (note how unittest test_mra_logger uses a different environment)
         cmd = 'rm -rf /tmp/testsuite_mra_logging'
         self.run_cmd(cmd)
-        # set test configuration (maybe we need some scripting for this ... ?)
-        cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
-        self.run_cmd(cmd)
+        if tracing:
+            # set test configuration (maybe we need some scripting for this ... ?)
+            cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
+            self.run_cmd(cmd)
     def run_cmd(self, cmd: str) -> None:
         extra_opts = {}
         if self.dryrun:
@@ -102,12 +104,10 @@ class BazelBuilder(Builder):
         Builder.__init__(self, **kwargs)
     def run_clean(self) -> None:
         self.run_cmd('bazel clean --color=yes')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         cmd_parts = ['bazel', 'build', '--jobs', str(jobs)] + ENV_OPTIONS
         if self.debug:
             cmd_parts += DEBUG_OPTIONS
-        if tracing:
-            cmd_parts += TRACING_OPTIONS
         for s in scope:
             self.run_cmd(' '.join(cmd_parts + ['--color=yes', f'//{s}']))
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
@@ -127,7 +127,7 @@ class CmakeBuilder(Builder):
         Builder.__init__(self, **kwargs)
     def run_clean(self) -> None:
         self.run_cmd('rm -rf build; mkdir build')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         # TODO: do something with scope, it currently only works for bazel, so now everyone gets a "full" build
         self.run_cmd('cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
         self.run_cmd(f'cd build; make -j {jobs}')

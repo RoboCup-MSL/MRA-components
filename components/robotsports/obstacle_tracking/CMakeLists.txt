@@ -12,6 +12,7 @@ target_include_directories(MRA-components-robotsports-obstacle-tracking PUBLIC
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/components/robotsports/obstacle_tracking    
+    ${MRA_SOURCE_DIR}/components/robotsports/obstacle_tracking/internal
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
 target_link_libraries(MRA-components-robotsports-obstacle-tracking MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
 

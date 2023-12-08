@@ -195,7 +195,7 @@ RobotsportsObstacleTracking::Output execute_obstacle_traject_test(ObstacleTrajec
             auto input = RobotsportsObstacleTracking::Input();
             input.Clear();
             input.mutable_obstacle_candidates()->Clear();
-            MRA_LOG_DEBUG("test_input {\"time\": %6.4f, \"obstacle_x\": %6.4f, \"obstacle_y\": %6.4f, \"robot_x\": %6.4f, \"robot_y\": %6.4f, \"robot_rz\": %6.4f}",
+            MRA_LOG_DEBUG("22222 test_input {\"time\": %6.4f, \"obstacle_x\": %6.4f, \"obstacle_y\": %6.4f, \"robot_x\": %6.4f, \"robot_y\": %6.4f, \"robot_rz\": %6.4f}",
                           data.rel_time, data.obstacle_x, data.obstacle_y, data.robot_x, data.robot_y, data.robot_rz);
 
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.rel_time * 1000);

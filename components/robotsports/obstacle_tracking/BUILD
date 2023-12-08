@@ -26,7 +26,7 @@ cc_library(
     deps = [
         "//base:abstract_interface",
         ":datatypes",
-        "//components/robotsports/obstacle_tracking/internal:ObjectTracking",
+        "//components/robotsports/obstacle_tracking/internal:ObstacleTracking",
         "//libraries/logging",
         "//libraries/geometry",
     ],

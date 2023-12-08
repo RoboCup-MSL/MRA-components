@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "constants_wm.hpp"
 #include "objectdef.hpp"
 #include "sequence_clustering_track_objects.hpp"
 #include "RobotsportsObstacleTracking_datatypes.hpp"
@@ -96,7 +95,6 @@ typedef struct object_process_s
     double par_clipradius;      /* clipping radius relative to own position */
     double par_kscale;          /* scale factor for Kalman gain */
     double par_maxage;          /* maximum age for non-updated objects */
-    long   par_mode;            /* mode MODE_LOCAL or MODE_GLOBL */
     double par_labelbound;      /* minimum required likelihood for object association */
 
     // parameter that indicates error in filter, e.g. out of Kalman filters

@@ -12,7 +12,6 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "constants_wm.hpp"
 #include "objectdef.hpp"
 
 #ifdef __cplusplus

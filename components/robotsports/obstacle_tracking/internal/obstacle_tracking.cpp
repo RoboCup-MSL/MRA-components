@@ -13,27 +13,10 @@
 #include <cmath>
 
 #include "RobotsportsObstacleTracking_datatypes.hpp"
-#include "constants_wm.hpp"
 #include "objectdef.hpp"
 #include "logging.hpp"
 #include "obstacle_tracking.hpp"
 #include "sequence_clustering_track_objects.hpp"
-//TODO:
-#define NRPLAYERS_COMPLETE_TEAM 10
-#define BM_SUCCESS 0
-#define OBJECT_PLAYER_US 1
-#define OBJECT_PLAYER_THEM 10
-
-
-
-// TODO decide on which value to use for sizing of arrays
-// Tech United uses the following:
-//   MAXNOBJ_LOCAL 10
-//   MAXNOBJ_GLOBAL 12
-//   MAX_TURTLES * MAXNOBJ_LOCAL equals 7 * 10 = 70
-//
-// Robot Sports uses
-//   NUM_OBSTACLES 20
 
 static scw_global_data pscgd;
 static double objects_detected[DIM*MAX_TURTLES*MAXNOBJ_LOCAL];
@@ -106,7 +89,6 @@ int obstacle_tracking_initialize(double timestamp)
     object_process.par_clipradius = 1000.0;/* clipping radius relative to own position, default is 1000.0 */
     object_process.par_kscale = 0.5;	/* scale factor for Kalman gain, default is 0.9 */
     object_process.par_maxage = 1.0;	/* maximum age for non-updated objects, was 0.5 */
-    object_process.par_mode = MODE_GLOBL;	/* mode MODE_LOCAL or MODE_GLOBL */
     object_process.par_labelbound = 0.60;	/* minimum required likelihood for object association, default value is 0.95 */
 
     object_process.filter_error =  0;		// this parameter is set if an error in the filter occurs, e.g. out of Kalman filters
@@ -156,7 +138,6 @@ void obstacle_tracking(double timestamp,
     pscgd.par.clipradius = object_process.par_clipradius;	// tunable parameter, default value is 1000.0
     pscgd.par.kscale	= object_process.par_kscale;		// tunable parameter, default value is 0.9
     pscgd.par.maxage	= object_process.par_maxage;		// tunable parameter, default value is 0.3
-    pscgd.par.mode 		= (int)object_process.par_mode;		// default value is 1 (GLOBL), alternative is 0 (LOCAL)
     pscgd.par.labelbound = object_process.par_labelbound;	// default value is 0.95
 
     double last_processed_vision_timestamp = object_process.last_processed_vision_ts;

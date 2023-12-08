@@ -21,6 +21,12 @@
 
 #include "logging.hpp"
 
+//TODO
+#define FIELDMARGIN     0.6                 /* margin-outside-field for object clipping */
+#define FIELDWIDTH      12.0
+#define FIELDLENGTH     20.0
+
+
 
 
 static void swap_index(int i, int j, int* idx)

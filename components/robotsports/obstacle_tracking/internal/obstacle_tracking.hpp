@@ -11,7 +11,6 @@
 
 #include "objectdef.hpp"
 #include "sequence_clustering_track_objects.hpp"
-#include "RobotsportsObstacleTracking_datatypes.hpp"
 
 #define OBJECT_LABEL_OWNTEAM 10
 

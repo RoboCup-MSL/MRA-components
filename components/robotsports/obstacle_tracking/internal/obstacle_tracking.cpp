@@ -95,7 +95,7 @@ int obstacle_tracking_initialize(double timestamp)
     object_process.reset_on_error =  1;
 
     // initialize data structure for sequential clustering with first hypothesis
-    return init_sc_wm(&pscgd, timestamp);
+    return init_sc_wm(pscgd, timestamp);
 }
 
 void obstacle_tracking(double timestamp,
@@ -104,7 +104,7 @@ void obstacle_tracking(double timestamp,
                         MRA::RobotsportsObstacleTracking::State &state,
                         MRA::RobotsportsObstacleTracking::Output &output)
 {
-    if (state.is_initialized()) {
+    if (not state.is_initialized()) {
         obstacle_tracking_initialize(timestamp);
         state.set_is_initialized(true);
     }
@@ -120,7 +120,7 @@ void obstacle_tracking(double timestamp,
     if (object_process.filter_error and object_process.reset_on_error) {
     	object_process.filter_error = 0;
     	object_process.filter_reset_time = timestamp;
-    	init_sc_wm(&pscgd, timestamp);
+    	init_sc_wm(pscgd, timestamp);
     }
 
     // copy filter parameters from shared memory so they can be updated run-time (not compile-time)
@@ -149,7 +149,7 @@ void obstacle_tracking(double timestamp,
     // check if input data is newer than data stored during the last sample
 
     // initialize obstacle counter
-    int obstacles_this_time = 0;
+    unsigned obstacles_this_time = 0;
 
     int nr_obstacles = input.obstacle_candidates_size();
 
@@ -178,7 +178,7 @@ void obstacle_tracking(double timestamp,
                 double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
             	if (obstacle_ts > (last_processed_vision_timestamp + object_process.update_interval_vision)) {
 					processObjects(input.obstacle_candidates(i), &objects_detected[obstacles_this_time*DIM]);
-					MRA_LOG_DEBUG("process_objects has added obstacle at (%f,%f) with label %f and timestamp %f\n",
+					MRA_LOG_DEBUG("process_objects has added obstacle at (%f,%f) with label %d and timestamp %f\n",
 					            objects_detected[obstacles_this_time*DIM],
 					            objects_detected[obstacles_this_time*DIM+1],
 					            objects_detected[obstacles_this_time*DIM+3],
@@ -239,14 +239,15 @@ void obstacle_tracking(double timestamp,
     object_process.nr_objects = obstacles_this_time;
 
     // now run sc_bm code if obstacles are found
-    int    pnobj;
-    int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, &pnobj, objects_detected, obstacles_this_time,  &pscgd);
-    MRA_LOG_DEBUG("object process | %6.3f %3d %3d %3d %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
-    if (ret == BM_SUCCESS) {
+    unsigned pnobj;
+    int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, pnobj, objects_detected, obstacles_this_time,  pscgd);
+    MRA_LOG_DEBUG("object process | time: %6.3f  return: %3d  nr_obstacles: %3d obstacles: %3d pnob: %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
+    if (ret == SC_SUCCESS) {
         // update object positions in world model since a successful step has been done
         // copy position and velocity data, and size, for all objects reported by filter
         //    	printf("#objects clustered %d\n", pnobj);
-        int i;
+        unsigned i = 0;
+        output.mutable_objects()->Clear();
         for (i = 0; i < pnobj; i++) {
             object_process.out[i].pos.x = pobj[4*i];
             object_process.out[i].vel.x = pobj[4*i+1];
@@ -264,6 +265,17 @@ void obstacle_tracking(double timestamp,
             // TODO temporary assignment of object filter label to col.r for debugging purposes
             //      may be used for association of opponent robot detections - this is reported but may be difficult due to noise
             object_process.out[i].col.r = pobj_label[i];
+
+            auto trackedObject = MRA::Datatypes::TrackedObject();
+            trackedObject.mutable_pos_vel_fcs()->mutable_position()->set_x(object_process.out[i].pos.x);;
+            trackedObject.mutable_pos_vel_fcs()->mutable_velocity()->set_x(object_process.out[i].vel.x);
+            trackedObject.mutable_pos_vel_fcs()->mutable_position()->set_y(object_process.out[i].pos.y);;
+            trackedObject.mutable_pos_vel_fcs()->mutable_velocity()->set_y(object_process.out[i].vel.y);
+            auto timestamp_obj = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(object_process.out[i].ts * 1000);
+            trackedObject.mutable_timestamp()->CopyFrom(timestamp_obj);
+            trackedObject.set_confidence(object_process.out[i].confidence);
+            trackedObject.set_type(object_process.out[i].type);
+            output.mutable_objects()->Add()->CopyFrom(trackedObject);
         }
         // stub remaining out fields with zero objects
         while (i < MAXNOBJ_GLOBAL) {

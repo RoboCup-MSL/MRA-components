@@ -9,8 +9,6 @@ using namespace MRA;
 // custom includes, if any
 // ...
 #include "obstacle_tracking.hpp"
-#include "logging.hpp" // TODO: automate, perhaps via generated hpp
-using namespace google::protobuf::util;
 
 
 int RobotsportsObstacleTracking::RobotsportsObstacleTracking::tick
@@ -29,8 +27,6 @@ int RobotsportsObstacleTracking::RobotsportsObstacleTracking::tick
     // user implementation goes here
     double timestamp_as_double = google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp) / 1000.0;
     obstacle_tracking(timestamp_as_double, input, params, state,output);
-
-
 
     return error_value;
 }

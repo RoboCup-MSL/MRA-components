@@ -195,7 +195,7 @@ RobotsportsObstacleTracking::Output execute_obstacle_traject_test(ObstacleTrajec
             auto input = RobotsportsObstacleTracking::Input();
             input.Clear();
             input.mutable_obstacle_candidates()->Clear();
-            MRA_LOG_DEBUG("22222 test_input {\"time\": %6.4f, \"obstacle_x\": %6.4f, \"obstacle_y\": %6.4f, \"robot_x\": %6.4f, \"robot_y\": %6.4f, \"robot_rz\": %6.4f}",
+            MRA_LOG_DEBUG("test_input {\"time\": %6.4f, \"obstacle_x\": %6.4f, \"obstacle_y\": %6.4f, \"robot_x\": %6.4f, \"robot_y\": %6.4f, \"robot_rz\": %6.4f}",
                           data.rel_time, data.obstacle_x, data.obstacle_y, data.robot_x, data.robot_y, data.robot_rz);
 
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.rel_time * 1000);
@@ -230,11 +230,11 @@ TEST(RobotsportsObstacleTrackingTest, obstacle_min_y_left_to_right)
 {
     MRA_TRACE_TEST_FUNCTION();
     auto traject = ObstacleTrajectGenerator();
-    traject.set_obstacle_traject(-6.0, -4.0, 2.0, 0);
+    traject.set_obstacle_traject(-5.0, -4.0, 2.0, 0);
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    traject.set_omni_camera(6.0, 0.2, 15);
+    traject.set_omni_camera(8.0, 0.2, 15);
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
-    double traject_dist = 0.05;
+    double traject_dist = 0.5;
 
     auto last_output = execute_obstacle_traject_test(traject, traject_dist);
 //    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction

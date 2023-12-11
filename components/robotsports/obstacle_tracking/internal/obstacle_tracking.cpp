@@ -52,9 +52,9 @@ int obstacle_tracking_initialize(double timestamp)
     }
 
     object_process.nobj = 0;
-    object_process.last_processed_vision_ts =  0.0;
+    object_process.last_processed_vision_ts =  -1.0;
     object_process.update_interval_vision = 0.05;
-    object_process.last_processed_selves_ts = 0.0;
+    object_process.last_processed_selves_ts = -1.0;
     object_process.update_interval_selves = 0.05;
 
     // trigger for status dump to stdout
@@ -152,6 +152,7 @@ void obstacle_tracking(double timestamp,
     unsigned obstacles_this_time = 0;
 
     int nr_obstacles = input.obstacle_candidates_size();
+    MRA_LOG_DEBUG("INPUT nr_obstacles =  %d", nr_obstacles);
 
 
     // start with omni vision reports
@@ -159,24 +160,27 @@ void obstacle_tracking(double timestamp,
     if (nr_obstacles > 0) {
     	// include limit on nr_obstacles? does not seem to be required; nr_obstacles should always be less or equal to maximum amount of reported obstacles
         // get time stamp for new information
-        double last_omni_timestamp = 0.0;
+        double last_omni_timestamp = -1.0;
         for (int i = 0; i < nr_obstacles; i++) {
             double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
-            if (obstacle_ts > last_omni_timestamp)
+            MRA_LOG_DEBUG("obstacle [%d] ts: %f", i, obstacle_ts);
+            if (obstacle_ts > last_omni_timestamp) {
                 last_omni_timestamp = obstacle_ts;
+            }
         }
+        MRA_LOG_DEBUG("last_omni_timestamp: %f", last_omni_timestamp);
         // check for new features from omni camera - a sinle new obstacle is enough!
         //printf("object_process: objects %d last_omni %f last_object_process %f\n", nr_obstacles, last_omni_timestamp, last_processed_vision_timestamp);
+        MRA_LOG_DEBUG("last_processed_vision_timestamp: %f", last_processed_vision_timestamp);
         if (last_omni_timestamp > last_processed_vision_timestamp) {
             // we have new features!
             // copy to Tech United data structure called objects_detected array
             // first, copy objects found by omni_vision
-            int i;
-            for (i = 0; i < nr_obstacles; i++) {
+            for (auto i = 0; i < nr_obstacles; i++) {
                 // processObjects will move the data to the Tech United data structure
             	// add only observations that are newer than (last update + interval)
                 double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
-            	if (obstacle_ts > (last_processed_vision_timestamp + object_process.update_interval_vision)) {
+            	if (obstacle_ts > last_processed_vision_timestamp) {
 					processObjects(input.obstacle_candidates(i), &objects_detected[obstacles_this_time*DIM]);
 					MRA_LOG_DEBUG("process_objects has added obstacle at (%f,%f) with label %d and timestamp %f\n",
 					            objects_detected[obstacles_this_time*DIM],
@@ -189,6 +193,7 @@ void obstacle_tracking(double timestamp,
             	}
             }
         }
+        MRA_LOG_DEBUG("object_process.last_processed_vision_ts: %f", object_process.last_processed_vision_ts);
     }
 
     // add communicated positions of team-mates, if available
@@ -228,6 +233,7 @@ void obstacle_tracking(double timestamp,
     if (obstacles_this_time > MAX_TURTLES*MAXNOBJ_LOCAL) {
         MRA_LOG_DEBUG("warning: object_process has more input objects this time than can be handled");
 	}
+    MRA_LOG_DEBUG("object_process objects than can be handled: %d", obstacles_this_time);
 
     // stub with zero objects;
     auto zero_obstacle = MRA::RobotsportsObstacleTracking::ObstacleCandidate();

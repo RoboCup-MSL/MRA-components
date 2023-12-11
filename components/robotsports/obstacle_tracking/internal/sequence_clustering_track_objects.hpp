@@ -22,7 +22,7 @@ extern "C" {
 
 typedef struct tag_hypothesis_w {
     int hypothesis_id;                /* hypothesis identifier */
-    unsigned association_id;     /* identifier of the Kalman filter object that is associated with the current measurement */
+    int association_id;     /* identifier of the Kalman filter object that is associated with the current measurement */
     int filter_id[MAXNOBJ_GLOBAL];  /* array of Kalman filter identifiers, representing the detected objects according to this hypothesis */
     unsigned number_of_objects;               /* number of detected objects */
     double probalility;               /* probability of this hypothesis */

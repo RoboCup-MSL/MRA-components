@@ -29,7 +29,7 @@
 #define OBJECT_PLAYER_THEM 10
 
 const int NO_FREE_LABEL_ID = -1;
-
+const int NO_OBJECT_ID = -1;
 const int SC_NO_ASSOCIATING_OBJECT_FOUND = -2;
 
 

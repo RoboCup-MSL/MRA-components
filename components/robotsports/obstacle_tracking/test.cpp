@@ -200,19 +200,18 @@ RobotsportsObstacleTracking::Output execute_obstacle_traject_test(ObstacleTrajec
 
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.rel_time * 1000);
             if (data.omni_candidates.size() > 0) {
-
                 for (unsigned idx = 0; idx < data.omni_candidates.size(); idx++) {
                     auto  candidate = MRA::RobotsportsObstacleTracking::ObstacleCandidate();
                     candidate.mutable_pose_fcs()->set_x(data.omni_candidates[idx].x);
                     candidate.mutable_pose_fcs()->set_y(data.omni_candidates[idx].y);
                     candidate.mutable_pose_fcs()->set_z(data.omni_candidates[idx].z);
+                    candidate.set_radius(0.6);
                     candidate.set_confidence(data.omni_candidates[idx].confidence);
                     google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(data.omni_candidates[idx].ts*1000.0);
                     candidate.mutable_timestamp()->CopyFrom(timestamp);
 
                     input.mutable_obstacle_candidates()->Add()->CopyFrom(candidate);
                 }
-
                 error_value = m.tick(timestamp, input, params, state, output, local);
                 MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
                 MRA_LOG_DEBUG("state: %s", MRA::convert_proto_to_json_str(state).c_str());
@@ -234,11 +233,12 @@ TEST(RobotsportsObstacleTrackingTest, obstacle_min_y_left_to_right)
     traject.set_robot_traject(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     traject.set_omni_camera(8.0, 0.2, 15);
     traject.set_front_camera(13.0, 110.0, 0.2, 25);
-    double traject_dist = 0.5;
+    double traject_dist = 5.0;
 
     auto last_output = execute_obstacle_traject_test(traject, traject_dist);
-//    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().x(), 2.0, 0.001); // check if final speed is reached: x direction
-//    EXPECT_NEAR(last_output.ball().pos_vel_fcs().velocity().y(), 0.0, 0.001); // check if final speed is reached: y direction
+    EXPECT_EQ(last_output.objects_size(), 1);
+    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().x(), 2.0, 0.01); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().y(), 0.0, 0.01); // check if final speed is reached: y direction
 }
 
 

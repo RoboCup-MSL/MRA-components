@@ -57,9 +57,6 @@ int obstacle_tracking_initialize(double timestamp)
     object_process.last_processed_selves_ts = -1.0;
     object_process.update_interval_selves = 0.05;
 
-    // trigger for status dump to stdout
-    object_process.dump_sc = 0;
-
     // initialize static data structure for administration of objects by/from filter
     for(int i=0;i<MAXNOBJ_GLOBAL;i++){
         pobj[4*i]		= 0.0;

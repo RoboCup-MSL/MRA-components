@@ -80,7 +80,6 @@ typedef struct object_process_s
 
     // interface to Turtle2 code
     int             cnt_iskicking;
-    long            dump_sc;                // trigger for status dump
 
     // parameters for Turtle2 code
     double par_pclutter;        /* probability that new measurement is clutter */

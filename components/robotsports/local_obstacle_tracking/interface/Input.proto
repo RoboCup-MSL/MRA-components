@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.RobotsportsObstacleTracking;
+package MRA.RobotsportsLocalObstacleTracking;
 
 import "google/protobuf/timestamp.proto";
 import "datatypes/Pose.proto";

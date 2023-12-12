@@ -239,6 +239,8 @@ TEST(RobotsportsObstacleTrackingTest, obstacle_min_y_left_to_right)
     EXPECT_EQ(last_output.objects_size(), 1);
     EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().x(), 2.0, 0.01); // check if final speed is reached: x direction
     EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().y(), 0.0, 0.01); // check if final speed is reached: y direction
+    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().position().x(), 0.0, 0.01); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().position().y(), -4.0, 0.01); // check if final speed is reached: y direction
 }
 
 

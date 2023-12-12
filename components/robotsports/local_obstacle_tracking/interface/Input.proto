@@ -17,9 +17,4 @@ message ObstacleCandidate
 message Input
 {
     repeated ObstacleCandidate obstacle_candidates = 1; // obstacle candidates  [FCS]
-    repeated ObstacleCandidate communicated_teammates = 2; // obstacle candidates [FCS]. Only participating team mates must be added (no reserves)
-    
-    // PREFERRED: but no timestamp
-    //   repeated MRA.Datatypes.Player communicated_teammates = 2; // obstacle candidates [FCS]
-    //   MRA.Datatypes.Player self = 3; // own position in the field [FCS]
 }

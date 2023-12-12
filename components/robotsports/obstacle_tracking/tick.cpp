@@ -8,7 +8,6 @@ using namespace MRA;
 
 // custom includes, if any
 // ...
-#include "obstacle_tracking.hpp"
 
 
 int RobotsportsObstacleTracking::RobotsportsObstacleTracking::tick
@@ -25,8 +24,6 @@ int RobotsportsObstacleTracking::RobotsportsObstacleTracking::tick
     MRA_LOG_TICK();
 
     // user implementation goes here
-    double timestamp_as_double = google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp) / 1000.0;
-    obstacle_tracking(timestamp_as_double, input, params, state,output);
 
     return error_value;
 }

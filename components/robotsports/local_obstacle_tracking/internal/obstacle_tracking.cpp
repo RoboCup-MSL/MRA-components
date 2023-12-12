@@ -139,7 +139,6 @@ void obstacle_tracking(double timestamp,
     pscgd.par.labelbound = object_process.par_labelbound;	// default value is 0.95
 
     double last_processed_vision_timestamp = object_process.last_processed_vision_ts;
-    double last_processed_selves_timestamp = object_process.last_processed_selves_ts;
 
     // first sensor is omni_vision
     // check for updated object positions first, only then update object positions in extrapolated coordinates
@@ -192,40 +191,6 @@ void obstacle_tracking(double timestamp,
             }
         }
         MRA_LOG_DEBUG("object_process.last_processed_vision_ts: %f", object_process.last_processed_vision_ts);
-    }
-
-    // add communicated positions of team-mates, if available
-    if (object_process.use_shared_selves) {
-    	double last_shared_selves_timestamp = 0.0;
-        // check against last updated timestamp for shared selves information
-        for (int m = 0; m < input.communicated_teammates_size(); m++) {
-            auto player_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.communicated_teammates(m).timestamp()) / 1000.0;
-            if (player_ts > last_shared_selves_timestamp) {
-                last_shared_selves_timestamp = player_ts;
-            }
-
-        }
-        // last_processed_selves_timestamp was previously initialized
-        if (last_shared_selves_timestamp > last_processed_selves_timestamp) {
-			for (int j = 0; j < input.communicated_teammates_size(); j++) {
-				// only pick if player has sufficient confidence and time stamp more recent than (last update + interval)
-	            auto player_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.communicated_teammates(j).timestamp()) / 1000.0;
-				if ((input.communicated_teammates(j).confidence() > object_process.min_conf_shared_selves)
-				    and (player_ts > (last_processed_selves_timestamp + object_process.update_interval_selves))) {
-					// we have a valid shared self
-					if (obstacles_this_time < MAX_TURTLES*MAXNOBJ_LOCAL) {
-						// add it if still room
-						processObjects(input.communicated_teammates(j), &objects_detected[obstacles_this_time*DIM]);
-						objects_detected[obstacles_this_time*DIM+3] = (j+1); // label field replaced by robot ID (array index + 1)
-						objects_detected[obstacles_this_time*DIM+4] = timestamp; // TODO remove when proper timestamp is communicated
-						//printf("process_objects has added player   at (%f,%f) with label %f and timestamp %f\n", objects_detected[obstacles_this_time*DIM], objects_detected[obstacles_this_time*DIM+1], objects_detected[obstacles_this_time*DIM+3], objects_detected[obstacles_this_time*DIM+4]);
-						obstacles_this_time++;
-						// only update last_processed_selves_ts if at least one shared self has been used for updating the filter
-						object_process.last_processed_selves_ts = last_shared_selves_timestamp;
-					}
-				}
-			}
-        }
     }
 
     if (obstacles_this_time > MAX_TURTLES*MAXNOBJ_LOCAL) {

@@ -3,8 +3,6 @@
 
 add_library(MRA-components-robotsports-obstacle-tracking
     tick.cpp
-    internal/obstacle_tracking.cpp
-    internal/sequence_clustering_track_objects.cpp
 )
 
 target_include_directories(MRA-components-robotsports-obstacle-tracking PUBLIC

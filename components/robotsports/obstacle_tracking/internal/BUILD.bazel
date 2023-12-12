@@ -1,13 +1,8 @@
 cc_library(
     name = "ObstacleTracking",
     srcs = [
-        "sequence_clustering_track_objects.cpp",
-        "obstacle_tracking.cpp"
     ],
     hdrs = [
-        "sequence_clustering_track_objects.hpp",
-        "obstacle_tracking.hpp",
-        "objectdef.hpp"
     ],
     includes = [
         ".",

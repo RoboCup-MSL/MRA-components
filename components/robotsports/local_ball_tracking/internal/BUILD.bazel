@@ -13,8 +13,7 @@ cc_library(
         "sequence_clustering_best_uid.hpp"
     ],
     includes = [
-        ".",
-        "..",
+        "."
     ],
     deps = [
         "//libraries/logging",

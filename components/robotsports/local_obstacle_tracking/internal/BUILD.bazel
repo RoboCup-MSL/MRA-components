@@ -10,8 +10,7 @@ cc_library(
         "objectdef.hpp"
     ],
     includes = [
-        ".",
-        "..",
+        "."
     ],
     deps = [
         "//libraries/logging",

@@ -1,0 +1,27 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+
+== Design
+
+.components overview
+plantuml::{modelsdir}/mra_overview_layers.puml[format=svg]
+
+<<<
+include::sideline.adoc[leveloffset=+1]
+
+<<<
+include::worldmodel.adoc[leveloffset=+1]
+
+<<<
+include::behavior.adoc[leveloffset=+1]
+
+<<<
+include::actions/actions.adoc[leveloffset=+1]
+
+<<<
+include::reflex_actions.adoc[leveloffset=+1]
+
+<<<
+include::hardware/hardware.adoc[leveloffset=+1]
+

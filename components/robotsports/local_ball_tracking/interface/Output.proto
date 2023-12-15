@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+import "datatypes/TrackedObject.proto";
+
+message Output
+{
+    MRA.Datatypes.TrackedObject ball = 1;  
+}
+
+
+
+

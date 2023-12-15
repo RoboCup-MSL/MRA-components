@@ -1,0 +1,40 @@
+@startuml Basic Sample
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person_Ext(main_referee, "Main Referee", $sprite="person")
+Person_Ext(refbox_referee, "Refbox Referee", $sprite="person")
+Person(developer, "Robotics Engineeer", $sprite="person")
+
+
+System_Boundary(Referee_system, "Referee Computer") {
+    SystemDb_Ext(msl_logging, "MSL logging")
+    System_Ext(refbox, "Refbox")
+}
+
+System_Boundary(mra_sideline, "MRA Sideline Software")  {
+    System(ui, "User Interface")
+    System(visualisation, "Visualisation")
+}
+
+System_Boundary(robot, "Robot")  {
+    System(mra, "MRA robot software", $sprite="robot")
+}
+
+System_Ext(teammate, "MRA teammate", $sprite="robot")
+
+
+Rel_D(refbox_referee, refbox, "refbox commands")
+Rel_D(refbox, ui, "refbox commands")
+
+Rel_D(ui, mra, "commands")
+Rel_D(ui, mra, "service requests")
+Rel_D(ui, mra, "settings")
+Rel_U(mra, ui, "robot_data", $tags="broadcast")
+Rel_D(mra, visualisation, "robot_data", $tags="broadcast")
+Rel_U(mra, msl_logging, "MSL logging", $tags="broadcast")
+BiRel_R(mra, teammate, "robot_data", $tags="broadcast")
+
+Rel_R(main_referee, refbox_referee, "instruct")
+Rel(developer, ui, "")
+Rel(developer, visualisation, "")
+@enduml

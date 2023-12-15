@@ -1,0 +1,83 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+ContainerDb_Ext(TeamMate, "TeamMate")
+
+ContainerDb(WorldModel, "WorldModel")
+
+Container_Boundary(Hardware, "Hardware") {
+    Component(drive, "Drive")
+    Component(stereo_vision, "Stereo Vision")
+    Component(omnivision, "Omnivision")
+    Component(imu, "IMU")
+    Component(lidar, "lidar")
+}
+
+Component(behavior, "Behavior")
+
+Component(actions, "Actions")
+
+Component(reflex, "Reflex Actions")
+
+Component(self_localisation, "Self Localisation")
+
+
+Component(local_obstacle_tracking, "local obstacle tracking") /' (in : obstacles (0:50)  out: obstacles (0:20) - pos+speed '/
+
+Component(Obstacle_tracking, "Obstacle Tracking")
+
+Component(ball_tracking, "Ball Tracking")
+
+Container_Boundary(Received_communication, "Received_communication") {
+    Component(received_team_data, "received team data")
+    Component(handle_commands, "handle commands")
+    Component(handle_settings, "handle settings")
+}
+
+Container_Boundary(Sideline, "Sideline") {
+
+}
+
+
+Component(opponent_with_ball, "opponent_with_ball")
+Component(local_ball_tracking, "Local Ball Tracking")
+
+Rel_U(local_obstacle_tracking, ball_tracking, "")
+Rel_U(Obstacle_tracking, opponent_with_ball, "")
+Rel_U(ball_tracking, opponent_with_ball, "")
+
+Rel_U(omnivision, Obstacle_tracking, "")
+Rel_U(stereo_vision, local_obstacle_tracking, "")
+Rel_U(omnivision, local_ball_tracking, "")
+Rel_U(stereo_vision, local_ball_tracking, "")
+
+Rel_U(local_ball_tracking, ball_tracking, "")
+Rel_L(opponent_with_ball, WorldModel, "")
+Rel_L(self_localisation, WorldModel, "")
+Rel_U(Obstacle_tracking, WorldModel, "")
+Rel_L(ball_tracking, WorldModel, "")
+Rel_R(received_team_data, WorldModel, "")
+Rel_R(handle_commands, WorldModel, "")
+Rel_R(handle_commands, WorldModel, "")
+Rel_D(received_team_data, ball_tracking, "ball data")
+Rel_D(received_team_data, Obstacle_tracking, "obstacle data")
+
+/' force order between WorldModel and behavior via a '/
+Rel_L(WorldModel, behavior, "")
+Rel_L(WorldModel, actions, "")
+Rel_L(WorldModel, reflex, "")
+
+
+Rel_U(omnivision, self_localisation, "")
+Rel_U(imu, self_localisation, "")
+Rel_U(lidar, self_localisation, "")
+Rel_U(stereo_vision, self_localisation, "")
+Rel_U(drive, self_localisation, "")
+
+
+Rel_D(TeamMate, Received_communication, "robot_data")
+Rel_D(Sideline, Received_communication, "service requests")
+Rel_D(Sideline, Received_communication, "robot type setting")
+
+
+@enduml

@@ -1,0 +1,72 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(Hardware, "Hardware") {
+
+Component(kicker, "Kicker") {
+    port I_kicker
+}
+
+Component(drive, "Drive") {
+    port I_drive
+    port I_ballhandler
+    port I_goalierack
+}
+
+Component(stereo_vision, "stereo vision") {
+    port I_stereo_vision
+    portout stereo_imu
+}
+
+Component(omnivision, "Omnivision") {
+    port I_omnivision
+    portout omni_imu
+ }
+
+Component(Imu, "Imu") {
+    port I_imu
+    portout imu_data
+}
+
+Component( Lidar, "Lidar") {
+    port I_lidar
+}
+
+}   /' hardware package '/
+
+Container_Boundary(actions, "Actions") {
+ }
+
+
+Component(tracking_algorithms, "Tracking Algorithms")
+Component(robot_configurator, "Robot Configurator")
+
+Component(keepalive, "Keep Alive")
+Component(io, "I/O")
+Component(vitals, "Vitals")
+
+Rel_D(actions, I_drive, "Drive")
+Rel_D(actions, I_kicker, "Kicker")
+Rel_D(actions,  I_goalierack, "Goalie_rack")
+Rel_D(actions, I_ballhandler, "BallHandler")
+
+Rel_U(imu_data, omni_imu, "Omnivision")
+Rel_U(imu_data, stereo_imu, "Stereo")
+Rel_U(I_omnivision, tracking_algorithms, "")
+Rel_U(I_stereo_vision, tracking_algorithms, "")
+Rel_U(I_drive, tracking_algorithms, "")
+Rel_U(I_imu,  tracking_algorithms, "")
+Rel_U(I_lidar, tracking_algorithms, "")
+
+Rel_U(robot_configurator, drive, "my_team_drive")
+Rel_U(robot_configurator, kicker, "my_team_kicker")
+Rel_U(robot_configurator, stereo_vision, "my_team_zed")
+Rel_U(robot_configurator, omnivision, "my_team_omni")
+Rel_U(robot_configurator, Imu, "my_team_IMU")
+Rel_U(robot_configurator, Lidar, "my_team_Lidar")
+Rel_D(robot_configurator, keepalive, "my_team_facilities")
+Rel_D(robot_configurator, io, "my_team_facilities")
+Rel_D(robot_configurator, vitals, "my_team_facilities")
+
+@enduml
+

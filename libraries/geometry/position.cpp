@@ -96,4 +96,3 @@ Position& Position::faceTowards(Position const &p)
     wrap_angles();
     return *this;
 }
-

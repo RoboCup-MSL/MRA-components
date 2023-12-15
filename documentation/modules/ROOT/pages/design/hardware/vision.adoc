@@ -1,0 +1,34 @@
+=== vision system
+
+There are two kind of vision systems supported:
+
+* <<omnivision>>
+* <<stereo_camera>>
+
+
+==== omnidirectional camera [[omnivision]]
+In photography, an omnidirectional camera (from "omni", meaning all), also known as 360-degree camera, is a camera having a field of view that covers approximately the entire sphere or at least a full circle in the horizontal plane. Omnidirectional cameras are important in areas where large visual field coverage is needed, such as in panoramic photography and robotics. (source: link:https://en.wikipedia.org/wiki/Omnidirectional_(360-degree)_camera[wikipedia])
+
+==== stereo camera [[stereo_camera]]
+Computer stereo vision is the extraction of 3D information from digital images, such as those obtained by a CCD camera. By comparing information about a scene from two vantage points, 3D information can be extracted by examining the relative positions of objects in the two panels. This is similar to the biological process of stereopsis. (source: link:https://en.wikipedia.org/wiki/Computer_stereo_vision[wikipedia])
+
+*examples:*
+
+* ZED
+* Kinect
+
+
+
+==== Output
+With the vision systems often color segmentation is used detection an object. In future this can change.
+
+Vision can give multiple candidates for an object.
+
+* object detection (angle, distance)
+	* Ball (0:10)
+	* Obstacle (0:50)
+	* Robot (only if classified via shirt or shape)
+    * Lines
+    * Goals (Landmark)
+
+

@@ -7,6 +7,7 @@ cc_library(
         "COMPONENT_CPP_NAME_CAMELCASE_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//MRA_COMPONENTS_ROOT/COMPONENT_REL_PATH/interface:interface",
     ],

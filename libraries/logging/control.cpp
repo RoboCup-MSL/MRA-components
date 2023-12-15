@@ -83,7 +83,7 @@ MRA::Datatypes::LogControl defaultConfiguration()
 {
     MRA::Datatypes::LogControl result;
     result.set_folder(_mkLogFolder());
-    result.set_filename("<maincomponent>_<pid>.log");
+    result.set_filename("<maincomponent>_<pid>.spdlog");
     result.mutable_general()->set_component("MRA");
     std::string level_str = "INFO";
     char const *cp = getenv(LOG_LEVEL_KEY.c_str());
@@ -109,6 +109,7 @@ MRA::Datatypes::LogControl getConfiguration()
     // Open shared memory, initialize if not existing
     int shm_fd = shm_open(_mkShmFile().c_str(), O_RDONLY, 0666);
     if (shm_fd == -1) {
+        LOGDEBUG("shm init");
         auto cfg = defaultConfiguration();
         setConfiguration(cfg);
         return cfg;

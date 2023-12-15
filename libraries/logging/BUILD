@@ -1,4 +1,3 @@
-
 cc_library(
     name = "logging",
     hdrs = [
@@ -24,6 +23,7 @@ cc_library(
     linkopts = ["-lrt"],  # for shm_open etc
     deps = [
     	"@gabime_spdlog",
+        "@opencv",
         "//base:abstract_interface",
         "//datatypes:MRA_cc_proto",
     ],

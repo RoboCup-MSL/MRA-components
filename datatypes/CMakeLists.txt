@@ -5,11 +5,16 @@
 set(MESSAGE_PROTOS_COMMON
     ActionResult.proto
     Ball.proto
+    BallCandidate.proto
+    CvMat.proto
     Logging.proto
     Obstacle.proto
     Player.proto
+    Point.proto
     Pose.proto
     PosVel.proto
+    Shapes.proto
+    TrackedObject.proto
     WorldState.proto
 )
 message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")

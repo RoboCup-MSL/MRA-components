@@ -1,0 +1,25 @@
+cc_library(
+    name = "LocalBallTracking",
+    srcs = [
+        "sequence_clustering_track_ball.cpp",
+        "RobotsportsLocalBallTracking_sequence_clustering.cpp",
+        "sequence_clustering_best_uid.cpp"
+        
+    ],
+    hdrs = [
+        "sequence_clustering_track_ball.hpp",
+        "sequence_clustering_common_definitions.hpp",
+        "RobotsportsLocalBallTracking_sequence_clustering.hpp",
+        "sequence_clustering_best_uid.hpp"
+    ],
+    includes = [
+        "."
+    ],
+    deps = [
+        "//libraries/logging",
+        "//libraries/geometry",
+        "//components/robotsports/local_ball_tracking:datatypes",
+    ],
+    visibility = ["//visibility:public"],
+)
+

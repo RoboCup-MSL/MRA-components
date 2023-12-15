@@ -7,6 +7,7 @@ cc_library(
         "FalconsTrajectoryGeneration_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/falcons/trajectory_generation/interface:interface",
     ],

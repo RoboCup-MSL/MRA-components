@@ -7,6 +7,7 @@ cc_library(
         "FalconsVelocityControl_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/falcons/velocity_control/interface:interface",
     ],

@@ -3,6 +3,8 @@
 
 #include "abstract_interface.hpp"
 #include "backend.hpp"
+#include "json_convert.hpp"
+#include "logdebug.hpp"
 #include "control.hpp"
 #include <fstream>
 
@@ -45,15 +47,18 @@ public:
     void start()
     {
         // get configuration to use for this tick (do not allow logging only start or only end of tick)
+        LOGDEBUG("LogTick.start componentName %s", _componentName.c_str());
         _cfg = control::getConfiguration(_componentName);
+        LOGDEBUG("LogTick.start config %s", MRA::convert_proto_to_json_str(_cfg).c_str());
         // dispatch to backend
         if (_cfg.enabled())
         {
             backend::reconfigure(_cfg);
             // if so configured, open binary file, otherwise NULL pointer
-            _binfile = backend::logTickBinFile(_cfg, _componentName, _counter);
+            std::pair<std::ofstream *, std::string> bf = backend::logTickBinFile(_cfg, _componentName, _counter);
+            _binfile = bf.first;
             // call backend
-            backend::logTickStart(_componentName, _fileName, _lineNumber, _cfg, _binfile, _counter, _t, _input, _params, *_state);
+            backend::logTickStart(_componentName, _fileName, _lineNumber, _cfg, bf.second, _binfile, _counter, _t, _input, _params, *_state);
         }
     }
 

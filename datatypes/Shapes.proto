@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package MRA.Datatypes;
+
+import "datatypes/Point.proto";
+
+message Line
+{
+    MRA.Datatypes.Point from = 1;
+    MRA.Datatypes.Point to = 2;
+}
+
+message Rectangle
+{
+    MRA.Datatypes.Point center = 1;
+    MRA.Datatypes.Point size = 2;
+}
+
+message Circle
+{
+    MRA.Datatypes.Point center = 1;
+    double radius = 2; // use radius=0 for a dot
+}
+
+message Arc
+{
+    // modeled as cv::ellipse, see its documentation for some nice pictures
+    MRA.Datatypes.Point center = 1;
+    MRA.Datatypes.Point size = 2;
+    double angle = 3; // all angles in radians (unlike opencv)
+    double startAngle = 4;
+    double endAngle = 5;
+}
+
+message Shape
+{
+    double linewidth = 1;
+    oneof shape
+    {
+        Line line = 2;
+        Rectangle rectangle = 3;
+        Circle circle = 4;
+        Arc arc = 5;
+    }
+}
+

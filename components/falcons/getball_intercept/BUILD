@@ -7,6 +7,7 @@ cc_library(
         "FalconsGetballIntercept_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/falcons/getball_intercept/interface:interface",
     ],

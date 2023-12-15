@@ -29,11 +29,16 @@ import pathlib
 import subprocess
 import argparse
 
+try:
+    from tzlocal import get_localzone
+    TIMEZONE = str(get_localzone())
+except:
+    TIMEZONE = 'Local' # may not be resolved by bazel ...
 
 
 MRA_ROOT = pathlib.Path(__file__).parent.resolve()
 DEBUG_OPTIONS = ['--subcommands', '--verbose_failures', '--sandbox_debug']
-ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite']
+ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite', '--test_env=TZ=' + TIMEZONE]
 TEST_OPTIONS = ['--test_output', 'all', '--nocache_test_results']
 TRACING_OPTIONS = ['--test_env=MRA_LOGGER_KEEP_TESTSUITE_TRACING=1']
 TESTSUITE_SHM_FILE = '/dev/shm/testsuite_mra_logging_shared_memory'
@@ -72,7 +77,7 @@ class Builder():
         cmd = 'rm -rf /tmp/testsuite_mra_logging'
         self.run_cmd(cmd)
         # set test configuration (maybe we need some scripting for this ... ?)
-        cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.log","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
+        cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
         self.run_cmd(cmd)
     def run_cmd(self, cmd: str) -> None:
         extra_opts = {}
@@ -127,7 +132,7 @@ class CmakeBuilder(Builder):
         self.run_cmd('cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
         self.run_cmd(f'cd build; make -j {jobs}')
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
-        cmd = f'cd build; ctest'
+        cmd = f'cd build; ctest --rerun-failed --output-on-failure'
         self.run_cmd(cmd)
 
 

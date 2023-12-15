@@ -13,12 +13,21 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-arr
 # dependency: ProtoBuf
 # check if ProtoBuf is installed
 # install on Ubuntu: sudo apt-get install protobuf-compiler
-find_package(Protobuf REQUIRED)
+find_package(Protobuf)
 if(NOT PROTOBUF_FOUND)
-message(FATAL_ERROR, "Protobuf could not be find. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
+message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
+# dependency: opencv
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+# dependency gtest 
+find_package(GTest)
+if(NOT GTEST_FOUND)
+message(FATAL_ERROR "GTest could not be find by cmake. Install Gtest (e.g. sudo apt-get install libgtest-dev)")
+endif()
 
 # dependency: json
 include(FetchContent)
@@ -48,11 +57,14 @@ include(GoogleTest)
 set(MESSAGE_PROTOS_COMMON
     datatypes/ActionResult.proto
     datatypes/Ball.proto
+    datatypes/CvMat.proto
     datatypes/Logging.proto
     datatypes/Obstacle.proto
     datatypes/Player.proto
+    datatypes/Point.proto
     datatypes/Pose.proto
     datatypes/PosVel.proto
+    datatypes/Shapes.proto
     datatypes/WorldState.proto
 )
 
@@ -61,7 +73,7 @@ add_library(MRA-datatypes)
 target_include_directories(MRA-datatypes PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(MRA-datatypes protobuf)
 
-protobuf_generate(TARGET MRA-datatypes PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+protobuf_generate(TARGET MRA-datatypes PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
 
 
 # mark the protobuf files as generated source to ensure generation is finished by before building sources.

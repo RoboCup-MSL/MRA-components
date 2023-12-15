@@ -7,6 +7,7 @@ cc_library(
         "RobotsportsProofIsAlive_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/robotsports/proof_is_alive/interface:interface",
     ],
@@ -26,6 +27,7 @@ cc_library(
         "//base:abstract_interface",
         ":datatypes",
         "//libraries/logging",
+        "//libraries/geometry",
     ],
 )
 

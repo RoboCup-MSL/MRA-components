@@ -1,0 +1,50 @@
+ifndef::imagedir[]
+:imagedir: ../../images
+endif::[]
+
+== Coordinate Systems
+
+There are two coordinate systems:
+
+* <<Field Coordinate System (FCS)>>
+* <<Object Coordinate System (OCS)>>
+
+
+=== Field Coordinate System (FCS)
+
+Most data regarding robots, obstacles or ball are to be defined in a three-dimensional Cartesian coordinate system defined according to the following rules (see figure <<FCS_figure>>):
+
+[#FCS_figure]
+.Field Coordinate System
+image::{imagedir}/field_coordinate_system.png[]
+
+* the Field coordinate system is defined as viewed from the own side of the field;
+* the Field coordinate system follows the right system principle;
+* the 'XY' plane is coincident with the field floor;
+* the origin of the coordinate system is coincident with the center of the field;
+* the x-axis is coincident with the center of the mid-field line and positive to the right;
+* the y-axis is positive towards the opponent goal;
+* the z-axis is positive above the ground;
+* angles are measured from the X-axis, or from any other line parallel to the 'X' axis, in the counter.
+clockwise direction, and are defined in the interval [0..2π];
+* angle arithmetic uses (mod 2π).
+
+
+=== Object Coordinate System (OCS)
+
+The Object Coordinate System follows the right system principle;
+
+* the Object Coordinate System is defined as viewed from the middle of the object towards the front of the object (for a robot this is the side used to manipulate the ball)
+* the 'XY' plane is coincident with the ground;
+* the origin of the coordinate system is coincident with the center of the object;
+* the x-axis is coincident with the center of the object and positive to the right;
+* the y-axis is positive towards the front of the object;
+* the z-axis is positive above the ground;
+
+In the figure <<OCS_figure>> the x- and y-axis of an object (robot) are shown when the object has an angle q wrt the Field Coordinate System (capital X an Y axis)
+
+[#OCS_figure]
+.Object Coordinate System
+image::{imagedir}/object_coordinate_system.png[]
+
+

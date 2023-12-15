@@ -1,0 +1,67 @@
+ifndef::modelsdir[]
+:modelsdir: ../../../models
+endif::[]
+
+== Actions
+
+.actions overview
+plantuml::{modelsdir}/mra_actions_layer.puml[format=svg]
+
+Actions are independent pieces of behaviors that are be executed by the robot
+
+The term action is select, because it is used often in the robotics domain.
+Behaviors, Skills are terms for actions.
+
+The following actions are available
+
+* <<move>>
+* <<follow_ball>>
+* <<get_bal>>
+* <<dribble>>
+* <<shield_ball>>
+* <<pass>>
+* <<shoot_on_target>>
+* <<keeperMove>>
+
+Each action will have a result:
+
+* RUNNING (execution in PROGRESS)
+* PASS (execution is FINISHED)
+* FAIL (execution is FINISHED)
+
+=== move [[move]]
+The robot will drive to a given position without the ball. The action <<dribble>> is the driving with the ball.  A property can be set to let the robot facing the ball while it is driving to the requested position.  Facing the ball make the robot  capable to react quickly on a ball moving towards the robot.
+
+===  follow_ball [[follow_ball]]
+The robot will follow the ball by rotation at its location. The front of the robot will be facing the ball.
+
+include::get_ball.adoc[]
+
+
+===  dribble [[dribble]]
+Robot will move to given position with the ball. It will adjust its path and velocity to keep control over the ball.
+
+===  shield_ball [[shield_ball]]
+Robot will shield the ball to avoid that an opponent can take control over it.
+
+===  pass [[pass]]
+Robot will pass ball to player which can receive ball with minimal risk on interception by opponent.
+
+[#OpenIssue-02]
+====
+OpenIssue-02:: Jan: why mention minimal risk etc.? that makes it so much more complex, why not leave that responsibility at the higher level?
+For RobotSports the robot with the ball decides where pass will go to. Responsibility of the action, not of the higher layer. This is less complex than higher level decision. (discuss exact contents per block)
+====
+
+===  shoot_on_target [[shoot_on_target]]
+Robot shoot to a given target position (like the goal).
+The selection of the target is the responsibility of the high layer.
+
+Rationale: shoot_on_target is more convenience for tuning and testing or demonstrations (like shoot through a hole), the goal analysis and target pos choice are a responsibility at a higher layer.
+
+===  keeperMove [[keeperMove]]
+Robot will defend goal line
+
+=== self-pass
+
+Robot will dribble with ball to a position to prevent the player is sanctioned because it dribbles too much it will shoot the ball and pick it up.

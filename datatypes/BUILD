@@ -16,6 +16,7 @@ cc_proto_library(
     deps = [":MRA_proto"],
 )
 
+
 py_proto_library(
     name = "MRA_proto_py",
     visibility = ["//visibility:public"],

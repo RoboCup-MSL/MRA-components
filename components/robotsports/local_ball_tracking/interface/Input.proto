@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalBallTracking;
+
+import "datatypes/BallCandidate.proto";
+
+
+message Input
+{
+    repeated MRA.Datatypes.BallCandidate candidates = 1;
+}

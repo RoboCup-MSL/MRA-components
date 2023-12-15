@@ -8,13 +8,13 @@
 
 #include <vector>
 #include <list>
-#include "Vertex.h"
-#include "PlannerOptions.h"
 #include "Position.h"
 #include "MovingObject.h"
 #include "FieldConfig.h"
-#include "TeamPlannerData.h"
-#include "TeamPlannerResult.h"
+#include "PlannerOptions.hpp"
+#include "TeamPlannerData.hpp"
+#include "TeamPlannerResult.hpp"
+#include "Vertex.hpp"
 
 /**
  * Represents an undirected graph with nodes the important point in the field.

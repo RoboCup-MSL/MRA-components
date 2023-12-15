@@ -3,7 +3,8 @@
  *  @brief   Utility class for plotting planner to svg file
  *  @curator Jürge van Eijck
  */
-#include "SvgUtils.h"
+#include "SvgUtils.hpp"
+
 #include "FieldConfig.h"
 #include "MathUtils.h"
 #include "FileUtils.h"

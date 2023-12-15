@@ -9,8 +9,9 @@
 #define DYNAMICROLEASSIGNMENT_H 1
 
 #include <vector>
-#include "planner_types.h"
-#include "TeamPlannerData.h"
+
+#include "planner_types.hpp"
+#include "TeamPlannerData.hpp"
 
 class DynamicRoleAssignment {
 public:

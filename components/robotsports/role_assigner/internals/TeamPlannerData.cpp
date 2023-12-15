@@ -4,12 +4,13 @@
  *  @curator Jürge van Eijck
  */
 
-#include "TeamPlannerData.h"
-#include "TeamPlannerResult.h"
+#include "TeamPlannerData.hpp"
+
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 #include <cmath>
+#include "TeamPlannerResult.hpp"
 
 using namespace std;
 using namespace trs;

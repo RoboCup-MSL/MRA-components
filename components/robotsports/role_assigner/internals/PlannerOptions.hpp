@@ -7,7 +7,8 @@
 #define PLANNER_OPTIONS_H 1
 
 #include <string>
-#include "planner_types.h" // define of planner_options_t
+
+#include "planner_types.hpp" // define of planner_options_t
 
 namespace trs {
 // Constructing a new object will set the default options.

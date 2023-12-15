@@ -4,8 +4,6 @@ package MRA.RobotsportsRoleAssigner;
 
 import "datatypes/WorldState.proto";
 
-
-
 message Input
 {
 	enum GameState

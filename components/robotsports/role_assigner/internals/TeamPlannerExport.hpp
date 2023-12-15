@@ -7,12 +7,12 @@
 #define TEAM_PLANNER_EXPORT_H 1
 
 #include "MovingObject.h"
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
 #include "WmTypes.h"
 #include <vector>
 #include "FieldConfig.h"
 #include <string>
+#include "GlobalPathPlanner.hpp"
+#include "PlannerOptions.hpp"
 
 
 namespace trs {

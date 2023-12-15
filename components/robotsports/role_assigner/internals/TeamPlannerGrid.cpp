@@ -5,18 +5,19 @@
  *      Author: jurge
  */
 
+#include "TeamPlannerGrid.hpp"
+
 #include <limits>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <cmath>
 #include <list>
-#include "TeamPlannerGrid.h"
 #include "FieldConfig.h"
-#include "PlannerGridInfoData.h"
-#include "GridHeuristic.h"
+#include "GridHeuristic.hpp"
 #include "MathUtils.h"
-#include "TeamPlay.h"
+#include "PlannerGridInfoData.hpp"
+#include "TeamPlay.hpp"
 
 using namespace std;
 

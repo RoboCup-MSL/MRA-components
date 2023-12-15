@@ -4,7 +4,8 @@
 #include "Position.h"
 #include "Vector2D.h"
 #include <string>
-#include "planner_types.h"  // define in planner directory
+
+#include "../internals/planner_types.hpp"  // define in planner directory
 
 using namespace std;
 /**

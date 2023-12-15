@@ -3,14 +3,15 @@
  *  @brief   Class for the dynamic robot planner
  *  @curator Jürge van Eijck
  */
-#include "Dynamics.h"
-#include "GlobalPathDynamicPlanner.h"
+#include "GlobalPathDynamicPlanner.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <limits>
 
-#include "Vertex.h"
-#include "GlobalPathPlanner.h"
+#include "Dynamics.hpp"
+#include "GlobalPathPlanner.hpp"
+#include "Vertex.hpp"
 
 using namespace trs;
 

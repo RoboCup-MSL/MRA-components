@@ -5,12 +5,13 @@
  *      Author: jurge
  */
 
-#include "GridHeuristic.h"
+#include "GridHeuristic.hpp"
+
 #include <cmath>
 #include <limits>
 #include <iostream>
-#include "planner_common.h"
 #include "MathUtils.h"
+#include "planner_common.hpp"
 using namespace trs;
 
 double grid_eps = 1e-3; // 1 mm

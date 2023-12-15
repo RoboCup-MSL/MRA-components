@@ -7,13 +7,14 @@
 #define TEAM_PLANNER_DATA_H 1
 
 #include "MovingObject.h"
-#include "PlannerOptions.h"
 #include "Vector2D.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include <vector>
-#include "TeamPlannerOpponent.h"
-#include "TeamPlannerResult.h"
+
+#include "PlannerOptions.hpp"
+#include "TeamPlannerOpponent.hpp"
+#include "TeamPlannerResult.hpp"
 
 typedef struct pass_data_s {
 	long   valid; // 1: if data is valid; 0 otherwise

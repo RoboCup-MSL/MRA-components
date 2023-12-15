@@ -10,7 +10,7 @@
 
 #include "Vector2D.h"
 #include "MovingObject.h"
-#include  "TeamPlay.h"
+#include "TeamPlay.hpp"
 
 namespace trs {
 

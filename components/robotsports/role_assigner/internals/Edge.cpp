@@ -3,8 +3,9 @@
  *  @brief   Represents a vertex in the graph..
  *  @curator Jürge van Eijck
  */
-#include "Vertex.h"
-#include "Edge.h"
+#include "Edge.hpp"
+
+#include "Vertex.hpp"
 namespace trs {
 
 Edge::Edge(Vertex* pTarget, double dCost) :

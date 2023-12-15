@@ -7,13 +7,13 @@
 #define TEAMPLAY_H 1
 
 #include "MovingObject.h"
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
-#include "TeamPlannerData.h"
-#include "TeamPlannerOpponent.h"
 #include <vector>
+#include "GlobalPathPlanner.hpp"
+#include "PlannerOptions.hpp"
+#include "TeamPlannerData.hpp"
+#include "TeamPlannerOpponent.hpp"
 
 
 namespace trs {

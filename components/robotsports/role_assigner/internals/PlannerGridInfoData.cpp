@@ -4,10 +4,11 @@
  *  Created on: Jan 3, 2016
  *      Author: jurge
  */
+#include "PlannerGridInfoData.hpp"
+
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include "PlannerGridInfoData.h"
 
 using namespace trs;
 using namespace std;

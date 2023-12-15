@@ -3,18 +3,19 @@
  *  @brief   Class for team planning
  *  @curator Jürge van Eijck
  */
-#include "TeamPlay.h"
-#include "TeamFormation.h"
-#include "TeamPlannerExport.h"
-#include "RolePosition.h"
-#include "GlobalPathDynamicPlanner.h"
-#include "SvgUtils.h"
+#include "TeamPlay.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <limits>
 #include <cmath>
 #include <climits>
 #include <algorithm>
+#include "GlobalPathDynamicPlanner.hpp"
+#include "RolePosition.hpp"
+#include "SvgUtils.hpp"
+#include "TeamFormation.hpp"
+#include "TeamPlannerExport.hpp"
 
 using namespace std;
 using namespace trs;

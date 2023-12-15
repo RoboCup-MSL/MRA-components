@@ -5,7 +5,7 @@
  *      Author: jurge
  */
 
-#include "TeamFormation.h"
+#include "TeamFormation.hpp"
 using namespace trs;
 using namespace std;
 

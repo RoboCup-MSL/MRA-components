@@ -5,11 +5,11 @@
  */
 #include <vector>
 #include "MovingObject.h"
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
-#include "TeamPlannerData.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
+#include "GlobalPathPlanner.hpp"
+#include "PlannerOptions.hpp"
+#include "TeamPlannerData.hpp"
 
 namespace trs {
 

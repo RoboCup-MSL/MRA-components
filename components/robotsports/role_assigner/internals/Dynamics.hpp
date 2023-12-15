@@ -10,7 +10,8 @@
 #include "MovingObject.h"
 #include "Vector2D.h"
 #include <vector>
-#include "GlobalPathPlanner.h" // for planner_piece_t
+
+#include "GlobalPathPlanner.hpp" // for planner_piece_t
 
 namespace trs {
 

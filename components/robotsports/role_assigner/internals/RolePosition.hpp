@@ -7,14 +7,14 @@
 #define ROLE_POSITION_H 1
 
 #include "MovingObject.h"
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
 #include "WmTypes.h"
-#include "planner_types.h"
 #include "FieldConfig.h"
-#include "TeamPlannerData.h"
-#include "TeamPlannerOpponent.h"
 #include <vector>
+#include "GlobalPathPlanner.hpp"
+#include "planner_types.hpp"
+#include "PlannerOptions.hpp"
+#include "TeamPlannerData.hpp"
+#include "TeamPlannerOpponent.hpp"
 
 
 namespace trs {

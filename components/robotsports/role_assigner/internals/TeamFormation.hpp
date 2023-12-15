@@ -8,10 +8,11 @@
 #ifndef TEAMFORMATION_H
 #define TEAMFORMATION_H 1
 
-#include "planner_types.h"
 #include "WmTypes.h"
 #include <vector>
-#include "PlannerOptions.h"
+
+#include "planner_types.hpp"
+#include "PlannerOptions.hpp"
 
 namespace trs {
 

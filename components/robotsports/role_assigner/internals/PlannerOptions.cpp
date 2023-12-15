@@ -3,7 +3,7 @@
  *  @brief    Options for generating the visibility graph and the path planner
  *  @curator Jürge van Eijck
  */
-#include "PlannerOptions.h"
+#include "PlannerOptions.hpp"
 
 #include <ostream>
 #include <sstream>
@@ -138,6 +138,32 @@ PlannerOptions::PlannerOptions() {
 
 }
 
+
+inline std::string FormationAsString(team_formation_e formation) {
+  std::string formationString = "";
+  switch (formation) {
+  case team_formation_e::FORMATION_013: formationString = "FORMATION_013"; break;
+  case team_formation_e::FORMATION_112: formationString = "FORMATION_112"; break;
+  case team_formation_e::FORMATION_211: formationString = "FORMATION_211"; break;
+  case team_formation_e::FORMATION_310: formationString = "FORMATION_310"; break;
+  case team_formation_e::FORMATION_ATTACK_SUPPORT_ONLY: formationString = "FORMATION_ATTACK_SUPPORT_ONLY"; break;
+  case team_formation_e::FORMATION_DEFENDER_ONLY: formationString = "FORMATION_DEFENDER_ONLY"; break;
+  case team_formation_e::FORMATION_INTERCEPTOR_ONLY: formationString = "FORMATION_INTERCEPTOR_ONLY"; break;
+  case team_formation_e::FORMATION_SWEEPER_ONLY: formationString = "FORMATION_SWEEPER_ONLY"; break;
+  case team_formation_e::FORMATION_SETPLAY_RECEIVER_ONLY: formationString = "FORMATION_SETPLAY_RECEIVER_ONLY"; break;
+  case team_formation_e::FORMATION_SETPLAY_KICKER_ONLY: formationString = "FORMATION_SETPLAY_KICKER_ONLY"; break;
+  case team_formation_e::FORMATION_BALLPLAYER_ONLY: formationString = "FORMATION_BALLPLAYER_ONLY"; break;
+  case team_formation_e::FORMATION_SEARCHFORBALL_ONLY: formationString = "FORMATION_SEARCHFORBALL_ONLY"; break;
+  case team_formation_e::FORMATION_BEGINPOSITION_ONLY: formationString = "FORMATION_BEGINPOSITION_ONLY"; break;
+  case team_formation_e::FORMATION_PARKING_ONLY: formationString = "FORMATION_PARKING_ONLY"; break;
+  case team_formation_e::FORMATION_PENALTYKICKER_ONLY: formationString = "FORMATION_PENALTYKICKER_ONLY"; break;
+  case team_formation_e::FORMATION_PENALTY_SHOOTOUT: formationString = "FORMATION_PENALTY_SHOOTOUT"; break;
+  default:
+      formationString = "unknown formation (ERROR situation)";
+  }
+  return formationString;
+}
+
 std::string PlannerOptions::toString() const  {
 	std::stringstream buffer;
 	buffer << "calculateAllPaths = " << calculateAllPaths << std::endl;
@@ -261,6 +287,7 @@ std::string PlannerOptions::toString() const  {
 	buffer << "autoAssignGoalie = "<< autoAssignGoalie << std::endl;
 	return buffer.str();
 }
+
 
 
 

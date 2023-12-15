@@ -8,10 +8,10 @@
 #ifndef PLANNER_GRID_GRIDHEURISTIC_H
 #define PLANNER_GRID_GRIDHEURISTIC_H 1
 
-#include "TeamPlay.h"
-#include "PlannerGridInfoData.h"
 #include "FieldConfig.h"
-#include "PlannerOptions.h"
+#include "PlannerGridInfoData.hpp"
+#include "PlannerOptions.hpp"
+#include "TeamPlay.hpp"
 #include "WmTypes.h"
 
 namespace trs {

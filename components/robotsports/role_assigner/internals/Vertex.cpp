@@ -3,8 +3,9 @@
  *  @brief   Represents a vertex in the graph.
  *  @curator Jürge van Eijck
  */
+#include "Vertex.hpp"
+
 #include <vector>
-#include "Vertex.h"
 #include <cmath>
 #include <iostream>
 #include <limits>

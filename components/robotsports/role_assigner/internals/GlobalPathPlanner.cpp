@@ -3,6 +3,8 @@
  *  @brief   class for robot planner
  *  @curator Jürge van Eijck
  */
+#include "GlobalPathPlanner.hpp"
+
 #include <vector>
 #include <cmath>
 #include <string>
@@ -15,14 +17,13 @@
 #include <algorithm>
 #include <limits>
 
-#include "Vertex.h"
-#include "GlobalPathPlanner.h"
 #include "FieldConfig.h"
 #include "Geometry.h"
 #include "MathUtils.h"
 #include "StringUtils.h"
-#include "SvgUtils.h"
 #include "StringUtils.h"
+#include "SvgUtils.hpp"
+#include "Vertex.hpp"
 
 using namespace std;
 

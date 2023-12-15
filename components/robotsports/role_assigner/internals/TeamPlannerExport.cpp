@@ -6,18 +6,19 @@
 #ifndef TEAM_PLANNER_H
 #define TEAM_PLANNER_H 1
 
-#include "TeamPlannerExport.h"
+#include "TeamPlannerExport.hpp"
+
 #include "MovingObject.h"
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
 #include "WmTypes.h"
 #include "Field.h"
-#include "SvgUtils.h"
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <sys/time.h>
 #include <cmath>
+#include "GlobalPathPlanner.hpp"
+#include "PlannerOptions.hpp"
+#include "SvgUtils.hpp"
 
 namespace trs {
 

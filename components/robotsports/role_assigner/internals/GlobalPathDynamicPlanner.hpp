@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include "PlannerOptions.h"
-#include "GlobalPathPlanner.h"
+#include "GlobalPathPlanner.hpp"
 #include "MovingObject.h"
+#include "PlannerOptions.hpp"
 #include "Position.h"
 #include "Vector2D.h"
 

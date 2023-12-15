@@ -3,7 +3,8 @@
  *  @brief   Collection of static methods for calculating time related properties.
  *  @curator Jürge van Eijck
  */
-#include "Dynamics.h"
+#include "Dynamics.hpp"
+
 #include "MathUtils.h"
 #include <cmath>
 #include <limits>

@@ -7,7 +7,8 @@
 #define VERTEX_H 1
 
 #include <vector>
-#include "Edge.h"
+
+#include "Edge.hpp"
 #include "Vector2D.h"
 
 namespace trs {

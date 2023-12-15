@@ -1,6 +1,7 @@
+#include "planner_common.hpp"
+
 #include <vector>
 #include "Vector2D.h"
-#include "planner_common.h"
 #include <iostream>
 #include <iomanip>
 #include <cmath>

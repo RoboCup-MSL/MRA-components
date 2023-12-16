@@ -20,8 +20,6 @@
 #include "FieldConfig.h"
 #include "Geometry.h"
 #include "MathUtils.h"
-#include "StringUtils.h"
-#include "StringUtils.h"
 #include "SvgUtils.hpp"
 #include "Vertex.hpp"
 

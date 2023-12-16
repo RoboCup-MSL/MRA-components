@@ -10,7 +10,6 @@
 
 #include "MovingObject.h"
 #include "WmTypes.h"
-#include "Field.h"
 #include <vector>
 #include <iostream>
 #include <algorithm>

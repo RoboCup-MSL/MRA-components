@@ -3,6 +3,8 @@
 
 #include "abstract_interface.hpp"
 #include "backend.hpp"
+#include "json_convert.hpp"
+#include "logdebug.hpp"
 #include "control.hpp"
 #include <fstream>
 
@@ -45,7 +47,9 @@ public:
     void start()
     {
         // get configuration to use for this tick (do not allow logging only start or only end of tick)
+        LOGDEBUG("LogTick.start componentName %s", _componentName.c_str());
         _cfg = control::getConfiguration(_componentName);
+        LOGDEBUG("LogTick.start config %s", MRA::convert_proto_to_json_str(_cfg).c_str());
         // dispatch to backend
         if (_cfg.enabled())
         {

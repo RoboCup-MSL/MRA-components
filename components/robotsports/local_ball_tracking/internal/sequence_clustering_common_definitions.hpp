@@ -24,7 +24,7 @@ typedef struct tag_ball_candidate_t {
         double y;                       /* y-position */
         double z;                       /* z-position */
         double confidence;              /* confidence */
-        balltype_e  type;               /* sensor label */
+        int  type;                     /* sensor label */
         double sigma;                   /* standard deviation of sensor noise */
         bool   is_free;                 /* is rolling freely (0 or 1) */
         bool   in_air;                  /* is flying in the air (0 or 1) */
@@ -43,7 +43,7 @@ typedef struct tag_ball_estimate_t {
         double zdot;            /* z-velocity */
         double hconf;           /* Moving Average confidence of winning hypothesis */
         bool is_updated;        /* is winning hypothesis updated with candidate in last sample */
-        balltype_e label;       /* type of last added candidate in winning hypothesis */
+        int  label;             /* type of last added candidate in winning hypothesis */
         double timestamp;       /* ball timestamp */
 } ball_estimate_t;
 

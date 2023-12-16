@@ -31,18 +31,18 @@ using namespace MRA;
  * @return Intersection point D. Note that c.distanceTo(D) is the distance of c to the line (p1,p2).
  */
 static MRA::Geometry::Position intersectPerpendicular(const MRA::Geometry::Position& r_pose1, const MRA::Geometry::Position& r_pose2,
-	const MRA::Geometry::Position& r_pose_p) {
-	double p1x = r_pose1.x;
-	double p1y = r_pose1.y;
-	double p2x = r_pose2.x;
-	double p2y = r_pose2.y;
-	double px = r_pose_p.x;
-	double py = r_pose_p.y;
-	double lambda =((p2x - p1x) * (px - p1x) + (p2y - p1y) * (py - p1y)) / ((p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y));
-	MRA::Geometry::Position intersection;
-	intersection.x = p1x + lambda * (p2x - p1x);
-	intersection.y = p1y + lambda * (p2y - p1y);
-	return intersection;
+    const MRA::Geometry::Position& r_pose_p) {
+    double p1x = r_pose1.x;
+    double p1y = r_pose1.y;
+    double p2x = r_pose2.x;
+    double p2y = r_pose2.y;
+    double px = r_pose_p.x;
+    double py = r_pose_p.y;
+    double lambda =((p2x - p1x) * (px - p1x) + (p2y - p1y) * (py - p1y)) / ((p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y));
+    MRA::Geometry::Position intersection;
+    intersection.x = p1x + lambda * (p2x - p1x);
+    intersection.y = p1y + lambda * (p2y - p1y);
+    return intersection;
 }
 
 int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
@@ -62,7 +62,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
     std::cout << __FILE__ << " state: " << convert_proto_to_json_str(state) << std::endl;
 #endif // DEBUG
 
-	int error_value = 0;
+    int error_value = 0;
 
     auto const ws = input.worldstate();
 
@@ -91,18 +91,18 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
         // check if not any failure mode was triggered
         if (output.actionresult() == MRA::Datatypes::RUNNING)
         {
-        	MRA::Geometry::Position robot_pos = ws.robot().position();
-        	MRA::Datatypes::Pose robot_vel = ws.robot().velocity();
+            MRA::Geometry::Position robot_pos = ws.robot().position();
+            MRA::Datatypes::Pose robot_vel = ws.robot().velocity();
 
-        	MRA::Datatypes::Pose ball_pos_fc  = ws.ball().position();
-        	MRA::Datatypes::Pose target_vel_fc  = ws.ball().velocity();
+            MRA::Datatypes::Pose ball_pos_fc  = ws.ball().position();
+            MRA::Datatypes::Pose target_vel_fc  = ws.ball().velocity();
 
-        	// get extrapolated ball position : add velocity vector (position over 1 sec)
-        	MRA::Geometry::Position ball_pos_fc_extrapolated = ball_pos_fc;
-        	ball_pos_fc_extrapolated += target_vel_fc;
+            // get extrapolated ball position : add velocity vector (position over 1 sec)
+            MRA::Geometry::Position ball_pos_fc_extrapolated = ball_pos_fc;
+            ball_pos_fc_extrapolated += target_vel_fc;
 
-        	MRA::Geometry::Position target_position = intersectPerpendicular(ball_pos_fc, ball_pos_fc_extrapolated, robot_pos);
-        	target_position.faceTowards(ball_pos_fc); // facing ball
+            MRA::Geometry::Position target_position = intersectPerpendicular(ball_pos_fc, ball_pos_fc_extrapolated, robot_pos);
+            target_position.faceTowards(ball_pos_fc); // facing ball
 
 
             if ((robot_pos -target_position).size() > params.actionradius())

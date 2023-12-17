@@ -24,7 +24,7 @@ class RolePosition {
 public:
 	static MRA::Geometry::Point determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
 			dynamic_role_e dynamic_role, game_state_e gamestate,
-			const MovingObject& globalBall, const previous_used_ball_by_planner_t& previous_global_ball,
+			const MovingObject& globalBall, const TeamPlannerState& r_state,
 			std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
 			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, bool teamControlBall,
@@ -52,12 +52,12 @@ private:
 	static void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
 
 	static void calculateSetPlayPosition(MRA::Geometry::Point& shooterPosition, MRA::Geometry::Point& receiverPosition,
-			const std::vector<TeamPlannerRobot>& Team, const MRA::Geometry::Point& ballPosition, const previous_used_ball_by_planner_t& previous_global_ball,
+			const std::vector<TeamPlannerRobot>& Team, const MRA::Geometry::Point& ballPosition, const TeamPlannerState& r_state,
 			game_state_e gamestate, const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
 
 	static MRA::Geometry::Point calculateSetPlayReceiverPosition(const std::vector<TeamPlannerRobot>& Team,
 			                                    const MRA::Geometry::Point& globalBallPosition,
-												const previous_used_ball_by_planner_t& previous_global_ball,
+			                                    const TeamPlannerState& r_state,
 												game_state_e gamestate,
 												const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
 

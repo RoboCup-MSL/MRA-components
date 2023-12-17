@@ -18,7 +18,7 @@ using namespace trs;
 
 
 MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role, game_state_e gamestate,
-		const MovingObject& globalBall, const previous_used_ball_by_planner_t& previous_global_ball,
+		const MovingObject& ball, const TeamPlannerState& r_state,
 		std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
 		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
@@ -32,7 +32,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         gamestate == game_state_e::FREEKICK_AGAINST || gamestate == game_state_e::THROWIN_AGAINST 	) )
 	{
 		// Setplay against: man coverage for all opponents
-		rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, globalBall, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, true /* setplay active */, teamControlBall);
+		rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, true /* setplay active */, teamControlBall);
 		return rolePosition;
 	}
 
@@ -60,7 +60,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		else
 		{
 			MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, fieldConfig.getMaxFieldY());
-			MRA::Geometry::Point ballPos = globalBall.getPosition().getPoint();
+			MRA::Geometry::Point ballPos = ball.getPosition().getPoint();
 			if (fieldConfig.isInField(ballPos.x, ballPos.y, plannerOptions.outsideFieldMargin))
 			{
 				double alfa = ballPos.angle(goalPos);
@@ -84,8 +84,8 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		MRA::Geometry::Point shooterPosition;
 		MRA::Geometry::Point receiverPosition;
 		// Get ball position, will be the base of the positioning
-		MRA::Geometry::Point globalBallPosition = globalBall.getPosition().getPoint();
-		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, globalBallPosition, previous_global_ball, gamestate, plannerOptions, fieldConfig);
+		MRA::Geometry::Point ballPosition = ball.getPosition().getPoint();
+		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, ballPosition, r_state, gamestate, plannerOptions, fieldConfig);
 		rolePosition = shooterPosition;  // right of field, just middle of opponent half in Y
 	}
 	break;
@@ -98,24 +98,24 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		MRA::Geometry::Point shooterPosition;
 		MRA::Geometry::Point receiverPosition;
 		// Get ball position, will be the base of the positioning
-		MRA::Geometry::Point globalBallPosition = globalBall.getPosition().getPoint();
-		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, globalBallPosition, previous_global_ball, gamestate, plannerOptions, fieldConfig);
+		MRA::Geometry::Point ballPosition = ball.getPosition().getPoint();
+		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, ballPosition, r_state, gamestate, plannerOptions, fieldConfig);
 		rolePosition = receiverPosition;  // right of field, just middle of opponent half in Y
 	}
 	break;
 	case dr_PENALTY_DEFENDER:
 	{
-			rolePosition = TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(Team,  gamestate, 	plannerOptions, globalBall, Opponents,r_gridFileNumber++, fieldConfig);
+			rolePosition = TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(Team,  gamestate, 	plannerOptions, ball, Opponents,r_gridFileNumber++, fieldConfig);
 	}
 	break;
 	case dr_DEFENDER:
 	{
 		if (plannerOptions.man_to_man_defense_during_normal_play) {
 			// man coverage
-			rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, globalBall, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, false /* normal-play */, teamControlBall);
+			rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, false /* normal-play */, teamControlBall);
 		}
 		else {
-			rolePosition = TeamPlanner_Grid::findDefensivePosition(Team,  gamestate, 	plannerOptions, globalBall, Opponents,r_gridFileNumber++, fieldConfig);
+			rolePosition = TeamPlanner_Grid::findDefensivePosition(Team,  gamestate, 	plannerOptions, ball, Opponents,r_gridFileNumber++, fieldConfig);
 		}
 	}
 	break;
@@ -124,7 +124,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		if (gamestate == game_state_e::GOALKICK) {
 			position_close_to_ball = true;
 		}
-		MovingObject ballPostionToUse = globalBall;
+		MovingObject ballPostionToUse = ball;
 		if (plannerOptions.use_pass_to_position_for_attack_support && pass_data.valid) {
 			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 0.0, -1, true);
 		}
@@ -150,7 +150,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 	}
 	break;
 	case dr_SWEEPER: {
-		rolePosition = TeamPlanner_Grid::findSweeperPosition(Team, gamestate, plannerOptions, globalBall, Opponents, r_gridFileNumber++, fieldConfig);
+		rolePosition = TeamPlanner_Grid::findSweeperPosition(Team, gamestate, plannerOptions, ball, Opponents, r_gridFileNumber++, fieldConfig);
 	}
 	break;
 	case dr_INTERCEPTOR: {
@@ -160,12 +160,12 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 			gamestate == game_state_e::THROWIN_AGAINST 	)
 		{
 			rolePosition = TeamPlanner_Grid::findInterceptorPositionDuringRestart(Team, gamestate, plannerOptions,
-					globalBall, Opponents, r_gridFileNumber++, fieldConfig);
+					ball, Opponents, r_gridFileNumber++, fieldConfig);
 		}
 		else {
-			MRA::Geometry::Point intercept_position = globalBall.getXYlocation();
+			MRA::Geometry::Point intercept_position = ball.getXYlocation();
 			if (plannerOptions.interceptor_assign_use_ball_velocity &&
-				globalBall.getLinearVelocity() > plannerOptions.interceptor_assign_min_velocity_for_calculate_interception_position) {
+				ball.getLinearVelocity() > plannerOptions.interceptor_assign_min_velocity_for_calculate_interception_position) {
 				// ball is moving: calculate distance to interception position per robot.
 				double maxSpeed = plannerOptions.maxPossibleLinearSpeed;
 				double bestIntercept_distance = std::numeric_limits<double>::infinity();
@@ -173,7 +173,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 					if (!Team[idx].assigned) {
 						// Find initial intercept point
 						MRA::Geometry::Point player_pos = Team[idx].position.getXYlocation();
-						Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(globalBall, player_pos, maxSpeed,
+						Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(ball, player_pos, maxSpeed,
 								fieldConfig, plannerOptions.move_to_ball_left_field_position);
 						if (player_pos.distanceTo(intercept_data.intercept_position) < bestIntercept_distance) {
 							bestIntercept_distance = player_pos.distanceTo(intercept_data.intercept_position);
@@ -184,7 +184,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 				rolePosition = intercept_position;
 			}
 			else {
-				rolePosition = InterceptorNormalPlayPosition(planner_target, globalBall, Team, Opponents,plannerOptions, fieldConfig);
+				rolePosition = InterceptorNormalPlayPosition(planner_target, ball, Team, Opponents,plannerOptions, fieldConfig);
 			}
 
 			int closest_to_ball_idx = FindOpponentClostestToPositionAndNotAssigned(intercept_position, fieldConfig, plannerOptions, Opponents);
@@ -196,7 +196,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 	}
 	break;
 	case dr_BALLPLAYER: {
-		MRA::Geometry::Point shootPos = TeamPlanner_Grid::findBallPlayerPosition(Team, gamestate, plannerOptions, globalBall, Opponents, r_gridFileNumber++, fieldConfig, ball_pickup_position, passIsRequired);
+		MRA::Geometry::Point shootPos = TeamPlanner_Grid::findBallPlayerPosition(Team, gamestate, plannerOptions, ball, Opponents, r_gridFileNumber++, fieldConfig, ball_pickup_position, passIsRequired);
 		rolePosition = shootPos;
 	}
 	break;
@@ -498,13 +498,13 @@ bool RolePosition::calculateSetPlayReceiverConservativePosition(const FieldConfi
 // ---------------------------------------------------------------------
 void RolePosition::calculateSetPlayPosition(MRA::Geometry::Point& shooterPosition, MRA::Geometry::Point& receiverPosition,
 											const std::vector<TeamPlannerRobot>& Team,
-		                                    const MRA::Geometry::Point& globalBallPosition,
-											const previous_used_ball_by_planner_t& previous_global_ball,
+											const MRA::Geometry::Point& ballPosition,
+											const TeamPlannerState& r_state,
 											game_state_e gamestate,
 											const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig)  {
 
 
-	receiverPosition = calculateSetPlayReceiverPosition(Team, globalBallPosition, previous_global_ball,
+	receiverPosition = calculateSetPlayReceiverPosition(Team, ballPosition, r_state,
 												gamestate, plannerOptions, fieldConfig);
 
 	// calculate kicker position on line between ball and receiver
@@ -512,7 +512,7 @@ void RolePosition::calculateSetPlayPosition(MRA::Geometry::Point& shooterPositio
 	double distBallShooter = plannerOptions.restart_shooter_ball_dist; // distance between shooter and ball
 	double distBallReciever = plannerOptions.restart_receiver_ball_dist; // distance between receiver and ball
 
-	double alfaKicker = globalBallPosition.angle(receiverPosition);
+	double alfaKicker = ballPosition.angle(receiverPosition);
 	bool shootPositionValid = false; // indicate if kicker position is valid
 	double shootX = 0.0;
 	double shootY = 0.0;
@@ -534,8 +534,8 @@ void RolePosition::calculateSetPlayPosition(MRA::Geometry::Point& shooterPositio
 			if (actualDistBallShooter < (fieldConfig.ROBOTSIZE * 0.5 + 0.10) ) {
 				// can not move close to ball then 10 cm from the front of the robot.
 				// use same x position as ball and position the front of the player cm from the ball
-				shootX = globalBallPosition.x;
-				shootY = globalBallPosition.y - (fieldConfig.ROBOTSIZE);
+				shootX = ballPosition.x;
+				shootY = ballPosition.y - (fieldConfig.ROBOTSIZE);
 				shootPositionValid = true;
 			}
 		}
@@ -545,7 +545,7 @@ void RolePosition::calculateSetPlayPosition(MRA::Geometry::Point& shooterPositio
 
 MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const std::vector<TeamPlannerRobot>& Team,
 		                                    const MRA::Geometry::Point& globalBallPosition,
-											const previous_used_ball_by_planner_t& previous_global_ball,
+		                                    const TeamPlannerState& r_state,
 											game_state_e gamestate,
 											const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig)
 {
@@ -574,12 +574,12 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const std::v
 	for (unsigned int idx = 0; idx < Team.size(); idx++) {
 		if (Team[idx].previous_result.previous_result_present == 1 && static_cast<dynamic_role_e>(Team[idx].previous_result.dynamic_role) == dr_SETPLAY_RECEIVER) {
 			MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(Team[idx].previous_result.end_position.x, Team[idx].previous_result.end_position.y);
-			MRA::Geometry::Point previousBall = MRA::Geometry::Point(previous_global_ball.x, previous_global_ball.y);
+			MRA::Geometry::Point previousBall = MRA::Geometry::Point(r_state.previous_global_ball.x, r_state.previous_global_ball.y);
 
 			if (globalBallPosition.distanceTo(previousBall) < 0.26) {
 				receiverPosition = previousEndPos;
-				receiverPosition.x = receiverPosition.x - (globalBallPosition.x - previous_global_ball.x);
-				receiverPosition.y = receiverPosition.y - (globalBallPosition.y - previous_global_ball.y);
+				receiverPosition.x = receiverPosition.x - (globalBallPosition.x - r_state.previous_global_ball.x);
+				receiverPosition.y = receiverPosition.y - (globalBallPosition.y - r_state.previous_global_ball.y);
 				if (fieldConfig.isInField(receiverPosition, margin_to_side_line)) {
 					return receiverPosition;
 				}

@@ -57,35 +57,49 @@ public:
 	bool passIsRequired;
 	pass_data_t pass_data;
 };
-class TeamPlannerData {
+
+class TeamPlannerState {
 public:
-	team_planner_result_t* player_paths;
+    previous_used_ball_by_planner_t previous_global_ball;
+};
+
+
+
+class TeamPlannerOutput {
+public:
+    team_planner_result_t* player_paths;
+    std::string pathToString();
+};
+
+
+class TeamPlannerInput {
+public:
+    TeamPlannerInput() {};
 	game_state_e gamestate;
 	MovingObject globalBall;
-	MovingObject localBall;
-	previous_used_ball_by_planner_t previous_global_ball;
 	std::vector<TeamPlannerRobot> Team;
 	std::vector<TeamPlannerOpponent> Opponents;
-	PlannerOptions plannerOptions;
 	std::vector<MRA::Geometry::Point> parking_positions;
 	ball_pickup_position_t ball_pickup_position;
 	bool passIsRequired;
 	pass_data_t pass_data;
+	std::vector<dynamic_role_e> teamFormation;
+	trs::FieldConfig fieldConfig;
 
-	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
-	void fromCSVstring(std::string&);
-	void fillData(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
-			const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
-			long controlBallByPlayerId, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
-			const PlannerOptions& plannerOptions,
-			const std::vector<MRA::Geometry::Point>& parking_postions, const FieldConfig& fieldConfig,
-			const previous_used_ball_by_planner_t& previous_global_ball,
-			const std::vector<final_planner_result_t>& previous_planner_results,
-			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
-			long passBallByPlayerId, const pass_data_t& pass_data,
-			const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area);
-
-	std::string pathToString();
+//
+//	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
+//	void fromCSVstring(std::string&);
+//	void fillData(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
+//			const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
+//			long controlBallByPlayerId, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
+//			const PlannerOptions& plannerOptions,
+//			const std::vector<MRA::Geometry::Point>& parking_postions, const FieldConfig& fieldConfig,
+//			const previous_used_ball_by_planner_t& previous_global_ball,
+//			const std::vector<final_planner_result_t>& previous_planner_results,
+//			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
+//			long passBallByPlayerId, const pass_data_t& pass_data,
+//			const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area);
+//	std::string pathToString();
 };
 
 } // namespace

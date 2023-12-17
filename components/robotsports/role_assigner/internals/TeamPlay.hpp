@@ -22,7 +22,10 @@ namespace trs {
 class TeamPlay {
 public:
 	TeamPlay();
-	void assign(const vector<dynamic_role_e>& teamFormation, const FieldConfig& fieldConfig, TeamPlannerData& teamplannerData);
+	void assign(const TeamPlannerInput& input,
+	            TeamPlannerState& r_state,
+	            TeamPlannerOutput& r_output,
+	            const PlannerOptions& plannerOptions);
 
 private:
 	class AssignToTargetData {
@@ -33,14 +36,6 @@ private:
 		bool hasPreviousTarget;
 		double distToPreviousTarget;
 	};
-
-
-	void assign(const vector<dynamic_role_e>& teamFormation,
-	        team_planner_result_t* player_paths, game_state_e gamestate,
-			const MovingObject& globalBall, const previous_used_ball_by_planner_t& previous_global_ball,
-			std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& opponents,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const std::vector<MRA::Geometry::Point>& parking_positions,
-			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
 
 	vector<dynamic_role_e> selectTeamFormation(game_state_e gamestate);
 

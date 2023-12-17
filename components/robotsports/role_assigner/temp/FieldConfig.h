@@ -14,6 +14,7 @@ namespace trs {
 class FieldConfig {
 
 public:
+    FieldConfig() {};
 	FieldConfig(double field_length, double field_width, double field_margin, double goal_width, double goal_length,
 			double center_circle_diameter, double goal_area_width, double goal_area_length, bool penalty_area_present, double penalty_area_width,
 			double penalty_area_length, double parking_area_width, double parking_area_length,

@@ -32,7 +32,6 @@ public:
 	bool isInReachableField(const MRA::Geometry::Point& r_pos) const;
 	bool isInReachableField(double x, double y) const;
 
-	bool isInFullField(double x, double y) const;
 	bool isInOpponentGoalArea(double x, double y) const;
 	bool isInOwnGoalArea(double x, double y) const;
 	bool isInOpponentPenaltyArea(double x, double y) const;
@@ -79,12 +78,7 @@ public:
 	double getParkingDistanceBetweenPlayers() const;
 	double getParkingDistanceToLine() const;
 
-	double getFieldMarkingsWidth() const;
-	double getFieldMarkingsWidthInternal() const;
-
 	double getPenaltySpotToBackline() const;
-
-	bool isMobileField() const;
 
 public: // data is public, to avoid vision updates. In the future: data is private, vision code is using functions. TODO
 	//"FieldLength: Length of the playing field [m]",

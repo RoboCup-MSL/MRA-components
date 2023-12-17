@@ -142,21 +142,10 @@ double FieldConfig::getParkingDistanceToLine() const {
 	return PARKING_DISTANCE_TO_LINE;
 }
 
-double FieldConfig::getFieldMarkingsWidth() const {
-	return FIELD_MARKINGS_WIDTH;
-}
-
-double FieldConfig::getFieldMarkingsWidthInternal() const {
-	return FIELD_MARKINGS_WIDTH_INTERNAL;
-}
-
 double FieldConfig::getPenaltySpotToBackline() const {
 	return PENALTY_SPOT_TO_BACKLINE;
 }
 
-bool FieldConfig::isMobileField() const {
-	return m_is_mobile_field;
-}
 
 FieldConfig FillDefaultFieldConfig() {
 	double robot_size = 0.5;
@@ -227,12 +216,6 @@ bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) co
 bool FieldConfig::isInField(double x, double y, double margin) const {
 	/* check if point is in the field */
 	bool inField = (fabs(y) <= (0.5*FIELD_LENGTH)-margin) && (fabs(x) <= (0.5*FIELD_WIDTH)-margin);
-	return inField;
-}
-
-bool FieldConfig::isInFullField(double x, double y) const {
-	/* check if point is in the full field */
-	bool inField = (fabs(y) <= getMaxFullFieldY()) && (fabs(x) <= getMaxFullFieldX());
 	return inField;
 }
 

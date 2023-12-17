@@ -20,7 +20,6 @@ add_library(MRA-components-robotsports-role-assigner
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp
     temp/FieldConfig.cpp
-    temp/FileUtils.cpp
     temp/MathUtils.cpp
     temp/MovingObject.cpp
     temp/Position.cpp

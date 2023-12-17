@@ -7,7 +7,9 @@
 
 #include "FieldConfig.h"
 #include "MathUtils.h"
-#include "FileUtils.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+
 //#include "TeamPlannerRobot.hpp"
 #include <iostream>
 #include <ostream>
@@ -73,13 +75,10 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 	double halfRobotSize = fieldConfig.getRobotRadius();
 	double robotSize = fieldConfig.getRobotSize();
 
-	FileParts parts = FileUtils::fileparts(options.svgOutputFileName);
-	if (parts.path.size() > 0) {
-		if (!FileUtils::isDirectory(parts.path)) {
-			MRA_LOG_INFO("Not existing directory: \"%s\"", parts.path.c_str());
-			return;
-		}
+	if (not SvgUtils::doesDirectoryExists(options.svgOutputFileName)) {
+        return;
 	}
+
 
 	FILE* fp = fopen(options.svgOutputFileName.c_str(), "w");
 	// SVG header
@@ -539,4 +538,31 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 	fclose(fp);
 	MRA_LOG_INFO("created SVG file : %s", options.svgOutputFileName.c_str());
 }
+
+/**
+ * return true if path is a directory, otherwise return false
+ */
+bool SvgUtils::doesDirectoryExists(const string& filename) {
+    // split filename in fileparts (compared to matlab fileparts function)
+    // split in path, name and extension
+    bool is_dir = false;
+    int idx0 = filename.rfind("/");
+
+    std::string path = filename.substr(0,idx0+1);
+    if (path.size() > 0) {
+        struct stat info;
+
+        if(stat( path.c_str(), &info ) == 0) {
+            if(info.st_mode & S_IFDIR) {
+                is_dir = true;
+            }
+        }
+        else {
+            MRA_LOG_INFO("Not existing directory: \"%s\"", path.c_str());
+        }
+    }
+    return is_dir;
+}
+
+
 

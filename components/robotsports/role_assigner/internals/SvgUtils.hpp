@@ -36,8 +36,6 @@ public:
 			bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo);
 
 private:
-
-
 	static FieldConfig m_fieldConfig;
 /**
  * Get svg x coordinate for given field X
@@ -49,6 +47,7 @@ private:
  */
 		static double svgY(double fieldY);
 
-
+		static bool doesDirectoryExists(const std::string& filename);
 };
+
 } // namespace

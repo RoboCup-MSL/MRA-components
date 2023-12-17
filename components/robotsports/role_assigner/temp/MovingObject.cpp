@@ -44,19 +44,6 @@ namespace trs {
 	}
 
 	/**
-	 * Constructs a new moving object
-	 * @param position Position of the object
-	 * @param velocity Velocity of the object
-	 */
-	MovingObject::MovingObject(Position position, MRA::Geometry::Point linearVelocity, double rotationVelocity, bool valid) :
-			m_position(position),
-			m_velocity(linearVelocity),
-			m_rotationVelocity(rotationVelocity),
-			m_label(-1),
-			m_valid(valid) {
-	}
-
-	/**
 	 * Position of the object
 	 * @return Position
 	 */
@@ -132,23 +119,6 @@ namespace trs {
 		return result;
 	}
 
-	/**
-	 * Moves the object at its current speed.
-	 * @param timespan Elapsed time period
-	 */
-	void MovingObject::move(double timespan) {
-        MRA::Geometry::Point velocity(m_velocity);
-        velocity *= timespan;
-		m_position.move(velocity, timespan);
-	}
-
-	/**
-	 * Moves the object for the given offset and update time with timespan
-	 */
-	void MovingObject::move(const MRA::Geometry::Point& offset, double timespan) {
-		m_position.move(offset, timespan);
-	}
-
 	std::string MovingObject::toString(bool print_complete) const {
 		std::stringstream buffer;
 		buffer << std::fixed << std::setprecision(2)
@@ -162,26 +132,5 @@ namespace trs {
 		return buffer.str();
 	}
 
-	MovingObject::operator moving_object_t() const {
-		moving_object_t mo;
-		mo.x = this->m_position.getPoint().x;
-		mo.y = this->m_position.getPoint().y;
-		mo.rz = this->m_position.getRotationZ();
-		mo.velx = this->m_velocity.x;
-		mo.vely = this->m_velocity.y;
-		mo.velrz = this->m_rotationVelocity;
-        mo.valid = static_cast<long>(this->m_valid);
-		return mo;
-	}
-
-	MovingObject& MovingObject::operator=(const moving_object_t& mo) {
-		this->m_position.set(mo.x, mo.y, mo.rz);
-		this->m_velocity.x = mo.velx;
-		this->m_velocity.y = mo.vely;
-		this->m_rotationVelocity = mo.velrz;
-        this->m_label = mo.label;
-        this->m_valid = static_cast<bool>(mo.valid);
-		return *this;
-	}
 
 }; // namespace

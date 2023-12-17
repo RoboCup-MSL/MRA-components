@@ -43,19 +43,19 @@ double SvgUtils::svgY(double fieldY) {
 	return m_fieldConfig.getMaxFullFieldY() - fieldY;
 }
 
-void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObject& localBall,
+void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 		const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
 		const team_planner_result_t& player_paths, const PlannerOptions& options, const std::vector<Vertex* >& vertices,
 		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
 		const std::string& colorMe, const FieldConfig& fieldConfig, bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo) {
 	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(globalBall, localBall, myTeam, opponents,	 player_paths, compare_paths,
+	save_graph_as_svg(globalBall, myTeam, opponents,	 player_paths, compare_paths,
 			options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe, fieldConfig,
 			hasTeamPlannerInputInfo, inputInfo );
 }
 
 
-void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObject& localBall,
+void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 		const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
 		const team_planner_result_t& player_paths,
 		const team_planner_result_t&  comparing_player_paths,
@@ -111,7 +111,6 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 	}
 	fprintf(fp, "\tcontrolball = %s (%ld)\n", controlBallByPlayerRemark.c_str(), controlBallByPlayer);
 	fprintf(fp, "\tglobalBall: %s\n", globalBall.toString().c_str());
-	fprintf(fp, "\tlocalBall: %s\n", localBall.toString().c_str());
 	fprintf(fp, "\tteam:\n");
 	for (unsigned int idx = 0; idx < myTeam.size(); idx++) {
 		int teamtypeId = -1;
@@ -183,13 +182,6 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 		globalBall.getVelocity(xyVel, rzvel);
 		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
 				globalBall.getPosition().getPoint().x, globalBall.getPosition().getPoint().y, xyVel.x, xyVel.y);
-	}
-	if (localBall.getPosition().getConfidence() > 0.001) {
-	    MRA::Geometry::Point xyVel;
-		double rzvel;
-		localBall.getVelocity(xyVel, rzvel);
-		fprintf(fp, "  <tns:LocalBall x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-				localBall.getPosition().getPoint().x, localBall.getPosition().getPoint().y, xyVel.x, xyVel.y);
 	}
 	for (unsigned int idx = 0; idx < myTeam.size(); idx++) {
 		string goalieString = "";

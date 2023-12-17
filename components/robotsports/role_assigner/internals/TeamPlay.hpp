@@ -37,7 +37,7 @@ private:
 
 	void assign(const vector<dynamic_role_e>& teamFormation,
 	        team_planner_result_t* player_paths, game_state_e gamestate,
-			const MovingObject& globalBall, const MovingObject& localBall, const previous_used_ball_by_planner_t& previous_global_ball,
+			const MovingObject& globalBall, const previous_used_ball_by_planner_t& previous_global_ball,
 			std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& opponents,
 			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
@@ -87,14 +87,13 @@ private:
 
 	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, team_planner_result_t&  player_paths);
 
-	void printAssignInputs(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
-			std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
+	void printAssignInputs(game_state_e gamestate, const MovingObject& globalBall, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
 			const PlannerOptions& plannerOptions, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
 
 	double calculateShortestDistanceObjectsToTarget(const std::vector<MovingObject>& objects, const MovingObject& targetObject);
 
-	void ReplanInterceptorWithLocalBall(const MovingObject& localBall,
+	void ReplanInterceptor(const MovingObject& Ball,
 			unsigned interceptorIdx,
 			std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
 			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, bool ballIsObstacle);

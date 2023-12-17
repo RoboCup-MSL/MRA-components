@@ -18,7 +18,7 @@ using namespace trs;
 
 
 MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role, game_state_e gamestate,
-		const MovingObject& globalBall, const MovingObject& locallBall, const previous_used_ball_by_planner_t& previous_global_ball,
+		const MovingObject& globalBall, const previous_used_ball_by_planner_t& previous_global_ball,
 		std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
 		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,

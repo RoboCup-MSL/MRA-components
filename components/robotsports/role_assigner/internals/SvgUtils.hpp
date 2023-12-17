@@ -16,7 +16,7 @@ namespace trs {
 class SvgUtils {
 public:
 
-	static void save_graph_as_svg(const MovingObject& globalBall, const MovingObject& localBall, const std::vector<MovingObject>& myTeam,
+	static void save_graph_as_svg(const MovingObject& globalBall, const std::vector<MovingObject>& myTeam,
 			const std::vector<MovingObject>& opponents, const team_planner_result_t& player_paths,
 			const PlannerOptions& options, const std::vector<Vertex* >& vertices,
 			game_state_e gamestate, long controlBallByPlayer,
@@ -25,7 +25,7 @@ public:
 			const std::string& meColor, const FieldConfig& fieldConfig,
 			bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo);
 
-	static void save_graph_as_svg(const MovingObject& globalBall, const MovingObject& localBall, const std::vector<MovingObject>& myTeam,
+	static void save_graph_as_svg(const MovingObject& globalBall, const std::vector<MovingObject>& myTeam,
 			const std::vector<MovingObject>& opponents, const team_planner_result_t& player_paths,
 			const team_planner_result_t&  comparing_player_paths,
 			const PlannerOptions& options, const std::vector<Vertex* >& vertices,

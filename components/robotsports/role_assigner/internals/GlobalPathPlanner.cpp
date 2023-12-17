@@ -729,7 +729,7 @@ void GlobalPathPlanner::save_graph_as_svg(const vector<planner_piece_t>& path) {
 	bool  hasTeamPlannerInputInfo = false;
 	class TeamPlannerInputInfo  inputInfo;
 	// TODO handle localball correctly towards svg
-	SvgUtils::save_graph_as_svg(m_Ball, m_Ball, myTeam, opponents, player_paths,
+	SvgUtils::save_graph_as_svg(m_Ball, myTeam, opponents, player_paths,
 			m_options, m_vertices, game_state_e::NONE, -1, vector<player_type_e>(), vector<long>(), "red",
 			m_fieldConfig, hasTeamPlannerInputInfo, inputInfo);
 }

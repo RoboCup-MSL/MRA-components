@@ -45,13 +45,6 @@ public:
 	MovingObject(Position position, bool valid = true);
 
 	/**
-	 * Constructs a new moving object
-	 * @param position Position of the object
-	 * @param velocity Velocity of the object
-	 */
-	MovingObject(Position position, MRA::Geometry::Point linearVelocity, double rotationVelocity, bool valid = true);
-
-	/**
 	 * Position of the object
 	 * @return Position
 	 */
@@ -96,23 +89,9 @@ public:
 	 * @return Position of the object.
 	 */
 	Position getPositionAt(double time) const;
-
-	/**
-	 * Moves the object at its current speed.
-	 * @param timespan Elapsed time period
-	 */
-	void move(double timespan);
-
-	/**
-	 * Moves the object for the given offset and update time with timespan
-	 */
-	void move(const MRA::Geometry::Point& offset, double timespan);
-
+//
 
 	std::string toString(bool print_complete = true) const;
-
-	operator moving_object_t() const;
-	MovingObject& operator=(const moving_object_t& mo);
 
 };
 

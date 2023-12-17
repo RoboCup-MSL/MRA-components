@@ -7,7 +7,6 @@
 #define TEAM_PLANNER_DATA_H 1
 
 #include "MovingObject.h"
-#include "Vector2D.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include <vector>
@@ -22,8 +21,8 @@ typedef struct pass_data_s {
 	long   target_id; // destination of kick, where 0 is goal
 	double velocity; // [m/s]
 	double angle; // upwards angle
-	trs::Vector2D  origin_pos; // field coordinates of origin
-	trs::Vector2D  target_pos; // field coordinates of target
+	MRA::Geometry::Point  origin_pos; // field coordinates of origin
+	MRA::Geometry::Point  target_pos; // field coordinates of target
 	double ts; // timestamp of update
 	double eta; // estimated time of arrival at target as liveseconds [s]
 } pass_data_t;
@@ -68,7 +67,7 @@ public:
 	std::vector<TeamPlannerRobot> Team;
 	std::vector<TeamPlannerOpponent> Opponents;
 	PlannerOptions plannerOptions;
-	std::vector<Vector2D> parking_positions;
+	std::vector<MRA::Geometry::Point> parking_positions;
 	ball_pickup_position_t ball_pickup_position;
 	bool passIsRequired;
 	pass_data_t pass_data;
@@ -79,7 +78,7 @@ public:
 			const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
 			long controlBallByPlayerId, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
 			const PlannerOptions& plannerOptions,
-			const std::vector<Vector2D>& parking_postions, const FieldConfig& fieldConfig,
+			const std::vector<MRA::Geometry::Point>& parking_postions, const FieldConfig& fieldConfig,
 			const previous_used_ball_by_planner_t& previous_global_ball,
 			const std::vector<final_planner_result_t>& previous_planner_results,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,

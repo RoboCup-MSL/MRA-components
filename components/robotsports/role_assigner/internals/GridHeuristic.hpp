@@ -286,11 +286,11 @@ class DistanceToHeuristic : public GridHeuristic
 {
 public:
 	DistanceToHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const Vector2D& pos, double dScaling);
+			const MRA::Geometry::Point& pos, double dScaling);
 	virtual ~DistanceToHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const Vector2D m_pos;
+	const MRA::Geometry::Point m_pos;
 	const double m_dScaling;
 };
 
@@ -300,11 +300,11 @@ class DistanceToPointHeuristic : public GridHeuristic
 {
 public:
 	DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const Vector2D& pos, double dScaling, double maxRange, bool inverted);
+			const MRA::Geometry::Point& pos, double dScaling, double maxRange, bool inverted);
 	virtual ~DistanceToPointHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const Vector2D m_pos;
+	const MRA::Geometry::Point m_pos;
 	const double m_dScaling;
 	double m_dMaxRange;
 	bool m_bInverted;
@@ -386,7 +386,7 @@ public:
 private:
 	const std::vector<TeamPlannerRobot>& m_Team;
 	const std::vector<TeamPlannerOpponent>& m_Opponents;
-	const Vector2D m_opponentGoal;
+	const MRA::Geometry::Point m_opponentGoal;
 	const double m_rightPole_x;
 	const double m_leftPole_x;
 	const double m_robotRadius;
@@ -422,15 +422,15 @@ class StayAwayFromOpponentsHeuristic : public GridHeuristic
 {
 public:
 	StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const Vector2D& ballPlayerPos,
+			const MRA::Geometry::Point& ballPlayerPos,
 			const MovingObject& ball,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const double radius);
 	virtual ~StayAwayFromOpponentsHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const Vector2D& m_ballPlayerPos;
-	const Vector2D m_ball;
+	const MRA::Geometry::Point& m_ballPlayerPos;
+	const MRA::Geometry::Point m_ball;
 	const std::vector<TeamPlannerOpponent>& m_Opponents;
 	const double m_radius;
 	double m_angle_ball_ballplayer_min;

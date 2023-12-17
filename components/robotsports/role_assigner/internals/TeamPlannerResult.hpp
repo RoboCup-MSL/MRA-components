@@ -7,7 +7,6 @@
 #define TEAM_PLANNER_RESULT_H 1
 
 #include "MovingObject.h"
-//#include "PlannerOptions.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include <vector>
@@ -19,7 +18,7 @@ public:
 	std::vector<planner_piece_t> path;
 	dynamic_role_e dynamic_role;
 	game_state_e gamestate;
-	Vector2D target;
+	MRA::Geometry::Point target;
 	planner_target_e planner_target;
 	defend_info_t defend_info;
 	bool target_position_is_end_position_of_pass;

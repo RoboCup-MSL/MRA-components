@@ -292,6 +292,7 @@ public:
 	static PlannerOptions ReadFromIniFile(const std::string& inifilename);
 };
 
+std::string FormationAsString(team_formation_e formation);
 
 } // namespace
 

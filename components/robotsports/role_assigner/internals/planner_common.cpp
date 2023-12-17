@@ -1,7 +1,6 @@
 #include "planner_common.hpp"
 
 #include <vector>
-#include "Vector2D.h"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
@@ -10,7 +9,7 @@
 using namespace std;
 using namespace trs;
 
-double chance_of_intercept(const Vector2D& pass_begin_vec, const Vector2D& pass_end_vec, const vector<MovingObject>& Opponents,
+double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec, const vector<MovingObject>& Opponents,
 		double interceptionChanceStartDistance,
 		double interceptionChanceIncreasePerMeter,
 		double interceptionDistancePenaltyFactor)
@@ -34,29 +33,29 @@ double chance_of_intercept(const Vector2D& pass_begin_vec, const Vector2D& pass_
 	double end_width = start_width + dist_from_to * increase_per_meter; // calculate size of largest parallel side of trapezoid
 
 	// calculate largest parallel side of trapezoid
-	double EndXp = pass_end_vec.m_x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
-	double EndYp = pass_end_vec.m_y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
-	double EndXm = pass_end_vec.m_x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
-	double EndYm = pass_end_vec.m_y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
+	double EndXp = pass_end_vec.x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
+	double EndYp = pass_end_vec.y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
+	double EndXm = pass_end_vec.x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
+	double EndYm = pass_end_vec.y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
 
 
 	// calculate smallest parallel side of trapezoid
-	double BeginXp = pass_begin_vec.m_x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
-	double BeginYp = pass_begin_vec.m_y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
-	double BeginXm = pass_begin_vec.m_x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
-	double BeginYm = pass_begin_vec.m_y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
+	double BeginXp = pass_begin_vec.x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
+	double BeginYp = pass_begin_vec.y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
+	double BeginXm = pass_begin_vec.x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
+	double BeginYm = pass_begin_vec.y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
 
 	// loop for calculating angles between receiving positions and opponents
 	for( unsigned int i = 0; i < Opponents.size(); i++){
-		Vector2D opponent = Opponents[i].getPosition().getVector2D();
+	    MRA::Geometry::Point opponent = Opponents[i].getPosition().getPoint();
 		// return true if point (x,y) is in polygon defined by the points  else return false
-		if (inTriangle(BeginXp, BeginYp, EndXm, EndYm, BeginXm, BeginYm, opponent.m_x , opponent.m_y) ||
-				inTriangle(EndXm, EndYm, BeginXp, BeginYp, EndXp, EndYp, opponent.m_x , opponent.m_y) )
+		if (inTriangle(BeginXp, BeginYp, EndXm, EndYm, BeginXm, BeginYm, opponent.x , opponent.y) ||
+				inTriangle(EndXm, EndYm, BeginXp, BeginYp, EndXp, EndYp, opponent.x , opponent.y) )
 		{
 			// Opponent is in the Trapezoid
 			// calculate intercept point of the perpendicular from Opponent to the pass-line (shortest line to pass line for the opponent)
-			Vector2D Per;
-			intersectPerpendicular(Per.m_x, Per.m_y, pass_begin_vec.m_x, pass_begin_vec.m_y, pass_end_vec.m_x, pass_end_vec.m_y, opponent.m_x, opponent.m_y);
+		    MRA::Geometry::Point Per;
+			intersectPerpendicular(Per.x, Per.y, pass_begin_vec.x, pass_begin_vec.y, pass_end_vec.x, pass_end_vec.y, opponent.x, opponent.y);
 			// calculate distance from opponent intercept point (Vector Per) to pass begin point
 			double distPer = pass_begin_vec.distanceTo(Per); //
 			double ext_at_Per = start_width + distPer * increase_per_meter;

@@ -8,8 +8,7 @@
 #include "FieldConfig.h"
 #include "MathUtils.h"
 #include "FileUtils.h"
-#include "TeamPlannerRobot.h"
-#include "log.h"
+//#include "TeamPlannerRobot.hpp"
 #include <iostream>
 #include <ostream>
 #include <sstream>
@@ -21,6 +20,8 @@
 #include <limits>
 #include <map>
 #include <cmath>
+#include "logging.hpp"
+
 using namespace std;
 using namespace trs;
 
@@ -75,7 +76,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 	FileParts parts = FileUtils::fileparts(options.svgOutputFileName);
 	if (parts.path.size() > 0) {
 		if (!FileUtils::isDirectory(parts.path)) {
-			logAlways("Not existing directory: \"%s\"", parts.path.c_str());
+			MRA_LOG_INFO("Not existing directory: \"%s\"", parts.path.c_str());
 			return;
 		}
 	}
@@ -178,18 +179,18 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(options.attack_formation).c_str());
 	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(options.defense_formation).c_str());
 	if (globalBall.getPosition().getConfidence() > 0.001) {
-		Vector2D xyVel;
+		MRA::Geometry::Point xyVel;
 		double rzvel;
 		globalBall.getVelocity(xyVel, rzvel);
 		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-				globalBall.getPosition().getVector2D().m_x, globalBall.getPosition().getVector2D().m_y, xyVel.m_x, xyVel.m_y);
+				globalBall.getPosition().getPoint().x, globalBall.getPosition().getPoint().y, xyVel.x, xyVel.y);
 	}
 	if (localBall.getPosition().getConfidence() > 0.001) {
-		Vector2D xyVel;
+	    MRA::Geometry::Point xyVel;
 		double rzvel;
 		localBall.getVelocity(xyVel, rzvel);
 		fprintf(fp, "  <tns:LocalBall x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-				localBall.getPosition().getVector2D().m_x, localBall.getPosition().getVector2D().m_y, xyVel.m_x, xyVel.m_y);
+				localBall.getPosition().getPoint().x, localBall.getPosition().getPoint().y, xyVel.x, xyVel.y);
 	}
 	for (unsigned int idx = 0; idx < myTeam.size(); idx++) {
 		string goalieString = "";
@@ -229,24 +230,24 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 
 			}
 		}
-		Vector2D xyVel;
+		MRA::Geometry::Point xyVel;
 		double rzvel;
 		myTeam[idx].getVelocity(xyVel, rzvel);
 		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
 				idString.c_str(),
-				myTeam[idx].getPosition().getVector2D().m_x, myTeam[idx].getPosition().getVector2D().m_y, myTeam[idx].getPosition().getRotationZ(),
-				xyVel.m_x, xyVel.m_y, rzvel, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
+				myTeam[idx].getPosition().getPoint().x, myTeam[idx].getPosition().getPoint().y, myTeam[idx].getPosition().getRotationZ(),
+				xyVel.x, xyVel.y, rzvel, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
 	}
 	for (unsigned int idx = 0; idx < opponents.size(); idx++) {
-		Vector2D xyVel;
+	    MRA::Geometry::Point xyVel;
 		double rzvel;
 		opponents[idx].getVelocity(xyVel, rzvel);
 		string idString = "id=\""+ std::to_string(opponents[idx].getLabel()) + "\"";
 		fprintf(fp, "  <tns:Opponent %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
 				idString.c_str(),
-				opponents[idx].getPosition().getVector2D().m_x, opponents[idx].getPosition().getVector2D().m_y, opponents[idx].getPosition().getRotationZ(),
-				xyVel.m_x, xyVel.m_y, rzvel);
+				opponents[idx].getPosition().getPoint().x, opponents[idx].getPosition().getPoint().y, opponents[idx].getPosition().getRotationZ(),
+				xyVel.x, xyVel.y, rzvel);
 
 	}
 	if (hasTeamPlannerInputInfo)
@@ -337,33 +338,33 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 
 		fprintf(fp,
 				"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(v->m_coordinate.m_x),  svgY(v->m_coordinate.m_y), 0.01);
+				svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), 0.01);
 		if (options.svgDrawEdges) {
 			for (std::vector<Edge>::iterator it = v->m_neighbours.begin(); it != v->m_neighbours.end(); ++it) {
 				Edge e = *it;
 				Vertex* t = e.m_pTarget;
 				fprintf(fp,
 						"<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.025cm\"  stroke=\"pink\"/>\n",
-						svgX(v->m_coordinate.m_x),  svgY(v->m_coordinate.m_y), svgX(t->m_coordinate.m_x),  svgY(t->m_coordinate.m_y));
+						svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), svgX(t->m_coordinate.x),  svgY(t->m_coordinate.y));
 
 			}
 		}
 	}
 
 	// OPPONENTS
-	for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx != opponents.size(); bar_idx++) {
-		Vector2D bar_pos = opponents[bar_idx].getPosition().getVector2D();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != opponents.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = opponents[bar_idx].getPosition().getPoint();
 		fprintf(fp,
 				"\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.m_x - halfRobotSize), svgY(bar_pos.m_y + halfRobotSize), robotSize, robotSize, options.svgOpponentColor.c_str(), options.svgOpponentColor.c_str());
+				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgOpponentColor.c_str(), options.svgOpponentColor.c_str());
 		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>",
-				svgX(bar_pos.m_x- 0.65*halfRobotSize), svgY(bar_pos.m_y- 0.65*halfRobotSize), bar_idx+1);
+				svgX(bar_pos.x- 0.65*halfRobotSize), svgY(bar_pos.y- 0.65*halfRobotSize), bar_idx+1);
 	}
 
 	// TEAMMATES
 	// draw me first.
 	if (myTeam.size() > 0 ) {
-		Vector2D bar_pos = myTeam[0].getPosition().getVector2D();
+	    MRA::Geometry::Point bar_pos = myTeam[0].getPosition().getPoint();
 		double r = myTeam[0].getPosition().getRotationZ() + M_PI_2;
 		string teamColor = options.svgTeamColor;
 		string fillColor = options.svgTeamColor;
@@ -372,18 +373,18 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 //		}
 		fprintf(fp,
 				"\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.m_x - halfRobotSize), svgY(bar_pos.m_y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
+				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
 		if (controlBallByPlayer == 0) {
 			fprintf(fp,
 					"\n<!-- aiming -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.05cm\"  stroke=\"yellow\"/>\n",
-					svgX(bar_pos.m_x), svgY(bar_pos.m_y), svgX(bar_pos.m_x + 12 * cos(r)), svgY(bar_pos.m_y + 12 * sin(r)));
+					svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));
 		}
 	}
-	for(std::vector<Vector2D>::size_type bar_idx = 1; bar_idx < myTeam.size(); bar_idx++) {
-		Vector2D bar_pos = myTeam[bar_idx].getPosition().getVector2D();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 1; bar_idx < myTeam.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = myTeam[bar_idx].getPosition().getPoint();
 		fprintf(fp,
 				"\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.m_x - halfRobotSize), svgY(bar_pos.m_y + halfRobotSize), robotSize, robotSize, options.svgTeamColor.c_str(), options.svgTeamColor.c_str());
+				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgTeamColor.c_str(), options.svgTeamColor.c_str());
 	}
 
 	string last_path_element_color = "yellow";
@@ -420,8 +421,8 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 			double new_y = (player_paths[pidx]).path[j].y;
 			if (j == 1) {
 				// start first path piece not in middle of player but near the edge of the player
-				Vector2D prev_pos(prev_x, prev_y);
-				Vector2D new_pos(new_x, new_y);
+			    MRA::Geometry::Point prev_pos(prev_x, prev_y);
+			    MRA::Geometry::Point new_pos(new_x, new_y);
 				double alfa = prev_pos.angle(new_pos);
 				prev_x = prev_x - (cos(alfa) * halfRobotSize);
 				prev_y = prev_y - (sin(alfa) * halfRobotSize);
@@ -449,7 +450,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
 //			fprintf(fp,
 //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.m_x), svgY(m_target[idx]->m_coordinate.m_y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
 //		}
 
 	}
@@ -467,8 +468,8 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 			double new_y = (comparing_player_paths[pidx]).path[j].y;
 			if (j == 1) {
 				// start first path piece not in middle of player but near the edge of the player
-				Vector2D prev_pos(prev_x, prev_y);
-				Vector2D new_pos(new_x, new_y);
+			    MRA::Geometry::Point prev_pos(prev_x, prev_y);
+			    MRA::Geometry::Point new_pos(new_x, new_y);
 				double alfa = prev_pos.angle(new_pos);
 				prev_x = prev_x - (cos(alfa) * halfRobotSize);
 				prev_y = prev_y - (sin(alfa) * halfRobotSize);
@@ -496,45 +497,46 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall, const MovingObj
 //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
 //			fprintf(fp,
 //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.m_x), svgY(m_target[idx]->m_coordinate.m_y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
 //		}
 
 	}
 
 	// put player-id on top of the players
-	for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx < myTeam.size(); bar_idx++) {
-		Vector2D bar_pos = myTeam[bar_idx].getPosition().getVector2D();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < myTeam.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = myTeam[bar_idx].getPosition().getPoint();
 		long robotId = bar_idx+1;
 		if (robotIds.size() > bar_idx) {
 			robotId = robotIds[bar_idx];
 		}
-		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.m_x - 0.65*halfRobotSize), svgY(bar_pos.m_y - 0.65*halfRobotSize), robotId);
+		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.x - 0.65*halfRobotSize), svgY(bar_pos.y - 0.65*halfRobotSize), robotId);
 	}
 
 	// BALL
 	if (globalBall.isValid()) {
 		fprintf(fp,
 				"\n<!-- globalBall -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(globalBall.getPosition().getVector2D().m_x),  svgY(globalBall.getPosition().getVector2D().m_y), fieldConfig.getBallRadius()); // half ball diameter
+				svgX(globalBall.getPosition().getPoint().x),  svgY(globalBall.getPosition().getPoint().y), fieldConfig.getBallRadius()); // half ball diameter
 	}
 	if (options.svgDrawVelocity) {
-		Vector2D linVel;
+	    MRA::Geometry::Point linVel;
 		double vrz;
 		globalBall.getVelocity(linVel, vrz);
-		double speed  = linVel.norm();
+		double speed  = linVel.size();
 		if (speed > 1e-6) {
-			Vector2D endVelocityVector = globalBall.getPosition().getVector2D().add(linVel);
+		    MRA::Geometry::Point endVelocityVector = globalBall.getPosition().getPoint();
+		    endVelocityVector += linVel;
 			// globalBall
 			//FIELD - middle line
 			fprintf(fp,
 					"\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
-					svgX(globalBall.getPosition().getVector2D().m_x), svgY(globalBall.getPosition().getVector2D().m_y),
-					svgX(endVelocityVector.m_x), svgY(endVelocityVector.m_y));
+					svgX(globalBall.getPosition().getPoint().x), svgY(globalBall.getPosition().getPoint().y),
+					svgX(endVelocityVector.x), svgY(endVelocityVector.y));
 		}
 	}
 
 	fprintf(fp, "</svg>\n");
 	fclose(fp);
-	logAlways("created SVG file : %s", options.svgOutputFileName.c_str());
+	MRA_LOG_INFO("created SVG file : %s", options.svgOutputFileName.c_str());
 }
 

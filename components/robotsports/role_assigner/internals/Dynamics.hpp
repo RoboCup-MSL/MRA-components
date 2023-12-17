@@ -8,7 +8,7 @@
 #define DYNAMICS_H 1
 
 #include "MovingObject.h"
-#include "Vector2D.h"
+#include "geometry.hpp"
 #include <vector>
 
 #include "GlobalPathPlanner.hpp" // for planner_piece_t
@@ -19,7 +19,7 @@ class Dynamics {
 	public:
 
 	typedef struct dynamics_s {
-		Vector2D intercept_position; // position of interception
+	    MRA::Geometry::Point intercept_position; // position of interception
 		bool move_to_ball_leave_field_pos = false;  // interception position is point where ball leaves field: true | false
 	} dynamics_t;
 
@@ -35,7 +35,7 @@ class Dynamics {
 	 *            Our maximum speed. Assuming indefinite acceleration.
 	 * @return Intercept point, null if intercept is not possible.
 	 */
-	static dynamics_t interceptBall(const MovingObject& movingObject, const Vector2D& coordinates,
+	static dynamics_t interceptBall(const MovingObject& movingObject, const MRA::Geometry::Point& coordinates,
 			double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position);
 
 
@@ -47,7 +47,7 @@ class Dynamics {
 	 * @param rFieldConfig field configuration
 	 * @return point where ball leaves the field.
 	 */
-	static Vector2D calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig);
+	static MRA::Geometry::Point calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig);
 
 	/**
 	 * Calculates time necessary to traverse a path at maximum speed, assuming

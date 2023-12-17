@@ -32,11 +32,11 @@ private:
 	MovingObject m_Me;
 	MovingObject m_Ball;
 	Vertex * m_start;
-	Vector2D m_startVelocity;
+	MRA::Geometry::Point m_startVelocity;
 	std::vector<Vertex *> m_target;
 	std::vector<Vertex *> m_vertices;
-	std::vector<Vector2D> m_teammates;
-	std::vector<Vector2D> m_opponents;
+	std::vector<MRA::Geometry::Point> m_teammates;
+	std::vector<MRA::Geometry::Point> m_opponents;
 	std::vector<Vertex* > m_approachVertices;
 	std::vector<Vertex* > m_addPoints;
 	PlannerOptions m_options;
@@ -66,7 +66,7 @@ public:
 	/* create graph for the provided input */
 	void createGraph(MovingObject me, MovingObject ball, const std::vector<MovingObject>& teammates,
 			const std::vector<MovingObject>& opponents, const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
-			bool avoidBallPath, const Vector2D& rBallTargePos);
+			bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
 
 	/**
 	 *
@@ -91,9 +91,9 @@ private:
 	void addOpponents(const std::vector<MovingObject>& opponents, bool skipFirstRadius);
 	void addTeammates(const std::vector<MovingObject>& teamMates);
 
-	bool nearPath(const Vector2D& v);
+	bool nearPath(const MRA::Geometry::Point& v);
 
-	void addEdges(bool avoidBallPath, const Vector2D& rBallTargePos);
+	void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
 
 	double ballApproachPenalty(Vertex* v);
 	double ownVelocityPenalty(Vertex* v);
@@ -106,7 +106,7 @@ private:
 
 	void addEnemyGoalApproachVertices();
 
-	void addPoint( const Vector2D& point);
+	void addPoint( const MRA::Geometry::Point& point);
 
 };
 

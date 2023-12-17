@@ -16,7 +16,7 @@ using namespace std;
 
 namespace trs {
 
-Vertex::Vertex(const Vector2D& aCoordinate, double distanceToTarget) :
+Vertex::Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget) :
 		m_minDistance(std::numeric_limits<double>::infinity()),
 		m_extraCost(0),
 		m_coordinate(aCoordinate),
@@ -26,7 +26,7 @@ Vertex::Vertex(const Vector2D& aCoordinate, double distanceToTarget) :
 		{
 		}
 
-Vertex::Vertex(const Vector2D& aCoordinate, double distanceToTarget, double dCost) :
+Vertex::Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget, double dCost) :
 		m_minDistance(std::numeric_limits<double>::infinity()),
 		m_extraCost(dCost),
 		m_coordinate(aCoordinate),

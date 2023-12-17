@@ -13,18 +13,17 @@ add_library(MRA-components-robotsports-role-assigner
     internals/PlannerGridInfoData.cpp
     internals/PlannerOptions.cpp
     internals/RolePosition.cpp
+    internals/SvgUtils.cpp
     internals/TeamPlannerData.cpp
     internals/TeamPlannerExport.cpp
     internals/TeamPlay.cpp
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp
     temp/FieldConfig.cpp
-    temp/Geometry.cpp
+    temp/FileUtils.cpp
     temp/MathUtils.cpp
     temp/MovingObject.cpp
     temp/Position.cpp
-    temp/Vector2D.cpp
-   
 )
 
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC

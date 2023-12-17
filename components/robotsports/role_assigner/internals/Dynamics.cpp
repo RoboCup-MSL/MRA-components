@@ -13,53 +13,54 @@
 using namespace trs;
 
 // calculation position where the ball will leave the field
-Vector2D Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig) {
-	Vector2D BallPos = rBallObject.getXYlocation();
-	Vector2D BallVelocity;
+MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig) {
+    MRA::Geometry::Point BallPos = rBallObject.getXYlocation();
+    MRA::Geometry::Point BallVelocity;
 	double Vr = 0.0;
 	rBallObject.getVelocity(BallVelocity, Vr);
 
-	Vector2D leavingPoint = BallPos;
+	MRA::Geometry::Point leavingPoint = BallPos;
 
-	Vector2D p2 = BallPos.add(BallVelocity); // calculate 2nd point of ball traject.
+	MRA::Geometry::Point p2(BallPos);
+	p2 += BallVelocity; // calculate 2nd point of ball traject.
 	int sideline_direction = 1; // positive direction (+x)
-	if (BallVelocity.m_x < 0) {
+	if (BallVelocity.x < 0) {
 		sideline_direction = -1; // negative direction (-x)
 	}
 	int backline_direction = 1; // positive direction (+y)
-	if (BallVelocity.m_y < 0) {
+	if (BallVelocity.y < 0) {
 		backline_direction = -1; // negative direction (-y)
 	}
 	double margin = 0.25 * rFieldConfig.getRobotSize(); // keep ball in the field, player just outside the field
 	double interSectionSideLineX, interSectionSideLineY, interSectionBackLineX,
 			interSectionBackLineY = 0.0;
 	bool intersectWithBackLine = getIntersectionOfTwoLines(
-			interSectionBackLineX, interSectionBackLineY, BallPos.m_x, BallPos.m_y,
-			p2.m_x, p2.m_y, rFieldConfig.getMaxFieldX(),
+			interSectionBackLineX, interSectionBackLineY, BallPos.x, BallPos.y,
+			p2.x, p2.y, rFieldConfig.getMaxFieldX(),
 			backline_direction * (rFieldConfig.getMaxFieldY() + margin),
 			-rFieldConfig.getMaxFieldX(),
 			backline_direction * (rFieldConfig.getMaxFieldY() + margin));
 	bool intersectWithSideLine = getIntersectionOfTwoLines(
-			interSectionSideLineX, interSectionSideLineY, BallPos.m_x, BallPos.m_y,
-			p2.m_x, p2.m_y,
+			interSectionSideLineX, interSectionSideLineY, BallPos.x, BallPos.y,
+			p2.x, p2.y,
 			sideline_direction * (rFieldConfig.getMaxFieldX() + margin),
 			rFieldConfig.getMaxFieldY(),
 			sideline_direction * (rFieldConfig.getMaxFieldX() + margin),
 			-rFieldConfig.getMaxFieldY());
 	if (intersectWithBackLine && !intersectWithSideLine) {
 		// intersection only with backline
-		leavingPoint.m_x = interSectionBackLineX;
-		leavingPoint.m_y = interSectionBackLineY;
+		leavingPoint.x = interSectionBackLineX;
+		leavingPoint.y = interSectionBackLineY;
 	} else if (!intersectWithBackLine && intersectWithSideLine) {
 		// intersection only with sideline
-		leavingPoint.m_x = interSectionSideLineX;
-		leavingPoint.m_y = interSectionSideLineY;
+		leavingPoint.x = interSectionSideLineX;
+		leavingPoint.y = interSectionSideLineY;
 	} else if (intersectWithBackLine && intersectWithSideLine) {
 		// intersect with both lines.
 		// use point closest to ball position
-		Vector2D sidelinePoint = Vector2D(interSectionSideLineX,
+	    MRA::Geometry::Point sidelinePoint = MRA::Geometry::Point(interSectionSideLineX,
 				interSectionSideLineY);
-		Vector2D backlinePoint = Vector2D(interSectionBackLineX,
+	    MRA::Geometry::Point backlinePoint = MRA::Geometry::Point(interSectionBackLineX,
 				interSectionBackLineY);
 		if (BallPos.distanceTo(sidelinePoint) < BallPos.distanceTo(backlinePoint)) {
 			leavingPoint = sidelinePoint; // closest to sideline
@@ -71,17 +72,17 @@ Vector2D Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObjec
 }
 
 Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
-		const Vector2D& coordinates, double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position) {
+		const MRA::Geometry::Point& coordinates, double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position) {
 	dynamics_t result = {};
 
 	// for clarity, lets assume Me wants to intercept a moving Ball
-	Vector2D ball = rBallObject.getPosition().getVector2D();
-	Vector2D ballVelocity;
+	MRA::Geometry::Point ball = rBallObject.getPosition().getPoint();
+	MRA::Geometry::Point ballVelocity;
 	double vrz;
 	rBallObject.getVelocity(ballVelocity, vrz);
-	Vector2D meCoordinates = coordinates;
+	MRA::Geometry::Point meCoordinates = coordinates;
 
-	double ballSpeed = ballVelocity.norm();
+	double ballSpeed = ballVelocity.size();
 	if (ballSpeed < 0.0001) {
 		// When object is not moving, the intercept point is the object
 		// position itself
@@ -89,7 +90,8 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 		return result;
 	}
 	double distance = meCoordinates.distanceTo(ball);
-	double cosBeta = meCoordinates.subtract(ball).inproduct(ballVelocity)
+	meCoordinates -= ball;
+	double cosBeta = meCoordinates.inproduct(ballVelocity)
 						/ (distance * ballSpeed);
 
 	double relativeSpeed = fabs(ballSpeed - maxSpeed);
@@ -123,7 +125,9 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 		// Intercept impossible
 		result.move_to_ball_leave_field_pos = true; // no intercept possible
 	} else {
-		result.intercept_position = ball.add(ballVelocity.multiply(time));
+	    ballVelocity *= time;
+	    ball += ballVelocity;
+		result.intercept_position = ball;
 	}
 
 	if (!fieldConfig.isInField(result.intercept_position, 0.25*fieldConfig.getRobotRadius()))
@@ -156,8 +160,8 @@ double Dynamics::timeOnPath(const vector<planner_piece_t>& path, double maxSpeed
 	// Get total length of path
 	double length = 0.0;
 	for (unsigned int index = 1; index < path.size(); ++index) {
-		Vector2D current = Vector2D(path[index].x, path[index].y);
-		Vector2D previous = Vector2D(path[index-1].x, path[index-1].y);
+	    MRA::Geometry::Point current = MRA::Geometry::Point(path[index].x, path[index].y);
+	    MRA::Geometry::Point previous = MRA::Geometry::Point(path[index-1].x, path[index-1].y);
 		length += current.distanceTo(previous);
 	}
 	return length / maxSpeed;

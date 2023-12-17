@@ -80,15 +80,15 @@ static void addToCSV(const string& rstrId, int value, std::stringstream& rString
 }
 
 static void MovingObjectToCSV(const string& rstrId, const MovingObject& rObject, std::stringstream& rStringStream, const string& rstrSeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
-	Vector2D linVel;
+    MRA::Geometry::Point linVel;
 	double rotVel;
 	rObject.getVelocity(linVel, rotVel);
 	addToCSV(rstrId+".valid",rObject.isValid(), rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
 	if (rObject.isValid()) {
-		addToCSV(rstrId+".x", rObject.getXYlocation().m_x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-		addToCSV(rstrId+".y", rObject.getXYlocation().m_y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-		addToCSV(rstrId+".vx", linVel.m_x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-		addToCSV(rstrId+".vy", linVel.m_y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+		addToCSV(rstrId+".x", rObject.getXYlocation().x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+		addToCSV(rstrId+".y", rObject.getXYlocation().y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+		addToCSV(rstrId+".vx", linVel.x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+		addToCSV(rstrId+".vy", linVel.y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
 		addToCSV(rstrId+".vr", rotVel, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
 	}
 	else
@@ -177,10 +177,10 @@ string TeamPlannerData::toCSVlinestring(bool printHeader, bool inputOnly) {
 		// pass data is valid
 		addToCSV("pass_data.kicked", static_cast<double>(this->pass_data.kicked), buffer, separator, printHeader, header_buffer);
 		addToCSV("pass_data.target_id", static_cast<double>(this->pass_data.target_id), buffer, separator, printHeader, header_buffer);
-		addToCSV("pass_data.origin_pos.x", static_cast<double>(this->pass_data.origin_pos.m_x), buffer, separator, printHeader, header_buffer);
-		addToCSV("pass_data.origin_pos.y", static_cast<double>(this->pass_data.origin_pos.m_y), buffer, separator, printHeader, header_buffer);
-		addToCSV("pass_data.target_pos.x", static_cast<double>(this->pass_data.target_pos.m_x), buffer, separator, printHeader, header_buffer);
-		addToCSV("pass_data.target_pos.y", static_cast<double>(this->pass_data.target_pos.m_y), buffer, separator, printHeader, header_buffer);
+		addToCSV("pass_data.origin_pos.x", static_cast<double>(this->pass_data.origin_pos.x), buffer, separator, printHeader, header_buffer);
+		addToCSV("pass_data.origin_pos.y", static_cast<double>(this->pass_data.origin_pos.y), buffer, separator, printHeader, header_buffer);
+		addToCSV("pass_data.target_pos.x", static_cast<double>(this->pass_data.target_pos.x), buffer, separator, printHeader, header_buffer);
+		addToCSV("pass_data.target_pos.y", static_cast<double>(this->pass_data.target_pos.y), buffer, separator, printHeader, header_buffer);
 		//addToCSV("pass_data.velocity", static_cast<double>(this->pass_data.velocity), buffer, separator, printHeader, header_buffer);
 		//addToCSV("pass_data.rz", fmod(this->pass_data.rz, M_PI*2), buffer, separator, printHeader, header_buffer);
 		addToCSV("pass_data.ts", static_cast<double>(this->pass_data.ts), buffer, separator, printHeader, header_buffer);
@@ -249,7 +249,7 @@ void TeamPlannerData::fillData(game_state_e gamestate, const MovingObject& globa
 		const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
 		long controlBallByPlayerId, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
 		const PlannerOptions& plannerOptions,
-		const std::vector<Vector2D>& parking_postions, const FieldConfig& fieldConfig,
+		const std::vector<MRA::Geometry::Point>& parking_postions, const FieldConfig& fieldConfig,
 		const previous_used_ball_by_planner_t& previous_global_ball,
 		const std::vector<final_planner_result_t>& previous_planner_results,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,

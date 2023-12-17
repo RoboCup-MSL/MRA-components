@@ -18,7 +18,6 @@
 #include <limits>
 
 #include "FieldConfig.h"
-#include "Geometry.h"
 #include "MathUtils.h"
 #include "SvgUtils.hpp"
 #include "Vertex.hpp"
@@ -26,6 +25,45 @@
 using namespace std;
 
 namespace trs {
+
+/**
+ * Integrates 1 over the square of the distance between point c and line segment p1-p2.
+ *
+ * @param c
+ *            Point
+ * @param p1
+ *            Begin point of line segment
+ * @param p2
+ *            End point of line segment
+ * @return 1 over square of the distance between c and p1-p2, integrated over p1-p2.
+ *           infinity is returned if distanceIntegral can not be calculated.
+ */
+double distanceIntegral(const MRA::Geometry::Point& c, const MRA::Geometry::Point& p1, const MRA::Geometry::Point& p2) {
+    // Calculate square of the length of p1-p2.
+    double l2 = (p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y);
+    if (fabs(l2) < 1e-16) {
+        // prevent division by zero
+        return std::numeric_limits<double>::infinity();
+    }
+    double lambda = ((p2.x - p1.x) * (c.x - p1.x) + (p2.y - p1.y) * (c.y - p1.y)) / l2;
+    double len = sqrt(l2);
+    double s1 = -lambda * len;
+    double s2 = (1 - lambda) * len;
+    // Find the point (xx,yy) where the perpendicular line through c crosses line p1-p2
+    double xx = p1.x + lambda * (p2.x - p1.x);
+    double yy = p1.y + lambda * (p2.y - p1.y);
+    // Calculate distance of c to line p1-p2
+    double d = sqrt((c.x - xx) * (c.x - xx) + (c.y - yy) * (c.y - yy));
+    if (fabs(d) < 1e-16) {
+        // prevent division by zero
+        return std::numeric_limits<double>::infinity();
+    }
+    // Formula found using WolframAlpha.com. Type: integrate 1/(x^2+d^2) dx
+    return (atan2(s2, d) - atan2(s1, d)) / d;
+    // return (aTan2(s2,d)-aTan2(s1,d))/d;
+    // return (Math.atan2(s2, d)-Math.atan2(s1, d))/d;
+}
+
 
 static int svgId = -1;
 
@@ -48,8 +86,8 @@ GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
 	m_startVelocity(0),
 	m_target(std::vector<Vertex *>()),
 	m_vertices(std::vector<Vertex *>()),
-	m_teammates(std::vector<Vector2D>()),
-	m_opponents(std::vector<Vector2D>()),
+	m_teammates(std::vector<MRA::Geometry::Point>()),
+	m_opponents(std::vector<MRA::Geometry::Point>()),
 	m_approachVertices(std::vector<Vertex*>()),
 	m_addPoints(std::vector<Vertex*>()),
 	m_options(PlannerOptions()),
@@ -97,14 +135,14 @@ void GlobalPathPlanner::createGraph(MovingObject me, MovingObject ball,
 		planner_target_e targetFunction,
 		bool ballIsObstacle,
 		bool avoidBallPath,
-		const Vector2D& rBallTargePos) {
+		const MRA::Geometry::Point& rBallTargePos) {
 	// TODO check on dist me to target, if large than max field. stop calculations !!!!!
 	m_Ball = ball;
 	Position startPos = me.getPosition();
 	if (m_start != 0) {
 		delete m_start;
 	}
-	m_start = new Vertex(startPos.getVector2D(), 0);
+	m_start = new Vertex(startPos.getPoint(), 0);
 	double Vrz;
 	me.getVelocity(m_startVelocity, Vrz);
 	m_vertices.push_back(m_start);
@@ -173,8 +211,8 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 		if (m_start->equals(*(m_target[idx]))) {
 			vector < planner_piece_t> p = vector<planner_piece_t>();
 			planner_piece_t piece;
-			piece.x = m_target[idx]->m_coordinate.m_x;
-			piece.y = m_target[idx]->m_coordinate.m_y;
+			piece.x = m_target[idx]->m_coordinate.x;
+			piece.y = m_target[idx]->m_coordinate.y;
 			piece.cost = 0; // no costs
 			piece.target = static_cast<long>(m_targetFunction);
 			p.push_back(piece);
@@ -186,7 +224,7 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 	bool nearTarget = false;
 	double nearTargetThreshold = 0.01; // 1 [mm]: if start is near any target: cost is only distance to target
 	double nearTargetCost = std::numeric_limits<double>::infinity();
-	Vector2D nearestTarget;
+	MRA::Geometry::Point nearestTarget;
 	for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
 		double distStartToTarget = m_start->m_coordinate.distanceTo(m_target[idx]->m_coordinate);
 		if  (distStartToTarget <  nearTargetThreshold) {
@@ -200,8 +238,8 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 		// start is near a target position.
 		vector < planner_piece_t> p = vector<planner_piece_t>();
 		planner_piece_t piece;
-		piece.x = nearestTarget.m_x;
-		piece.y = nearestTarget.m_y;
+		piece.x = nearestTarget.x;
+		piece.y = nearestTarget.y;
 		piece.cost = 0; // no costs
 		piece.target = static_cast<long>(m_targetFunction);
 		p.push_back(piece);
@@ -261,8 +299,8 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 		for (Vertex* vertex = m_target[idx]; vertex != 0 && piece_nr < 20; vertex = vertex->m_pPrevious) {
 			piece_nr++;
 			planner_piece_t piece;
-			piece.x = vertex->m_coordinate.m_x;
-			piece.y = vertex->m_coordinate.m_y;
+			piece.x = vertex->m_coordinate.x;
+			piece.y = vertex->m_coordinate.y;
 			piece.cost = vertex->m_minDistance;
 			piece.target = static_cast<long>(m_targetFunction);
 
@@ -290,9 +328,9 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 
 void GlobalPathPlanner::addOpponents(const vector<MovingObject>& opponents, bool skipFirstRadius) {
 	for(std::vector<MovingObject>::size_type pos_idx = 0; pos_idx != opponents.size(); pos_idx++) {
-		Vector2D v(opponents[pos_idx].getPosition().getVector2D());
-		double x = v.m_x;
-		double y = v.m_y;
+		MRA::Geometry::Point v(opponents[pos_idx].getPosition().getPoint());
+		double x = v.x;
+		double y = v.y;
 
 		// Opponents that are far from any reasonable path from start to
 		// target are not added.
@@ -303,7 +341,7 @@ void GlobalPathPlanner::addOpponents(const vector<MovingObject>& opponents, bool
 							/ m_options.nrVerticesFirstCircle;
 					double xx = x + m_options.firstCircleRadius * cos(angle);
 					double yy = y + m_options.firstCircleRadius * sin(angle);
-					addPoint(Vector2D(xx, yy));
+					addPoint(MRA::Geometry::Point(xx, yy));
 				}
 			}
 
@@ -312,7 +350,7 @@ void GlobalPathPlanner::addOpponents(const vector<MovingObject>& opponents, bool
 						/ m_options.nrVerticesSecondCircle;
 				double xx = x + m_options.secondCircleRadius * cos(angle);
 				double yy = y + m_options.secondCircleRadius * sin(angle);
-				addPoint(Vector2D(xx, yy));
+				addPoint(MRA::Geometry::Point(xx, yy));
 			}
 		}
 		// TODO: prevent a path from going through the goal, or have
@@ -323,9 +361,9 @@ void GlobalPathPlanner::addOpponents(const vector<MovingObject>& opponents, bool
 
 void GlobalPathPlanner::addTeammates(const vector<MovingObject>& teamMates) {
 	for(std::vector<MovingObject>::size_type pos_idx = 0; pos_idx != teamMates.size(); pos_idx++) {
-		Vector2D v(teamMates[pos_idx].getPosition().getVector2D());
-		double x = v.m_x;
-		double y = v.m_y;
+		MRA::Geometry::Point v(teamMates[pos_idx].getPosition().getPoint());
+		double x = v.x;
+		double y = v.y;
 
 		// Opponents that are far from any reasonable path from start to
 		// target are not added.
@@ -335,7 +373,7 @@ void GlobalPathPlanner::addTeammates(const vector<MovingObject>& teamMates) {
 						/ m_options.nrVerticesFirstCircle;
 				double xx = x + m_options.firstCircleRadius * cos(angle);
 				double yy = y + m_options.firstCircleRadius * sin(angle);
-				addPoint(Vector2D(xx, yy));
+				addPoint(MRA::Geometry::Point(xx, yy));
 			}
 
 			for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
@@ -343,7 +381,7 @@ void GlobalPathPlanner::addTeammates(const vector<MovingObject>& teamMates) {
 						/ m_options.nrVerticesSecondCircle;
 				double xx = x + m_options.secondCircleRadius * cos(angle);
 				double yy = y + m_options.secondCircleRadius * sin(angle);
-				addPoint(Vector2D(xx, yy));
+				addPoint(MRA::Geometry::Point(xx, yy));
 			}
 		}
 		// TODO: prevent a path from going through the goal, or have
@@ -362,14 +400,14 @@ void GlobalPathPlanner::addTeammates(const vector<MovingObject>& teamMates) {
  *         if it is either within minimumDistanceToEndPoint from either S or
  *         T, or, if the angle <S,v,T> is greater than 90 degrees.
  */
-bool GlobalPathPlanner::nearPath(const Vector2D& v) {
+bool GlobalPathPlanner::nearPath(const MRA::Geometry::Point& v) {
 	bool res = false;
 
 	if (!res)
 		for (std::vector<Vertex *>::iterator it = m_target.begin();
 				it != m_target.end() && !res; ++it) {
-			res = (((*it)->m_coordinate.m_x - v.m_x) * (m_start->m_coordinate.m_x - v.m_x)
-					+ ((*it)->m_coordinate.m_y - v.m_y) * (m_start->m_coordinate.m_y - v.m_y) <= 0
+			res = (((*it)->m_coordinate.x - v.x) * (m_start->m_coordinate.x - v.x)
+					+ ((*it)->m_coordinate.y - v.y) * (m_start->m_coordinate.y - v.y) <= 0
 					|| v.distanceTo((*it)->m_coordinate) < m_options.minimumDistanceToEndPoint ||
 					v.distanceTo(m_start->m_coordinate) < m_options.minimumDistanceToEndPoint);
 		}
@@ -380,7 +418,7 @@ bool GlobalPathPlanner::nearPath(const Vector2D& v) {
  * Inserts edges in the graph between vertices. To optimize, edges that are
  * very long are not included.
  */
-void GlobalPathPlanner::addEdges(bool avoidBallPath, const Vector2D& rBallTargePos) {
+void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos) {
 	for (std::vector<Vertex>::size_type i = 0; i < m_vertices.size() - 1; i++) {
 		for (std::vector<Vertex>::size_type j = i + 1; j < m_vertices.size(); j++) {
 			Vertex* v1 = m_vertices[i];
@@ -401,10 +439,10 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const Vector2D& rBallTargeP
 					// not allowed to make edge which crosses the pass line.
 					double px =0;
 					double py = 0;
-					bool intersect = lineSegmentIntersection(v1->m_coordinate.m_x, v1->m_coordinate.m_y,
-							                                 v2->m_coordinate.m_x, v2->m_coordinate.m_y,
-															 m_Ball.getXYlocation().m_x, m_Ball.getXYlocation().m_y,
-															 rBallTargePos.m_x, rBallTargePos.m_y,
+					bool intersect = lineSegmentIntersection(v1->m_coordinate.x, v1->m_coordinate.y,
+							                                 v2->m_coordinate.x, v2->m_coordinate.y,
+															 m_Ball.getXYlocation().x, m_Ball.getXYlocation().y,
+															 rBallTargePos.x, rBallTargePos.y,
 															 px, py);
 					if (intersect) {
 						// line v1->v2 intersects the passing line (ball - ball targetpos)
@@ -488,8 +526,8 @@ bool GlobalPathPlanner::equalToTarget(const Vertex* pV) {
  * @return
  */
 double GlobalPathPlanner::ballApproachPenalty(Vertex* v) {
-	double x = v->m_coordinate.getX();
-	double y = v->m_coordinate.getY();
+	double x = v->m_coordinate.x;
+	double y = v->m_coordinate.y;
 
 	/* calculate distance to middle of penalty area */
 	double penaltyAreaY = m_fieldConfig.getMaxFieldY() - m_fieldConfig.getPenaltyAreaLength();
@@ -501,11 +539,13 @@ double GlobalPathPlanner::ballApproachPenalty(Vertex* v) {
 }
 
 double GlobalPathPlanner::ownVelocityPenalty(Vertex* v) {
-	Vector2D startCoordinate(m_start->m_coordinate);
-	Vector2D initialDirection = v->m_coordinate.subtract(startCoordinate);
-	Vector2D normalizedInitialDirection = initialDirection.normalize();
-	Vector2D diffVector = normalizedInitialDirection.subtract(m_startVelocity);
-	double norm = diffVector.norm();
+	MRA::Geometry::Point startCoordinate(m_start->m_coordinate);
+	MRA::Geometry::Point initialDirection(v->m_coordinate);
+	initialDirection -= startCoordinate;
+	MRA::Geometry::Point normalizedInitialDirection(initialDirection);
+	normalizedInitialDirection.normalize();
+	normalizedInitialDirection -= m_startVelocity;
+	double norm = normalizedInitialDirection.size();
 	double penalty = norm*norm*m_options.startingVelocityPenaltyFactor;
 	return penalty;
 }
@@ -525,20 +565,20 @@ double GlobalPathPlanner::ownVelocityPenalty(Vertex* v) {
  */
 double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 	double safetyCost = 0.0;
-	for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx != m_opponents.size(); bar_idx++) {
-		Vector2D barrier = m_opponents[bar_idx];
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != m_opponents.size(); bar_idx++) {
+		MRA::Geometry::Point barrier = m_opponents[bar_idx];
 
-		double cost = Geometry::distanceIntegral(barrier, v1->m_coordinate, v2->m_coordinate);
+		double cost = distanceIntegral(barrier, v1->m_coordinate, v2->m_coordinate);
 		safetyCost += cost;
 	}
 
 	// add barrier for each team mate in own penalty area (keeper and an possible defender).
 	// This to prevent that the player will hit them. Only checking on role "goalie" is not possible
 	// due to dynamic goalie assignment when the normal goalie is absent.
-	for(std::vector<Vector2D>::size_type teammate_idx = 0; teammate_idx != m_teammates.size(); teammate_idx++) {
-		Vector2D teammate_position = m_teammates[teammate_idx];
-		if (m_fieldConfig.isInOwnPenaltyArea(teammate_position.m_x, teammate_position.m_y)) {
-			double cost = Geometry::distanceIntegral(teammate_position, v1->m_coordinate, v2->m_coordinate);
+	for(std::vector<MRA::Geometry::Point>::size_type teammate_idx = 0; teammate_idx != m_teammates.size(); teammate_idx++) {
+		MRA::Geometry::Point teammate_position = m_teammates[teammate_idx];
+		if (m_fieldConfig.isInOwnPenaltyArea(teammate_position.x, teammate_position.y)) {
+			double cost = distanceIntegral(teammate_position, v1->m_coordinate, v2->m_coordinate);
 			safetyCost += cost;
 		}
 	}
@@ -559,7 +599,7 @@ void GlobalPathPlanner::addUniformVertices() {
 	for (double x = -(m_maxFieldX+border); x <= (m_maxFieldX+border); x += m_options.uniform_x_interval) {
 		for (double y = -(m_maxFieldY+border); y <= (m_maxFieldY+border); y += m_options.uniform_y_interval) {
 			if (!m_fieldConfig.isInOwnGoalArea(x,y) && !m_fieldConfig.isInOpponentGoalArea(x,y)) {
-				Vector2D vv = Vector2D(x, y);
+				MRA::Geometry::Point vv = MRA::Geometry::Point(x, y);
 				if (nearPath(vv)) {
 					addPoint(vv);
 				}
@@ -578,8 +618,8 @@ void GlobalPathPlanner::addBallApproachVertices() {
 	for (std::vector<Vertex*>::iterator it = m_target.begin();
 			it != m_target.end(); ++it) {
 
-		double x = (*it)->m_coordinate.getX();
-		double y = (*it)->m_coordinate.getY();
+		double x = (*it)->m_coordinate.x;
+		double y = (*it)->m_coordinate.y;
 		double distToTarget = (*it)->m_coordinate.distanceTo(m_start->m_coordinate);
 		double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
 		double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
@@ -591,7 +631,7 @@ void GlobalPathPlanner::addBallApproachVertices() {
 				double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
 				double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
 				if (m_fieldConfig.isInReachableField(x1, y1)) {
-					Vector2D point = Vector2D(x1, y1);
+					MRA::Geometry::Point point = MRA::Geometry::Point(x1, y1);
 					Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
 					m_vertices.push_back(vertex);
 					m_approachVertices.push_back(vertex);
@@ -610,8 +650,8 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
 	for (std::vector<Vertex*>::iterator it = m_target.begin();
 			it != m_target.end(); ++it) {
 
-		double x = (*it)->m_coordinate.getX();
-		double y = (*it)->m_coordinate.getY();
+		double x = (*it)->m_coordinate.x;
+		double y = (*it)->m_coordinate.y;
 		double distToTarget = (*it)->m_coordinate.distanceTo(m_start->m_coordinate);
 		double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
 		double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
@@ -623,7 +663,7 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
 				double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
 				double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
 				if (m_fieldConfig.isInReachableField(x1, y1)) {
-					Vector2D point = Vector2D(x1, y1);
+					MRA::Geometry::Point point = MRA::Geometry::Point(x1, y1);
 
 					//logger.info("Add point "+ i + " pos: " + point);
 					Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
@@ -645,9 +685,9 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
  *            Coordinates of the vertex to add to the graph
  * @return Vertex created, null if the vertex was not added to the graph
  */
-void GlobalPathPlanner::addPoint( const Vector2D& point) {
+void GlobalPathPlanner::addPoint( const MRA::Geometry::Point& point) {
 	//vertices,
-	if (m_fieldConfig.isInReachableField(point.m_x, point.m_y) == false) {
+	if (m_fieldConfig.isInReachableField(point.x, point.y) == false) {
 		return; // only point inside the (complete) field should be added
 	}
 	// See if it is too close to another vertex
@@ -673,13 +713,13 @@ void GlobalPathPlanner::addPoint( const Vector2D& point) {
 void GlobalPathPlanner::save_graph_as_svg(const vector<planner_piece_t>& path) {
 	std::vector<MovingObject> myTeam = std::vector<MovingObject>();
 	//myTeam.push_back(MovingObject(m_Me));
-	for(std::vector<Vector2D>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-		myTeam.push_back(MovingObject(m_teammates[pos_idx].m_x, m_teammates[pos_idx].m_y, 0, 0, 0, 0, 0, true));
+	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
+		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0, 0, 0, 0, 0, true));
 	}
 
 	std::vector<MovingObject> opponents = std::vector<MovingObject>();
-	for(std::vector<Vector2D>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-		opponents.push_back(MovingObject(m_opponents[pos_idx].m_x, m_opponents[pos_idx].m_y, 0, 0, 0, 0, 0, true));
+	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
+		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0, 0, 0, 0, 0, true));
 	}
 
 	team_planner_result_t player_paths = team_planner_result_t();

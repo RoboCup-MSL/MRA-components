@@ -43,9 +43,9 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 
 	// Find initial intercept point
 	Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(ball,
-			                                     startPosition.getVector2D(), maxSpeed,
+			                                     startPosition.getPoint(), maxSpeed,
 												 fieldConfig, plannerOptions.move_to_ball_left_field_position);
-	if (intercept_data.intercept_position.m_x == std::numeric_limits<double>::has_quiet_NaN) {
+	if (intercept_data.intercept_position.x == std::numeric_limits<double>::has_quiet_NaN) {
 		// No intercept possible, return empty list
 		if (logDynamicPlanner) {
 //			logAlways("No intercept possible");
@@ -60,7 +60,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 	visibilityGraph.setOptions(plannerOptions);
 
 	bool avoidBallPath = false; // Not need to avoid the ball. This function is only used for the interceptor
-	Vector2D BallTargePos;
+	MRA::Geometry::Point BallTargePos;
 
 	int iteration = 1;
 
@@ -82,7 +82,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 		}
 		// Calculate new intercept point based on minimum time
 		Position newInterceptPosition =  ball.getPositionAt(time);
-		if (newInterceptPosition.getVector2D().m_x == std::numeric_limits<double>::has_quiet_NaN) {
+		if (newInterceptPosition.getPoint().x == std::numeric_limits<double>::has_quiet_NaN) {
 			// Return previous path
 			if (logDynamicPlanner) {
 //				logAlways("New intercept impossible. Returning last path.");
@@ -90,14 +90,14 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 			return path;
 		}
 
-		auto newInterceptInField = fieldConfig.isInField(newInterceptPosition.getVector2D(), 0.0);
+		auto newInterceptInField = fieldConfig.isInField(newInterceptPosition.getPoint(), 0.0);
 		if (!newInterceptInField) {
 			auto interceptPoint = Dynamics::calculateBallLeavingFieldPoint(ball, fieldConfig);
-			newInterceptPosition.set(interceptPoint.m_x, interceptPoint.m_y, 0.0);
+			newInterceptPosition.set(interceptPoint.x, interceptPoint.y, 0.0);
 		}
 
 		target_vect.clear();
-		target_vect.push_back(Vertex(newInterceptPosition.getVector2D(), 0));
+		target_vect.push_back(Vertex(newInterceptPosition.getPoint(), 0));
 		GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(fieldConfig); // create new visibility-graph to avoid dynamic memory issues
 		visibilityGraph2.setOptions(plannerOptions);
 		visibilityGraph2.createGraph(start, ball, teammates, opponents, target_vect, targetFunction, ballIsObstacle, avoidBallPath, BallTargePos);

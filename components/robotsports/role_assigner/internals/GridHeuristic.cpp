@@ -13,6 +13,7 @@
 #include "MathUtils.h"
 #include "planner_common.hpp"
 using namespace trs;
+#include "geometry.hpp"
 
 double grid_eps = 1e-3; // 1 mm
 
@@ -187,8 +188,8 @@ AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic::AlreadyPlayerAssignedToOwnPenalt
 	for (unsigned idx = 0; idx < Team.size() && m_alreadyPlayerAssignedToOwnPenaltyArea == false; idx++) {
 		if (Team[idx].assigned  && Team[idx].player_type == player_type_e::FIELD_PLAYER) {
 			// field player is assigned and has a path
-			double end_x = Team[idx].result.target.m_x;
-			double end_y = Team[idx].result.target.m_y;
+			double end_x = Team[idx].result.target.x;
+			double end_y = Team[idx].result.target.y;
 			if  (m_fieldConfig.isInOwnPenaltyArea(end_x, end_y)) {
 				m_alreadyPlayerAssignedToOwnPenaltyArea = true;
 			}
@@ -213,8 +214,8 @@ AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic::AlreadyPlayerAssignedToOppo
 	for (unsigned idx = 0; idx < Team.size() && m_alreadyPlayerAssignedToOpponentPenaltyArea == false; idx++) {
 		if (Team[idx].assigned  && Team[idx].player_type == player_type_e::FIELD_PLAYER) {
 			// field player is assigned and has a path
-			double end_x = Team[idx].result.target.m_x;
-			double end_y = Team[idx].result.target.m_y;
+			double end_x = Team[idx].result.target.x;
+			double end_y = Team[idx].result.target.y;
 			if  (m_fieldConfig.isInOpponentPenaltyArea(end_x, end_y)) {
 				m_alreadyPlayerAssignedToOpponentPenaltyArea = true;
 			}
@@ -278,8 +279,8 @@ double InfluenceCornerHeuristic::getValue(double x, double y) {
 		double distYtoCorner = m_fieldConfig.getMaxFieldY();
 		double distXFactor = (x < 0) ? -1.0 : 1.0;
 		double distYFactor = (y < 0) ? -1.0 : 1.0;
-		Vector2D closestCorner = Vector2D(distXtoCorner*distXFactor, distYtoCorner*distYFactor);
-		double dist2corner = closestCorner.distanceTo(Vector2D(x,y));
+		MRA::Geometry::Point closestCorner = MRA::Geometry::Point(distXtoCorner*distXFactor, distYtoCorner*distYFactor);
+		double dist2corner = closestCorner.distanceTo(MRA::Geometry::Point(x,y));
 		if (dist2corner > 4.0) {
 			value = 0.0;
 		}
@@ -309,7 +310,7 @@ double CollideTeamMateHeuristic::getValue(double x, double y) {
 	for (unsigned idx = 0; idx < m_Team.size(); idx++) {
 		if (m_Team[idx].assigned) {
 			// player is assigned and has a path
-			if (m_Team[idx].result.target.distanceTo(Vector2D(x,y)) < m_radius) {
+			if (m_Team[idx].result.target.distanceTo(MRA::Geometry::Point(x,y)) < m_radius) {
 				value = 1.0;
 			}
 		}
@@ -331,8 +332,8 @@ double InfluenceOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	// add influence other players. Opponents twice team meat. 1/10 support influence (20x² ?)
 	for (unsigned bar_idx = 0; bar_idx < m_Opponents.size(); bar_idx++) {
-		Vector2D bar_pos = m_Opponents[bar_idx].position.getPosition().getVector2D();
-		if (bar_pos.distanceTo(Vector2D(x,y)) < m_radius) {
+	    MRA::Geometry::Point bar_pos = m_Opponents[bar_idx].position.getPosition().getPoint();
+		if (bar_pos.distanceTo(MRA::Geometry::Point(x,y)) < m_radius) {
 			value = 1.0;
 		}
 	}
@@ -369,15 +370,15 @@ double OnLineBetweenPointsHeuristic::getValue(double x, double y){
 		double px = 0;
 		double py = 0;
 		intersectPerpendicular(px, py, m_x1, m_y1, m_x2, m_y2, x, y);
-		Vector2D Pintersect(px,py);
-		Vector2D P1(m_x1, m_y1);
-		Vector2D P2(m_x2, m_y2);
+		MRA::Geometry::Point Pintersect(px,py);
+		MRA::Geometry::Point P1(m_x1, m_y1);
+		MRA::Geometry::Point P2(m_x2, m_y2);
 		double distPintoP1 = Pintersect.distanceTo(P1);
 		double distPintoP2 = Pintersect.distanceTo(P2);
 		double distP1toP2 = P1.distanceTo(P2);
 		if ((distPintoP1 >  distP1toP2) || (distPintoP2 >  distP1toP2) ) {
 			// P is not between P1 and P2. use shortest distance to line piece
-			Vector2D p(x,y);
+		    MRA::Geometry::Point p(x,y);
 			distToLinePiece = min(p.distanceTo(P1), p.distanceTo(P2));
 		}
 		else {
@@ -427,7 +428,7 @@ private:
 
 // ----------------------------------------------------------------------------------------
 DistanceToHeuristic::DistanceToHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const Vector2D& pos, double dScaling):
+		const MRA::Geometry::Point& pos, double dScaling):
 												GridHeuristic(id, weight, pgid),
 												m_pos(pos),
 												m_dScaling(dScaling)
@@ -438,7 +439,7 @@ DistanceToHeuristic::DistanceToHeuristic(const char *id, double weight, PlannerG
 double DistanceToHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	if (fabs(m_dScaling) > 1e-16) {
-		value =  m_pos.distanceTo(Vector2D(x, y)) / m_dScaling;  // distance closer to position is better (lower)
+		value =  m_pos.distanceTo(MRA::Geometry::Point(x, y)) / m_dScaling;  // distance closer to position is better (lower)
 	}
 	return value;
 }
@@ -446,7 +447,7 @@ double DistanceToHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 DistanceToPointHeuristic::DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const Vector2D& pos, double dScaling, double maxRange, bool inverted) :
+		const MRA::Geometry::Point& pos, double dScaling, double maxRange, bool inverted) :
 												GridHeuristic(id, weight, pgid),
 												m_pos(pos),
 												m_dScaling(dScaling),
@@ -459,7 +460,7 @@ DistanceToPointHeuristic::DistanceToPointHeuristic(const char *id, double weight
 double DistanceToPointHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	if (fabs(m_dScaling) > 1e-16) {
-		value =  m_pos.distanceTo(Vector2D(x, y));
+		value =  m_pos.distanceTo(MRA::Geometry::Point(x, y));
 		if (value > m_dMaxRange) {
 			value = m_dMaxRange;
 		}
@@ -532,10 +533,10 @@ double InterceptionThreatHeuristic::getValue(double x, double y) {
 	//// Improves standing free by looking at the intercept by enemy thread
 
 	// player with ball
-	Vector2D ballPos = m_ball.getPosition().getVector2D();
+    MRA::Geometry::Point ballPos = m_ball.getPosition().getPoint();
 
 	// receiving position
-	Vector2D receivingPos = Vector2D(x, y);
+    MRA::Geometry::Point receivingPos = MRA::Geometry::Point(x, y);
 
 	return chance_of_intercept(ballPos, receivingPos, m_Opponents,
 			m_interceptionChanceStartDistance, m_interceptionChanceIncreasePerMeter, m_interceptionChancePenaltyFactor);
@@ -557,7 +558,7 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
 	for (unsigned idx = 0; idx < m_Team.size(); idx++) {
 		if (!m_Team[idx].assigned ) {
 			// player is not yet assigned. If he's assigned, his position does not have an advantage anymore, so no cone for him.
-			double temp_value = m_Team[idx].position.getPosition().getVector2D().distanceTo( Vector2D(x,y) ) / m_dScaling;
+			double temp_value = m_Team[idx].position.getPosition().getPoint().distanceTo( MRA::Geometry::Point(x,y) ) / m_dScaling;
 			value = ( value < temp_value ) ? value : temp_value;
 		}
 	}
@@ -579,9 +580,9 @@ double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y)
 	for (unsigned idx = 0; idx < m_Team.size(); idx++) {
 		if (m_Team[idx].previous_result.previous_result_present) {
 			if (m_Team[idx].previous_result.dynamic_role == m_dynamic_role) {
-				Vector2D prevPos = Vector2D(m_Team[idx].previous_result.end_position.x, m_Team[idx].previous_result.end_position.y);
+			    MRA::Geometry::Point prevPos = MRA::Geometry::Point(m_Team[idx].previous_result.end_position.x, m_Team[idx].previous_result.end_position.y);
 				// check if previous assigned
-				value += prevPos.distanceTo( Vector2D(x,y) ) / m_dScaling;
+				value += prevPos.distanceTo( MRA::Geometry::Point(x,y) ) / m_dScaling;
 			}
 		}
 	}
@@ -617,16 +618,16 @@ double ShootOnGoalHeuristic::getValue(double x, double y) {
 		// on distance to shoot on goal (no shots on goal if too far away)
 
 		for( unsigned int i = 0; i < m_Opponents.size(); i++){
-			Vector2D opponent = m_Opponents[i].position.getPosition().getVector2D();
+		    MRA::Geometry::Point opponent = m_Opponents[i].position.getPosition().getPoint();
 			// TODO prefer locations further from any robots
 
 			//	- Filter opponents on keeper. Robot within 1.5 meter from opponent goal
 			if (opponent.distanceTo(m_opponentGoal) > 1.5) {
 				// only opponent more than 1.5 meter from goal are considered as opponent field-players
-				bool corner1_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.m_y, m_leftPole_x, m_opponentGoal.m_y, x, y, opponent.m_x+m_robotRadius, opponent.m_y+m_robotRadius);
-				bool corner2_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.m_y, m_leftPole_x, m_opponentGoal.m_y, x, y, opponent.m_x+m_robotRadius, opponent.m_y-m_robotRadius);
-				bool corner3_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.m_y, m_leftPole_x, m_opponentGoal.m_y, x, y, opponent.m_x-m_robotRadius, opponent.m_y+m_robotRadius);
-				bool corner4_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.m_y, m_leftPole_x, m_opponentGoal.m_y, x, y, opponent.m_x-m_robotRadius, opponent.m_y-m_robotRadius);
+				bool corner1_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.y, m_leftPole_x, m_opponentGoal.y, x, y, opponent.x+m_robotRadius, opponent.y+m_robotRadius);
+				bool corner2_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.y, m_leftPole_x, m_opponentGoal.y, x, y, opponent.x+m_robotRadius, opponent.y-m_robotRadius);
+				bool corner3_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.y, m_leftPole_x, m_opponentGoal.y, x, y, opponent.x-m_robotRadius, opponent.y+m_robotRadius);
+				bool corner4_in_triangle = inTriangle(m_rightPole_x, m_opponentGoal.y, m_leftPole_x, m_opponentGoal.y, x, y, opponent.x-m_robotRadius, opponent.y-m_robotRadius);
 				if (corner1_in_triangle || corner2_in_triangle || corner3_in_triangle || corner4_in_triangle) {
 					//	-- each opponent (except goalie) in goal-triangle (ball-goal-posts) decrease probability with 40 %
 					// only valid for flat shots.
@@ -679,7 +680,7 @@ PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData&
 double PassHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 
-	Vector2D dribbelPos = Vector2D(x, y);
+	MRA::Geometry::Point dribbelPos = MRA::Geometry::Point(x, y);
 	if (m_numberOfFieldPlayers == 0) {
 		// no team mate; So give all positions same value
 		return 1.0;
@@ -690,7 +691,7 @@ double PassHeuristic::getValue(double x, double y) {
 		if (m_Team[team_idx].player_type != FIELD_PLAYER) {
 			continue; // skip this player; not a field player.
 		}
-		Vector2D teamMatePos = m_Team[team_idx].position.getPosition().getVector2D();
+		MRA::Geometry::Point teamMatePos = m_Team[team_idx].position.getPosition().getPoint();
 
 		// calculate interception chance (default algorithm used to make pass by ball player and attack supporter for finding position.
 		double interChange = chance_of_intercept(dribbelPos, teamMatePos, m_Opponents,
@@ -722,7 +723,7 @@ double PassHeuristic::getValue(double x, double y) {
 // ----------------------------------------------------------------------------------------
 // Calculate penalty for the position with respect to the opponents
 StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const Vector2D& ballPlayerPos,
+		const MRA::Geometry::Point& ballPlayerPos,
 		const MovingObject& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, const double radius) :
 												GridHeuristic(id, weight, pgid),
@@ -731,25 +732,25 @@ StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, d
 												m_Opponents(Opponents),
 												m_radius(radius) {
 	// calculate min and max angle. If opponent is this angle then it will be ignored (behind ball player)
-	m_angle_ball_ballplayer_min = from_pitopi(m_ball.angle(m_ballPlayerPos) - deg2rad(60));
-	m_angle_ball_ballplayer_max = from_pitopi(m_ball.angle(m_ballPlayerPos) + deg2rad(60));
+	m_angle_ball_ballplayer_min = MRA::Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) - MRA::Geometry::deg_to_rad(60));
+	m_angle_ball_ballplayer_max = MRA::Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) + MRA::Geometry::deg_to_rad(60));
 }
 
 double StayAwayFromOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	for (unsigned idx = 0; idx < m_Opponents.size(); idx++) {
-		Vector2D opponentPos = m_Opponents[idx].position.getPosition().getVector2D();
-		if (opponentPos.distanceTo(Vector2D(x,y)) < m_radius) {
+	    MRA::Geometry::Point opponentPos = m_Opponents[idx].position.getPosition().getPoint();
+		if (opponentPos.distanceTo(MRA::Geometry::Point(x,y)) < m_radius) {
 			double ang = m_ball.angle(opponentPos);
 			bool behind_ballPlayer = (ang > m_angle_ball_ballplayer_min && ang < m_angle_ball_ballplayer_max);
 			if (!behind_ballPlayer) {
 				// opponent is in front of ball player
-				double penalty = 1.0 - (opponentPos.distanceTo(Vector2D(x,y)) / m_radius);
+				double penalty = 1.0 - (opponentPos.distanceTo(MRA::Geometry::Point(x,y)) / m_radius);
 				value = max(value, penalty);
 			}
 			else {
 				// point is behind ball player so it will be ignored, but need to prevent go to this opponent.
-				if (opponentPos.distanceTo(Vector2D(x,y)) < 1.0)
+				if (opponentPos.distanceTo(MRA::Geometry::Point(x,y)) < 1.0)
 				{
 					// point is close to opponent to ignore. : prevent to go to this point
 					value = 1.0;

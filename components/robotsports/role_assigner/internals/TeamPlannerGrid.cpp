@@ -24,7 +24,7 @@ using namespace std;
 namespace trs {
 
 
-Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
+MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
 		const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired) {
 	const double infield_margin = 0.25;   // distance to stay from side of field
@@ -36,18 +36,18 @@ Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerR
 	double xc = ball_pickup_position.x;
 	double yc = ball_pickup_position.y;
 
-	Vector2D bestPosition = Vector2D(xc, yc);  // default : set best to pickup position
+	MRA::Geometry::Point bestPosition = MRA::Geometry::Point(xc, yc);  // default : set best to pickup position
 
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
-	allowedTargetPositions.push_back(Vector2D(xc, yc));
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
+	allowedTargetPositions.push_back(MRA::Geometry::Point(xc, yc));
 	// create possible target positions:
 
-	Vector2D ballPlayerPos = bestPosition; // set default to pickup position
+	MRA::Geometry::Point ballPlayerPos = bestPosition; // set default to pickup position
 	bool ballPlayerFound = false;
 	// add current position for ball-player
 	for (unsigned r_idx = 0; r_idx < Team.size(); r_idx++) {
 		if (Team[r_idx].controlBall) {
-			ballPlayerPos = Team[r_idx].position.getPosition().getVector2D();
+			ballPlayerPos = Team[r_idx].position.getPosition().getPoint();
 			allowedTargetPositions.push_back(ballPlayerPos); // ballplayer current position
 			ballPlayerFound = true;
 		}
@@ -58,7 +58,7 @@ Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerR
 		double xx = xc + dist_first_circle * cos(angle);
 		double yy = yc + dist_first_circle * sin(angle);
 		if (fieldConfig.isInField(xx,yy,infield_margin)) {
-			allowedTargetPositions.push_back(Vector2D(xx, yy));
+			allowedTargetPositions.push_back(MRA::Geometry::Point(xx, yy));
 		}
 
 	}
@@ -67,7 +67,7 @@ Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerR
 		double xx = xc + dist_second_circle * cos(angle);
 		double yy = yc + dist_second_circle * sin(angle);
 		if (fieldConfig.isInField(xx,yy,infield_margin)) {
-			allowedTargetPositions.push_back(Vector2D(xx, yy));
+			allowedTargetPositions.push_back(MRA::Geometry::Point(xx, yy));
 		}
 	}
 
@@ -78,7 +78,7 @@ Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerR
 	//  - 1 circle is better than 2nd circle
 	//
 
-	Vector2D bestPosForGoal = Vector2D(0, (fieldConfig.getMaxFieldY())-2.0); // 2 meters before goal
+	MRA::Geometry::Point bestPosForGoal = MRA::Geometry::Point(0, (fieldConfig.getMaxFieldY())-2.0); // 2 meters before goal
 	PlannerGridInfoData pgid = PlannerGridInfoData();
 	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
 	if (false) {
@@ -124,7 +124,7 @@ Vector2D TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerR
 void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
 		const PlannerOptions &plannerOptions,
 		const std::vector<TeamPlannerRobot>& Team,
-		const Vector2D& r_ballPos,
+		const MRA::Geometry::Point& r_ballPos,
 		const FieldConfig &fieldConfig,
 		vector<GridHeuristic*> &heuristics,
 		PlannerGridInfoData &pgid)
@@ -135,7 +135,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
 		// penalty needs minimal distance to ball of ca 3.5 m (minimal 3 meter in robocup rules)
 		auto ball_penalty = plannerOptions.grid_close_to_ball_restart_penalty_penalty; // default
 		auto ball_radius = plannerOptions.grid_close_to_ball_restart_penalty_radius;
-		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", ball_penalty, pgid, r_ballPos.m_x, r_ballPos.m_y, ball_radius));
+		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", ball_penalty, pgid, r_ballPos.x, r_ballPos.y, ball_radius));
 	}
 
 	if (gamestate == game_state_e::PENALTY_AGAINST) {
@@ -164,14 +164,14 @@ void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the position
  */
-Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const Vector2D& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+MRA::Geometry::Point TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig, bool setPlayActive, bool teamControlBall)
 {
 	// define grid of 50 cm, only in field not outside the border
-	Vector2D ballPos = ball.getPosition().getVector2D();
-	double x_pos_ball = ballPos.m_x;
-	double y_pos_ball = ballPos.m_y;
+    MRA::Geometry::Point ballPos = ball.getPosition().getPoint();
+	double x_pos_ball = ballPos.x;
+	double y_pos_ball = ballPos.y;
 
 
 	PlannerGridInfoData pgid = PlannerGridInfoData();
@@ -187,13 +187,13 @@ Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_
 		alfa = oppentToDefend.angle(fieldConfig.getOwnGoal());
 	}
 
-	double preferred_x = oppentToDefend.m_x - (cos(alfa) * plannerOptions.setplay_against_dist_to_opponent);
-	double preferred_y = oppentToDefend.m_y - (sin(alfa) * plannerOptions.setplay_against_dist_to_opponent);
+	double preferred_x = oppentToDefend.x - (cos(alfa) * plannerOptions.setplay_against_dist_to_opponent);
+	double preferred_y = oppentToDefend.y - (sin(alfa) * plannerOptions.setplay_against_dist_to_opponent);
 
 
 	// Defend opponents on own half or close to own half
 	// Preferred position approx 1 meter from opponent, with a preference with the defender to the most forward defender (smallest Y)
-	//heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0, pgid, oppentToDefend.m_x, oppentToDefend.m_y, 1.5, true)); // invert=true, so in circle attracts
+	//heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0, pgid, oppentToDefend.x, oppentToDefend.y, 1.5, true)); // invert=true, so in circle attracts
 
 	// Positioned on the line between opponent and ball (so opponent cannot be reached)
 	heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 500.0, pgid, x_pos_ball, y_pos_ball, preferred_x, preferred_y, fieldConfig.getMaxPossibleFieldDistance()));
@@ -202,7 +202,7 @@ Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_
 	heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponents", 800, pgid, Opponents, 1.0));
 
 	// Play close to the opponent to defend but not on exactly on top of it
-	heuristics.push_back(new DistanceToPointHeuristic("Opponent to defend", 200, pgid, Vector2D(preferred_x, preferred_y), 8.0, 8.0, false));
+	heuristics.push_back(new DistanceToPointHeuristic("Opponent to defend", 200, pgid, MRA::Geometry::Point(preferred_x, preferred_y), 8.0, 8.0, false));
 
 	// Do not position close to team-mate path position, avoid double defense if other opponents are available
 	heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 1000, pgid, Team, 0.7));
@@ -245,7 +245,7 @@ Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_
 			// opponent is in the forbidden area around the ball and ball is at our half.
 			// locate player on height at the half of the distance between ball and the opponent
 			double desired_y = y_pos_ball;
-			if (y_pos_ball < oppentToDefend.m_y) {
+			if (y_pos_ball < oppentToDefend.y) {
 				desired_y -= dist_ball_to_opponent * 0.5; // subtract offset wrt ball-y
 			}
 			else {
@@ -275,18 +275,18 @@ Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_
 	double min_y = preferred_y - (y_steps * grid_size);
 	double max_y = preferred_y + (y_steps * grid_size);
 
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 
 	// create x,y grid for calculation. with prefered x , y in center of grid !!
 	for (double x = min_x; x <= (max_x + 0.01); x += grid_size) {
 		for (double y = min_y; y <= (max_y + 0.01); y += grid_size) {
 			if (fieldConfig.isInField(x, y, 0))
 			{ // only position where player is inside the field
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
-	Vector2D bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
+	MRA::Geometry::Point bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, Team, Opponents,ball, plannerOptions, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -299,7 +299,7 @@ Vector2D TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
@@ -322,8 +322,8 @@ Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRo
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getVector2D().m_x;
-	double y_pos_ball = ball.getPosition().getVector2D().m_y;
+	double x_pos_ball = ball.getPosition().getPoint().x;
+	double y_pos_ball = ball.getPosition().getPoint().y;
 
 
 	PlannerGridInfoData pgid = PlannerGridInfoData();
@@ -337,14 +337,14 @@ Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRo
 	// Defend opponents on own half or close to own half
 	for (unsigned op_idx = 0; op_idx < Opponents.size(); op_idx++) {
 		TeamPlannerOpponent opponent = Opponents[op_idx];
-		Vector2D opponentPos = opponent.position.getPosition().getVector2D();
-		if (opponentPos.m_y < 2) {
+		MRA::Geometry::Point opponentPos = opponent.position.getPosition().getPoint();
+		if (opponentPos.y < 2) {
 
 			// Preferred position approx 1 meter from opponent, with a preference with the defender to the most forward defender (smallest Y)
-			heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0 - (opponentPos.m_y * 2) , pgid, opponentPos.m_x, opponentPos.m_y, 1.5, true)); // invert=true, so in circle attracts
+			heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0 - (opponentPos.y * 2) , pgid, opponentPos.x, opponentPos.y, 1.5, true)); // invert=true, so in circle attracts
 
 			// Positioned on the line between opponent and ball (so opponent cannot be reached)
-			heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 30.0, pgid, x_pos_ball, y_pos_ball, opponentPos.m_x, opponentPos.m_y, fieldConfig.getMaxPossibleFieldDistance()));
+			heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 30.0, pgid, x_pos_ball, y_pos_ball, opponentPos.x, opponentPos.y, fieldConfig.getMaxPossibleFieldDistance()));
 		}
 
 	}
@@ -402,7 +402,7 @@ Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRo
 	// apply penalty heuristics if needed
 	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
 
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
@@ -410,11 +410,11 @@ Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRo
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -fieldConfig.getMaxFieldY() + fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
-	Vector2D bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
+	MRA::Geometry::Point bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, Team, Opponents,ball, plannerOptions, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -426,7 +426,7 @@ Vector2D TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRo
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-Vector2D TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+MRA::Geometry::Point TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
@@ -478,7 +478,7 @@ Vector2D TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std:
 	//stay out of 3 meter zone around center of the field
 	heuristics.push_back(new InfluenceBallHeuristic("Influence Center Circle", 1000.0, pgid, 0, 0, fieldConfig.getCenterCirleDiameter() + 0.5));
 
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
@@ -486,11 +486,11 @@ Vector2D TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std:
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -fieldConfig.getMaxFieldY() + fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
-	Vector2D bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
+	MRA::Geometry::Point bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, Team, Opponents,ball, plannerOptions, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -504,7 +504,7 @@ Vector2D TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std:
  * It normally positioned behind defenders to tackle any attacker bypassing defensive line
  */
 
-Vector2D TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
@@ -533,8 +533,8 @@ Vector2D TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobo
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + y_grid_half;  // only half field;
 
-	double x_pos_ball = ball.getPosition().getVector2D().m_x;
-	double y_pos_ball = ball.getPosition().getVector2D().m_y;
+	double x_pos_ball = ball.getPosition().getPoint().x;
+	double y_pos_ball = ball.getPosition().getPoint().y;
 
 	PlannerGridInfoData pgid = PlannerGridInfoData();
 	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
@@ -607,23 +607,23 @@ Vector2D TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobo
 	// apply penalty heuristics if needed
 	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
 
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx  = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -fieldConfig.getMaxFieldY() + fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
-	Vector2D bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
+	MRA::Geometry::Point bestPosition = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, Team, Opponents,ball, plannerOptions, "Sweeper", gridFileNumber);
 	return bestPosition;
 }
 
-Vector2D TeamPlanner_Grid::calculateGridValues(const std::list<Vector2D>& allowedTargetPositions,
+MRA::Geometry::Point TeamPlanner_Grid::calculateGridValues(const std::list<MRA::Geometry::Point>& allowedTargetPositions,
 		vector<GridHeuristic*> heuristics, const PlannerOptions& plannerOptions, PlannerGridInfoData& pgid) {
 
 	double lowest_value = std::numeric_limits<double>::infinity();
@@ -633,10 +633,10 @@ Vector2D TeamPlanner_Grid::calculateGridValues(const std::list<Vector2D>& allowe
 	vector<griddata_t> gridData = vector<griddata_t>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	for (std::list<Vector2D>::const_iterator pos_it=allowedTargetPositions.begin(); pos_it != allowedTargetPositions.end(); ++pos_it) {
+	for (std::list<MRA::Geometry::Point>::const_iterator pos_it=allowedTargetPositions.begin(); pos_it != allowedTargetPositions.end(); ++pos_it) {
 		double tot_value = 0;
-		double x = pos_it->m_x;
-		double y = pos_it->m_y;
+		double x = pos_it->x;
+		double y = pos_it->y;
 		vector<double> layerValues = vector<double>(); // TODO get size from layer info length
 		for (auto it = heuristics.begin(); it != heuristics.end(); ++it) {
 			double value = (*it)->getValue(x, y) * (*it)->getWeight();
@@ -667,7 +667,7 @@ Vector2D TeamPlanner_Grid::calculateGridValues(const std::list<Vector2D>& allowe
 	for (auto it = heuristics.begin(); it != heuristics.end(); ++it) {
 		delete (*it);
 	}
-	return Vector2D(lowest_x, lowest_y);
+	return MRA::Geometry::Point(lowest_x, lowest_y);
 }
 
 //---------------------------------------------------------------------
@@ -675,7 +675,7 @@ Vector2D TeamPlanner_Grid::calculateGridValues(const std::list<Vector2D>& allowe
  * Method to find to most attractive position for interceptor role during restart
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  */
-Vector2D TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
@@ -697,8 +697,8 @@ Vector2D TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vecto
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getVector2D().m_x;
-	double y_pos_ball = ball.getPosition().getVector2D().m_y;
+	double x_pos_ball = ball.getPosition().getPoint().x;
+	double y_pos_ball = ball.getPosition().getPoint().y;
 
 	// parameters to get a minimal distance to the ball (used function is a parabola).
 	// TODO should be mixed to below, where is ball_penalty, etc used?
@@ -731,7 +731,7 @@ Vector2D TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vecto
 
 
 	// Position interceptor on the 3 M circle around the ball (as close as allowed to the ball)
-	heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, ball.getPosition().getVector2D(), fieldConfig.getMaxPossibleFieldDistance()));
+	heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, ball.getPosition().getPoint(), fieldConfig.getMaxPossibleFieldDistance()));
 
 	// Position interceptor as close as possible to opponent interceptor (located within the 3 meter circle)
 	heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, Team, fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_INTERCEPTOR));
@@ -771,17 +771,17 @@ Vector2D TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vecto
 	heuristics.push_back(new AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic("Already player assigned to opponent penalty area", 100000, pgid, Team, fieldConfig));
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 	for (int x_idx = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -fieldConfig.getMaxFieldY() + fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
-	Vector2D pos = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
+	MRA::Geometry::Point pos = calculateGridValues(allowedTargetPositions, heuristics, plannerOptions, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, Team, Opponents, ball, plannerOptions, "InterceptorRestart", gridFileNumber);
 	return pos;
 }
@@ -792,7 +792,7 @@ Vector2D TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vecto
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-bool TeamPlanner_Grid::findAttackSupportPosition(Vector2D& bestPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 		const PlannerOptions& plannerOptions, const MovingObject& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		bool position_close_to_ball, bool teamControlBall)
@@ -821,8 +821,8 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Vector2D& bestPosition, const s
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getVector2D().m_x;
-	double y_pos_ball = ball.getPosition().getVector2D().m_y;
+	double x_pos_ball = ball.getPosition().getPoint().x;
+	double y_pos_ball = ball.getPosition().getPoint().y;
 
 	/*
 	 * Attack support position heuristics in open-play (offensive and defensive)
@@ -931,13 +931,13 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Vector2D& bestPosition, const s
 	 */
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	std::list<Vector2D> allowedTargetPositions = list<Vector2D>();
+	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 	for (int x_idx = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -fieldConfig.getMaxFieldY() + fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(Vector2D(x, y));
+				allowedTargetPositions.push_back(MRA::Geometry::Point(x, y));
 			}
 		}
 	}
@@ -958,14 +958,14 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Vector2D& bestPosition, const s
 				plannerOptions.interceptionChanceStartDistance, plannerOptions.interceptionChanceIncreasePerMeter,
 				plannerOptions.interceptionChancePenaltyFactor);
 
-		double bestX = bestPosition.m_x;
-		double bestY = bestPosition.m_y;
+		double bestX = bestPosition.x;
+		double bestY = bestPosition.y;
 		double lowestValue = std::numeric_limits<double>::infinity();
 		// for all positions to check
 		for (unsigned i = 0; i < nr_wait_positions; i++) {
 			double angle = i * 2.0 * M_PI / static_cast<double>(nr_wait_positions);
-			double xx = bestPosition.m_x + radius_non_opt_wait * cos(angle);
-			double yy = bestPosition.m_y + radius_non_opt_wait * sin(angle);
+			double xx = bestPosition.x + radius_non_opt_wait * cos(angle);
+			double yy = bestPosition.y + radius_non_opt_wait * sin(angle);
 			if (fieldConfig.isInField(xx,yy, infield_margin)) {
 				// only check positions in the field
 				double val = InterceptionThreat.getValue(xx, yy);
@@ -976,8 +976,8 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Vector2D& bestPosition, const s
  				 }
 			}
 		}
-		bestPosition.m_x = bestX;
-		bestPosition.m_y = bestY;
+		bestPosition.x = bestX;
+		bestPosition.y = bestY;
 	}
 
 	return true;

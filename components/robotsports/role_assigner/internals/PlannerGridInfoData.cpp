@@ -17,13 +17,13 @@ string PlannerGridInfoData::toString() {
 	std::stringstream buffer;
 	buffer << "TEAM:" << endl;
 	for (auto it = this->gameData.Team.begin(); it != this->gameData.Team.end(); ++it) {
-		buffer << "x: "<< it->getPosition().getVector2D().m_x << " y: " <<  it->getPosition().getVector2D().m_y << endl;
+		buffer << "x: "<< it->getPosition().getPoint().x << " y: " <<  it->getPosition().getPoint().y << endl;
 	}
 	buffer << "OPPONENTS:" << endl;
 	for (auto it = this->gameData.Opponents.begin(); it != this->gameData.Opponents.end(); ++it) {
-		buffer << "x: "<< it->getPosition().getVector2D().m_x << " y: " <<  it->getPosition().getVector2D().m_y << endl;
+		buffer << "x: "<< it->getPosition().getPoint().x << " y: " <<  it->getPosition().getPoint().y << endl;
 	}
-	buffer<< "BALL x: "  <<  this->gameData.ball.getPosition().getVector2D().m_x << " y: "<< this->gameData.ball.getPosition().getVector2D().m_y << endl;
+	buffer<< "BALL x: "  <<  this->gameData.ball.getPosition().getPoint().x << " y: "<< this->gameData.ball.getPosition().getPoint().y << endl;
 	buffer << "LAYER-NAMES:" << endl;
 	for (auto it = this->name.begin();  it != this->name.end(); ++it) {
 		buffer <<  *it << endl;
@@ -40,14 +40,14 @@ void PlannerGridInfoData::saveToFile(const std::string& filename) {
 	fprintf(fp, "# GAME-DATA\n");
 	// TEAM data
 	for (auto it = this->gameData.Team.begin(); it != this->gameData.Team.end(); ++it) {
-		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getVector2D().m_x, it->getPosition().getVector2D().m_y);
+		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getPoint().x, it->getPosition().getPoint().y);
 	}
 	fprintf(fp, "\n");
 	for (auto it = this->gameData.Opponents.begin(); it != this->gameData.Opponents.end(); ++it) {
-		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getVector2D().m_x, it->getPosition().getVector2D().m_y);
+		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getPoint().x, it->getPosition().getPoint().y);
 	}
 	fprintf(fp, "\n");
-	fprintf(fp, " %5.2f; %5.2f;\n", this->gameData.ball.getPosition().getVector2D().m_x, this->gameData.ball.getPosition().getVector2D().m_y);
+	fprintf(fp, " %5.2f; %5.2f;\n", this->gameData.ball.getPosition().getPoint().x, this->gameData.ball.getPosition().getPoint().y);
 	fprintf(fp, "# LAYER-NAMES\n");
 	for (auto it = this->name.begin();  it != this->name.end(); ++it) {
 		fprintf(fp, "%s;", it->c_str());

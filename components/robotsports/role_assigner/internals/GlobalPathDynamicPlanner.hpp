@@ -12,7 +12,7 @@
 #include "MovingObject.h"
 #include "PlannerOptions.hpp"
 #include "Position.h"
-#include "Vector2D.h"
+#include "geometry.hpp"
 
 namespace trs {
 /**

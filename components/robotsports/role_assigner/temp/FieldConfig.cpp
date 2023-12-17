@@ -115,13 +115,13 @@ double FieldConfig::getGoalWidth() const {
 	return GOAL_WIDTH;
 }
 
-Vector2D FieldConfig::getOpponentGoal() const {
-	Vector2D opponentGoal = Vector2D(0, getMaxFieldY());
+MRA::Geometry::Point FieldConfig::getOpponentGoal() const {
+    MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, getMaxFieldY());
 	return opponentGoal;
 }
 
-Vector2D FieldConfig::getOwnGoal() const {
-	Vector2D ownGoal = Vector2D(0, -getMaxFieldY());
+MRA::Geometry::Point FieldConfig::getOwnGoal() const {
+    MRA::Geometry::Point ownGoal = MRA::Geometry::Point(0, -getMaxFieldY());
 	return ownGoal;
 }
 
@@ -220,8 +220,8 @@ FieldConfig::FieldConfig(double field_length, double field_width, double field_m
 	MIN_DIST_TO_GOAL_AREA = 0.25;
 }
 
-bool FieldConfig::isInField(const Vector2D& r_pos, double margin) const {
-	return FieldConfig::isInField(r_pos.m_x, r_pos.m_y, margin);
+bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) const {
+	return FieldConfig::isInField(r_pos.x, r_pos.y, margin);
 }
 
 bool FieldConfig::isInField(double x, double y, double margin) const {
@@ -236,8 +236,8 @@ bool FieldConfig::isInFullField(double x, double y) const {
 	return inField;
 }
 
-bool FieldConfig::isInReachableField(const Vector2D& r_pos) const {
-	return isInReachableField(r_pos.m_x, r_pos.m_y);
+bool FieldConfig::isInReachableField(const MRA::Geometry::Point& r_pos) const {
+	return isInReachableField(r_pos.x, r_pos.y);
 }
 
 bool FieldConfig::isInReachableField(double x, double y) const {

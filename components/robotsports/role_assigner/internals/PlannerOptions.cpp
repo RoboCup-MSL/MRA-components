@@ -139,7 +139,7 @@ PlannerOptions::PlannerOptions() {
 }
 
 
-inline std::string FormationAsString(team_formation_e formation) {
+std::string FormationAsString(team_formation_e formation) {
   std::string formationString = "";
   switch (formation) {
   case team_formation_e::FORMATION_013: formationString = "FORMATION_013"; break;

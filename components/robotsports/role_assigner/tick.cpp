@@ -8,7 +8,7 @@ using namespace MRA;
 
 // custom includes, if any
 // ...
-
+#include "TeamPlay.hpp"
 
 int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
 (
@@ -23,8 +23,12 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     int error_value = 0;
 
     // user implementation goes here
+    trs::FieldConfig fieldConfig = trs::FillDefaultFieldConfig();
+    trs::TeamPlannerData teamplannerData;
+    vector<dynamic_role_e> teamFormation;
 
-
+    trs::TeamPlay team_play = trs::TeamPlay();
+    team_play.assign(teamFormation, fieldConfig, teamplannerData);
 
     return error_value;
 }

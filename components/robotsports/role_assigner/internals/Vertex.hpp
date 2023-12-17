@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "Edge.hpp"
-#include "Vector2D.h"
+#include "geometry.hpp"
 
 namespace trs {
 
@@ -18,13 +18,13 @@ class Vertex {
 public:
 	double m_minDistance;
 	double m_extraCost;
-	Vector2D m_coordinate;
+	MRA::Geometry::Point m_coordinate;
 	double m_straightLineToTarget;
 	std::vector<Edge> m_neighbours;
 	Vertex * m_pPrevious;
 
-	Vertex(const Vector2D& aCoordinate, double distanceToTarget);
-	Vertex(const Vector2D& aCoordinate, double distanceToTarget, double dCost);
+	Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget);
+	Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget, double dCost);
 	Vertex(const Vertex& rVertex);
 	virtual ~Vertex();
 

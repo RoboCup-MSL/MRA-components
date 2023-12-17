@@ -7,7 +7,7 @@
 #ifndef FIELD_CONFIG_H
 #define FIELD_CONFIG_H 1
 #include <string>
-#include <Vector2D.h>
+#include "geometry.hpp"
 
 namespace trs {
 
@@ -22,14 +22,14 @@ public:
 			double penalty_spot_to_backline, bool is_mobile_field);
 
 	/* check if point is in the playing field and is minimal the given margin from the edge of the playing field. A positive margin is within the playing field.  */
-	bool isInField(const Vector2D& r_pos, double margin) const;
+	bool isInField(const MRA::Geometry::Point& r_pos, double margin) const;
 	bool isInField(double x, double y, double margin) const;
 
 	/* Check if position is within reachable field. This is a location where player can be including the safety area around the field and can freely move.
 	 * Reachable means: position where the player has still space for turning while player is within the playing field
 	 * or safety area around the field and not behind own goal.
 	 */
-	bool isInReachableField(const Vector2D& r_pos) const;
+	bool isInReachableField(const MRA::Geometry::Point& r_pos) const;
 	bool isInReachableField(double x, double y) const;
 
 	bool isInFullField(double x, double y) const;
@@ -70,8 +70,8 @@ public:
 	double getGoalLength() const;
 	double getGoalWidth() const;
 
-	Vector2D getOpponentGoal() const;
-	Vector2D getOwnGoal() const;
+	MRA::Geometry::Point getOpponentGoal() const;
+	MRA::Geometry::Point getOwnGoal() const;
 
 
 	double getParkingAreaWidth() const;

@@ -22,7 +22,7 @@ namespace trs {
 class TeamPlay {
 public:
 	TeamPlay();
-	void assign(const FieldConfig& fieldConfig, TeamPlannerData& teamplannerData);
+	void assign(const vector<dynamic_role_e>& teamFormation, const FieldConfig& fieldConfig, TeamPlannerData& teamplannerData);
 
 private:
 	class AssignToTargetData {
@@ -35,10 +35,11 @@ private:
 	};
 
 
-	void assign(team_planner_result_t* player_paths, game_state_e gamestate,
+	void assign(const vector<dynamic_role_e>& teamFormation,
+	        team_planner_result_t* player_paths, game_state_e gamestate,
 			const MovingObject& globalBall, const MovingObject& localBall, const previous_used_ball_by_planner_t& previous_global_ball,
 			std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& opponents,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const std::vector<Vector2D>& parking_positions,
+			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
 
 	vector<dynamic_role_e> selectTeamFormation(game_state_e gamestate);
@@ -47,7 +48,7 @@ private:
 			const MovingObject& globalBall,
 			std::vector<TeamPlannerRobot>& Team,
 			const std::vector<TeamPlannerOpponent>& Opponents,
-			const Vector2D& target, bool ballIsObstacle, planner_target_e planner_target,
+			const MRA::Geometry::Point& target, bool ballIsObstacle, planner_target_e planner_target,
 			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const defend_info_t& Defend_infob,
 			bool role_position_is_end_position_of_pass, const pass_data_t& pass_data);
 
@@ -58,7 +59,7 @@ private:
 
 	void assignGoalie(game_state_e gamestate, std::vector<TeamPlannerRobot>& Team, bool ballIsObstacle,
 			const MovingObject& globalBall, const std::vector<TeamPlannerOpponent>& Opponents, const PlannerOptions& plannerOptions,
-			const FieldConfig& m_fieldConfig, const std::vector<Vector2D>& parking_positions);
+			const FieldConfig& m_fieldConfig, const std::vector<MRA::Geometry::Point>& parking_positions);
 
 	void assignTooLongInPenaltyAreaPlayers(game_state_e gamestate, std::vector<TeamPlannerRobot>& Team,
 			bool ballIsObstacle, const MovingObject& globalBall, const std::vector<TeamPlannerOpponent>& Opponents,
@@ -67,16 +68,16 @@ private:
 	planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
 	void assignToFixedPositions(unsigned playerlist_idx, dynamic_role_e dynamic_role, game_state_e gamestate, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const MovingObject& globalBall, bool ballIsObstacle, const std::vector<Vector2D>& parking_positions,
+			const MovingObject& globalBall, bool ballIsObstacle, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, bool searchForBall,
 			const defend_info_t& Defend_info, const pass_data_t& pass_data);
 
 	bool searchForBallBehaviorNeeded(game_state_e gamestate, const MovingObject& globalBall, const FieldConfig& fieldConfig);
 
-	void print_provided_position(game_state_e gamestate, const vector<vector<Vector2D>>& positions);
+	void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
 
-	void fillProvidePositions(vector<vector<Vector2D>>& playerPositions, game_state_e gamestate, const MovingObject& globalBall,
-			bool searchForBall,const std::vector<Vector2D>& parking_positions);
+	void fillProvidePositions(vector<vector<MRA::Geometry::Point>>& playerPositions, game_state_e gamestate, const MovingObject& globalBall,
+			bool searchForBall,const std::vector<MRA::Geometry::Point>& parking_positions);
 
 	vector<MovingObject> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
@@ -88,7 +89,7 @@ private:
 
 	void printAssignInputs(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
 			std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const PlannerOptions& plannerOptions, const std::vector<Vector2D>& parking_positions,
+			const PlannerOptions& plannerOptions, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
 
 	double calculateShortestDistanceObjectsToTarget(const std::vector<MovingObject>& objects, const MovingObject& targetObject);
@@ -103,7 +104,7 @@ private:
 			const MovingObject& globalBall,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			planner_target_e planner_target, bool ballIsObstacle,
-			const Vector2D& targetPos, std::vector<TeamPlannerRobot>& Team);
+			const MRA::Geometry::Point& targetPos, std::vector<TeamPlannerRobot>& Team);
 
 	int m_gridFileNumber;
 };

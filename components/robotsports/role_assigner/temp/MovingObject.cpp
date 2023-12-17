@@ -2,12 +2,13 @@
 #include <iomanip>
 #include <ostream>
 #include <sstream>
+#include "geometry.hpp"
 
 namespace trs {
 
 	MovingObject::MovingObject() :
-	    m_position(Position(Vector2D(0,0), 0.0, 1.0, 0)),
-		m_velocity(Vector2D(0, 0)),
+	    m_position(Position(MRA::Geometry::Point(0,0), 0.0, 1.0, 0)),
+		m_velocity(MRA::Geometry::Point(0, 0)),
 		m_rotationVelocity(0.0),
 		m_label(-1),
 		m_valid(false) {
@@ -15,8 +16,8 @@ namespace trs {
 	}
 
 	MovingObject::MovingObject(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid):
-				m_position(Position(Vector2D(x,y), 0.0, 1.0, rz)),
-				m_velocity(Vector2D(vx,vy)),
+				m_position(Position(MRA::Geometry::Point(x,y), 0.0, 1.0, rz)),
+				m_velocity(MRA::Geometry::Point(vx,vy)),
 				m_rotationVelocity(vrz),
 				m_label(label),
 				m_valid(valid) {
@@ -36,7 +37,7 @@ namespace trs {
 	 */
 	MovingObject::MovingObject(Position position, bool valid) :
 					m_position(position),
-					m_velocity(Vector2D(0,0)),
+					m_velocity(MRA::Geometry::Point(0,0)),
 					m_rotationVelocity(0.0),
 					m_label(-1),
 					m_valid(valid)  {
@@ -47,7 +48,7 @@ namespace trs {
 	 * @param position Position of the object
 	 * @param velocity Velocity of the object
 	 */
-	MovingObject::MovingObject(Position position, Vector2D linearVelocity, double rotationVelocity, bool valid) :
+	MovingObject::MovingObject(Position position, MRA::Geometry::Point linearVelocity, double rotationVelocity, bool valid) :
 			m_position(position),
 			m_velocity(linearVelocity),
 			m_rotationVelocity(rotationVelocity),
@@ -67,8 +68,8 @@ namespace trs {
 	 * Xy location of the object
 	 * @return Position
 	 */
-	Vector2D MovingObject::getXYlocation() const {
-		return m_position.getVector2D();
+	MRA::Geometry::Point MovingObject::getXYlocation() const {
+		return m_position.getPoint();
 	}
 
 
@@ -77,14 +78,14 @@ namespace trs {
 	 * @return linear velocity = sqrt(x^2, y^2)
 	 */
 	double MovingObject::getLinearVelocity() const {
-		return m_velocity.norm();
+		return m_velocity.size();
 	}
 
 	/**
 	 * Speed of the object
 	 * @return Velocity vector
 	 */
-	void MovingObject::getVelocity(Vector2D& linearVelocity, double& rotationVelocity) const {
+	void MovingObject::getVelocity(MRA::Geometry::Point& linearVelocity, double& rotationVelocity) const {
 		linearVelocity = m_velocity;
 		rotationVelocity = m_rotationVelocity;
 	}
@@ -99,14 +100,14 @@ namespace trs {
 
 	void MovingObject::set(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid) {
 				m_position.set(x,y, rz);
-				m_velocity.m_x = vx;
-				m_velocity.m_y = vy;
+				m_velocity.x = vx;
+				m_velocity.y = vy;
 				m_rotationVelocity = vrz;
 				m_label = label;
 				m_valid = valid;
 	}
 
-	void MovingObject::setVelocity(const Vector2D& linearVelocity, double rotationVelocity) {
+	void MovingObject::setVelocity(const MRA::Geometry::Point& linearVelocity, double rotationVelocity) {
 		m_velocity = linearVelocity;
 		m_rotationVelocity = rotationVelocity;
 	}
@@ -125,7 +126,9 @@ namespace trs {
 	Position MovingObject::getPositionAt(double time) const {
 		double timespan = time - m_position.getTime();
 		Position result(m_position);
-		result.move(m_velocity.multiply(timespan), timespan);
+		MRA::Geometry::Point velocity(m_velocity);
+		velocity *= timespan;
+		result.move(velocity, timespan);
 		return result;
 	}
 
@@ -134,24 +137,25 @@ namespace trs {
 	 * @param timespan Elapsed time period
 	 */
 	void MovingObject::move(double timespan) {
-		m_position.move(m_velocity.multiply(timespan), timespan);
+        MRA::Geometry::Point velocity(m_velocity);
+        velocity *= timespan;
+		m_position.move(velocity, timespan);
 	}
 
 	/**
 	 * Moves the object for the given offset and update time with timespan
 	 */
-	void MovingObject::move(const Vector2D& offset, double timespan) {
+	void MovingObject::move(const MRA::Geometry::Point& offset, double timespan) {
 		m_position.move(offset, timespan);
 	}
 
 	std::string MovingObject::toString(bool print_complete) const {
 		std::stringstream buffer;
 		buffer << std::fixed << std::setprecision(2)
-				<< " x: " << m_position.getVector2D().m_x
-			    << " y: " << m_position.getVector2D().m_y;
+				<< " x: " << m_position.getPoint().x
+			    << " y: " << m_position.getPoint().y;
 		if (print_complete) {
-			buffer << " rz: " << m_position.getRotationZ()
-				   << " vx: " << m_velocity.m_x << " vy: " << m_velocity.m_y
+			buffer << " vx: " << m_velocity.x << " vy: " << m_velocity.y
 				   << " vr: " <<  m_rotationVelocity << " valid: " << (int) m_valid
 				   << " label: " << m_label;
 		}
@@ -160,11 +164,11 @@ namespace trs {
 
 	MovingObject::operator moving_object_t() const {
 		moving_object_t mo;
-		mo.x = this->m_position.getVector2D().m_x;
-		mo.y = this->m_position.getVector2D().m_y;
+		mo.x = this->m_position.getPoint().x;
+		mo.y = this->m_position.getPoint().y;
 		mo.rz = this->m_position.getRotationZ();
-		mo.velx = this->m_velocity.m_x;
-		mo.vely = this->m_velocity.m_y;
+		mo.velx = this->m_velocity.x;
+		mo.vely = this->m_velocity.y;
 		mo.velrz = this->m_rotationVelocity;
         mo.valid = static_cast<long>(this->m_valid);
 		return mo;
@@ -172,8 +176,8 @@ namespace trs {
 
 	MovingObject& MovingObject::operator=(const moving_object_t& mo) {
 		this->m_position.set(mo.x, mo.y, mo.rz);
-		this->m_velocity.m_x = mo.velx;
-		this->m_velocity.m_y = mo.vely;
+		this->m_velocity.x = mo.velx;
+		this->m_velocity.y = mo.vely;
 		this->m_rotationVelocity = mo.velrz;
         this->m_label = mo.label;
         this->m_valid = static_cast<bool>(mo.valid);

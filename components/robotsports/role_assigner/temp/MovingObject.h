@@ -2,7 +2,7 @@
 #define MOVINGOBJECT_H 1
 
 #include "Position.h"
-#include "Vector2D.h"
+#include "geometry.hpp"
 #include <string>
 
 #include "../internals/planner_types.hpp"  // define in planner directory
@@ -19,7 +19,7 @@ namespace trs {
 class MovingObject {
 private:
 	Position m_position;
-	Vector2D m_velocity; // in m/s
+	MRA::Geometry::Point m_velocity; // in m/s
 	double m_rotationVelocity;
 	int	m_label; // number of object, 1..10 for own player, >10 for opponents
 	bool m_valid;
@@ -49,7 +49,7 @@ public:
 	 * @param position Position of the object
 	 * @param velocity Velocity of the object
 	 */
-	MovingObject(Position position, Vector2D linearVelocity, double rotationVelocity, bool valid = true);
+	MovingObject(Position position, MRA::Geometry::Point linearVelocity, double rotationVelocity, bool valid = true);
 
 	/**
 	 * Position of the object
@@ -61,7 +61,7 @@ public:
 	 * Xy location of the object
 	 * @return Position
 	 */
-	Vector2D getXYlocation() const;
+	MRA::Geometry::Point getXYlocation() const;
 
 	/**
 	 * linear speed of the object (magnitude of velocity vector)
@@ -73,7 +73,7 @@ public:
 	 * Speed of the object
 	 * @return Velocity vector
 	 */
-	void getVelocity(Vector2D& linearVelocity, double& rotationVelocity)  const;
+	void getVelocity(MRA::Geometry::Point& linearVelocity, double& rotationVelocity)  const;
 
 	int getLabel() const;
 
@@ -82,7 +82,7 @@ public:
 	void set(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid);
 
 	// set / update velocity
-	void setVelocity(const Vector2D& linearVelocity, double rotationVelocity);
+	void setVelocity(const MRA::Geometry::Point& linearVelocity, double rotationVelocity);
 
 	/**
 	 * Calculates the position of the object at a certain time, given the time
@@ -106,7 +106,7 @@ public:
 	/**
 	 * Moves the object for the given offset and update time with timespan
 	 */
-	void move(const Vector2D& offset, double timespan);
+	void move(const MRA::Geometry::Point& offset, double timespan);
 
 
 	std::string toString(bool print_complete = true) const;

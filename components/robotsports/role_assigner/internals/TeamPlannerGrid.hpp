@@ -8,7 +8,7 @@
 #ifndef TEAMPLANNERGRID_H_
 #define TEAMPLANNERGRID_H_
 
-#include "Vector2D.h"
+#include "geometry.hpp"
 #include "MovingObject.h"
 #include "TeamPlay.hpp"
 
@@ -26,31 +26,31 @@ public:
 		double z;
 	} griddata_t;
 
-	static Vector2D findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
+	static MRA::Geometry::Point findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
 			const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 			const ball_pickup_position_t& m_ball_pickup_position, bool passIsRequired);
 
 
-	static Vector2D findManToManDefensivePosition(dynamic_role_e dynamic_role, const Vector2D& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+	static MRA::Geometry::Point findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 			const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 			int gridFileNumber, const FieldConfig& fieldConfig, bool setPlayActive, bool teamControlBall);
 
-	static Vector2D findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
+	static MRA::Geometry::Point findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
 			const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig);
 
-	static Vector2D findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+	static MRA::Geometry::Point findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 			const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		    int gridFileNumber, const FieldConfig& fieldConfig);
 
-	static Vector2D findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+	static MRA::Geometry::Point findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 			const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		    int gridFileNumber, const FieldConfig& fieldConfig);
 
-	static bool  findAttackSupportPosition(Vector2D& rSupportPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+	static bool  findAttackSupportPosition(MRA::Geometry::Point& rSupportPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 			const PlannerOptions& plannerOptions, const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 			int gridFileNumber, const FieldConfig& fieldConfig, bool position_close_to_ball, bool teamControlBall);
 
-	static Vector2D findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
+	static MRA::Geometry::Point findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
 			const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 			int gridFileNumber, const FieldConfig& fieldConfig);
 
@@ -61,13 +61,13 @@ private:
 			const std::vector<TeamPlannerOpponent>& opponents, double interceptionInfluenceDistance, double interceptionDistancePenaltyFactor);
 	static double calculate_a_penaly_factor_for_teammate(double ball_ax_sqr, double ball_c);
 	static double calc_a_penalty_factor(double radius, double c);
-	static Vector2D calculateGridValues(const std::list<Vector2D>& allowedTargetPositions,
+	static MRA::Geometry::Point calculateGridValues(const std::list<MRA::Geometry::Point>& allowedTargetPositions,
 			std::vector<GridHeuristic*> heuristics, const PlannerOptions& plannerOptions, PlannerGridInfoData& pgid) ;
 
 	static void handle_penalty_heuristics(game_state_e gamestate,
 			const PlannerOptions &plannerOptions,
 			const std::vector<TeamPlannerRobot>& Team,
-			const Vector2D& r_ballPos,
+			const MRA::Geometry::Point& r_ballPos,
 			const FieldConfig &fieldConfig,
 			vector<GridHeuristic*> &heuristics,
 			PlannerGridInfoData &pgid);

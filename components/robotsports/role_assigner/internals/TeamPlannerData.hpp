@@ -85,6 +85,8 @@ public:
 	pass_data_t pass_data;
 	std::vector<dynamic_role_e> teamFormation;
 	trs::FieldConfig fieldConfig;
+	bool teamControlBall;
+	bool playerPassedBall;
 
 //
 //	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);

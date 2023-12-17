@@ -12,7 +12,7 @@ using namespace std;
 //---------------------------------------------------------------------------------------------------------------------
 
 vector<dynamic_role_e> TeamFormation::selectTeamFormation(team_formation_e team_formation, game_state_e gamestate,
-		bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
+		bool playerControlBall, bool playerPassedBall, const TeamPlannerParameters& plannerOptions) {
 	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
 	// inputs which can be used:
 	//	m_plannerOptions;
@@ -100,7 +100,7 @@ std::vector<dynamic_role_e> TeamFormation::roleOnlyFormation(dynamic_role_e dyna
 }
 
 
-vector<dynamic_role_e> TeamFormation::getFormation013(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
+vector<dynamic_role_e> TeamFormation::getFormation013(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const TeamPlannerParameters& plannerOptions) {
 	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
 	switch (gamestate) {
 	case FREEKICK: // intentional fall through
@@ -168,7 +168,7 @@ vector<dynamic_role_e> TeamFormation::getFormation013(game_state_e gamestate, bo
 	return formation;
 }
 
-vector<dynamic_role_e> TeamFormation::getFormation112(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
+vector<dynamic_role_e> TeamFormation::getFormation112(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const TeamPlannerParameters& plannerOptions) {
 	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
 	switch (gamestate) {
 	case FREEKICK: // intentional fall through
@@ -240,7 +240,7 @@ vector<dynamic_role_e> TeamFormation::getFormation112(game_state_e gamestate, bo
 	return formation;
 }
 
-vector<dynamic_role_e> TeamFormation::getFormation211(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
+vector<dynamic_role_e> TeamFormation::getFormation211(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const TeamPlannerParameters& plannerOptions) {
 	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
 	switch (gamestate) {
 	case FREEKICK: // intentional fall through
@@ -311,7 +311,7 @@ vector<dynamic_role_e> TeamFormation::getFormation211(game_state_e gamestate, bo
 	return formation;
 }
 
-vector<dynamic_role_e> TeamFormation::getFormation310(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
+vector<dynamic_role_e> TeamFormation::getFormation310(game_state_e gamestate, bool playerControlBall, bool playerPassedBall, const TeamPlannerParameters& plannerOptions) {
 	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
 	switch (gamestate) {
 	case FREEKICK: // intentional fall through

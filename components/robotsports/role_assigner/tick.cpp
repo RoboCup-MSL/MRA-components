@@ -26,7 +26,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     trs::TeamPlannerInput tp_input = trs::TeamPlannerInput();
     trs::TeamPlannerState tp_state;
     trs::TeamPlannerOutput tp__output;
-    trs::PlannerOptions tp_params;
+    trs::TeamPlannerParameters tp_params;
 
     if (tp_input.gamestate == trs::game_state_e::NORMAL) {
         bool playerControlBall = false;

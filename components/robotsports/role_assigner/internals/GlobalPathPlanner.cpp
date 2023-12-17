@@ -90,13 +90,12 @@ GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
 	m_opponents(std::vector<MRA::Geometry::Point>()),
 	m_approachVertices(std::vector<Vertex*>()),
 	m_addPoints(std::vector<Vertex*>()),
-	m_options(PlannerOptions()),
+	m_options(TeamPlannerParameters()),
 	m_targetFunction(planner_target_e::GOTO_BALL),
 	m_maxFieldX(0),
 	m_maxFieldY(0)
 {
-	double Vrz;
-	m_Me.getVelocity(m_startVelocity, Vrz);
+	m_Me.getVelocity(m_startVelocity);
 }
 
 GlobalPathPlanner::~GlobalPathPlanner() {
@@ -124,27 +123,27 @@ void GlobalPathPlanner::clearApproachVertices() {
 	m_approachVertices.clear();
 }
 
-void GlobalPathPlanner::setOptions(const PlannerOptions& options) {
+void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
 	m_options = options;
 }
 
-void GlobalPathPlanner::createGraph(MovingObject me, MovingObject ball,
-		const std::vector<MovingObject>& teammates,
-		const std::vector<MovingObject>& opponents,
+void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlannerData& teamplanner_data,
 		const std::vector<trs::Vertex>& targetPos,
 		planner_target_e targetFunction,
 		bool ballIsObstacle,
 		bool avoidBallPath,
 		const MRA::Geometry::Point& rBallTargePos) {
+
+    auto ball = teamplanner_data.ball;
+
 	// TODO check on dist me to target, if large than max field. stop calculations !!!!!
 	m_Ball = ball;
-	Position startPos = me.getPosition();
+	Position startPos = start.getPosition();
 	if (m_start != 0) {
 		delete m_start;
 	}
 	m_start = new Vertex(startPos.getPoint(), 0);
-	double Vrz;
-	me.getVelocity(m_startVelocity, Vrz);
+	start.getVelocity(m_startVelocity);
 	m_vertices.push_back(m_start);
 	m_targetFunction = targetFunction;
 	for(std::vector<Vertex>::size_type pos_idx = 0; pos_idx != targetPos.size(); pos_idx++) {
@@ -173,14 +172,16 @@ void GlobalPathPlanner::createGraph(MovingObject me, MovingObject ball,
 	if (m_options.addBarierVertices) {
 		if (ballIsObstacle) {
 			// handle ball as obstacle
-			if (ball.isValid()) {
-				vector<MovingObject> ball_vector = vector<MovingObject>();
-				ball_vector.push_back(ball);
-				addOpponents(ball_vector, true);
+			if (teamplanner_data.ball_present) {
+				addOpponent(teamplanner_data.ball, true);
 			}
 		}
-		addOpponents(opponents, false);
-		addOpponents(teammates, false); // handle team mates as opponent (drive around them)
+		for (auto opponent: teamplanner_data.opponents) {
+		    addOpponent(opponent.position, false);
+		}
+        for (auto teammate: teamplanner_data.team) {
+            addOpponent(teammate.position, false); // handle team mates as opponent (drive around them)
+        }
 	}
 
 	//
@@ -201,7 +202,7 @@ void GlobalPathPlanner::createGraph(MovingObject me, MovingObject ball,
  *
  * @return List of coordinates on the shortest path
  */
-vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
+vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData& teamplanner_data) {
 	m_start->m_minDistance = 0.0;
 
 	std::list<trs::Vertex*> sortedList = std::list<trs::Vertex*>();
@@ -320,74 +321,70 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath() {
 			filename.replace(filename.end()-4,filename.end(), buffer);
 		}
 		m_options.svgOutputFileName = filename;
-		save_graph_as_svg(path2);
+		save_graph_as_svg(teamplanner_data, path2);
 		m_options.svgOutputFileName = org_svgOutputFileName; // restore svg name
 	}
 	return path2;
 }
 
-void GlobalPathPlanner::addOpponents(const vector<MovingObject>& opponents, bool skipFirstRadius) {
-	for(std::vector<MovingObject>::size_type pos_idx = 0; pos_idx != opponents.size(); pos_idx++) {
-		MRA::Geometry::Point v(opponents[pos_idx].getPosition().getPoint());
-		double x = v.x;
-		double y = v.y;
+void GlobalPathPlanner::addOpponent(const MovingObject& opponent, bool skipFirstRadius) {
+    MRA::Geometry::Point v(opponent.getPosition().getPoint());
+    double x = v.x;
+    double y = v.y;
 
-		// Opponents that are far from any reasonable path from start to
-		// target are not added.
-		if (nearPath(v)) {
-			if (!skipFirstRadius) {
-				for (int i = 0; i < m_options.nrVerticesFirstCircle; i++) {
-					double angle = i * 2.0 * M_PI
-							/ m_options.nrVerticesFirstCircle;
-					double xx = x + m_options.firstCircleRadius * cos(angle);
-					double yy = y + m_options.firstCircleRadius * sin(angle);
-					addPoint(MRA::Geometry::Point(xx, yy));
-				}
-			}
+    // Opponents that are far from any reasonable path from start to
+    // target are not added.
+    if (nearPath(v)) {
+        if (!skipFirstRadius) {
+            for (int i = 0; i < m_options.nrVerticesFirstCircle; i++) {
+                double angle = i * 2.0 * M_PI
+                        / m_options.nrVerticesFirstCircle;
+                double xx = x + m_options.firstCircleRadius * cos(angle);
+                double yy = y + m_options.firstCircleRadius * sin(angle);
+                addPoint(MRA::Geometry::Point(xx, yy));
+            }
+        }
 
-			for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
-				double angle = i * 2.0 * M_PI
-						/ m_options.nrVerticesSecondCircle;
-				double xx = x + m_options.secondCircleRadius * cos(angle);
-				double yy = y + m_options.secondCircleRadius * sin(angle);
-				addPoint(MRA::Geometry::Point(xx, yy));
-			}
-		}
-		// TODO: prevent a path from going through the goal, or have
-		// another process guard such a route?
-		m_opponents.push_back(v);
-	}
+        for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
+            double angle = i * 2.0 * M_PI
+                    / m_options.nrVerticesSecondCircle;
+            double xx = x + m_options.secondCircleRadius * cos(angle);
+            double yy = y + m_options.secondCircleRadius * sin(angle);
+            addPoint(MRA::Geometry::Point(xx, yy));
+        }
+    }
+    // TODO: prevent a path from going through the goal, or have
+    // another process guard such a route?
+    m_opponents.push_back(v);
 }
 
-void GlobalPathPlanner::addTeammates(const vector<MovingObject>& teamMates) {
-	for(std::vector<MovingObject>::size_type pos_idx = 0; pos_idx != teamMates.size(); pos_idx++) {
-		MRA::Geometry::Point v(teamMates[pos_idx].getPosition().getPoint());
-		double x = v.x;
-		double y = v.y;
+void GlobalPathPlanner::addTeammate(const MovingObject& teamMate) {
+    MRA::Geometry::Point v(teamMate.getPosition().getPoint());
+    double x = v.x;
+    double y = v.y;
 
-		// Opponents that are far from any reasonable path from start to
-		// target are not added.
-		if (nearPath(v)) {
-			for (int i = 0; i < m_options.nrVerticesFirstCircle; i++) {
-				double angle = i * 2.0 * M_PI
-						/ m_options.nrVerticesFirstCircle;
-				double xx = x + m_options.firstCircleRadius * cos(angle);
-				double yy = y + m_options.firstCircleRadius * sin(angle);
-				addPoint(MRA::Geometry::Point(xx, yy));
-			}
+    // Opponents that are far from any reasonable path from start to
+    // target are not added.
+    if (nearPath(v)) {
+        for (int i = 0; i < m_options.nrVerticesFirstCircle; i++) {
+            double angle = i * 2.0 * M_PI
+                    / m_options.nrVerticesFirstCircle;
+            double xx = x + m_options.firstCircleRadius * cos(angle);
+            double yy = y + m_options.firstCircleRadius * sin(angle);
+            addPoint(MRA::Geometry::Point(xx, yy));
+        }
 
-			for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
-				double angle = i * 2.0 * M_PI
-						/ m_options.nrVerticesSecondCircle;
-				double xx = x + m_options.secondCircleRadius * cos(angle);
-				double yy = y + m_options.secondCircleRadius * sin(angle);
-				addPoint(MRA::Geometry::Point(xx, yy));
-			}
-		}
-		// TODO: prevent a path from going through the goal, or have
-		// another process guard such a route?
-		m_teammates.push_back(v);
-	}
+        for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
+            double angle = i * 2.0 * M_PI
+                    / m_options.nrVerticesSecondCircle;
+            double xx = x + m_options.secondCircleRadius * cos(angle);
+            double yy = y + m_options.secondCircleRadius * sin(angle);
+            addPoint(MRA::Geometry::Point(xx, yy));
+        }
+    }
+    // TODO: prevent a path from going through the goal, or have
+    // another process guard such a route?
+    m_teammates.push_back(v);
 }
 
 /**
@@ -710,16 +707,16 @@ void GlobalPathPlanner::addPoint( const MRA::Geometry::Point& point) {
 	m_vertices.push_back(vertex);
 }
 
-void GlobalPathPlanner::save_graph_as_svg(const vector<planner_piece_t>& path) {
+void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path) {
 	std::vector<MovingObject> myTeam = std::vector<MovingObject>();
 	//myTeam.push_back(MovingObject(m_Me));
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0, 0, 0, 0, 0, true));
+		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, -1)); //TODO add id
 	}
 
 	std::vector<MovingObject> opponents = std::vector<MovingObject>();
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0, 0, 0, 0, 0, true));
+		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, -1)); //TODO add id
 	}
 
 	team_planner_result_t player_paths = team_planner_result_t();
@@ -729,9 +726,9 @@ void GlobalPathPlanner::save_graph_as_svg(const vector<planner_piece_t>& path) {
 	bool  hasTeamPlannerInputInfo = false;
 	class TeamPlannerInputInfo  inputInfo;
 	// TODO handle localball correctly towards svg
-	SvgUtils::save_graph_as_svg(m_Ball, myTeam, opponents, player_paths,
+	SvgUtils::save_graph_as_svg(teamplanner_data, player_paths,
 			m_options, m_vertices, game_state_e::NONE, -1, vector<player_type_e>(), vector<long>(), "red",
-			m_fieldConfig, hasTeamPlannerInputInfo, inputInfo);
+			hasTeamPlannerInputInfo, inputInfo);
 }
 
 

@@ -15,7 +15,7 @@
 using namespace std;
 using namespace trs;
 
-std::string TeamPlannerRobot::toString() {
+std::string TeamPlannerRobot::toString() const {
 	std::stringstream buffer;
 	buffer << "ID: " + robotId   << " type: " << PlayerTypeAsString(player_type) << endl
 		   << "Position: " << position.toString() <<  " control ball: " <<  controlBall << endl

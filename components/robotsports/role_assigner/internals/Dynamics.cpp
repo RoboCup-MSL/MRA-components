@@ -16,8 +16,7 @@ using namespace trs;
 MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig) {
     MRA::Geometry::Point BallPos = rBallObject.getXYlocation();
     MRA::Geometry::Point BallVelocity;
-	double Vr = 0.0;
-	rBallObject.getVelocity(BallVelocity, Vr);
+	rBallObject.getVelocity(BallVelocity);
 
 	MRA::Geometry::Point leavingPoint = BallPos;
 
@@ -78,8 +77,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 	// for clarity, lets assume Me wants to intercept a moving Ball
 	MRA::Geometry::Point ball = rBallObject.getPosition().getPoint();
 	MRA::Geometry::Point ballVelocity;
-	double vrz;
-	rBallObject.getVelocity(ballVelocity, vrz);
+	rBallObject.getVelocity(ballVelocity);
 	MRA::Geometry::Point meCoordinates = coordinates;
 
 	double ballSpeed = ballVelocity.size();

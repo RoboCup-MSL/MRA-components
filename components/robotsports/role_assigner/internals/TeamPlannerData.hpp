@@ -11,8 +11,8 @@
 #include "FieldConfig.h"
 #include <vector>
 
-#include "PlannerOptions.hpp"
 #include "TeamPlannerOpponent.hpp"
+#include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 
 typedef struct pass_data_s {
@@ -45,7 +45,7 @@ public:
 	double time_in_own_penalty_area;
 	double time_in_opponent_penalty_area;
 
-	std::string toString();
+	std::string toString() const;
 
 };
 
@@ -71,25 +71,24 @@ public:
     std::string pathToString();
 };
 
-
 class TeamPlannerInput {
 public:
     TeamPlannerInput() {};
-	game_state_e gamestate;
-	MovingObject globalBall;
-	std::vector<TeamPlannerRobot> Team;
-	std::vector<TeamPlannerOpponent> Opponents;
-	std::vector<MRA::Geometry::Point> parking_positions;
-	ball_pickup_position_t ball_pickup_position;
-	bool passIsRequired;
-	pass_data_t pass_data;
-	std::vector<dynamic_role_e> teamFormation;
-	trs::FieldConfig fieldConfig;
-	bool teamControlBall;
-	bool playerPassedBall;
+    game_state_e gamestate;
+    bool ball_present;
+    MovingObject globalBall;
+    std::vector<TeamPlannerRobot> Team;
+    std::vector<TeamPlannerOpponent> Opponents;
+    std::vector<MRA::Geometry::Point> parking_positions;
+    ball_pickup_position_t ball_pickup_position;
+    bool passIsRequired;
+    pass_data_t pass_data;
+    std::vector<dynamic_role_e> teamFormation;
+    trs::FieldConfig fieldConfig;
+    bool teamControlBall;
+    bool playerPassedBall;
 
-//
-//	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
+    //	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
 //	void fromCSVstring(std::string&);
 //	void fillData(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
 //			const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
@@ -102,6 +101,39 @@ public:
 //			long passBallByPlayerId, const pass_data_t& pass_data,
 //			const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area);
 //	std::string pathToString();
+};
+
+class TeamPlannerData {
+public:
+    TeamPlannerData() {};
+    game_state_e gamestate;
+    bool ball_present;
+    MovingObject ball;
+    std::vector<TeamPlannerRobot> team;
+    std::vector<TeamPlannerOpponent> opponents;
+    std::vector<MRA::Geometry::Point> parking_positions;
+    ball_pickup_position_t ball_pickup_position;
+    bool passIsRequired;
+    pass_data_t pass_data;
+    std::vector<dynamic_role_e> teamFormation;
+    trs::FieldConfig fieldConfig;
+    bool teamControlBall;
+    bool playerPassedBall;
+
+//
+//  std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
+//  void fromCSVstring(std::string&);
+//  void fillData(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
+//          const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
+//          long controlBallByPlayerId, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
+//          const PlannerOptions& plannerOptions,
+//          const std::vector<MRA::Geometry::Point>& parking_postions, const FieldConfig& fieldConfig,
+//          const previous_used_ball_by_planner_t& previous_global_ball,
+//          const std::vector<final_planner_result_t>& previous_planner_results,
+//          const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
+//          long passBallByPlayerId, const pass_data_t& pass_data,
+//          const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area);
+//  std::string pathToString();
 };
 
 } // namespace

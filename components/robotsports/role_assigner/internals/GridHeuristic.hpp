@@ -10,7 +10,7 @@
 
 #include "FieldConfig.h"
 #include "PlannerGridInfoData.hpp"
-#include "PlannerOptions.hpp"
+#include "TeamPlannerParameters.hpp"
 #include "TeamPlay.hpp"
 #include "WmTypes.h"
 
@@ -126,7 +126,7 @@ class InOppenentPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
 	InOppenentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ class InOwnPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
 	InOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ class InOwnGoalAreaHeuristic : public InSquareHeuristic
 {
 public:
 	InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
 };
 
 
@@ -403,7 +403,7 @@ public:
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const FieldConfig& fieldConfig,
 			const ball_pickup_position_t& ball_pickup_position,
-			const PlannerOptions& plannerOptions);
+			const TeamPlannerParameters& plannerOptions);
 	virtual ~PassHeuristic() {};
 	double getValue(double x, double y);
 private:

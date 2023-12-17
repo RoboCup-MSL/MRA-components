@@ -24,7 +24,7 @@ using namespace std;
 namespace trs {
 
 
-MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const PlannerOptions& plannerOptions,
+MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
 		const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired) {
 	const double infield_margin = 0.25;   // distance to stay from side of field
@@ -122,7 +122,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<
 }
 
 void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
-		const PlannerOptions &plannerOptions,
+		const TeamPlannerParameters &plannerOptions,
 		const std::vector<TeamPlannerRobot>& Team,
 		const MRA::Geometry::Point& r_ballPos,
 		const FieldConfig &fieldConfig,
@@ -165,7 +165,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
  * Most attractive position will be the position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig, bool setPlayActive, bool teamControlBall)
 {
 	// define grid of 50 cm, only in field not outside the border
@@ -300,7 +300,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findManToManDefensivePosition(dynamic_rol
  * Most attractive position will be the offensive position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
 
@@ -427,7 +427,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<T
  * Most attractive position will be the offensive position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
 	double field_direction = -1.0;
@@ -505,7 +505,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOu
  */
 
 MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
     /* Position sweeper, in order of priority (weighing):
@@ -624,7 +624,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<Tea
 }
 
 MRA::Geometry::Point TeamPlanner_Grid::calculateGridValues(const std::list<MRA::Geometry::Point>& allowedTargetPositions,
-		vector<GridHeuristic*> heuristics, const PlannerOptions& plannerOptions, PlannerGridInfoData& pgid) {
+		vector<GridHeuristic*> heuristics, const TeamPlannerParameters& plannerOptions, PlannerGridInfoData& pgid) {
 
 	double lowest_value = std::numeric_limits<double>::infinity();
 	double lowest_x = 0;
@@ -676,7 +676,7 @@ MRA::Geometry::Point TeamPlanner_Grid::calculateGridValues(const std::list<MRA::
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  */
 MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
     /* Position intercepter during restart, in order of priority (weighing):
@@ -793,7 +793,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(cons
  * Most attractive position will be the offensive position
  */
 bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const PlannerOptions& plannerOptions, const MovingObject& ball,
+		const TeamPlannerParameters& plannerOptions, const MovingObject& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		bool position_close_to_ball, bool teamControlBall)
 {
@@ -986,7 +986,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 // ----------------------------------------------------------
 // Save provided data to file
 void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-		const MovingObject& ball, const PlannerOptions& plannerOptions, const string& strSituation, int gridFileNumber) {
+		const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& strSituation, int gridFileNumber) {
 
 	if (plannerOptions.saveGridDataToFile) {
 		string gridFileName = "";

@@ -16,8 +16,8 @@
 #include <sys/time.h>
 #include <cmath>
 #include "GlobalPathPlanner.hpp"
-#include "PlannerOptions.hpp"
 #include "SvgUtils.hpp"
+#include "TeamPlannerParameters.hpp"
 
 namespace trs {
 

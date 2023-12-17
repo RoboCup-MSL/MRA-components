@@ -43,37 +43,35 @@ double SvgUtils::svgY(double fieldY) {
 	return m_fieldConfig.getMaxFullFieldY() - fieldY;
 }
 
-void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
-		const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
-		const team_planner_result_t& player_paths, const PlannerOptions& options, const std::vector<Vertex* >& vertices,
+void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
+        const team_planner_result_t& player_paths,
+        const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
 		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
-		const std::string& colorMe, const FieldConfig& fieldConfig, bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo) {
+		const std::string& colorMe, bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo) {
 	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(globalBall, myTeam, opponents,	 player_paths, compare_paths,
-			options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe, fieldConfig,
+	save_graph_as_svg(teamplanner_data, compare_paths, options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe,
 			hasTeamPlannerInputInfo, inputInfo );
 }
 
 
-void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
-		const std::vector<MovingObject>& myTeam, const std::vector<MovingObject>& opponents,
-		const team_planner_result_t& player_paths,
-		const team_planner_result_t&  comparing_player_paths,
-		const PlannerOptions& options, const std::vector<Vertex* >& vertices,
+void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
+        const team_planner_result_t& player_paths,
+        const team_planner_result_t&  comparing_player_paths,
+		const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
 		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes,
-		const std::vector<long>& robotIds, const std::string& colorMe, const FieldConfig& fieldConfig,
+		const std::vector<long>& robotIds, const std::string& colorMe,
 		bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo )
 {
-	m_fieldConfig = fieldConfig;
+	m_fieldConfig = teamplanner_data.fieldConfig;
 
 	if (options.svgOutputFileName.empty()) {
 		return;  // No outputfile required
 	}
 
-	double totalFieldLength = fieldConfig.getFullFieldLength();
-	double totalFieldWidth = fieldConfig.getFullFieldWidth();
-	double halfRobotSize = fieldConfig.getRobotRadius();
-	double robotSize = fieldConfig.getRobotSize();
+	double totalFieldLength = m_fieldConfig.getFullFieldLength();
+	double totalFieldWidth = m_fieldConfig.getFullFieldWidth();
+	double halfRobotSize = m_fieldConfig.getRobotRadius();
+	double robotSize = m_fieldConfig.getRobotSize();
 
 	if (not SvgUtils::doesDirectoryExists(options.svgOutputFileName)) {
         return;
@@ -110,9 +108,9 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 		controlBallByPlayerRemark = "(controlled by team-member)";
 	}
 	fprintf(fp, "\tcontrolball = %s (%ld)\n", controlBallByPlayerRemark.c_str(), controlBallByPlayer);
-	fprintf(fp, "\tglobalBall: %s\n", globalBall.toString().c_str());
+	fprintf(fp, "\tglobalBall: %s\n", teamplanner_data.ball.toString().c_str());
 	fprintf(fp, "\tteam:\n");
-	for (unsigned int idx = 0; idx < myTeam.size(); idx++) {
+	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		int teamtypeId = -1;
 		if (idx < teamTypes.size()) {
 			teamtypeId = teamTypes[idx];
@@ -122,11 +120,11 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 			robotId = robotIds [idx];
 		}
 		fprintf(fp, "\t\tR%02ld = %s type = %s (%d)\n",
-				robotId, myTeam[idx].toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(teamtypeId)).c_str(), teamtypeId );
+		        robotId, teamplanner_data.team[idx].toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(teamtypeId)).c_str(), teamtypeId );
 	}
 	fprintf(fp, "\topponents:\n");
-	for (unsigned int idx = 0; idx < opponents.size(); idx++) {
-		fprintf(fp, "\t\tplayer[%u] = %s\n", idx, opponents[idx].toString().c_str());
+	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
+		fprintf(fp, "\t\tplayer[%u] = %s\n", idx, teamplanner_data.opponents[idx].position.toString().c_str());
 	}
 
 	for (unsigned long p_idx = 0; p_idx < player_paths.size(); p_idx++) {
@@ -150,7 +148,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 	fprintf(fp, "paths:\n%s\n", Xtext.str().c_str());
 
 	fprintf(fp, "\toptions:\n%s\n", options.toString().c_str());
-	fprintf(fp, "\tfield:\n%s\n", fieldConfig.toString().c_str());
+	fprintf(fp, "\tfield:\n%s\n", m_fieldConfig.toString().c_str());
 	fprintf(fp, "\n");
 
 	if (hasTeamPlannerInputInfo)
@@ -174,16 +172,16 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 
 	// add xml output
 	fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
-	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(options.attack_formation).c_str());
-	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(options.defense_formation).c_str());
-	if (globalBall.getPosition().getConfidence() > 0.001) {
+//TODO-jve-MRA
+//	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(options.attack_formation).c_str());
+//	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(options.defense_formation).c_str());
+	if (teamplanner_data.ball.getPosition().getConfidence() > 0.001) {
 		MRA::Geometry::Point xyVel;
-		double rzvel;
-		globalBall.getVelocity(xyVel, rzvel);
+		teamplanner_data.ball.getVelocity(xyVel);
 		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-				globalBall.getPosition().getPoint().x, globalBall.getPosition().getPoint().y, xyVel.x, xyVel.y);
+		        teamplanner_data.ball.getPosition().getPoint().x, teamplanner_data.ball.getPosition().getPoint().y, xyVel.x, xyVel.y);
 	}
-	for (unsigned int idx = 0; idx < myTeam.size(); idx++) {
+	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		string goalieString = "";
 		if (idx < teamTypes.size()) {
 			if (teamTypes[idx] == GOALIE) {
@@ -191,7 +189,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 			}
 		}
 
-		string idString = "id=\""+ std::to_string(myTeam[idx].getLabel()) + "\"";
+		string idString = "id=\""+ std::to_string(teamplanner_data.team[idx].position.getLabel()) + "\"";
 
 		string controlBallString = "";
 		if (controlBallByPlayer  == static_cast<int>(idx))
@@ -222,23 +220,23 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 			}
 		}
 		MRA::Geometry::Point xyVel;
-		double rzvel;
-		myTeam[idx].getVelocity(xyVel, rzvel);
-		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
+		teamplanner_data.team[idx].position.getVelocity(xyVel);
+		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" %s %s %s %s/>\n",
 				idString.c_str(),
-				myTeam[idx].getPosition().getPoint().x, myTeam[idx].getPosition().getPoint().y, myTeam[idx].getPosition().getRotationZ(),
-				xyVel.x, xyVel.y, rzvel, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
+				teamplanner_data.team[idx].position.getPosition().getPoint().x, teamplanner_data.team[idx].position.getPosition().getPoint().y, teamplanner_data.team[idx].position.getPosition().getRotationZ(),
+				xyVel.x, xyVel.y, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
 	}
-	for (unsigned int idx = 0; idx < opponents.size(); idx++) {
+	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
 	    MRA::Geometry::Point xyVel;
-		double rzvel;
-		opponents[idx].getVelocity(xyVel, rzvel);
-		string idString = "id=\""+ std::to_string(opponents[idx].getLabel()) + "\"";
-		fprintf(fp, "  <tns:Opponent %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
+	    teamplanner_data.opponents[idx].position.getVelocity(xyVel);
+		string idString = "id=\""+ std::to_string(teamplanner_data.opponents[idx].position.getLabel()) + "\"";
+		fprintf(fp, "  <tns:Opponent %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" />\n",
 				idString.c_str(),
-				opponents[idx].getPosition().getPoint().x, opponents[idx].getPosition().getPoint().y, opponents[idx].getPosition().getRotationZ(),
-				xyVel.x, xyVel.y, rzvel);
+				teamplanner_data.opponents[idx].position.getPosition().getPoint().x,
+				teamplanner_data.opponents[idx].position.getPosition().getPoint().y,
+				teamplanner_data.opponents[idx].position.getPosition().getRotationZ(),
+				xyVel.x, xyVel.y);
 
 	}
 	if (hasTeamPlannerInputInfo)
@@ -283,45 +281,45 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 	//FIELD - outer field lines
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"/>",
-			fieldConfig.getFieldMargin(), fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth(), fieldConfig.getFieldLength());
+			m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldWidth(), m_fieldConfig.getFieldLength());
 	//FIELD - middle line
 	fprintf(fp,
 			"<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"white\"/>\n",
-	         fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth()+fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin());
+			m_fieldConfig.getFieldMargin(), m_fieldConfig.getMaxFieldY()+m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldWidth()+m_fieldConfig.getFieldMargin(), m_fieldConfig.getMaxFieldY()+m_fieldConfig.getFieldMargin());
 	//FIELD - middle circle
 	fprintf(fp,
 			"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"  />\n",
-			totalFieldWidth*0.5,  totalFieldLength*0.5, fieldConfig.getCenterCirleDiameter()*0.5);
+			totalFieldWidth*0.5,  totalFieldLength*0.5, m_fieldConfig.getCenterCirleDiameter()*0.5);
 
 	// PENALTY AREAS
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getPenaltyAreaWidth()*0.5), m_fieldConfig.getFieldMargin(), m_fieldConfig.getPenaltyAreaWidth(), m_fieldConfig.getPenaltyAreaLength());
 
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getPenaltyAreaLength(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getPenaltyAreaWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()-m_fieldConfig.getPenaltyAreaLength(), m_fieldConfig.getPenaltyAreaWidth(), m_fieldConfig.getPenaltyAreaLength());
 
 	// GOAL AREAS
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalAreaWidth()*0.5), m_fieldConfig.getFieldMargin(), m_fieldConfig.getGoalAreaWidth(), m_fieldConfig.getGoalAreaLength());
 
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getGoalAreaLength(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalAreaWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()-m_fieldConfig.getGoalAreaLength(), m_fieldConfig.getGoalAreaWidth(), m_fieldConfig.getGoalAreaLength());
 
 	//FIELD - goals
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"plum\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()-fieldConfig.getGoalLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.5), m_fieldConfig.getFieldMargin()-m_fieldConfig.getGoalLength(), m_fieldConfig.getGoalWidth(), m_fieldConfig.getGoalLength());
 	fprintf(fp,
 			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\"  fill=\"powderblue\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength(), m_fieldConfig.getGoalWidth(), m_fieldConfig.getGoalLength());
 	// indicate own goal with text own goal
 	fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" fill=\"darkred\">OWN</text>",
-			(totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.2),
-			fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()+(fieldConfig.getGoalLength()*0.75));
+			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.2),
+			m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()+(m_fieldConfig.getGoalLength()*0.75));
 
 	//vertices
 	for (std::vector<Vertex* >::size_type j = 0; j < vertices.size(); j++) {
@@ -343,8 +341,8 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 	}
 
 	// OPPONENTS
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != opponents.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = opponents[bar_idx].getPosition().getPoint();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != teamplanner_data.opponents.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = teamplanner_data.opponents[bar_idx].position.getPosition().getPoint();
 		fprintf(fp,
 				"\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
 				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgOpponentColor.c_str(), options.svgOpponentColor.c_str());
@@ -354,9 +352,9 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 
 	// TEAMMATES
 	// draw me first.
-	if (myTeam.size() > 0 ) {
-	    MRA::Geometry::Point bar_pos = myTeam[0].getPosition().getPoint();
-		double r = myTeam[0].getPosition().getRotationZ() + M_PI_2;
+	if (teamplanner_data.team.size() > 0 ) {
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[0].position.getPosition().getPoint();
+		double r = teamplanner_data.team[0].position.getPosition().getRotationZ() + M_PI_2;
 		string teamColor = options.svgTeamColor;
 		string fillColor = options.svgTeamColor;
 //		if (colorMe.length() > 0) {
@@ -371,8 +369,8 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 					svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));
 		}
 	}
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 1; bar_idx < myTeam.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = myTeam[bar_idx].getPosition().getPoint();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 1; bar_idx < teamplanner_data.team.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position.getPosition().getPoint();
 		fprintf(fp,
 				"\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
 				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgTeamColor.c_str(), options.svgTeamColor.c_str());
@@ -426,7 +424,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 				// last element
 					fprintf(fp,
 							"\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-							(int)pidx, svgX((player_paths[pidx].path[j]).x),  svgY((player_paths[pidx].path[j]).y), fieldConfig.getBallRadius()*1.5,
+							(int)pidx, svgX((player_paths[pidx].path[j]).x),  svgY((player_paths[pidx].path[j]).y), m_fieldConfig.getBallRadius()*1.5,
 							last_path_element_color.c_str() /* fill color */, last_path_element_color.c_str() /* line color */); // half ball diameter
 
 			}
@@ -441,7 +439,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
 //			fprintf(fp,
 //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), m_fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
 //		}
 
 	}
@@ -473,7 +471,7 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 				// last element
 				fprintf(fp,
 						"\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-						(int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), fieldConfig.getBallRadius()*1.5,
+						(int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), m_fieldConfig.getBallRadius()*1.5,
 						compare_last_path_element_color.c_str() /* fill color */, compare_last_path_element_color.c_str() /* line color */); // half ball diameter
 
 			}
@@ -488,14 +486,14 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
 //			fprintf(fp,
 //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), m_fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
 //		}
 
 	}
 
 	// put player-id on top of the players
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < myTeam.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = myTeam[bar_idx].getPosition().getPoint();
+	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < teamplanner_data.team.size(); bar_idx++) {
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position.getPosition().getPoint();
 		long robotId = bar_idx+1;
 		if (robotIds.size() > bar_idx) {
 			robotId = robotIds[bar_idx];
@@ -504,24 +502,23 @@ void SvgUtils::save_graph_as_svg(const MovingObject& globalBall,
 	}
 
 	// BALL
-	if (globalBall.isValid()) {
+	if (teamplanner_data.ball_present) {
 		fprintf(fp,
 				"\n<!-- globalBall -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(globalBall.getPosition().getPoint().x),  svgY(globalBall.getPosition().getPoint().y), fieldConfig.getBallRadius()); // half ball diameter
+				svgX(teamplanner_data.ball.getPosition().getPoint().x),  svgY(teamplanner_data.ball.getPosition().getPoint().y), teamplanner_data.fieldConfig.getBallRadius()); // half ball diameter
 	}
 	if (options.svgDrawVelocity) {
 	    MRA::Geometry::Point linVel;
-		double vrz;
-		globalBall.getVelocity(linVel, vrz);
+	    teamplanner_data.ball.getVelocity(linVel);
 		double speed  = linVel.size();
 		if (speed > 1e-6) {
-		    MRA::Geometry::Point endVelocityVector = globalBall.getPosition().getPoint();
+		    MRA::Geometry::Point endVelocityVector = teamplanner_data.ball.getPosition().getPoint();
 		    endVelocityVector += linVel;
 			// globalBall
 			//FIELD - middle line
 			fprintf(fp,
 					"\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
-					svgX(globalBall.getPosition().getPoint().x), svgY(globalBall.getPosition().getPoint().y),
+					svgX(teamplanner_data.ball.getPosition().getPoint().x), svgY(teamplanner_data.ball.getPosition().getPoint().y),
 					svgX(endVelocityVector.x), svgY(endVelocityVector.y));
 		}
 	}

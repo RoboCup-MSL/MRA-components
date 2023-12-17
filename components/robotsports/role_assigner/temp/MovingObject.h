@@ -20,9 +20,7 @@ class MovingObject {
 private:
 	Position m_position;
 	MRA::Geometry::Point m_velocity; // in m/s
-	double m_rotationVelocity;
 	int	m_label; // number of object, 1..10 for own player, >10 for opponents
-	bool m_valid;
 
 public:
 	MovingObject();
@@ -33,7 +31,7 @@ public:
 	 * @param y y-position Position of the object
 	 * velocity is set to vx, vy
 	 */
-	MovingObject(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid);
+	MovingObject(double x, double y, double rz, double vx, double vy, int label);
 
 	MovingObject(const MovingObject& mo);
 
@@ -42,7 +40,7 @@ public:
 	 * @param position Position of the object
 	 * velocity is set to 0.0
 	 */
-	MovingObject(Position position, bool valid = true);
+	MovingObject(Position position);
 
 	/**
 	 * Position of the object
@@ -66,16 +64,14 @@ public:
 	 * Speed of the object
 	 * @return Velocity vector
 	 */
-	void getVelocity(MRA::Geometry::Point& linearVelocity, double& rotationVelocity)  const;
+	void getVelocity(MRA::Geometry::Point& linearVelocity)  const;
 
 	int getLabel() const;
 
-	bool isValid() const;
-
-	void set(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid);
+	void set(double x, double y, double rz, double vx, double vy, int label);
 
 	// set / update velocity
-	void setVelocity(const MRA::Geometry::Point& linearVelocity, double rotationVelocity);
+	void setVelocity(const MRA::Geometry::Point& linearVelocity);
 
 	/**
 	 * Calculates the position of the object at a certain time, given the time

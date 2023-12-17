@@ -11,11 +11,11 @@ add_library(MRA-components-robotsports-role-assigner
     internals/GridHeuristic.cpp
     internals/planner_common.cpp
     internals/PlannerGridInfoData.cpp
-    internals/PlannerOptions.cpp
     internals/RolePosition.cpp
     internals/SvgUtils.cpp
     internals/TeamPlannerData.cpp
     internals/TeamPlannerExport.cpp
+    internals/TeamPlannerParameters.cpp
     internals/TeamPlay.cpp
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp

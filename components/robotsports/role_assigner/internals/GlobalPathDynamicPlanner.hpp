@@ -10,9 +10,9 @@
 
 #include "GlobalPathPlanner.hpp"
 #include "MovingObject.h"
-#include "PlannerOptions.hpp"
 #include "Position.h"
 #include "geometry.hpp"
+#include "TeamPlannerParameters.hpp"
 
 namespace trs {
 /**
@@ -38,9 +38,9 @@ public:
      *            Number of re-planning iterations
      * @return path
      */
-    std::vector<planner_piece_t> planPath(const MovingObject& start, MovingObject ball, const std::vector<MovingObject>& teammates,
-			const std::vector<MovingObject>& opponents, const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction,
-			bool ballIsObstacle, double maxSpeed, const PlannerOptions& plannerOptions, int nrIterations, const FieldConfig& fieldConfig);
+    std::vector<planner_piece_t> planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
+            const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction,
+			bool ballIsObstacle, double maxSpeed, const TeamPlannerParameters& plannerOptions, int nrIterations);
 
 private:
 

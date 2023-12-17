@@ -159,7 +159,7 @@ double InTriangleHeuristic::getValue(double x, double y)
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in opponent penaltyArea
 InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig) :
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 						InSquareHeuristic(id, weight, pgid,
 								-(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY(),
 								+(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY() - plannerOptions.grid_opponent_goal_clearance_y)
@@ -170,7 +170,7 @@ InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, 
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own penaltyArea
 InOwnPenaltyAreaHeuristic::InOwnPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig) :
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 								InSquareHeuristic(id, weight, pgid,
 										-(plannerOptions.grid_opponent_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_opponent_goal_clearance_y,
 										+(plannerOptions.grid_opponent_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY())
@@ -234,7 +234,7 @@ double AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic::getValue(double x, d
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own goalArea
 InOwnGoalAreaHeuristic::InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig) :
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 												InSquareHeuristic(id, weight, pgid,
 														-(plannerOptions.grid_own_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_own_goal_clearance_y,
 														+(plannerOptions.grid_own_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY()) {
@@ -655,7 +655,7 @@ PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData&
 		const std::vector<TeamPlannerOpponent>& Opponents,
 		const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position,
-		const PlannerOptions& plannerOptions) :
+		const TeamPlannerParameters& plannerOptions) :
 										GridHeuristic(id, weight, pgid),
 										m_Team(Team),
 										m_Opponents(vector<MovingObject>()),

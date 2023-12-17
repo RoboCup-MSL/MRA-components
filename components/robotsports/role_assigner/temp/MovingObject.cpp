@@ -9,38 +9,30 @@ namespace trs {
 	MovingObject::MovingObject() :
 	    m_position(Position(MRA::Geometry::Point(0,0), 0.0, 1.0, 0)),
 		m_velocity(MRA::Geometry::Point(0, 0)),
-		m_rotationVelocity(0.0),
-		m_label(-1),
-		m_valid(false) {
+		m_label(-1) {
 
 	}
 
-	MovingObject::MovingObject(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid):
+	MovingObject::MovingObject(double x, double y, double rz, double vx, double vy, int label):
 				m_position(Position(MRA::Geometry::Point(x,y), 0.0, 1.0, rz)),
 				m_velocity(MRA::Geometry::Point(vx,vy)),
-				m_rotationVelocity(vrz),
-				m_label(label),
-				m_valid(valid) {
+				m_label(label) {
 		}
 
 	MovingObject::MovingObject(const MovingObject& mo) :
 		m_position(mo.m_position),
 		m_velocity(mo.m_velocity),
-		m_rotationVelocity(mo.m_rotationVelocity),
-		m_label(mo.m_label),
-		m_valid(mo.m_valid) {
+		m_label(mo.m_label) {
 	}
 
 	/**
 	 * Constructs a new moving object
 	 * @param position Position of the object
 	 */
-	MovingObject::MovingObject(Position position, bool valid) :
+	MovingObject::MovingObject(Position position) :
 					m_position(position),
 					m_velocity(MRA::Geometry::Point(0,0)),
-					m_rotationVelocity(0.0),
-					m_label(-1),
-					m_valid(valid)  {
+					m_label(-1)  {
 	}
 
 	/**
@@ -72,31 +64,23 @@ namespace trs {
 	 * Speed of the object
 	 * @return Velocity vector
 	 */
-	void MovingObject::getVelocity(MRA::Geometry::Point& linearVelocity, double& rotationVelocity) const {
+	void MovingObject::getVelocity(MRA::Geometry::Point& linearVelocity) const {
 		linearVelocity = m_velocity;
-		rotationVelocity = m_rotationVelocity;
 	}
 
 	int MovingObject::getLabel() const {
 		return m_label;
 	}
 
-	bool MovingObject::isValid() const {
-		return m_valid;
-	}
-
-	void MovingObject::set(double x, double y, double rz, double vx, double vy, double vrz, int label, bool valid) {
+	void MovingObject::set(double x, double y, double rz, double vx, double vy, int label) {
 				m_position.set(x,y, rz);
 				m_velocity.x = vx;
 				m_velocity.y = vy;
-				m_rotationVelocity = vrz;
 				m_label = label;
-				m_valid = valid;
 	}
 
-	void MovingObject::setVelocity(const MRA::Geometry::Point& linearVelocity, double rotationVelocity) {
+	void MovingObject::setVelocity(const MRA::Geometry::Point& linearVelocity) {
 		m_velocity = linearVelocity;
-		m_rotationVelocity = rotationVelocity;
 	}
 
 	/**
@@ -126,7 +110,6 @@ namespace trs {
 			    << " y: " << m_position.getPoint().y;
 		if (print_complete) {
 			buffer << " vx: " << m_velocity.x << " vy: " << m_velocity.y
-				   << " vr: " <<  m_rotationVelocity << " valid: " << (int) m_valid
 				   << " label: " << m_label;
 		}
 		return buffer.str();

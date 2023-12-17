@@ -20,7 +20,7 @@ using namespace trs;
 MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role, game_state_e gamestate,
 		const MovingObject& ball, const TeamPlannerState& r_state,
 		std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
-		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig,
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
 		bool teamControlBall, bool playerPassedBall, const pass_data_t& pass_data, bool& r_role_position_is_end_position_of_pass) {
 	MRA::Geometry::Point rolePosition = MRA::Geometry::Point(0,0);
@@ -126,7 +126,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		}
 		MovingObject ballPostionToUse = ball;
 		if (plannerOptions.use_pass_to_position_for_attack_support && pass_data.valid) {
-			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 0.0, -1, true);
+			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 1);
 		}
 
 		// check if already player moves to ball target position
@@ -213,7 +213,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 	return rolePosition;
 }
 
-MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(const MRA::Geometry::Point& globalBallPosition, const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig)
+MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(const MRA::Geometry::Point& globalBallPosition, const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig)
 {
 	// select position 90 degrees to the line between the ball and the opponent goal
 	MRA::Geometry::Point receiverPosition;
@@ -268,7 +268,7 @@ MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(
 
 // ------------------------------------------------------------------
 bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const FieldConfig& fieldConfig,
-		const MRA::Geometry::Point& globalBallPosition, const PlannerOptions& plannerOptions, MRA::Geometry::Point& receiverPosition) {
+		const MRA::Geometry::Point& globalBallPosition, const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition) {
 	bool found = false;
 
 	// no straight lob-shot possible
@@ -417,7 +417,7 @@ bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const FieldConfig& fi
 
 // ------------------------------------------------------------------
 bool RolePosition::calculateSetPlayReceiverOnLobShotLinePosition(const FieldConfig& fieldConfig,
-		const MRA::Geometry::Point& globalBallPosition, const PlannerOptions& plannerOptions, MRA::Geometry::Point& receiverPosition) {
+		const MRA::Geometry::Point& globalBallPosition, const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition) {
 	bool found = false;
 
 	// no straight lob-shot possible
@@ -470,7 +470,7 @@ bool RolePosition::calculateSetPlayReceiverOnLobShotLinePosition(const FieldConf
 
 // ---------------------------------------------------------------------
 bool RolePosition::calculateSetPlayReceiverConservativePosition(const FieldConfig& fieldConfig,
-		const MRA::Geometry::Point& globalBallPosition, const PlannerOptions& plannerOptions, MRA::Geometry::Point& receiverPosition)
+		const MRA::Geometry::Point& globalBallPosition, const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition)
 {
 	bool found = false;
 	double outsideFieldMargin = plannerOptions.outsideFieldMargin; // distance to stay from side of field
@@ -501,7 +501,7 @@ void RolePosition::calculateSetPlayPosition(MRA::Geometry::Point& shooterPositio
 											const MRA::Geometry::Point& ballPosition,
 											const TeamPlannerState& r_state,
 											game_state_e gamestate,
-											const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig)  {
+											const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig)  {
 
 
 	receiverPosition = calculateSetPlayReceiverPosition(Team, ballPosition, r_state,
@@ -547,7 +547,7 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const std::v
 		                                    const MRA::Geometry::Point& globalBallPosition,
 		                                    const TeamPlannerState& r_state,
 											game_state_e gamestate,
-											const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig)
+											const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig)
 {
 	// CODE only valid for replay !!!
 	// calculation assume that no opponent or team mate is at calculated position. This is only true for restart.
@@ -719,7 +719,7 @@ MRA::Geometry::Point RolePosition::closestTo(const MRA::Geometry::Point& referen
  */
 void RolePosition::GetFixedPositions(vector<MRA::Geometry::Point>& playerPositions, game_state_e gamestate,
 		const MovingObject& globalBall, bool searchForBall,const std::vector<MRA::Geometry::Point>& parking_positions,
-		const FieldConfig& fieldConfig, const PlannerOptions& plannerOptions) {
+		const FieldConfig& fieldConfig, const TeamPlannerParameters& plannerOptions) {
 
 	bool parking_is_left = true;
 	if (!parking_positions.empty()) {
@@ -875,7 +875,7 @@ void RolePosition::print_provided_position(game_state_e gamestate, const vector<
 
 MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_e& planner_target,
 		const MovingObject& globalBall, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig) {
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) {
 //
 // Set role-position to ball-position (default dist < 3.0 m) and ball in priority-block area (default y < 0)
 // IF Opponent is close to ball and priority block is enabled THEN
@@ -1010,7 +1010,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
 
 int RolePosition::FindMostDangerousOpponentAndNotAssigned(
 		const MovingObject& globalBall, const FieldConfig& fieldConfig,
-		const PlannerOptions& plannerOptions,
+		const TeamPlannerParameters& plannerOptions,
 		const std::vector<TeamPlannerOpponent>& Opponents)
 /* find the opponent who is most dangerous and not yet assigned (= defended)
  * return index of opponent in Opponents vector, return -1 if no opponent found to defend.
@@ -1050,7 +1050,7 @@ int RolePosition::FindMostDangerousOpponentAndNotAssigned(
 
 int RolePosition::FindOpponentClostestToPositionAndNotAssigned(
 		const MRA::Geometry::Point& targetPos, const FieldConfig& fieldConfig,
-		const PlannerOptions& plannerOptions,
+		const TeamPlannerParameters& plannerOptions,
 		const std::vector<TeamPlannerOpponent>& Opponents)
 /* find the opponent closest to the ball and not yet assigned (= defended)
  * return index of opponent in Opponents vector, return -1 if no opponent found to defend.
@@ -1089,7 +1089,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(
 MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
 		defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
 		const MovingObject& globalBall, const FieldConfig& fieldConfig,
-		game_state_e gamestate, const PlannerOptions& plannerOptions,
+		game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
 		std::vector<TeamPlannerOpponent>& Opponents, std::vector<TeamPlannerRobot>& Team, int& r_gridFileNumber,
 		bool setPlayActive, bool teamControlBall) {
 	// man coverage for all opponents

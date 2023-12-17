@@ -3,7 +3,7 @@
  *  @brief    Options for generating the visibility graph and the path planner
  *  @curator Jürge van Eijck
  */
-#include "PlannerOptions.hpp"
+#include "TeamPlannerParameters.hpp"
 
 #include <ostream>
 #include <sstream>
@@ -14,127 +14,115 @@ using namespace std;
 
 namespace trs {
 
-bool PlannerOptions::calculateAllPaths = true;
-double PlannerOptions::minimumEdgeLength = 0.30;
-double PlannerOptions::maximumEdgeLength = 4.00;
-double PlannerOptions::minimumDistanceToEndPoint = 3.00;
-int PlannerOptions::nrVerticesFirstCircle = 6;
-double PlannerOptions::firstCircleRadius = 0.80;
-int PlannerOptions::nrVerticesSecondCircle = 4;
-double PlannerOptions::secondCircleRadius = 1.60;
-double PlannerOptions::safetyFactor = 1.00;
-bool PlannerOptions::addBarierVertices = true;
-bool PlannerOptions::addUniformVertices = true;
-bool PlannerOptions::manDefenseBetweenBallAndPlayer = true;
-double PlannerOptions::dist_before_penalty_area_for_sweeper = 0.75;
-double PlannerOptions::uniform_x_interval = 2.00;
-double PlannerOptions::uniform_y_interval = 2.00;
-double PlannerOptions::startingVelocityPenaltyFactor = 1.00;
-double PlannerOptions::distToapplyBallApproachVertices = 10.00;
-bool PlannerOptions::addBallApproachVertices = false;
-double PlannerOptions::ballApproachVerticesRadius = 0.6;
-int PlannerOptions::ballApproachNumberOfVertices = 8;
-double PlannerOptions::grid_size = 0.75;
-int PlannerOptions::nrDynamicPlannerIterations = 2;
-double PlannerOptions::maxPossibleLinearSpeed = 1.5;
-double PlannerOptions::maxPossibleLinearAcceleration = 3.0;
-std::string PlannerOptions::svgOutputFileName = "";
-std::string PlannerOptions::svgDefaultTargetColor = "red";
-std::string PlannerOptions::svgBallColor = "orange";
-std::string PlannerOptions::svgOriginalTargetColor = "darkred";
-std::string PlannerOptions::svgTeamColor = "magenta";
-std::string PlannerOptions::svgOpponentColor = "cyan";
-bool PlannerOptions::svgDrawVelocity = true;
-bool PlannerOptions::svgDrawEdges = false;
-bool PlannerOptions::saveGridDataToFile = false;
-bool PlannerOptions::svgRobotPlanner = false;
-double PlannerOptions::interceptionChanceStartDistance = 1.0;
-double PlannerOptions::interceptionChanceIncreasePerMeter = 0.25;
-double PlannerOptions::interceptionChancePenaltyFactor = 4.0;
-double PlannerOptions::grid_close_to_ball_normal_penalty = 17000;
-double PlannerOptions::grid_close_to_ball_normal_radius = 3.0;
-double PlannerOptions::grid_close_to_ball_restart_normal_penalty = 17000;
-double PlannerOptions::grid_close_to_ball_restart_normal_radius = 3.0; // default the standard MSL rules, can be overwritten in ini file
-double PlannerOptions::grid_close_to_ball_restart_penalty_penalty = 17000;
-double PlannerOptions::grid_close_to_ball_restart_penalty_radius = 3.25;
-double PlannerOptions::grid_close_to_ball_restart_dropball_penalty = 17000;
-double PlannerOptions::grid_close_to_ball_restart_dropball_radius = 1.0; // default the standard MSL rules, can be overwritten in ini file
-double PlannerOptions::grid_opponent_goal_clearance_x = 7.0;
-double PlannerOptions::grid_opponent_goal_clearance_y = 2.5;
-double PlannerOptions::grid_own_goal_clearance_x = 3.25;
-double PlannerOptions::grid_own_goal_clearance_y = 1.00;
-int  PlannerOptions::nr_robots_needed_for_pass_play = 2;
-int  PlannerOptions::nr_attack_support_during_defensive_period = 0;
-bool PlannerOptions::wait_on_non_optimal_position_during_prepare_phase = false;
-bool PlannerOptions::priority_block_apply = true;
-double PlannerOptions::priority_block_min_distance = 0.75;
-double PlannerOptions::priority_block_max_distance = 2.0;
-double PlannerOptions::priority_block_max_distance_to_defense_line = 0.25;
-double PlannerOptions::priority_block_max_ball_y = 0.0;
-double PlannerOptions::priority_block_max_opponent_to_ball_dist = 3.0;
-bool PlannerOptions::priority_block_check_ball_in_area = true;
-bool PlannerOptions::priority_block_check_opponent_close_to_ball = true;
-bool PlannerOptions::man_to_man_defense_during_normal_play = true;
-double PlannerOptions::attack_supporter_extra_distance_to_stay_from_sideline = 0.75;
-double PlannerOptions::auto_save_svg_period = 10.0;
-team_formation_e PlannerOptions::attack_formation = team_formation_e::FORMATION_112;
-team_formation_e PlannerOptions::defense_formation = team_formation_e::FORMATION_112;
-double PlannerOptions::restart_receiver_ball_dist = 2.5;
-double PlannerOptions::restart_shooter_ball_dist = 0.8;
-double PlannerOptions::equality_cost_threshold = 1.5;
-bool PlannerOptions::previous_role_bonus_must_be_applied = true;
-double PlannerOptions::previous_role_bonus_end_pos_radius = 1.5;
-bool PlannerOptions::use_pass_to_position_for_attack_support = true;
-bool PlannerOptions::man_to_man_defense_during_setplay_against = true;
-double  PlannerOptions::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
-double PlannerOptions::setplay_against_dist_to_opponent = 1.5;
+bool TeamPlannerParameters::calculateAllPaths = true;
+double TeamPlannerParameters::minimumEdgeLength = 0.30;
+double TeamPlannerParameters::maximumEdgeLength = 4.00;
+double TeamPlannerParameters::minimumDistanceToEndPoint = 3.00;
+int TeamPlannerParameters::nrVerticesFirstCircle = 6;
+double TeamPlannerParameters::firstCircleRadius = 0.80;
+int TeamPlannerParameters::nrVerticesSecondCircle = 4;
+double TeamPlannerParameters::secondCircleRadius = 1.60;
+double TeamPlannerParameters::safetyFactor = 1.00;
+bool TeamPlannerParameters::addBarierVertices = true;
+bool TeamPlannerParameters::addUniformVertices = true;
+bool TeamPlannerParameters::manDefenseBetweenBallAndPlayer = true;
+double TeamPlannerParameters::dist_before_penalty_area_for_sweeper = 0.75;
+double TeamPlannerParameters::uniform_x_interval = 2.00;
+double TeamPlannerParameters::uniform_y_interval = 2.00;
+double TeamPlannerParameters::startingVelocityPenaltyFactor = 1.00;
+double TeamPlannerParameters::distToapplyBallApproachVertices = 10.00;
+bool TeamPlannerParameters::addBallApproachVertices = false;
+double TeamPlannerParameters::ballApproachVerticesRadius = 0.6;
+int TeamPlannerParameters::ballApproachNumberOfVertices = 8;
+double TeamPlannerParameters::grid_size = 0.75;
+int TeamPlannerParameters::nrDynamicPlannerIterations = 2;
+double TeamPlannerParameters::maxPossibleLinearSpeed = 1.5;
+double TeamPlannerParameters::maxPossibleLinearAcceleration = 3.0;
+std::string TeamPlannerParameters::svgOutputFileName = "";
+std::string TeamPlannerParameters::svgDefaultTargetColor = "red";
+std::string TeamPlannerParameters::svgBallColor = "orange";
+std::string TeamPlannerParameters::svgOriginalTargetColor = "darkred";
+std::string TeamPlannerParameters::svgTeamColor = "magenta";
+std::string TeamPlannerParameters::svgOpponentColor = "cyan";
+bool TeamPlannerParameters::svgDrawVelocity = true;
+bool TeamPlannerParameters::svgDrawEdges = false;
+bool TeamPlannerParameters::saveGridDataToFile = false;
+bool TeamPlannerParameters::svgRobotPlanner = false;
+double TeamPlannerParameters::interceptionChanceStartDistance = 1.0;
+double TeamPlannerParameters::interceptionChanceIncreasePerMeter = 0.25;
+double TeamPlannerParameters::interceptionChancePenaltyFactor = 4.0;
+double TeamPlannerParameters::grid_close_to_ball_normal_penalty = 17000;
+double TeamPlannerParameters::grid_close_to_ball_normal_radius = 3.0;
+double TeamPlannerParameters::grid_close_to_ball_restart_normal_penalty = 17000;
+double TeamPlannerParameters::grid_close_to_ball_restart_normal_radius = 3.0; // default the standard MSL rules, can be overwritten in ini file
+double TeamPlannerParameters::grid_close_to_ball_restart_penalty_penalty = 17000;
+double TeamPlannerParameters::grid_close_to_ball_restart_penalty_radius = 3.25;
+double TeamPlannerParameters::grid_close_to_ball_restart_dropball_penalty = 17000;
+double TeamPlannerParameters::grid_close_to_ball_restart_dropball_radius = 1.0; // default the standard MSL rules, can be overwritten in ini file
+double TeamPlannerParameters::grid_opponent_goal_clearance_x = 7.0;
+double TeamPlannerParameters::grid_opponent_goal_clearance_y = 2.5;
+double TeamPlannerParameters::grid_own_goal_clearance_x = 3.25;
+double TeamPlannerParameters::grid_own_goal_clearance_y = 1.00;
+int  TeamPlannerParameters::nr_robots_needed_for_pass_play = 2;
+int  TeamPlannerParameters::nr_attack_support_during_defensive_period = 0;
+bool TeamPlannerParameters::wait_on_non_optimal_position_during_prepare_phase = false;
+bool TeamPlannerParameters::priority_block_apply = true;
+double TeamPlannerParameters::priority_block_min_distance = 0.75;
+double TeamPlannerParameters::priority_block_max_distance = 2.0;
+double TeamPlannerParameters::priority_block_max_distance_to_defense_line = 0.25;
+double TeamPlannerParameters::priority_block_max_ball_y = 0.0;
+double TeamPlannerParameters::priority_block_max_opponent_to_ball_dist = 3.0;
+bool TeamPlannerParameters::priority_block_check_ball_in_area = true;
+bool TeamPlannerParameters::priority_block_check_opponent_close_to_ball = true;
+bool TeamPlannerParameters::man_to_man_defense_during_normal_play = true;
+double TeamPlannerParameters::attack_supporter_extra_distance_to_stay_from_sideline = 0.75;
+double TeamPlannerParameters::auto_save_svg_period = 10.0;
+//team_formation_e RoleAssignerParameters::attack_formation = team_formation_e::FORMATION_112;
+//team_formation_e RoleAssignerParameters::defense_formation = team_formation_e::FORMATION_112;
+double TeamPlannerParameters::restart_receiver_ball_dist = 2.5;
+double TeamPlannerParameters::restart_shooter_ball_dist = 0.8;
+double TeamPlannerParameters::equality_cost_threshold = 1.5;
+bool TeamPlannerParameters::previous_role_bonus_must_be_applied = true;
+double TeamPlannerParameters::previous_role_bonus_end_pos_radius = 1.5;
+bool TeamPlannerParameters::use_pass_to_position_for_attack_support = true;
+bool TeamPlannerParameters::man_to_man_defense_during_setplay_against = true;
+double  TeamPlannerParameters::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
+double TeamPlannerParameters::setplay_against_dist_to_opponent = 1.5;
 
-bool PlannerOptions::move_to_ball_left_field_position = true;
-bool PlannerOptions::select_lowest_robot_nr_for_dynamic_role = true;
-int PlannerOptions::preferredSetplayKicker = 0;
-int PlannerOptions::preferredSetplayReceiver = 0;
-double PlannerOptions::setplay_margin_to_penalty_area_side = 0.75;
-bool PlannerOptions::no_sweeper_during_setplay = true;
-bool PlannerOptions::interceptor_assign_use_ball_velocity = true;
-double PlannerOptions::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
+bool TeamPlannerParameters::move_to_ball_left_field_position = true;
+bool TeamPlannerParameters::select_lowest_robot_nr_for_dynamic_role = true;
+int TeamPlannerParameters::preferredSetplayKicker = 0;
+int TeamPlannerParameters::preferredSetplayReceiver = 0;
+double TeamPlannerParameters::setplay_margin_to_penalty_area_side = 0.75;
+bool TeamPlannerParameters::no_sweeper_during_setplay = true;
+bool TeamPlannerParameters::interceptor_assign_use_ball_velocity = true;
+double TeamPlannerParameters::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
 
-int PlannerOptions::dedicatedSweeper = 0;
-bool PlannerOptions::autoAssignGoalie = false;
-double PlannerOptions::outsideFieldMargin = 0.5;
-bool PlannerOptions::lobShotWhenPossible = true;
-double PlannerOptions::min_y_for_lob_shot = +0.25;
-double PlannerOptions::kickoff_fp1_x = -1.00;
-double PlannerOptions::kickoff_fp1_y =  0.00;
-double PlannerOptions::kickoff_fp2_x = +1.70;
-double PlannerOptions::kickoff_fp2_y = -1.50;
-double PlannerOptions::kickoff_fp3_x = -5.00;
-double PlannerOptions::kickoff_fp3_y = -0.75;
-double PlannerOptions::kickoff_fp4_x = +5.00;
-double PlannerOptions::kickoff_fp4_y = -0.75;
+int TeamPlannerParameters::dedicatedSweeper = 0;
+bool TeamPlannerParameters::autoAssignGoalie = false;
+double TeamPlannerParameters::outsideFieldMargin = 0.5;
+bool TeamPlannerParameters::lobShotWhenPossible = true;
+double TeamPlannerParameters::min_y_for_lob_shot = +0.25;
+double TeamPlannerParameters::kickoff_fp1_x = -1.00;
+double TeamPlannerParameters::kickoff_fp1_y =  0.00;
+double TeamPlannerParameters::kickoff_fp2_x = +1.70;
+double TeamPlannerParameters::kickoff_fp2_y = -1.50;
+double TeamPlannerParameters::kickoff_fp3_x = -5.00;
+double TeamPlannerParameters::kickoff_fp3_y = -0.75;
+double TeamPlannerParameters::kickoff_fp4_x = +5.00;
+double TeamPlannerParameters::kickoff_fp4_y = -0.75;
 
 
-double PlannerOptions::kickoff_against_fp1_x = 1.87;
-double PlannerOptions::kickoff_against_fp1_y = -1.87;
-double PlannerOptions::kickoff_against_fp2_x = -1.87;
-double PlannerOptions::kickoff_against_fp2_y = -1.87;
-double PlannerOptions::kickoff_against_fp3_x = 3.5;
-double PlannerOptions::kickoff_against_fp3_y = -0.4;
-double PlannerOptions::kickoff_against_fp4_x = -3.5;
-double PlannerOptions::kickoff_against_fp4_y = -0.4;
+double TeamPlannerParameters::kickoff_against_fp1_x = 1.87;
+double TeamPlannerParameters::kickoff_against_fp1_y = -1.87;
+double TeamPlannerParameters::kickoff_against_fp2_x = -1.87;
+double TeamPlannerParameters::kickoff_against_fp2_y = -1.87;
+double TeamPlannerParameters::kickoff_against_fp3_x = 3.5;
+double TeamPlannerParameters::kickoff_against_fp3_y = -0.4;
+double TeamPlannerParameters::kickoff_against_fp4_x = -3.5;
+double TeamPlannerParameters::kickoff_against_fp4_y = -0.4;
 
-// mobile field defaults
-double PlannerOptions::mobile_field_uniform_x_interval = 1.00;
-double PlannerOptions::mobile_field_uniform_y_interval = 1.00;
-double PlannerOptions::mobile_field_grid_size = 0.5;
-double PlannerOptions::mobile_field_grid_close_to_ball_normal_radius = 1.5;
-double PlannerOptions::mobile_field_grid_close_to_ball_restart_normal_radius = 1.5;
-double PlannerOptions::mobile_field_grid_close_to_ball_restart_penalty_radius  = 1.5;
-double PlannerOptions::mobile_field_grid_close_to_ball_restart_dropball_radius  = 1.1;
-double PlannerOptions::mobile_field_restart_receiver_ball_dist  = 1.2;
-double PlannerOptions::mobile_field_restart_shooter_ball_dist = 0.8;
-double PlannerOptions::mobile_field_setplay_against_dist_to_opponent = 1.5;
-
-PlannerOptions::PlannerOptions() {
+TeamPlannerParameters::TeamPlannerParameters() {
 
 }
 
@@ -164,7 +152,7 @@ std::string FormationAsString(team_formation_e formation) {
   return formationString;
 }
 
-std::string PlannerOptions::toString() const  {
+std::string TeamPlannerParameters::toString() const  {
 	std::stringstream buffer;
 	buffer << "calculateAllPaths = " << calculateAllPaths << std::endl;
 	buffer << "minimumEdgeLength = " << minimumEdgeLength  << std::endl;
@@ -218,8 +206,8 @@ std::string PlannerOptions::toString() const  {
 	buffer << "priority_block_max_distance = "<< priority_block_max_distance << endl;
 	buffer << "priority_block_max_distance_to_defense_line = "<< priority_block_max_distance_to_defense_line << endl;
 	buffer << "attack_supporter_extra_distance_to_stay_from_sideline = " << attack_supporter_extra_distance_to_stay_from_sideline << endl;
-	buffer << "attack attack_formation = " << FormationAsString(attack_formation) << endl;
-	buffer << "defense formation = " << FormationAsString(defense_formation) << endl;
+//	buffer << "attack attack_formation = " << FormationAsString(attack_formation) << endl;
+//	buffer << "defense formation = " << FormationAsString(defense_formation) << endl;
 	buffer << "restart_receiver_ball_dist = " <<  restart_receiver_ball_dist << endl;
 	buffer << "restart_shooter_ball_dist = " <<  restart_shooter_ball_dist << endl;
 	buffer << "equality_cost_threshold = " <<  equality_cost_threshold << endl;
@@ -235,17 +223,6 @@ std::string PlannerOptions::toString() const  {
 	buffer << "dist_to_goal_to_mark_opponent_as_goalie = " << dist_to_goal_to_mark_opponent_as_goalie << endl;
 	buffer << "setplay_against_dist_to_opponent = "  << setplay_against_dist_to_opponent << endl;
 
-
-	buffer << "mobile_field_uniform_x_interval = "  << mobile_field_uniform_x_interval << endl;
-	buffer << "mobile_field_uniform_y_interval = " << mobile_field_uniform_y_interval << endl;
-	buffer << "mobile_field_grid_size = " << mobile_field_grid_size << endl;
-	buffer << "mobile_field_grid_close_to_ball_normal_radius = " << mobile_field_grid_close_to_ball_normal_radius << endl;
-	buffer << "mobile_field_grid_close_to_ball_restart_normal_radius = " <<  mobile_field_grid_close_to_ball_restart_normal_radius<< endl;
-	buffer << "mobile_field_grid_close_to_ball_restart_penalty_radius = " << mobile_field_grid_close_to_ball_restart_penalty_radius << endl;
-	buffer << "mobile_field_grid_close_to_ball_restart_dropball_radius = " << mobile_field_grid_close_to_ball_restart_dropball_radius << endl;
-	buffer << "mobile_field_restart_receiver_ball_dist = " << mobile_field_restart_receiver_ball_dist << endl;
-	buffer << "mobile_field_restart_shooter_ball_dist = " << mobile_field_restart_shooter_ball_dist << endl;
-	buffer << "mobile_field_setplay_against_dist_to_opponent = " << mobile_field_setplay_against_dist_to_opponent << endl;
 
 	buffer << "move_to_ball_left_field_position = " << move_to_ball_left_field_position << endl;
 	buffer << "auto_save_svg_period = " << auto_save_svg_period << endl;

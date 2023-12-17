@@ -12,7 +12,7 @@
 #include "FieldConfig.h"
 #include <string>
 #include "GlobalPathPlanner.hpp"
-#include "PlannerOptions.hpp"
+#include "TeamPlannerParameters.hpp"
 
 
 namespace trs {

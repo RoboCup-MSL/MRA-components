@@ -11,9 +11,9 @@
 #include "FieldConfig.h"
 #include <vector>
 #include "GlobalPathPlanner.hpp"
-#include "PlannerOptions.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerOpponent.hpp"
+#include "TeamPlannerParameters.hpp"
 
 
 namespace trs {
@@ -25,7 +25,7 @@ public:
 	void assign(const TeamPlannerInput& input,
 	            TeamPlannerState& r_state,
 	            TeamPlannerOutput& r_output,
-	            const PlannerOptions& plannerOptions);
+	            const TeamPlannerParameters& plannerOptions);
 
 private:
 	class AssignToTargetData {
@@ -44,7 +44,7 @@ private:
 			std::vector<TeamPlannerRobot>& Team,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const MRA::Geometry::Point& target, bool ballIsObstacle, planner_target_e planner_target,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const defend_info_t& Defend_infob,
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig, const defend_info_t& Defend_infob,
 			bool role_position_is_end_position_of_pass, const pass_data_t& pass_data);
 
 	vector<MovingObject> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
@@ -52,22 +52,20 @@ private:
 	bool check_better_path_found(double& lowest_pathcost, double newPathCost, double fastestPathCost,
 			 	 	 	 	 	 const PlayerPlannerResult& new_path, const PlayerPlannerResult& fastest_path, 	double equality_cost_threshold );
 
-	void assignGoalie(game_state_e gamestate, std::vector<TeamPlannerRobot>& Team, bool ballIsObstacle,
-			const MovingObject& globalBall, const std::vector<TeamPlannerOpponent>& Opponents, const PlannerOptions& plannerOptions,
-			const FieldConfig& m_fieldConfig, const std::vector<MRA::Geometry::Point>& parking_positions);
+	void assignGoalie(game_state_e gamestate, TeamPlannerData& teamplanner_data, bool ballIsObstacle, const TeamPlannerParameters& plannerOptions);
 
 	void assignTooLongInPenaltyAreaPlayers(game_state_e gamestate, std::vector<TeamPlannerRobot>& Team,
 			bool ballIsObstacle, const MovingObject& globalBall, const std::vector<TeamPlannerOpponent>& Opponents,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
 
 	planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
 	void assignToFixedPositions(unsigned playerlist_idx, dynamic_role_e dynamic_role, game_state_e gamestate, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
 			const MovingObject& globalBall, bool ballIsObstacle, const std::vector<MRA::Geometry::Point>& parking_positions,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, bool searchForBall,
+			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig, bool searchForBall,
 			const defend_info_t& Defend_info, const pass_data_t& pass_data);
 
-	bool searchForBallBehaviorNeeded(game_state_e gamestate, const MovingObject& globalBall, const FieldConfig& fieldConfig);
+	bool searchForBallBehaviorNeeded(game_state_e gamestate, TeamPlannerData& teamplanner_data);
 
 	void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
 
@@ -83,18 +81,16 @@ private:
 	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, team_planner_result_t&  player_paths);
 
 	void printAssignInputs(game_state_e gamestate, const MovingObject& globalBall, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const PlannerOptions& plannerOptions, const std::vector<MRA::Geometry::Point>& parking_positions,
+			const TeamPlannerParameters& plannerOptions, const std::vector<MRA::Geometry::Point>& parking_positions,
 			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
 
 	double calculateShortestDistanceObjectsToTarget(const std::vector<MovingObject>& objects, const MovingObject& targetObject);
 
-	void ReplanInterceptor(const MovingObject& Ball,
-			unsigned interceptorIdx,
-			std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, bool ballIsObstacle);
+	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data,
+	        const TeamPlannerParameters& plannerOptions, bool ballIsObstacle);
 
 	bool AssignAnyRobotPreferedSetPlayer(dynamic_role_e dr_role,
-			const PlannerOptions& plannerOptions, game_state_e game_state,
+			const TeamPlannerParameters& plannerOptions, game_state_e game_state,
 			const MovingObject& globalBall,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			planner_target_e planner_target, bool ballIsObstacle,

@@ -2,7 +2,10 @@ syntax = "proto3";
 
 package MRA.RobotsportsRoleAssigner;
 
-import "datatypes/WorldState.proto";
+import "google/protobuf/timestamp.proto";
+import "datatypes/Player.proto";
+import "datatypes/Ball.proto";
+import "datatypes/Obstacle.proto";
 
 message Input
 {
@@ -35,7 +38,17 @@ message Input
 		GOAL_AGAINST = 24;
 	}
 
-    MRA.Datatypes.WorldState worldstate = 1;
+    MRA.Datatypes.Player robot = 1; // self
     GameState gamestate = 2;
+    repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
+    repeated MRA.Datatypes.Player teammates = 4;
+    // TODO: 
+    //  - passed ball is missing in Player.
+    //  - player_type_e player_type;  (keeper, reserve, fieldplayer)
+    //  - time_in_own_penalty_area;   (state ?)
+    //  - time_in_opponent_penalty_area; (state)
+    //  - current role.  (state)
+    
+    repeated MRA.Datatypes.Player opponents = 5;
 }
 

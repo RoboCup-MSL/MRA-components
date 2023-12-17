@@ -12,7 +12,7 @@
 
 namespace trs {
 // Constructing a new object will set the default options.
-class PlannerOptions {
+class TeamPlannerParameters {
 public:
 	// Calculate for all player a path, otherwise stop if own path is calculated.
 	static bool calculateAllPaths;
@@ -168,13 +168,6 @@ public:
 	// addition distance for attack supporter to stay from sideline: give more room to adjust position when pass is not perfect
 	static double attack_supporter_extra_distance_to_stay_from_sideline;
 
-	// selected attack formation to apply
-	static team_formation_e attack_formation;
-
-	// selected attack formation to apply
-	static team_formation_e defense_formation;
-
-
 	// distance between receiver and ball during game restart
 	static double restart_receiver_ball_dist;
 
@@ -271,25 +264,11 @@ public:
 	static double kickoff_against_fp4_y;
 
 
-
-	/* values used for mobile field (demo); overwrite default values */
-	static double mobile_field_uniform_x_interval;
-	static double mobile_field_uniform_y_interval;
-	static double mobile_field_grid_size;
-	static double mobile_field_grid_close_to_ball_normal_radius;
-	static double mobile_field_grid_close_to_ball_restart_normal_radius;
-	static double mobile_field_grid_close_to_ball_restart_penalty_radius;
-	static double mobile_field_grid_close_to_ball_restart_dropball_radius;
-	static double mobile_field_restart_receiver_ball_dist;
-	static double mobile_field_restart_shooter_ball_dist;
-	static double mobile_field_setplay_against_dist_to_opponent;
-
-
-	PlannerOptions();
+	TeamPlannerParameters();
 	std::string toString() const;
 	operator planner_options_t();
-	PlannerOptions& operator=(const planner_options_t& opt);
-	static PlannerOptions ReadFromIniFile(const std::string& inifilename);
+	TeamPlannerParameters& operator=(const planner_options_t& opt);
+	static TeamPlannerParameters ReadFromIniFile(const std::string& inifilename);
 };
 
 std::string FormationAsString(team_formation_e formation);

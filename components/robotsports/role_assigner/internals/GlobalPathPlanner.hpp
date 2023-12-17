@@ -11,8 +11,8 @@
 #include "Position.h"
 #include "MovingObject.h"
 #include "FieldConfig.h"
-#include "PlannerOptions.hpp"
 #include "TeamPlannerData.hpp"
+#include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 #include "Vertex.hpp"
 
@@ -39,7 +39,7 @@ private:
 	std::vector<MRA::Geometry::Point> m_opponents;
 	std::vector<Vertex* > m_approachVertices;
 	std::vector<Vertex* > m_addPoints;
-	PlannerOptions m_options;
+	TeamPlannerParameters m_options;
 	planner_target_e m_targetFunction;
 	double m_maxFieldX;
 	double m_maxFieldY;
@@ -61,11 +61,10 @@ public:
 	virtual ~GlobalPathPlanner();
 
 	/* set the options for the planner */
-	void setOptions(const PlannerOptions& options);
+	void setOptions(const TeamPlannerParameters& options);
 
 	/* create graph for the provided input */
-	void createGraph(MovingObject me, MovingObject ball, const std::vector<MovingObject>& teammates,
-			const std::vector<MovingObject>& opponents, const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+	void createGraph(const MovingObject& start_position, const TeamPlannerData& teamplanner_data, const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
 			bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
 
 	/**
@@ -76,10 +75,10 @@ public:
 	 *
 	 * @return List of coordinates on the shortest path
 	 */
-	std::vector<planner_piece_t> getShortestPath();
+	std::vector<planner_piece_t> getShortestPath(const TeamPlannerData& teamplanner_data);
 
 	/* Save the current status of the graph planner to svg file (use name from options) */
-	void save_graph_as_svg(const vector<planner_piece_t>& path);
+	void save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path);
 private:
 	GlobalPathPlanner(); // prevent creating class via default constructor
 
@@ -88,8 +87,8 @@ private:
 
 	bool equalToTarget(const Vertex* v);
 
-	void addOpponents(const std::vector<MovingObject>& opponents, bool skipFirstRadius);
-	void addTeammates(const std::vector<MovingObject>& teamMates);
+	void addOpponent(const MovingObject& opponent, bool skipFirstRadius);
+	void addTeammate(const MovingObject& teamMate);
 
 	bool nearPath(const MRA::Geometry::Point& v);
 

@@ -119,6 +119,8 @@ public:
     trs::FieldConfig fieldConfig;
     bool teamControlBall;
     bool playerPassedBall;
+    TeamPlannerParameters parameters;
+    bool ballIsObstacle;
 
 //
 //  std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);

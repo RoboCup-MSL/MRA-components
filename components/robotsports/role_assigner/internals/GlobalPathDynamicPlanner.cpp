@@ -31,8 +31,7 @@ using namespace trs;
  * @return path
  */
 std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
-        const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
-			double maxSpeed, const TeamPlannerParameters& plannerOptions, int nrIterations) {
+        const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, double maxSpeed, int nrIterations) {
 	bool logDynamicPlanner = false;
 
 	if (logDynamicPlanner) {
@@ -44,7 +43,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 	// Find initial intercept point
 	Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(teamplanner_data.ball,
 			                                     startPosition.getPoint(), maxSpeed,
-			                                     teamplanner_data.fieldConfig, plannerOptions.move_to_ball_left_field_position);
+			                                     teamplanner_data.fieldConfig, teamplanner_data.parameters.move_to_ball_left_field_position);
 	if (intercept_data.intercept_position.x == std::numeric_limits<double>::has_quiet_NaN) {
 		// No intercept possible, return empty list
 		if (logDynamicPlanner) {
@@ -57,7 +56,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 	}
 
 	GlobalPathPlanner visibilityGraph = GlobalPathPlanner(teamplanner_data.fieldConfig);
-	visibilityGraph.setOptions(plannerOptions);
+	visibilityGraph.setOptions(teamplanner_data.parameters);
 
 	bool avoidBallPath = false; // Not need to avoid the ball. This function is only used for the interceptor
 	MRA::Geometry::Point BallTargePos;
@@ -66,7 +65,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 
 	vector<trs::Vertex> target_vect;
 	target_vect.push_back(Vertex(intercept_data.intercept_position, 0));
-	visibilityGraph.createGraph(start, teamplanner_data, target_vect, targetFunction, ballIsObstacle, avoidBallPath, BallTargePos);
+	visibilityGraph.createGraph(start, teamplanner_data, target_vect, targetFunction, teamplanner_data.ballIsObstacle, avoidBallPath, BallTargePos);
 	std::vector<planner_piece_t> path = visibilityGraph.getShortestPath(teamplanner_data);
 
 	if (logDynamicPlanner) {
@@ -99,8 +98,8 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 		target_vect.clear();
 		target_vect.push_back(Vertex(newInterceptPosition.getPoint(), 0));
 		GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(teamplanner_data.fieldConfig); // create new visibility-graph to avoid dynamic memory issues
-		visibilityGraph2.setOptions(plannerOptions);
-		visibilityGraph2.createGraph(start, teamplanner_data, target_vect, targetFunction, ballIsObstacle, avoidBallPath, BallTargePos);
+		visibilityGraph2.setOptions(teamplanner_data.parameters);
+		visibilityGraph2.createGraph(start, teamplanner_data, target_vect, targetFunction, teamplanner_data.ballIsObstacle, avoidBallPath, BallTargePos);
 		path = visibilityGraph2.getShortestPath(teamplanner_data);
 		if (logDynamicPlanner) {
 //			logAlways("New path of length: %d", path.size());

@@ -40,7 +40,7 @@ public:
      */
     std::vector<planner_piece_t> planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
             const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction,
-			bool ballIsObstacle, double maxSpeed, const TeamPlannerParameters& plannerOptions, int nrIterations);
+			double maxSpeed, int nrIterations);
 
 private:
 

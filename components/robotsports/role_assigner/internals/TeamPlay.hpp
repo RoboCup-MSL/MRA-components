@@ -39,12 +39,8 @@ private:
 
 	vector<dynamic_role_e> selectTeamFormation(game_state_e gamestate);
 
-	bool assignAnyToPosition(int role_idx, dynamic_role_e dr_role, game_state_e gamestate,
-			const MovingObject& globalBall,
-			std::vector<TeamPlannerRobot>& Team,
-			const std::vector<TeamPlannerOpponent>& Opponents,
-			const MRA::Geometry::Point& target, bool ballIsObstacle, planner_target_e planner_target,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig, const defend_info_t& Defend_infob,
+	bool assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_idx, dynamic_role_e dr_role,
+			const MRA::Geometry::Point& target, planner_target_e planner_target, const defend_info_t& Defend_infob,
 			bool role_position_is_end_position_of_pass, const pass_data_t& pass_data);
 
 	vector<MovingObject> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
@@ -52,20 +48,16 @@ private:
 	bool check_better_path_found(double& lowest_pathcost, double newPathCost, double fastestPathCost,
 			 	 	 	 	 	 const PlayerPlannerResult& new_path, const PlayerPlannerResult& fastest_path, 	double equality_cost_threshold );
 
-	void assignGoalie(game_state_e gamestate, TeamPlannerData& teamplanner_data, bool ballIsObstacle, const TeamPlannerParameters& plannerOptions);
+	void assignGoalie(TeamPlannerData& teamplanner_data);
 
-	void assignTooLongInPenaltyAreaPlayers(game_state_e gamestate, std::vector<TeamPlannerRobot>& Team,
-			bool ballIsObstacle, const MovingObject& globalBall, const std::vector<TeamPlannerOpponent>& Opponents,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+	void assignTooLongInPenaltyAreaPlayers(TeamPlannerData&  teamplanner_data );
 
 	planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-	void assignToFixedPositions(unsigned playerlist_idx, dynamic_role_e dynamic_role, game_state_e gamestate, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const MovingObject& globalBall, bool ballIsObstacle, const std::vector<MRA::Geometry::Point>& parking_positions,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig, bool searchForBall,
-			const defend_info_t& Defend_info, const pass_data_t& pass_data);
+	void assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role,
+	        bool searchForBall, const defend_info_t& Defend_info, const pass_data_t& pass_data);
 
-	bool searchForBallBehaviorNeeded(game_state_e gamestate, TeamPlannerData& teamplanner_data);
+	bool searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data);
 
 	void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
 
@@ -80,21 +72,13 @@ private:
 
 	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, team_planner_result_t&  player_paths);
 
-	void printAssignInputs(game_state_e gamestate, const MovingObject& globalBall, std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const TeamPlannerParameters& plannerOptions, const std::vector<MRA::Geometry::Point>& parking_positions,
-			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data);
+	void printAssignInputs(TeamPlannerData&  teamplanner_data);
 
 	double calculateShortestDistanceObjectsToTarget(const std::vector<MovingObject>& objects, const MovingObject& targetObject);
 
-	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data,
-	        const TeamPlannerParameters& plannerOptions, bool ballIsObstacle);
+	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data);
 
-	bool AssignAnyRobotPreferedSetPlayer(dynamic_role_e dr_role,
-			const TeamPlannerParameters& plannerOptions, game_state_e game_state,
-			const MovingObject& globalBall,
-			const std::vector<TeamPlannerOpponent>& Opponents,
-			planner_target_e planner_target, bool ballIsObstacle,
-			const MRA::Geometry::Point& targetPos, std::vector<TeamPlannerRobot>& Team);
+	bool AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_data, dynamic_role_e dr_role, planner_target_e planner_target, const MRA::Geometry::Point& targetPos);
 
 	int m_gridFileNumber;
 };

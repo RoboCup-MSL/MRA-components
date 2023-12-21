@@ -37,11 +37,8 @@ private:
 		double distToPreviousTarget;
 	};
 
-	vector<dynamic_role_e> selectTeamFormation(game_state_e gamestate);
-
 	bool assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_idx, dynamic_role_e dr_role,
-			const MRA::Geometry::Point& target, planner_target_e planner_target, const defend_info_t& Defend_infob,
-			bool role_position_is_end_position_of_pass, const pass_data_t& pass_data);
+			const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass);
 
 	vector<MovingObject> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
 
@@ -54,15 +51,11 @@ private:
 
 	planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-	void assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role,
-	        bool searchForBall, const defend_info_t& Defend_info, const pass_data_t& pass_data);
+	void assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role);
 
 	bool searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data);
 
 	void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
-
-	void fillProvidePositions(vector<vector<MRA::Geometry::Point>>& playerPositions, game_state_e gamestate, const MovingObject& globalBall,
-			bool searchForBall,const std::vector<MRA::Geometry::Point>& parking_positions);
 
 	vector<MovingObject> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 

@@ -45,7 +45,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 	game_state_e org_gamestate = input.gamestate;
 
 	if (input.gamestate != game_state_e::NONE) {
-		// printAssignInputs(input.gamestate, globalBall, Team, Opponents, plannerOptions,  input.parking_positions, input.ball_pickup_position, input.passIsRequired, input.pass_data);
+		// printAssignInputs(input.gamestate, globalBall, Team, Opponents, plannerOptions,  input.parking_positions, input.ball_pickup_position, input.passIsRequired, teamplanner_data.pass_data);
 	}
 	if ((input.gamestate == game_state_e::NONE) ||
 			(input.gamestate == game_state_e::YELLOW_CARD_AGAINST) ||
@@ -88,22 +88,20 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 		}
 
 		planner_target_e planner_target = determine_planner_target(input.teamFormation[dr_idx], input.gamestate);
-		defend_info_t Defend_info = {0};
 
 		bool role_position_is_end_position_of_pass = false;
-		MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(Defend_info, planner_target, m_gridFileNumber, input.teamFormation[dr_idx], input.gamestate,
+		MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(teamplanner_data.defend_info, planner_target, m_gridFileNumber, input.teamFormation[dr_idx], input.gamestate,
 		        globalBall, r_state, Team, Opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position,
-				input.passIsRequired, input.teamControlBall, input.playerPassedBall, input.pass_data, role_position_is_end_position_of_pass);
+				input.passIsRequired, input.teamControlBall, input.playerPassedBall, teamplanner_data.pass_data, role_position_is_end_position_of_pass);
 		if (  searchForBall || input.gamestate == game_state_e::BEGIN_POSITION || input.gamestate ==  game_state_e::PARKING
 				|| input.gamestate ==  game_state_e::KICKOFF || input.gamestate ==  game_state_e::KICKOFF_AGAINST)
 		{
 			// Fixed position assignment
-			assignToFixedPositions(teamplanner_data, dr_idx, input.teamFormation[dr_idx], searchForBall, Defend_info, input.pass_data);
+			assignToFixedPositions(teamplanner_data, dr_idx, input.teamFormation[dr_idx]);
 		}
 		else {
 			//	Determine path for assigned role
-			assignAnyToPosition(teamplanner_data, static_cast<int>(dr_idx), input.teamFormation[dr_idx], rolePosition, planner_target,
-			        Defend_info, role_position_is_end_position_of_pass, input.pass_data);
+			assignAnyToPosition(teamplanner_data, static_cast<int>(dr_idx), input.teamFormation[dr_idx], rolePosition, planner_target, role_position_is_end_position_of_pass);
 		}
 		// stop if current player has ball
 		if (teamplanner_data.team[0].assigned && plannerOptions.calculateAllPaths == false) {
@@ -122,24 +120,23 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			if (teamplanner_data.team[ap_idx].assigned == false)  {
 				//	Determine path for assigned role
 				planner_target_e planner_target = determine_planner_target(dynamic_role_e::dr_DEFENDER, input.gamestate);
-				defend_info_t Defend_info;
 				bool role_position_is_end_position_of_pass = false;
-				MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(Defend_info, planner_target, m_gridFileNumber, dynamic_role_e::dr_DEFENDER, input.gamestate,
-				        globalBall, r_state, Team, Opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position, input.passIsRequired, input.teamControlBall, input.playerPassedBall, input.pass_data, role_position_is_end_position_of_pass);
+				MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(teamplanner_data.defend_info, planner_target, m_gridFileNumber, dynamic_role_e::dr_DEFENDER, input.gamestate,
+				        globalBall, r_state, Team, Opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position, input.passIsRequired, input.teamControlBall, input.playerPassedBall, teamplanner_data.pass_data, role_position_is_end_position_of_pass);
 				assignAnyToPosition(teamplanner_data, static_cast<int>(ap_idx), dynamic_role_e::dr_DEFENDER,
-				        rolePosition, planner_target, Defend_info, role_position_is_end_position_of_pass, input.pass_data);
+				        rolePosition, planner_target, role_position_is_end_position_of_pass);
 			}
 		}
 	}
 
-	bool avoidBallPath = input.pass_data.valid;
-	MRA::Geometry::Point BallTargePos = MRA::Geometry::Point(input.pass_data.target_pos.x, input.pass_data.target_pos.y);
+	bool avoidBallPath = teamplanner_data.pass_data.valid;
+	MRA::Geometry::Point BallTargePos = MRA::Geometry::Point(teamplanner_data.pass_data.target_pos.x, teamplanner_data.pass_data.target_pos.y);
 	// Calculate Robot Planner path
 	for (unsigned idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		if (teamplanner_data.team[idx].assigned == true)  {
 			// calculate path for robot.
 
-			avoidBallPath = input.pass_data.valid; // avoid bal path only if pass made (or shot on goal)
+			avoidBallPath = teamplanner_data.pass_data.valid; // avoid bal path only if pass made (or shot on goal)
 			if (teamplanner_data.team[idx].result.target_position_is_end_position_of_pass)
 			{
 				// in case of pass, don't avoid ball path if player is destination of the pass
@@ -237,7 +234,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 		}
 		inputInfo.ball_pickup_position = input.ball_pickup_position;
 		inputInfo.passIsRequired = input.passIsRequired;
-		inputInfo.pass_data = input.pass_data;
+		inputInfo.pass_data = teamplanner_data.pass_data;
 
 
 
@@ -432,8 +429,7 @@ bool TeamPlay::AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_dat
  * assign the fast player to the position and update the unassigned player list.
  * */
 bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_idx, dynamic_role_e dr_role,
-        const MRA::Geometry::Point& target, planner_target_e planner_target, const defend_info_t& defend_info,
-        bool role_position_is_end_position_of_pass, const pass_data_t& pass_data) {
+        const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass) {
 
 	// cerr << "ROLE-NR: " <<  role_idx << " : " << DynamicRoleAsString(dr_role) << " - AssignedToAnyPosition to target: " <<   target.toString() << endl;
 	vector<MRA::Geometry::Point> targets = vector<MRA::Geometry::Point>();
@@ -446,7 +442,7 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_
 		return true; // preferred set player found and assigned
 	}
 
-	if (role_position_is_end_position_of_pass && pass_data.valid) {
+	if (role_position_is_end_position_of_pass && teamplanner_data.pass_data.valid) {
 		/* only if role_position is end postion of pass and pass data is valid*
 		 * find player with same id as target_id in pass data (that player is destination of pass) */
 		// loop over all players
@@ -454,13 +450,13 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_
 			if (teamplanner_data.team[idx].assigned) {
 				continue;  // player already assigned, skip
 			}
-			if (teamplanner_data.team[idx].robotId == pass_data.target_id) {
+			if (teamplanner_data.team[idx].robotId == teamplanner_data.pass_data.target_id) {
 				/* this player is destination of the pass */
 			    teamplanner_data.team[idx].dynamic_role = dr_role;
 				teamplanner_data.team[idx].result = PlayerPlannerResult();
 				teamplanner_data.team[idx].result.gamestate = teamplanner_data.gamestate;
 				teamplanner_data.team[idx].result.target = target;
-				teamplanner_data.team[idx].result.defend_info = defend_info;
+				teamplanner_data.team[idx].result.defend_info = teamplanner_data.defend_info;
 				teamplanner_data.team[idx].result.planner_target = planner_target;
 				teamplanner_data.team[idx].result.target_position_is_end_position_of_pass = role_position_is_end_position_of_pass;
 				teamplanner_data.team[idx].assigned = true;
@@ -568,7 +564,7 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_
 		teamplanner_data.team[idx].result = PlayerPlannerResult();
 		teamplanner_data.team[idx].result.gamestate = teamplanner_data.gamestate;
 		teamplanner_data.team[idx].result.target = target;
-		teamplanner_data.team[idx].result.defend_info = defend_info;
+		teamplanner_data.team[idx].result.defend_info = teamplanner_data.defend_info;
 		teamplanner_data.team[idx].result.planner_target = planner_target;
 		teamplanner_data.team[idx].result.target_position_is_end_position_of_pass = role_position_is_end_position_of_pass;
 		teamplanner_data.team[idx].assigned = true;
@@ -818,11 +814,11 @@ bool TeamPlay::searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data) {
  * Assign all players to list of the given positions (order of list determines the priority, most important position is the first position in the list)
  * by using the path calculation, only the goalie-role will have a fixed path to the goal.
  */
-void TeamPlay::assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role,
-        bool searchForBall, const defend_info_t& Defend_info, const pass_data_t& pass_data)
+void TeamPlay::assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role)
 {
 	vector<MRA::Geometry::Point> playerPositions = vector<MRA::Geometry::Point>();  //TODO start position must come from configuration file
-	RolePosition::GetFixedPositions(playerPositions, teamplanner_data.gamestate, teamplanner_data.ball, searchForBall, teamplanner_data.parking_positions, teamplanner_data.fieldConfig, teamplanner_data.parameters);
+	RolePosition::GetFixedPositions(playerPositions, teamplanner_data.gamestate,
+	        teamplanner_data.ball, teamplanner_data.searchForBall, teamplanner_data.parking_positions, teamplanner_data.fieldConfig, teamplanner_data.parameters);
 
 	planner_target_e planner_target = planner_target_e::GOTO_TARGET_POSITION;
 	if (teamplanner_data.gamestate == game_state_e::PARKING) {
@@ -831,7 +827,7 @@ void TeamPlay::assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsign
 
 	// use overwritten dynamic role: no impact only easier to follow for humans
 	dynamic_role_e overwritten_dynamic_role = dynamic_role;
-	if (searchForBall) {
+	if (teamplanner_data.searchForBall) {
 		overwritten_dynamic_role = dynamic_role_e::dr_SEARCH_FOR_BALL;
 	}
 	if (teamplanner_data.gamestate == game_state_e::PARKING) {
@@ -843,7 +839,7 @@ void TeamPlay::assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsign
 
 	if (playerlist_idx < playerPositions.size()) {
 		MRA::Geometry::Point rolePosition = playerPositions[playerlist_idx];
-		assignAnyToPosition(teamplanner_data, playerlist_idx, overwritten_dynamic_role, rolePosition, planner_target, Defend_info, false, pass_data);
+		assignAnyToPosition(teamplanner_data, playerlist_idx, overwritten_dynamic_role, rolePosition, planner_target, false);
 	}
 
 	return;

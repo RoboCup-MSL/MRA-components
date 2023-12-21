@@ -88,6 +88,7 @@ public:
     bool teamControlBall;
     bool playerPassedBall;
 
+
     //	std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);
 //	void fromCSVstring(std::string&);
 //	void fillData(game_state_e gamestate, const MovingObject& globalBall, const MovingObject& localBall,
@@ -121,6 +122,8 @@ public:
     bool playerPassedBall;
     TeamPlannerParameters parameters;
     bool ballIsObstacle;
+    bool searchForBall;
+    defend_info_t defend_info;
 
 //
 //  std::string toCSVlinestring(bool printHeader = false, bool inputOnly = false);

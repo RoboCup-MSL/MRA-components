@@ -47,10 +47,9 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t& player_paths,
         const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
 		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
-		const std::string& colorMe, bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo) {
+		const std::string& colorMe) {
 	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(teamplanner_data, compare_paths, options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe,
-			hasTeamPlannerInputInfo, inputInfo );
+	save_graph_as_svg(teamplanner_data, compare_paths, options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe);
 }
 
 
@@ -59,8 +58,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t&  comparing_player_paths,
 		const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
 		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes,
-		const std::vector<long>& robotIds, const std::string& colorMe,
-		bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo )
+		const std::vector<long>& robotIds, const std::string& colorMe )
 {
 	m_fieldConfig = teamplanner_data.fieldConfig;
 
@@ -151,24 +149,22 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	fprintf(fp, "\tfield:\n%s\n", m_fieldConfig.toString().c_str());
 	fprintf(fp, "\n");
 
-	if (hasTeamPlannerInputInfo)
-	{
-		fprintf(fp, "\tpass_is_required: %s\n", inputInfo.passIsRequired ? "true" : "false");
-		fprintf(fp, "\tpassing player: %d\n", inputInfo.playerWhoIsPassing);
-		fprintf(fp, "\tpickup ball valid: %s\n", inputInfo.ball_pickup_position.valid ? "true" : "false");
-		fprintf(fp, "\tpickup ball x: %4.2f\n", inputInfo.ball_pickup_position.x);
-		fprintf(fp, "\tpickup ball y: %4.2f\n", inputInfo.ball_pickup_position.y);
-		fprintf(fp, "\tpickup ball ts: %4.2f\n", inputInfo.ball_pickup_position.ts);
-		for (unsigned int idx = 0; idx < inputInfo.previous_results.size(); idx++) {
-			fprintf(fp, "\tprev result[%u]: valid: %s\n", idx, inputInfo.previous_results[idx].previous_result_present ? "true" : "false");
-			fprintf(fp, "\tprev result[%u]: role: %s\n", idx, DynamicRoleAsString((dynamic_role_e)inputInfo.previous_results[idx].dynamic_role).c_str());
-			fprintf(fp, "\tprev result[%u]: end pos x: %4.2f\n", idx, inputInfo.previous_results[idx].end_position.x);
-			fprintf(fp, "\tprev result[%u]: end pos y: %4.2f\n", idx, inputInfo.previous_results[idx].end_position.y);
-			fprintf(fp, "\tprev result[%u]: end pos target: %ld\n", idx, inputInfo.previous_results[idx].end_position.target);
-			fprintf(fp, "\tprev result[%u]: ts: %4.2f\n", idx, inputInfo.previous_results[idx].ts);
-		}
-		fprintf(fp, "\n");
-	}
+    fprintf(fp, "\tpass_is_required: %s\n", teamplanner_data.passIsRequired ? "true" : "false");
+    fprintf(fp, "\tpassing player: %d\n", teamplanner_data.playerWhoIsPassing);
+    fprintf(fp, "\tpickup ball valid: %s\n", teamplanner_data.ball_pickup_position.valid ? "true" : "false");
+    fprintf(fp, "\tpickup ball x: %4.2f\n", teamplanner_data.ball_pickup_position.x);
+    fprintf(fp, "\tpickup ball y: %4.2f\n", teamplanner_data.ball_pickup_position.y);
+    fprintf(fp, "\tpickup ball ts: %4.2f\n", teamplanner_data.ball_pickup_position.ts);
+//    teamplanner_data.team[r_idx].previous_result
+    for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
+        fprintf(fp, "\tprev result[%u]: valid: %s\n", idx, teamplanner_data.team[idx].previous_result.previous_result_present ? "true" : "false");
+        fprintf(fp, "\tprev result[%u]: role: %s\n", idx, DynamicRoleAsString((dynamic_role_e)teamplanner_data.team[idx].previous_result.dynamic_role).c_str());
+        fprintf(fp, "\tprev result[%u]: end pos x: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.end_position.x);
+        fprintf(fp, "\tprev result[%u]: end pos y: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.end_position.y);
+        fprintf(fp, "\tprev result[%u]: end pos target: %ld\n", idx, teamplanner_data.team[idx].previous_result.end_position.target);
+        fprintf(fp, "\tprev result[%u]: ts: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.ts);
+    }
+    fprintf(fp, "\n");
 
 	// add xml output
 	fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
@@ -198,28 +194,27 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 		}
 		string passedBallString = "";
 		string previous_result_string = "";
-		if (hasTeamPlannerInputInfo)
-		{
-			if (inputInfo.playerWhoIsPassing == static_cast<int>(idx))
-			{
-				passedBallString = "passedBall=\"true\"";
-			}
-			if (inputInfo.previous_results[idx].previous_result_present)
-			{
-				std::stringstream previous_result_Xtext;
-				previous_result_Xtext << " previous_result_present=\"true\" "
-						               <<" previous_result_ts=\""  << inputInfo.previous_results[idx].ts << "\""
-									   <<" previous_result_x=\""   << inputInfo.previous_results[idx].end_position.x << "\""
-									   <<" previous_result_y=\""   << inputInfo.previous_results[idx].end_position.y << "\""
-									   <<" previous_result_dynamic_role=\""
-									   << DynamicRoleAsString(static_cast<dynamic_role_e>(inputInfo.previous_results[idx].dynamic_role))
-									   <<"\"";
 
-				previous_result_string= previous_result_Xtext.str();;
+		if (teamplanner_data.playerWhoIsPassing == static_cast<int>(idx))
+        {
+            passedBallString = "passedBall=\"true\"";
+        }
+        if (teamplanner_data.team[idx].previous_result.previous_result_present)
+        {
+            std::stringstream previous_result_Xtext;
+            previous_result_Xtext << " previous_result_present=\"true\" "
+                                   <<" previous_result_ts=\""  << teamplanner_data.team[idx].previous_result.ts << "\""
+                                   <<" previous_result_x=\""   << teamplanner_data.team[idx].previous_result.end_position.x << "\""
+                                   <<" previous_result_y=\""   << teamplanner_data.team[idx].previous_result.end_position.y << "\""
+                                   <<" previous_result_dynamic_role=\""
+                                   << DynamicRoleAsString(static_cast<dynamic_role_e>(teamplanner_data.team[idx].previous_result.dynamic_role))
+                                   <<"\"";
 
-			}
-		}
-		MRA::Geometry::Point xyVel;
+            previous_result_string= previous_result_Xtext.str();;
+
+        }
+
+        MRA::Geometry::Point xyVel;
 		teamplanner_data.team[idx].position.getVelocity(xyVel);
 		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" %s %s %s %s/>\n",
 				idString.c_str(),
@@ -239,37 +234,35 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 				xyVel.x, xyVel.y);
 
 	}
-	if (hasTeamPlannerInputInfo)
-	{
-		// write pickup ball info as svg input if possible
-		string validString = "valid=\"false\"";
-		if (inputInfo.ball_pickup_position.valid) {
-			validString = "valid=\"true\"";
-		}
 
-		fprintf(fp, "  <tns:PickupPosition x=\"%4.3f\" y=\"%4.3f\" ts=\"%4.3f\" %s />\n",
-				inputInfo.ball_pickup_position.x, inputInfo.ball_pickup_position.y, inputInfo.ball_pickup_position.ts, validString.c_str());
+    // write pickup ball info as svg input if possible
+    string validString = "valid=\"false\"";
+    if (teamplanner_data.ball_pickup_position.valid) {
+        validString = "valid=\"true\"";
+    }
+
+    fprintf(fp, "  <tns:PickupPosition x=\"%4.3f\" y=\"%4.3f\" ts=\"%4.3f\" %s />\n",
+            teamplanner_data.ball_pickup_position.x, teamplanner_data.ball_pickup_position.y, teamplanner_data.ball_pickup_position.ts, validString.c_str());
 
 
-		// write situation info as svg input if possible
-		string passRequiredString = "passing_required=\"false\"";
-		if (inputInfo.passIsRequired)
-		{
-			passRequiredString = "passing_required=\"true\"";
-		}
+    // write situation info as svg input if possible
+    string passRequiredString = "passing_required=\"false\"";
+    if (teamplanner_data.passIsRequired)
+    {
+        passRequiredString = "passing_required=\"true\"";
+    }
 
-		fprintf(fp, "  <tns:SituationInfo %s>\n", passRequiredString.c_str());
-		string pass_data_valid_str = "valid=\"false\"";
-		if (inputInfo.pass_data.valid)
-		{
-			pass_data_valid_str = "valid=\"true\"";
-		}
-		fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\"/>\n",
-				pass_data_valid_str.c_str(), inputInfo.pass_data.origin_pos.x, inputInfo.pass_data.origin_pos.y, inputInfo.pass_data.target_pos.x, inputInfo.pass_data.target_pos.y,
-					inputInfo.pass_data.velocity, inputInfo.pass_data.angle, inputInfo.pass_data.ts);
-		fprintf(fp, "  </tns:SituationInfo>\n");
-		fprintf(fp, "</tns:Situation>\n");
-	}
+    fprintf(fp, "  <tns:SituationInfo %s>\n", passRequiredString.c_str());
+    string pass_data_valid_str = "valid=\"false\"";
+    if (teamplanner_data.pass_data.valid)
+    {
+        pass_data_valid_str = "valid=\"true\"";
+    }
+    fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\"/>\n",
+            pass_data_valid_str.c_str(), teamplanner_data.pass_data.origin_pos.x, teamplanner_data.pass_data.origin_pos.y, teamplanner_data.pass_data.target_pos.x, teamplanner_data.pass_data.target_pos.y,
+            teamplanner_data.pass_data.velocity, teamplanner_data.pass_data.angle, teamplanner_data.pass_data.ts);
+    fprintf(fp, "  </tns:SituationInfo>\n");
+    fprintf(fp, "</tns:Situation>\n");
 
 	fprintf(fp, "\n-->\n"); // // end svg comment
 

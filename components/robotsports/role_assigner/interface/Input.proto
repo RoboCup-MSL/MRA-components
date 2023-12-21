@@ -46,8 +46,8 @@ message Input
     //  - passed ball is missing in Player.
     //  - player_type_e player_type;  (keeper, reserve, fieldplayer)
     //  - time_in_own_penalty_area;   (state ?)
-    //  - time_in_opponent_penalty_area; (state)
-    //  - current role.  (state)
+    //  - time_in_opponent_penalty_area; (state ?)
+    //  - current role.  (state ?)
     
     repeated MRA.Datatypes.Player opponents = 5;
 }

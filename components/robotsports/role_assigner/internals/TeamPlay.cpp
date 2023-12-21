@@ -224,29 +224,14 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			options.svgOutputFileName = GetTeamPlannerSVGname(input.gamestate, "DYN_ROLE_NONE");
 		}
 
-		class TeamPlannerInputInfo  inputInfo;
-		inputInfo.playerWhoIsPassing = -1;
-		for (unsigned r_idx = 0; r_idx < teamplanner_data.team.size(); r_idx++) {
-			if (teamplanner_data.team[r_idx].passBall) {
-				inputInfo.playerWhoIsPassing = r_idx;
-			}
-			inputInfo.previous_results.push_back(teamplanner_data.team[r_idx].previous_result);
-		}
-		inputInfo.ball_pickup_position = input.ball_pickup_position;
-		inputInfo.passIsRequired = input.passIsRequired;
-		inputInfo.pass_data = teamplanner_data.pass_data;
-
-
-
         long controlBallByPlayer = -1;
         for (unsigned r_idx = 0; r_idx < teamplanner_data.team.size(); r_idx++) {
             if(teamplanner_data.team[r_idx].controlBall) {
                 controlBallByPlayer = static_cast<int>(r_idx);
             }
         }
-        bool hasTeamPlannerInputInfo = true;
 		SvgUtils::save_graph_as_svg(teamplanner_data, *r_output.player_paths,
-		        options, std::vector<Vertex*>(), org_gamestate, controlBallByPlayer, teamTypes, robotIds, "red", hasTeamPlannerInputInfo, inputInfo);
+		        options, std::vector<Vertex*>(), org_gamestate, controlBallByPlayer, teamTypes, robotIds, "red");
 
 		// create empty path for robot with wrong path
 		if (thisPlayerHasUnallowedPath) {

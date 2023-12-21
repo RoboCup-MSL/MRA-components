@@ -22,8 +22,7 @@ public:
 			game_state_e gamestate, long controlBallByPlayer,
 			const std::vector<player_type_e>& teamTypes,
 			const std::vector<long>& robotIds,
-			const std::string& meColor,
-			bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo);
+			const std::string& meColor);
 
 	static void save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	        const team_planner_result_t& player_paths,
@@ -32,8 +31,7 @@ public:
 			game_state_e gamestate, long controlBallByPlayer,
 			const std::vector<player_type_e>& teamTypes,
 			const std::vector<long>& robotIds,
-			const std::string& meColor,
-			bool hasTeamPlannerInputInfo, const TeamPlannerInputInfo&  inputInfo);
+			const std::string& meColor);
 
 private:
 	static FieldConfig m_fieldConfig;

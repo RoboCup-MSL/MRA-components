@@ -38,8 +38,8 @@ TeamPlay::TeamPlay() : m_gridFileNumber(0) {
 void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, TeamPlannerOutput& r_output, const TeamPlannerParameters& plannerOptions)
 {
 //	game_state_e gamestate = input.gamestate;
-	std::vector<TeamPlannerRobot> Team =  input.Team;
-	std::vector<TeamPlannerOpponent> Opponents = input.Opponents;
+	std::vector<TeamPlannerRobot> Team =  input.team;
+	std::vector<TeamPlannerOpponent> Opponents = input.opponents;
 	trs::MovingObject globalBall;
 	TeamPlannerData teamplanner_data; // TODO
 	game_state_e org_gamestate = input.gamestate;

@@ -31,11 +31,11 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     if (tp_input.gamestate == trs::game_state_e::NORMAL) {
         bool playerControlBall = false;
         bool playerPassedBall = false;
-        for (unsigned r_idx = 0; r_idx < tp_input.Team.size(); r_idx++) {
-            if (tp_input.Team[r_idx].controlBall) {
+        for (unsigned r_idx = 0; r_idx < tp_input.team.size(); r_idx++) {
+            if (tp_input.team[r_idx].controlBall) {
                 playerControlBall = true;
             }
-            if (tp_input.Team[r_idx].passBall) {
+            if (tp_input.team[r_idx].passBall) {
                 tp_input.playerPassedBall = true;
             }
         }

@@ -69,9 +69,9 @@ public:
     TeamPlannerInput() {};
     game_state_e gamestate;
     bool ball_present;
-    MovingObject globalBall;
-    std::vector<TeamPlannerRobot> Team;
-    std::vector<TeamPlannerOpponent> Opponents;
+    MovingObject ball;
+    std::vector<TeamPlannerRobot> team;
+    std::vector<TeamPlannerOpponent> opponents;
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;

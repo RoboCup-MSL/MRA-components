@@ -1,8 +1,6 @@
-// system
-#include <thread>
-
 // internal
 #include "fit.hpp"
+#include "threadpool.hpp"
 
 // MRA libraries
 #include "opencv_utils.hpp"
@@ -26,18 +24,17 @@ void fitThreadFunction(FitCore& _fitCore, cv::Mat const &referenceFloor, std::ve
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
     int num_trackers_before = trackers.size();
-    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+    int num_threads = std::min(1, settings.numextrathreads());
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before, num_threads);
 
-    // multithreaded execution
-    std::vector<std::thread> threads;
-    for (auto &tr : trackers)
+    // multithreaded execution (main thread idle)
     {
-        threads.emplace_back(fitThreadFunction, std::ref(_fitCore), std::cref(referenceFloor), std::cref(rcsLinePoints), std::ref(tr));
-    }
-    // wait
-    for (auto &thread : threads)
-    {
-        thread.join();
+        ThreadPool threads(num_threads);
+        for (auto &tr : trackers)
+        {
+            threads.enqueue(fitThreadFunction, std::ref(_fitCore), std::cref(referenceFloor), std::cref(rcsLinePoints), std::ref(tr));
+        }
+        // wait via ~ThreadPool
     }
 
     // sort trackers on decreasing quality

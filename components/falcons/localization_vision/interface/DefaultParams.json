@@ -20,7 +20,7 @@
     },
     "shapes": [],
     "solver": {
-        "numExtraThreads": 0,
+        "numExtraThreads": 4,
         "pixelsPerMeter": 80,
         "floorBorder": 0.5,
         "blurFactor": 0.86,

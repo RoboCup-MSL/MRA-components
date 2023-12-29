@@ -15,43 +15,37 @@
 namespace MRA::Logging::backend
 {
 
-// tick logging: get binary file if configured, or NULL pointer
-std::pair<std::ofstream *, std::string> logTickBinFile(
+// tick logging binary file name
+std::string logTickBinFile(
     MRA::Datatypes::LogSpec const &cfg,
     std::string const &componentName,
     int counter)
 {
-    if (cfg.enabled() && cfg.dumpticks())
-    {
-        std::string binfolder = MRA::Logging::control::getLogFolder() + "/tickbins";
-        if (!std::filesystem::exists(binfolder)) {
-            std::filesystem::create_directory(binfolder);
-        }
-        std::string filename = binfolder + "/" + "tick_" + componentName + "_" + std::to_string(counter) + ".bin";
-        if (std::filesystem::exists(filename)) {
-            // TODO: with nested components, this can happen, may need some context/folder?
-            return std::make_pair<std::ofstream *, std::string>(nullptr, ""); // hack it for now
-            throw std::runtime_error("file already exists: " + filename);
-        }
-        LOGDEBUG("dumping binary data to %s", filename.c_str());
-        return std::make_pair(new std::ofstream(filename), filename);
+    std::string binfolder = MRA::Logging::control::getLogFolder() + "/tickbins";
+    if (!std::filesystem::exists(binfolder)) {
+        std::filesystem::create_directory(binfolder);
     }
-    return std::make_pair<std::ofstream *, std::string>(nullptr, "");
+    std::string filename = binfolder + "/" + "tick_" + componentName + "_" + std::to_string(counter) + ".bin";
+    if (std::filesystem::exists(filename)) {
+        // TODO: with nested components, this can happen, may need some context/folder?
+        return ""; // hack it for now
+        throw std::runtime_error("file already exists: " + filename);
+    }
+    return filename;
 }
 
-// dump protobuf data to binary file
+// dump protobuf data to ostringstream file
 template <typename T>
-void dumpToFile(T const &pbObject, std::ofstream *fp)
+void dumpPbToSs(T const &pbObject, std::ostringstream &ss)
 {
-    if (!fp || !fp->is_open()) return;
     // serialize the protobuf object to a string
     std::ostringstream oss;
     pbObject.SerializeToOstream(&oss);
     std::string serializedData = oss.str();
     // write the byte count followed by the serialized object
     int byteCount = static_cast<int>(serializedData.size());
-    fp->write(reinterpret_cast<const char*>(&byteCount), sizeof(int));
-    fp->write(serializedData.c_str(), byteCount);
+    ss.write(reinterpret_cast<const char*>(&byteCount), sizeof(int));
+    ss.write(serializedData.c_str(), byteCount);
 }
 
 // tick logging: write logging/data at start of tick
@@ -60,8 +54,7 @@ void logTickStart(
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
-    std::string const &binfileName,
-    std::ofstream *binfile,
+    std::ostringstream &bindata,
     int counter,
     google::protobuf::Timestamp const &timestamp,
     google::protobuf::Message const &input,
@@ -86,12 +79,12 @@ void logTickStart(
         logger->log(loc, MRA::Logging::TRACE, "> {%s}", traceStr.c_str());
         logger->log(loc, MRA::Logging::INFO, "start {%s}", infoStr.c_str());
         // tick .bin dump
-        if (cfg.dumpticks() && (binfile != nullptr))
+        if (cfg.dumpticks() != MRA::Datatypes::TickDumpMode::NEVER)
         {
-            logger->log(loc, MRA::Logging::DEBUG, "dumping binary data to %s", binfileName.c_str());
-            dumpToFile(input, binfile);
-            dumpToFile(params, binfile);
-            dumpToFile(state, binfile);
+            logger->log(loc, MRA::Logging::DEBUG, "dumping binary data to memory");
+            dumpPbToSs(input, bindata);
+            dumpPbToSs(params, bindata);
+            dumpPbToSs(state, bindata);
         }
     }
 }
@@ -102,7 +95,7 @@ void logTickEnd(
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
-    std::ofstream *binfile,
+    std::ostringstream &bindata,
     int counter,
     double duration,
     int error_value,
@@ -127,13 +120,21 @@ void logTickEnd(
         logger->log(loc, MRA::Logging::INFO, "end {%s}", infoStr.c_str());
         logger->log(loc, MRA::Logging::TRACE, "< {%s}", traceStr.c_str());
         // tick .bin dump
-        if (cfg.dumpticks() && (binfile != nullptr))
+        bool do_tickdump = (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ALWAYS) or (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ON_ERROR and error_value != 0);
+        if (do_tickdump)
         {
-            dumpToFile(output, binfile);
-            dumpToFile(diag, binfile);
-            dumpToFile(state, binfile);
-            binfile->close();
-            delete binfile;
+            dumpPbToSs(output, bindata);
+            dumpPbToSs(diag, bindata);
+            dumpPbToSs(state, bindata);
+            std::string filename = logTickBinFile(cfg, componentName, counter);
+            if (filename.size()) {
+                std::ofstream binfile(filename, std::ios::binary);
+                const std::string& data = bindata.str();
+                logger->log(loc, MRA::Logging::DEBUG, "dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
+                LOGDEBUG("dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
+                binfile.write(data.data(), data.size());
+                binfile.close();
+            }
         }
     }
 }

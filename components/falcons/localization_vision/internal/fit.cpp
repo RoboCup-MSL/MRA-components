@@ -36,6 +36,12 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     MRA_TRACE_FUNCTION_INPUTS(numpoints, guess_, step_);
     FitResult result;
 
+    // sanity checks
+    if (step.x < 0.01 or step.y < 0.01 or step.rz < 0.01)
+    {
+        throw std::runtime_error("bad step values");
+    }
+
     // create solver
     auto cvSolver = cv::DownhillSolver::create();
 

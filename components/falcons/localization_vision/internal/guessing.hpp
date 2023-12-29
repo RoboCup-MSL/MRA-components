@@ -2,9 +2,9 @@
 #define _MRA_FALCONS_LOCALIZATION_VISION_GUESSING_HPP
 
 #include <optional>
-
-#include "FalconsLocalizationVision_datatypes.hpp"
 #include "tracker.hpp"
+#include "FalconsLocalizationVision_datatypes.hpp"
+
 
 namespace MRA::FalconsLocalizationVision
 {
@@ -18,11 +18,12 @@ public:
     void run(std::vector<Tracker> &trackers, bool initial = true) const;
 
 private:
+    Params _params;
     GuessingParams _config;
     float _floorMaxX;
     float _floorMaxY;
 
-    std::optional<MRA::Datatypes::Point> createRandomGuess(std::vector<MRA::Geometry::Point> const &pointsToAvoid) const;
+    std::optional<MRA::Geometry::Point> tryGuess(std::vector<MRA::Geometry::Point> const &pointsToAvoid) const;
 
 }; // class Guesser
 

@@ -12,6 +12,7 @@ class Tracker
 public:
     Tracker(Params const &params);
     Tracker(Params const &params, TrackerState const &st);
+    Tracker(Params const &params, MRA::Datatypes::Circle const &c);
     ~Tracker() {};
 
     Params params;

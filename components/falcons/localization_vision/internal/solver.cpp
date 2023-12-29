@@ -175,7 +175,7 @@ std::vector<Tracker> Solver::createTrackers() const
     //         (      0,       0,  0.5*srz)
     if (result.size() == 0)
     {
-        result.push_back(Tracker(_params, TrackerState()));
+        result.push_back(Tracker(_params));
     }
     Tracker &tracker = result.at(0);
     tracker.guess = _input.guess();
@@ -186,6 +186,8 @@ std::vector<Tracker> Solver::createTrackers() const
     bool initial = (_state.tick() == 0);
     g.run(result, initial);
 
+    int num_trackers = result.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers);
     return result;
 }
 

@@ -1,3 +1,7 @@
+// system
+#include <thread>
+
+// internal
 #include "fit.hpp"
 
 // MRA libraries
@@ -9,21 +13,31 @@ using namespace MRA::FalconsLocalizationVision;
 const double RAD2DEG = 180.0 / M_PI;
 
 
+// Function to be executed by each thread
+void fitThreadFunction(FitCore& _fitCore, cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, Tracker& tr) {
+    FitResult fr = _fitCore.run(referenceFloor, rcsLinePoints, tr.guess, tr.step);
+    tr.fitResult = fr.pose;
+    tr.fitValid = fr.valid;
+    tr.fitScore = fr.score;
+    tr.fitPath = fr.path;
+}
+
+
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
     int num_trackers_before = trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
 
-    // TODO: multithreading
-
-    // run all fit attempts
-    for (auto &tr: trackers)
+    // multithreaded execution
+    std::vector<std::thread> threads;
+    for (auto &tr : trackers)
     {
-        FitResult fr = _fitCore.run(referenceFloor, rcsLinePoints, tr.guess, tr.step);
-        tr.fitResult = fr.pose;
-        tr.fitValid = fr.valid;
-        tr.fitScore = fr.score;
-        tr.fitPath = fr.path;
+        threads.emplace_back(fitThreadFunction, std::ref(_fitCore), std::cref(referenceFloor), std::cref(rcsLinePoints), std::ref(tr));
+    }
+    // wait
+    for (auto &thread : threads)
+    {
+        thread.join();
     }
 
     // sort trackers on decreasing quality
@@ -74,6 +88,10 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     result.pose.y = (vec.at<double>(0, 1));
     result.pose.rz = (vec.at<double>(0, 2));
     result.path = f->getPath();
+
+    // tracing
+    MRA::Datatypes::Pose result_pose = result.pose;
+    MRA_TRACE_FUNCTION_OUTPUTS(result.valid, result.score, result_pose);
     return result;
 }
 

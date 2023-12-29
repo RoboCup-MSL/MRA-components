@@ -29,7 +29,9 @@
         "epsilon": 1e-4,
         "linePoints": {
             "fit": {"radiusConstant": 0.05, "radiusScaleFactor": -0.003, "radiusMinimum": 0.0},
-            "plot": {"radius": 0.07}
+            "plot": {"radius": 0.07},
+            "maxCount": 100,
+            "minCount": 40
         },
         "pathPoints": {
             "radius": 0.03,

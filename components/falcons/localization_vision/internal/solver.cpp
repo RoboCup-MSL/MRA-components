@@ -148,7 +148,15 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
         result.push_back(lp);
     }
     int n = result.size();
-    MRA_TRACE_FUNCTION_OUTPUT(n);
+    // vector clipping
+    int max_size = _params.solver().linepoints().maxcount();
+    int dropped = 0;
+    if (n > max_size) {
+        dropped = max_size - n;
+        result.resize(max_size);
+        n = max_size;
+    }
+    MRA_TRACE_FUNCTION_OUTPUTS(n, dropped);
     return result;
 }
 
@@ -328,9 +336,9 @@ int Solver::run()
     // create a floor (linePoints RCS, robot at (0,0,0)) for input linepoints
     _linePoints = createLinePoints();
 
-    // check for any linepoints
+    // check for enough linepoints
     // (having none at all is very unusual for a real robot, but not so much in test suite)
-    if (_linePoints.size())
+    if ((int)_linePoints.size() >= _params.solver().linepoints().mincount())
     {
         // manual mode?
         if (_params.solver().manual().enabled())
@@ -346,6 +354,10 @@ int Solver::run()
             // run the fit algorithm (multithreaded), update trackers, update _fitResult
             runFitUpdateTrackers();
         }
+    }
+    else
+    {
+        MRA_LOG_WARNING("insufficient number of linepoints: %d < %d", _linePoints.size(), _params.solver().linepoints().mincount());
     }
 
     // create and optionally dump of diagnostics data for plotting

@@ -11,7 +11,9 @@ const double RAD2DEG = 180.0 / M_PI;
 
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers_before = trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+
     // TODO: multithreading
 
     // run all fit attempts
@@ -26,6 +28,11 @@ void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
 
     // sort trackers on decreasing quality
     std::sort(trackers.begin(), trackers.end());
+
+    // TODO: drop bad trackers
+
+    int num_trackers_after = trackers.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after);
 }
 
 FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, MRA::Geometry::Pose const &guess, MRA::Geometry::Pose const &step)

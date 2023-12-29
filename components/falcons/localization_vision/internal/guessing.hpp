@@ -15,10 +15,9 @@ public:
     Guesser(Params const &params);
     ~Guesser() {};
 
-    void run(std::vector<Tracker> &trackers, bool initial = true) const;
+    void run(std::vector<Tracker> &trackers, Params const &params, bool initial = true) const;
 
 private:
-    Params _params;
     GuessingParams _config;
     float _floorMaxX;
     float _floorMaxY;

@@ -6,7 +6,6 @@ using namespace MRA::FalconsLocalizationVision;
 
 Guesser::Guesser(Params const &params)
 {
-    _params = params;
     _config = params.solver().guessing();
     _floorMaxX = 0.5 * params.model().b();
     _floorMaxY = 0.5 * params.model().a();
@@ -35,11 +34,10 @@ std::optional<MRA::Geometry::Point> Guesser::tryGuess(std::vector<MRA::Geometry:
     return result;
 }
 
-void Guesser::run(std::vector<Tracker> &trackers, bool initial) const
+void Guesser::run(std::vector<Tracker> &trackers, Params const &params, bool initial) const
 {
     int num_trackers = trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers, initial);
-    auto params = _params;
 
     // if so configured, add new fit attempts (as trackers)
     // so that the fit algorithm can run them all

@@ -184,7 +184,7 @@ std::vector<Tracker> Solver::createTrackers() const
     // run the guesser to add more attempts/trackers
     Guesser g(_params);
     bool initial = (_state.tick() == 0);
-    g.run(result, initial);
+    g.run(result, _params, initial);
 
     int num_trackers = result.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers);
@@ -193,7 +193,8 @@ std::vector<Tracker> Solver::createTrackers() const
 
 void Solver::runFitUpdateTrackers()
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers);
     // run the fit algorithm (multithreaded, one per tracker) and update trackers
     _fitAlgorithm.run(_referenceFloorMat, _linePoints, _trackers);
 

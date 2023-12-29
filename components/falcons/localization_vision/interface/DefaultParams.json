@@ -31,7 +31,8 @@
             "fit": {"radiusConstant": 0.05, "radiusScaleFactor": -0.003, "radiusMinimum": 0.0},
             "plot": {"radius": 0.07},
             "maxCount": 100,
-            "minCount": 40
+            "minCount": 40,
+            "penaltyOutsideField": 0.005
         },
         "pathPoints": {
             "radius": 0.03,

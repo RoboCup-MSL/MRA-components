@@ -64,7 +64,7 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     auto cvSolver = cv::DownhillSolver::create();
 
     // configure solver
-    cv::Ptr<FitFunction> f = new FitFunction(referenceFloor, rcsLinePoints, settings.pixelspermeter());
+    cv::Ptr<FitFunction> f = new FitFunction(referenceFloor, rcsLinePoints, settings.pixelspermeter(), settings.linepoints().penaltyoutsidefield());
     cvSolver->setFunction(f);
     cv::Mat stepVec = (cv::Mat_<double>(3, 1) << step.x, step.y, step.rz);
     cvSolver->setInitStep(stepVec);
@@ -92,10 +92,11 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     return result;
 }
 
-FitFunction::FitFunction(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, float ppm)
+FitFunction::FitFunction(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, float ppm, float penaltyOutsideField)
 {
     MRA_TRACE_FUNCTION();
     _ppm = ppm;
+    _penaltyOutsideField = penaltyOutsideField;
     _referenceFloor = referenceFloor;
     _rcsLinePoints = rcsLinePoints;
     // count pixels for normalization, prevent division by zero when no linepoints present (yet)
@@ -170,6 +171,8 @@ double FitFunction::calc(const double *v) const
     double rz = v[2];
     MRA_TRACE_FUNCTION_INPUTS(x, y, rz);
     double score = 0.0;
+    int fieldPointsAmount = 0;
+    int fieldPointsOutsideField = 0;
     std::vector<cv::Point2f> transformed = transformPoints(_rcsLinePoints, transformationMatrixRCS2FCS(x, y, rz));
     for (size_t i = 0; i < _rcsLinePoints.size(); ++i)
     {
@@ -182,13 +185,27 @@ double FitFunction::calc(const double *v) const
             // Look up pixel intensity in _referenceFloor and accumulate the score
             s = static_cast<float>(_referenceFloor.at<uchar>(pixelY, pixelX)) / 255.0;
             score += s; // max 1.0 per pixel
+            fieldPointsAmount++;
+        }
+        else
+        {
+            fieldPointsOutsideField++;
         }
         MRA_LOG_DEBUG("calc %3d   rx=%8.3f  ry=%8.3f  px=%4d py=%4d  s=%6.2f", (int)i, _rcsLinePoints[i].x, _rcsLinePoints[i].y, (int)(pixelX), (int)(pixelY), s);
     }
     _fitpath.push_back(MRA::Geometry::Pose(x, y, rz));
-    // final normalization to 0..1 where 0 is good (minimization)
+    // normalization to 0..1 where 0 is good (minimization)
     double result = 1.0 - score / _rcsLinePointsPixelCount;
-    MRA_TRACE_FUNCTION_OUTPUT(result);
+
+    // make the score slightly worse for each pixels that is outside the field (to prevent a good score while most pixels are outside the field)
+    // a good lock has a score of less then 0.050
+    // a bad lock has a score of higher then 0.175
+    // 30 points outside the field should result result in a worse score
+    // so set 30 points outside the field to a score increase of 0.15, that means each point adds 0.005 to the score
+    // TODO: double check this with the goaly
+    result += fieldPointsOutsideField * _penaltyOutsideField;
+
+    MRA_TRACE_FUNCTION_OUTPUTS(result, fieldPointsAmount, fieldPointsOutsideField);
     return result;
 }
 

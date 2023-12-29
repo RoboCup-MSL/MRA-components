@@ -258,7 +258,7 @@ cv::Mat Solver::createDiagnosticsMat() const
 
     // add linepoints with blue/cyan color
     float ppm = _params.solver().pixelspermeter();
-    FitFunction ff(referenceFloorMat, _linePoints, ppm);
+    FitFunction ff(referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, ff.transformationMatrixRCS2FCS(_fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz));
     MRA_LOG_DEBUG("number of transformed points: %d", (int)transformed.size());
     for (const auto &point : transformed) {
@@ -304,7 +304,7 @@ void Solver::manualMode()
     MRA_TRACE_FUNCTION();
     float ppm = _params.solver().pixelspermeter();
     // run the core calc() function
-    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm);
+    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
     double score = fit.calc(pose);
     // copy pose into _fitResult so local.floor will be properly created

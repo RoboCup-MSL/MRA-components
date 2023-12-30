@@ -5,8 +5,8 @@ MRA (Robocup MSL Reference Architecture).
 This repository contains a set of components, as well as surrounding infrastructure, common datatypes and logging/geometry facilities.
 
 See here for the [presentation (pdf)](https://drive.google.com/file/d/1-4txLCdpiMcM90y2xGZRdFGJl2T32eTw/view?usp=sharing) from May 2023.
+The folder documentation contains information about the MSL Reference architecture: concept, design, design choises and references.
 
-(TODO more/stable material?)
 
 # Demonstration
 

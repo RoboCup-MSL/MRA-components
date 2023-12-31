@@ -6,7 +6,7 @@
 #include "Edge.hpp"
 
 #include "Vertex.hpp"
-namespace trs {
+namespace MRA {
 
 Edge::Edge(Vertex* pTarget, double dCost) :
 		m_pTarget(pTarget),

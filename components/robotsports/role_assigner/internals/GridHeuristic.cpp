@@ -12,7 +12,7 @@
 #include <iostream>
 #include "MathUtils.h"
 #include "planner_common.hpp"
-using namespace trs;
+using namespace MRA;
 #include "geometry.hpp"
 
 double grid_eps = 1e-3; // 1 mm

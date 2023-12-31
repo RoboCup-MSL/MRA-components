@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace trs {
+namespace MRA {
 
 
 MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
@@ -986,7 +986,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 // ----------------------------------------------------------
 // Save provided data to file
 void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-		const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& strSituation, int gridFileNumber) {
+		const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& sMRAituation, int gridFileNumber) {
 
 	if (plannerOptions.saveGridDataToFile) {
 		string gridFileName = "";
@@ -1000,12 +1000,12 @@ void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const std:
 		if (!plannerOptions.svgOutputFileName.empty()) {
 			// svg filename provided
 			std::stringstream stream("");
-			stream << plannerOptions.svgOutputFileName.substr(0, plannerOptions.svgOutputFileName.size()-4) << "_" << strSituation << "_" <<  gridFileNumber << ".gpd";
+			stream << plannerOptions.svgOutputFileName.substr(0, plannerOptions.svgOutputFileName.size()-4) << "_" << sMRAituation << "_" <<  gridFileNumber << ".gpd";
 			gridFileName = stream.str();
 		}
 		else {
 			std::stringstream stream("");
-			stream << "planner_grid_" << strSituation << "_" <<  gridFileNumber << ".gpd";
+			stream << "planner_grid_" << sMRAituation << "_" <<  gridFileNumber << ".gpd";
 			gridFileName = stream.str();
 		}
 //		logAlways("save grid data to = %s", gridFileName.c_str(), __FILE__, __LINE__);
@@ -1037,7 +1037,7 @@ double TeamPlanner_Grid::calc_a_penalty_factor(double radius, double c) {
 }
 
 
-} /* namespace trs */
+} /* namespace MRA */
 
 
 

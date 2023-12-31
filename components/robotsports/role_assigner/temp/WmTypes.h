@@ -3,7 +3,7 @@
 #include <string>
 #include "planner_types.hpp"
 
-namespace trs {
+namespace MRA {
 
 typedef enum  {
 	RESERVE,
@@ -137,7 +137,58 @@ inline std::string DynamicRoleAsString(dynamic_role_e dynamic_role) {
 	return dynamic_role_string;
 }
 
+inline dynamic_role_e StringToDynamicRole(std::string dynamic_role_str) {
+    dynamic_role_e dynamic_role = dynamic_role_e::dr_NONE;
 
-} // namespace trs
+    if (dynamic_role_str == "NONE") {
+        dynamic_role = dynamic_role_e::dr_NONE;
+    }
+    else if (dynamic_role_str == "GOALKEEPER") {
+        dynamic_role = dynamic_role_e::dr_GOALKEEPER;
+    }
+    else if (dynamic_role_str == "ATTACKSUPPORTER") {
+        dynamic_role = dynamic_role_e::dr_ATTACKSUPPORTER;
+    }
+    else if (dynamic_role_str == "DEFENDER") {
+        dynamic_role = dynamic_role_e::dr_DEFENDER;
+    }
+    else if (dynamic_role_str == "INTERCEPTOR") {
+        dynamic_role = dynamic_role_e::dr_INTERCEPTOR;
+    }
+    else if (dynamic_role_str == "SWEEPER") {
+        dynamic_role = dynamic_role_e::dr_SWEEPER;
+    }
+    else if (dynamic_role_str == "SETPLAY_RECEIVER") {
+        dynamic_role = dynamic_role_e::dr_SETPLAY_RECEIVER;
+    }
+    else if (dynamic_role_str == "SETPLAY_KICKER") {
+        dynamic_role = dynamic_role_e::dr_SETPLAY_KICKER;
+    }
+    else if (dynamic_role_str == "BALLPLAYER") {
+        dynamic_role = dynamic_role_e::dr_BALLPLAYER;
+    }
+    else if (dynamic_role_str == "SEARCH FOR BALL") {
+        dynamic_role = dynamic_role_e::dr_SEARCH_FOR_BALL;
+    }
+    else if (dynamic_role_str == "BEGIN_POSITION") {
+        dynamic_role = dynamic_role_e::dr_BEGIN_POSITION;
+    }
+    else if (dynamic_role_str == "PARKING") {
+        dynamic_role = dynamic_role_e::dr_PARKING;
+    }
+    else if (dynamic_role_str == "PENALTY_KICKER") {
+        dynamic_role = dynamic_role_e::dr_PENALTY_KICKER;
+    }
+    else if (dynamic_role_str == "PENALTY_DEFENDER") {
+        dynamic_role = dynamic_role_e::dr_PENALTY_DEFENDER;
+    }
+    else if (dynamic_role_str == "LOB_CALIBRATION") {
+        dynamic_role = dynamic_role_e::dr_LOB_CALIBRATION;
+    }
+    return dynamic_role;
+}
+
+
+} // namespace MRA
 
 #endif // WMTYPES_H

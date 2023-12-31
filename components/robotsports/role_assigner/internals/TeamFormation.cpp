@@ -6,7 +6,7 @@
  */
 
 #include "TeamFormation.hpp"
-using namespace trs;
+using namespace MRA;
 using namespace std;
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@
 #include "geometry.hpp"
 
 using namespace std;
-namespace trs {
+namespace MRA {
 
     /**
      * Constructs a new position, with all field fully specified

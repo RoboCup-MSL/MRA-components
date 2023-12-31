@@ -3,9 +3,50 @@ syntax = "proto3";
 package MRA.RobotsportsRoleAssigner;
 
 import "google/protobuf/timestamp.proto";
-import "datatypes/Player.proto";
+import "datatypes/Pose.proto";
 import "datatypes/Ball.proto";
 import "datatypes/Obstacle.proto";
+
+//  - current dynamic role. 
+// part of robot_strategy/interface/Output.proto
+enum DynamicRole {
+    NONE = 0;
+    GOALKEEPER = 1;
+    ATTACKSUPPORTER = 2;
+    DEFENDER = 3;
+    INTERCEPTOR = 4;
+    SWEEPER = 5;
+    SETPLAY_RECEIVER = 6;
+    SETPLAY_KICKER = 7;
+    BALLPLAYER = 8;
+    SEARCH_FOR_BALL = 9;
+    BEGIN_POSITION = 10;
+    PARKING = 11;
+    PENALTY_KICKER = 12;
+    LOB_CALIBRATION = 13;
+    PENALTY_DEFENDER = 14;
+};
+
+
+message Player
+{
+    // typically on the floor, so z,rx,ry unused
+    int32 id = 1; // T-shirt number
+    bool active = 2; // participating in the game (robot may be inactive when figuring out where it is)
+    bool human = 3;
+    MRA.Datatypes.Pose position = 4;
+    MRA.Datatypes.Pose velocity = 5;
+    bool hasball = 6;
+    bool passed_ball = 7;
+    bool is_keeper = 8;
+    double  time_in_own_penalty_area = 9;
+    double time_in_opponent_penalty_area = 10;
+    // double energy, competence? Reasoning should take it account when choosing player to pass to
+    // radius?
+    DynamicRole dynamic_role = 11;
+}
+
+
 
 message Input
 {
@@ -38,17 +79,17 @@ message Input
 		GOAL_AGAINST = 24;
 	}
 
-    MRA.Datatypes.Player robot = 1; // self
+    Player robot = 1; // self
     GameState gamestate = 2;
     repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
-    repeated MRA.Datatypes.Player teammates = 4;
+    repeated Player teammates = 4;
     // TODO: 
     //  - passed ball is missing in Player.
     //  - player_type_e player_type;  (keeper, reserve, fieldplayer)
+    //  - current dynamic role. 
     //  - time_in_own_penalty_area;   (state ?)
     //  - time_in_opponent_penalty_area; (state ?)
-    //  - current role.  (state ?)
     
-    repeated MRA.Datatypes.Player opponents = 5;
+    repeated Player opponents = 5;
 }
 

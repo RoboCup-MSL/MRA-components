@@ -19,7 +19,7 @@
 #include "SvgUtils.hpp"
 #include "TeamPlannerParameters.hpp"
 
-namespace trs {
+namespace MRA {
 
 string GetTeamPlannerSVGname(game_state_e gamestate, string suffix) {
 	// get current time, and make a string from it.

@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace trs {
+namespace MRA {
 
 Vertex::Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget) :
 		m_minDistance(std::numeric_limits<double>::infinity()),

@@ -7,7 +7,7 @@
 #include "MathUtils.h"
 
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec, const vector<MovingObject>& Opponents,
 		double interceptionChanceStartDistance,

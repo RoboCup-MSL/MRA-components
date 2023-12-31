@@ -13,7 +13,7 @@
 #include "GlobalPathPlanner.hpp"
 #include "Vertex.hpp"
 
-using namespace trs;
+using namespace MRA;
 
 /**
  * Plans a path assuming constant velocities and indefinite accelerations.
@@ -31,7 +31,7 @@ using namespace trs;
  * @return path
  */
 std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
-        const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, double maxSpeed, int nrIterations) {
+        const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, double maxSpeed, int nrIterations) {
 	bool logDynamicPlanner = false;
 
 	if (logDynamicPlanner) {
@@ -63,7 +63,7 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MovingObje
 
 	int iteration = 1;
 
-	vector<trs::Vertex> target_vect;
+	vector<MRA::Vertex> target_vect;
 	target_vect.push_back(Vertex(intercept_data.intercept_position, 0));
 	visibilityGraph.createGraph(start, teamplanner_data, target_vect, targetFunction, teamplanner_data.ballIsObstacle, avoidBallPath, BallTargePos);
 	std::vector<planner_piece_t> path = visibilityGraph.getShortestPath(teamplanner_data);

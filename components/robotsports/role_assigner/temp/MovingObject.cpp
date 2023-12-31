@@ -4,18 +4,18 @@
 #include <sstream>
 #include "geometry.hpp"
 
-namespace trs {
+namespace MRA {
 
 	MovingObject::MovingObject() :
 	    m_position(Position(MRA::Geometry::Point(0,0), 0.0, 1.0, 0)),
-		m_velocity(MRA::Geometry::Point(0, 0)),
+		m_velocity(MRA::Geometry::Velocity(0, 0, 0)),
 		m_label(-1) {
 
 	}
 
-	MovingObject::MovingObject(double x, double y, double rz, double vx, double vy, int label):
+	MovingObject::MovingObject(double x, double y, double rz, double vx, double vy, double vrz, int label):
 				m_position(Position(MRA::Geometry::Point(x,y), 0.0, 1.0, rz)),
-				m_velocity(MRA::Geometry::Point(vx,vy)),
+				m_velocity(MRA::Geometry::Velocity(vx,vy, vrz)),
 				m_label(label) {
 		}
 
@@ -31,7 +31,7 @@ namespace trs {
 	 */
 	MovingObject::MovingObject(Position position) :
 					m_position(position),
-					m_velocity(MRA::Geometry::Point(0,0)),
+					m_velocity(MRA::Geometry::Velocity(0,0)),
 					m_label(-1)  {
 	}
 
@@ -72,14 +72,15 @@ namespace trs {
 		return m_label;
 	}
 
-	void MovingObject::set(double x, double y, double rz, double vx, double vy, int label) {
+	void MovingObject::set(double x, double y, double rz, double vx, double vy, double vrz, int label) {
 				m_position.set(x,y, rz);
 				m_velocity.x = vx;
 				m_velocity.y = vy;
+				m_velocity.rz = vrz;
 				m_label = label;
 	}
 
-	void MovingObject::setVelocity(const MRA::Geometry::Point& linearVelocity) {
+	void MovingObject::setVelocity(const MRA::Geometry::Velocity& linearVelocity) {
 		m_velocity = linearVelocity;
 	}
 
@@ -101,7 +102,24 @@ namespace trs {
 		velocity *= timespan;
 		result.move(velocity, timespan);
 		return result;
+
 	}
+    /**
+     * Moves the object at its current speed.
+     * @param timespan Elapsed time period
+     */
+    void MovingObject::move(double timespan) {
+        auto vel = m_velocity;
+        vel *= timespan;
+        m_position.move(vel, timespan);
+    }
+
+    /**
+     * Moves the object for the given offset and update time with timespan
+     */
+    void MovingObject::move(const MRA::Geometry::Point& offset, double timespan) {
+        m_position.move(offset, timespan);
+    }
 
 	std::string MovingObject::toString(bool print_complete) const {
 		std::stringstream buffer;

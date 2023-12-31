@@ -15,7 +15,7 @@
 
 class DynamicRoleAssignment {
 public:
-	static void assignDynamicRolesToPlayers(const std::vector<dynamic_role_e>& teamFormation, std::vector<trs::TeamPlannerRobot>& Team);
+	static void assignDynamicRolesToPlayers(const std::vector<dynamic_role_e>& teamFormation, std::vector<MRA::TeamPlannerRobot>& Team);
 };
 
 

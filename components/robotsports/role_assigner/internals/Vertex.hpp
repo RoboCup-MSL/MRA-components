@@ -11,7 +11,7 @@
 #include "Edge.hpp"
 #include "geometry.hpp"
 
-namespace trs {
+namespace MRA {
 
 class Vertex {
 

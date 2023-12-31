@@ -14,12 +14,12 @@ using namespace std;
  * @author evg
  *
  */
-namespace trs {
+namespace MRA {
 
 class MovingObject {
 private:
 	Position m_position;
-	MRA::Geometry::Point m_velocity; // in m/s
+	MRA::Geometry::Velocity m_velocity; // in m/s
 	int	m_label; // number of object, 1..10 for own player, >10 for opponents
 
 public:
@@ -31,7 +31,7 @@ public:
 	 * @param y y-position Position of the object
 	 * velocity is set to vx, vy
 	 */
-	MovingObject(double x, double y, double rz, double vx, double vy, int label);
+	MovingObject(double x, double y, double rz, double vx, double vy, double vrz, int label);
 
 	MovingObject(const MovingObject& mo);
 
@@ -68,10 +68,10 @@ public:
 
 	int getLabel() const;
 
-	void set(double x, double y, double rz, double vx, double vy, int label);
+	void set(double x, double y, double rz, double vx, double vy, double vrz, int label);
 
 	// set / update velocity
-	void setVelocity(const MRA::Geometry::Point& linearVelocity);
+	void setVelocity(const MRA::Geometry::Velocity& linearVelocity);
 
 	/**
 	 * Calculates the position of the object at a certain time, given the time
@@ -85,8 +85,11 @@ public:
 	 * @return Position of the object.
 	 */
 	Position getPositionAt(double time) const;
-//
 
+	void move(double timespan);
+
+	/* Moves the object for the given offset and update time with timespan */
+    void move(const MRA::Geometry::Point& offset, double timespan);
 	std::string toString(bool print_complete = true) const;
 
 };

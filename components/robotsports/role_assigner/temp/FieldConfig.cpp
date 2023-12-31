@@ -13,7 +13,7 @@
 using namespace std;
 const int NRPLAYERS = 5; // max players per team
 
-namespace trs {
+namespace MRA {
 
 double FieldConfig::getFieldLength() const {
 	return FIELD_LENGTH;

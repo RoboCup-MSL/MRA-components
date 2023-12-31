@@ -15,7 +15,7 @@
 #include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 
-namespace trs {
+namespace MRA {
 
 class TeamPlannerRobot {
 public:
@@ -77,7 +77,7 @@ public:
     bool passIsRequired;
     pass_data_t pass_data;
     std::vector<dynamic_role_e> teamFormation;
-    trs::FieldConfig fieldConfig;
+    MRA::FieldConfig fieldConfig;
     bool teamControlBall;
     bool playerPassedBall;
 };
@@ -99,7 +99,7 @@ public:
     bool passIsRequired;
     pass_data_t pass_data;
     std::vector<dynamic_role_e> teamFormation;
-    trs::FieldConfig fieldConfig;
+    MRA::FieldConfig fieldConfig;
     TeamPlannerParameters parameters;
 
     // based on inputs

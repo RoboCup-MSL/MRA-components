@@ -20,7 +20,7 @@
 #include "geometry.hpp"
 
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 //---------------------------------------------------------------------------------------------------------------------
 TeamPlay::TeamPlay() : m_gridFileNumber(0) {
@@ -40,7 +40,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 //	game_state_e gamestate = input.gamestate;
 	std::vector<TeamPlannerRobot> Team =  input.team;
 	std::vector<TeamPlannerOpponent> Opponents = input.opponents;
-	trs::MovingObject globalBall;
+	MRA::MovingObject globalBall;
 	TeamPlannerData teamplanner_data; // TODO
 	game_state_e org_gamestate = input.gamestate;
 
@@ -147,7 +147,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			GlobalPathPlanner visibilityGraph = GlobalPathPlanner(input.fieldConfig); // create robot planner
 			visibilityGraph.setOptions(plannerOptions);
 			// create list of possible targets for robot-planner
-			std::vector<trs::Vertex> targetPos = vector<trs::Vertex>();
+			std::vector<MRA::Vertex> targetPos = vector<MRA::Vertex>();
 			targetPos.push_back(Vertex(teamplanner_data.team[idx].result.target, 0));
 			visibilityGraph.createGraph(teamplanner_data.team[idx].position, teamplanner_data,
 					targetPos, teamplanner_data.team[idx].result.planner_target, ballIsObstacle, avoidBallPath, BallTargePos);
@@ -898,7 +898,7 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx,
 	    parameters.addBallApproachVertices = false;
 	}
 
-	vector<trs::Vertex> targetPos = vector<trs::Vertex>();
+	vector<MRA::Vertex> targetPos = vector<MRA::Vertex>();
 	targetPos.push_back(Vertex(teamplanner_data.ball.getPosition().getPoint(), 0));
 	std::vector<planner_piece_t> path;
 

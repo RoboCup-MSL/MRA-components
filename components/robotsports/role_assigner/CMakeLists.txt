@@ -1,5 +1,10 @@
 # this file was produced by MRA-codegen.py from template_CMakeLists.txt
 # it should NOT be modified by user
+set(STRATEGY_TESTER_XSD test/StrategyTester.xsd)
+set(STRATEGY_TESTER_H test/StrategyTester_generated.h)
+set(STRATEGY_TESTER_CPP StrategyTester_generated.cpp)
+
+find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread QUIET)
 
 add_library(MRA-components-robotsports-role-assigner
     tick.cpp
@@ -35,6 +40,116 @@ target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
  )
 target_link_libraries(MRA-components-robotsports-role-assigner MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
 
+
+add_custom_command(OUTPUT ${STRATEGY_TESTER_CPP}
+  COMMAND xsdcxx cxx-tree
+    --namespace-map http://www.robotsports.nl=robotsports
+    --hxx-suffix _generated.h
+    --cxx-suffix _generated.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/${STRATEGY_TESTER_XSD}
+  DEPENDS ${STRATEGY_TESTER_CPP}
+  
+  #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${STRATEGY_TESTER_H} ${MY_GENERATED_INC_DIR}/${STRATEGY_TESTER_H
+)
+
+  # --- xml tester ---
+ add_executable(xml_test
+    test/xml_tester++.cpp
+    test/xmlTeamPlanner.cpp
+    ${STRATEGY_TESTER_CPP}
+)
+
+target_include_directories(xml_test PUBLIC
+    ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}
+    ${MRA_SOURCE_DIR}/base
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/internals
+    ${CMAKE_CURRENT_SOURCE_DIR}/temp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test
+ )
+
+target_link_libraries(xml_test
+    MRA-components-robotsports-role-assigner
+  )
+#add_custom_target(xml_test
+#  DEPENDS ${STRATEGY_TESTER_CPP}
+#)
+
+
+
+  # --- planner_regression_checker ---
+#[[ 
+  add_executable(planner_regression_checker
+    test/planner_regression_checker.cpp
+    test/xml_tester++.cpp
+    #test/xmlGlobalPathPlanner.cpp
+    test/xmlTeamPlanner.cpp
+    test/planner_regression_checker.cpp
+    ${STRATEGY_TESTER_CPP}
+  )
+target_include_directories(planner_regression_checker PUBLIC
+    ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}
+    ${MRA_SOURCE_DIR}/base
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/internals
+    ${CMAKE_CURRENT_SOURCE_DIR}/temp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test
+ )
+
+target_link_libraries(planner_regression_checker
+    MRA-components-robotsports-role-assigner
+  )
+]]
+
+#ADD_DEPENDENCIES(MRA-components-robotsports-role-assigner, ${STRATEGY_TESTER_CPP}) 
+
+# system dependencies
+
+#add_custom_target(rsplanner_xsd
+#  DEPENDS ${STRATEGY_TESTER_CPP}
+#)
+#
+#  add_executable(xml_test
+#    test/xml_tester++.cpp
+#    ${STRATEGY_TESTER_CPP}
+#    test/xmlTeamPlanner.cpp
+#  )
+#
+#  target_link_libraries(xml_test
+#    ${RS_LINK_LIBS}
+#    ${Boost_FILESYSTEM_LIBRARY}
+#    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+#    ${Boost_SYSTEM_LIBRARY}
+#    ${Boost_THREAD_LIBRARY}
+#  )
+
+  # --- xml_globalpathplanner_test ---
+#  set(GLOBAL_PLANNER_TESTER_XSD ${CMAKE_CURRENT_SOURCE_DIR}/GlobalPathPlannerTester.xsd)
+#  set(GLOBAL_PLANNER_TESTER_CPP GlobalPathPlannerTester_generated.cpp)
+
+#  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+#  add_custom_command(OUTPUT ${GLOBAL_PLANNER_TESTER_CPP}
+#    COMMAND xsdcxx cxx-tree
+#      --namespace-map http://www.robotsports.nl=robotsports
+#      --hxx-suffix _generated.h
+#      --cxx-suffix _generated.cpp
+#      ${GLOBAL_PLANNER_TESTER_XSD}
+#    DEPENDS ${GLOBAL_PLANNER_TESTER_XSD}
+#  )
+
+#  add_executable(xml_globalpathplanner_test
+#    ${GLOBAL_PLANNER_TESTER_CPP}
+#    test/xmlGlobalPathPlanner.cpp
+#  )
+#
+#  target_link_libraries(xml_globalpathplanner_test
+#    ${RS_LINK_LIBS}
+#  )
 
 add_executable(
     robotsports_role_assigner_test

@@ -24,7 +24,7 @@
 
 using namespace std;
 
-namespace trs {
+namespace MRA {
 
 /**
  * Integrates 1 over the square of the distance between point c and line segment p1-p2.
@@ -128,7 +128,7 @@ void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
 }
 
 void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlannerData& teamplanner_data,
-		const std::vector<trs::Vertex>& targetPos,
+		const std::vector<MRA::Vertex>& targetPos,
 		planner_target_e targetFunction,
 		bool ballIsObstacle,
 		bool avoidBallPath,
@@ -205,7 +205,7 @@ void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlanner
 vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData& teamplanner_data) {
 	m_start->m_minDistance = 0.0;
 
-	std::list<trs::Vertex*> sortedList = std::list<trs::Vertex*>();
+	std::list<MRA::Vertex*> sortedList = std::list<MRA::Vertex*>();
 	sortedList.push_back(m_start);
 	// check if start is not on target location
 	for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
@@ -711,12 +711,12 @@ void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_dat
 	std::vector<MovingObject> myTeam = std::vector<MovingObject>();
 	//myTeam.push_back(MovingObject(m_Me));
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, -1)); //TODO add id
+		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, 0.0, -1)); //TODO add id
 	}
 
 	std::vector<MovingObject> opponents = std::vector<MovingObject>();
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, -1)); //TODO add id
+		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, 0.0, -1)); //TODO add id
 	}
 
 	team_planner_result_t player_paths = team_planner_result_t();

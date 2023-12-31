@@ -25,7 +25,7 @@
 #include "logging.hpp"
 
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 FieldConfig SvgUtils::m_fieldConfig = FillDefaultFieldConfig();
 

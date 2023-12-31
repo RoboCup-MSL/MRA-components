@@ -9,7 +9,7 @@
 #include <string>
 #include "geometry.hpp"
 
-namespace trs {
+namespace MRA {
 
 class FieldConfig {
 

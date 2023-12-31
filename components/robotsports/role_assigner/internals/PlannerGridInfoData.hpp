@@ -13,7 +13,7 @@
 
 #include <MovingObject.h>
 
-namespace trs {
+namespace MRA {
 
 class PlannerGridGameData {
 public:
@@ -46,6 +46,6 @@ public:
 	void readFromFile(const std::string& filename);
 };
 
-} /* namespace trs */
+} /* namespace MRA */
 
 #endif /* PLANNERGRIDINFODATA_H_ */

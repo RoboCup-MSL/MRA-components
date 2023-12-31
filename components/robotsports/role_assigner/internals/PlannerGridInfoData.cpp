@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace trs;
+using namespace MRA;
 using namespace std;
 
 string PlannerGridInfoData::toString() {
@@ -112,7 +112,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 					y = std::stod(item_text);
 				}
 				if (item_nr == 2) {
-					this->gameData.Team.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, -1));
+					this->gameData.Team.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, 0.0, -1));
 					item_nr = 0;
 				}
 			}
@@ -136,7 +136,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 					y = std::stod(item_text);
 				}
 				if (item_nr == 2) {
-					this->gameData.Opponents.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, -1));
+					this->gameData.Opponents.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, 0.0,-1));
 					item_nr = 0;
 				}
 			}
@@ -162,7 +162,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 				}
 			}
 			if (item_nr == 2) {
-				this->gameData.ball = MovingObject(x, y, 0.0, 0.0, 0.0, -1);
+				this->gameData.ball = MovingObject(x, y, 0.0, 0.0, 0.0, 0.0, -1);
 			}
 			layer_names_comment = true;
 		}

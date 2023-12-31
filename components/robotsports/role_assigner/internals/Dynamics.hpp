@@ -13,7 +13,7 @@
 
 #include "GlobalPathPlanner.hpp" // for planner_piece_t
 
-namespace trs {
+namespace MRA {
 
 class Dynamics {
 	public:

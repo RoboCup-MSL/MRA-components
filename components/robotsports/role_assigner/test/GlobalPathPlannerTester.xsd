@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.robotsports.nl"
+	targetNamespace="http://www.robotsports.nl"
+	elementFormDefault="qualified">
+
+	<element name="Situation" type="tns:GlobalPathPlannerType">
+		<annotation>
+			<documentation>Root element for test GlobalPathPlanner.</documentation>
+		</annotation></element>
+
+	<complexType name="GlobalPathPlannerType">
+        <annotation>
+        	<documentation>Event given by the GlobalPathPlanner tester.</documentation>
+        </annotation>
+        <sequence>
+			<element name="Description" type="string" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Description of the GlobalPathPlanner test.</documentation>
+				</annotation>
+  			</element>
+			<element name="Options" type="tns:OptionsType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Selected options for the GlobalPathPlanner.</documentation>
+				</annotation>
+  			</element>
+   			<element name="GlobalPathPlannerObjective" type="tns:GlobalPathPlannerObjectiveType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>robot planner objective (purpose)</documentation>
+				</annotation>
+  			</element>
+			<element name="Ball" type="tns:BallType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Structure contains Information about the ball.</documentation>
+				</annotation>
+  			</element>
+  			<element name="Me" type="tns:PlayerType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Player to calculate path for</documentation>
+				</annotation>
+			</element>
+  			<element name="Target" type="tns:TargetType" maxOccurs="unbounded" minOccurs="1">
+				<annotation>
+					<documentation>target positions</documentation>
+				</annotation>
+			</element>
+  			<element name="Team" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0">
+				<annotation>
+					<documentation>own players</documentation>
+				</annotation>
+			</element>
+  			<element name="Opponent" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0">
+				<annotation>
+					<documentation>own players</documentation>
+				</annotation>
+			</element>
+  		</sequence>
+	</complexType>
+
+	<complexType name="BallType">
+        <annotation>
+        	<documentation>moving ball </documentation>
+        </annotation>
+		<attribute name="x" type="double">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+	   <attribute name="velx" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity X</documentation>
+			</annotation></attribute>
+       <attribute name="vely" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity Y</documentation>
+			</annotation></attribute>
+	</complexType>
+	<complexType name="PlayerType">
+        <annotation>
+        	<documentation>moving player</documentation>
+        </annotation>
+		<attribute name="x" type="double">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+		<attribute name="rz" type="double" default="0.0">
+			<annotation>
+				<documentation>rz</documentation>
+			</annotation></attribute>
+	   <attribute name="velx" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity X</documentation>
+			</annotation></attribute>
+            <attribute name="vely" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity Y</documentation>
+			</annotation></attribute>
+            <attribute name="velrz" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity Rz</documentation>
+			</annotation></attribute>
+	</complexType>
+	<complexType name="TargetType">
+        <annotation>
+        	<documentation>target position</documentation>
+        </annotation>
+		<attribute name="x" type="double">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+	   <attribute name="distToTarget" type="double" default="0.0">
+			<annotation>
+				<documentation>dist to target</documentation>
+			</annotation></attribute>
+        <attribute name="cost" type="double" default="0.0">
+			<annotation>
+				<documentation>initial cost</documentation>
+			</annotation></attribute>
+	</complexType>
+	<complexType name="OptionsType">
+        <annotation>
+        	<documentation>moving object </documentation>
+        </annotation>
+		<attribute name="minimumEdgeLength" type="double"  default="0.30">
+			<annotation>
+				<documentation>Minimum distance between to vertices. This will make the path finding algorithm faster</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="maximumEdgeLength" type="double"  default="4.00">
+			<annotation>
+				<documentation>Maximum length of and edge. Edges that are longer will not be added to the graph and there not be part of a path.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="minimumDistanceToEndPoint" type="double"  default="3.00">
+			<annotation>
+				<documentation>Barriers that are far from a reasonable path are not considered. A barrier is 'near', if it is somewhat in between the end points or at small distance of an end point.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrVerticesFirstCircle" type="integer" default="6">
+			<annotation>
+				<documentation>Number of vertices on the first circle around the object. Set to 0 if none.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="firstCircleRadius" type="double" default="0.8">
+			<annotation>
+				<documentation>Radius of the first circle of vertices around the object.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrVerticesSecondCircle" type="integer" default="4">
+			<annotation>
+				<documentation>Number of vertices on the second circle around the object. Set to 0 if none.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="secondCircleRadius" type="double" default="1.60">
+			<annotation>
+				<documentation>Radius of the second circle of vertices around the object.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="safetyFactor" type="double" default="1.00">
+			<annotation>
+				<documentation>Factor for obstacle cost.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addBarierVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If vertices around barriers should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addUniformVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If uniformly distributed vertices should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="uniform_x_interval" type="double" default="2.0">
+			<annotation>
+				<documentation>spacing in x between vertices when applying uniform grid.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="uniform_y_interval" type="double" default="2.0">
+			<annotation>
+				<documentation>spacing in y between vertices when applying uniform grid.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="startingVelocityPenaltyFactor" type="double" default="1.00">
+			<annotation>
+				<documentation>Penalty for starting velocity in other direction than intended direction.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addBallApproachVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If ball approach distributed vertices should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="distToapplyBallApproachVertices" type="double" default="1.00">
+			<annotation>
+				<documentation>The distance from the border of the field, when approach vertices must be applied.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="ballApproachVerticesRadius" type="double" default="0.60">
+			<annotation>
+				<documentation>The approach vertices radius around ball.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="ballApproachNumberOfVertices" type="integer" default="8">
+			<annotation>
+				<documentation>Number of approach vertices around ball.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="manDefenseBetweenBallAndPlayer" type="boolean" default="false">
+			<annotation>
+				<documentation>when playing man defense, the player will position itself between the ball and the player.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrSweeperWhenDefending" type="integer" default="1">
+			<annotation>
+				<documentation>number of sweepers to be assigned when defending.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrSweeperWhenAttacking" type="integer" default="1">
+			<annotation>
+				<documentation>number of sweepers to be assigned when attacking.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="dist_before_penalty_area_for_sweeper" type="double" default="0.75">
+			<annotation>
+				<documentation>Minimal distance to penalty area for the sweeper.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="svgDrawVelocity" type="boolean" default="true">
+			<annotation>
+				<documentation>should svg contains velocity vector drawn.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="svgDrawEdges" type="boolean" default="false">
+			<annotation>
+				<documentation>should svg contains edges drawn.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgDefaultTargetColor" type="string" default="red">
+			<annotation>
+				<documentation>svg: default color for target.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgBallColor" type="string" default="orange">
+			<annotation>
+				<documentation>svg: color for ball.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgOriginalTargetColor" type="string" default="darkred">
+			<annotation>
+				<documentation>svg: color for the original target if target is relocated.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgTeamColor" type="string" default="magenta">
+			<annotation>
+				<documentation>svg: color for our team.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgOpponentColor" type="string" default="cyan">
+			<annotation>
+				<documentation>svg: color for opponent team.</documentation>
+			</annotation>
+        </attribute>				
+		<attribute name="svgOutputFileName" type="string" default="">
+			<annotation>
+				<documentation>svg: write output to svg file with the name, if empty ("") then no file is written..</documentation>
+			</annotation>
+        </attribute>				
+	</complexType>
+	<simpleType name="GlobalPathPlannerObjectiveType">
+        <annotation>
+        	<documentation/>
+        </annotation>
+        <restriction base="string">
+			<enumeration value="GOTO_BALL"/>
+			<enumeration value="DRIBBLE"/>
+			<enumeration value="SUPPORT_DEFENSE"/>
+			<enumeration value="SUPPORT_ATTACK"/>
+			<enumeration value="PREPARE_RESTART_AGAINST"/>
+			<enumeration value="PREPARE_RESTART"/>
+			<enumeration value="PREPARE_DROPBALL"/>
+			<enumeration value="GOTO_TARGET_POSITION"/>
+			<enumeration value="GOTO_TARGET_POSITION_SLOW"/>
+			<enumeration value="SWEEPER"/>
+ 			<enumeration value="GOALIE"/>
+  		</restriction>
+	</simpleType>
+	<simpleType name="FormationType">
+        <annotation>
+        	<documentation/>
+        </annotation>
+        <restriction base="string">
+			<enumeration value="FORMATION_013"/>
+			<enumeration value="FORMATION_112"/>
+			<enumeration value="FORMATION_211"/>
+			<enumeration value="FORMATION_SWEEPER_ONLY"/>
+			<enumeration value="FORMATION_DEFENDER_ONLY"/>
+			<enumeration value="FORMATION_ATTACK_SUPPORT_ONLY"/>
+ 		</restriction>
+	</simpleType>
+</schema>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

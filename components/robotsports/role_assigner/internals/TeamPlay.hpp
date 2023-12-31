@@ -16,7 +16,7 @@
 #include "TeamPlannerParameters.hpp"
 
 
-namespace trs {
+namespace MRA {
 
 
 class TeamPlay {

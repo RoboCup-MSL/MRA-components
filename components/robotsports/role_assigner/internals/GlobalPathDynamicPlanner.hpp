@@ -14,7 +14,7 @@
 #include "geometry.hpp"
 #include "TeamPlannerParameters.hpp"
 
-namespace trs {
+namespace MRA {
 /**
  * A planner that takes into account the movement of the start and target locations (assuming constant velocity), and
  * stationary barrier objects that must be avoided.
@@ -39,7 +39,7 @@ public:
      * @return path
      */
     std::vector<planner_piece_t> planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
-            const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction,
+            const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
 			double maxSpeed, int nrIterations);
 
 private:

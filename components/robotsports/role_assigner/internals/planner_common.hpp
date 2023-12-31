@@ -6,6 +6,6 @@
 #include <vector>
 
 
-double chance_of_intercept(const MRA::Geometry::Point& from, const MRA::Geometry::Point& to, const vector<trs::MovingObject>& Opponents,
+double chance_of_intercept(const MRA::Geometry::Point& from, const MRA::Geometry::Point& to, const vector<MRA::MovingObject>& Opponents,
 			double interceptionChanceStartDistance, double interceptionChanceIncreasePerMeter,double interceptionChancePenaltyFactor);
 #endif

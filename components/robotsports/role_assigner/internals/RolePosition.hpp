@@ -17,7 +17,7 @@
 #include "TeamPlannerParameters.hpp"
 
 
-namespace trs {
+namespace MRA {
 
 
 class RolePosition {

@@ -14,7 +14,7 @@
 #include "TeamPlannerGrid.hpp"  // grid related teamplanner functions
 
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 
 MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role, game_state_e gamestate,
@@ -126,7 +126,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		}
 		MovingObject ballPostionToUse = ball;
 		if (plannerOptions.use_pass_to_position_for_attack_support && pass_data.valid) {
-			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 1);
+			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 0.0, 1);
 		}
 
 		// check if already player moves to ball target position

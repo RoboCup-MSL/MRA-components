@@ -13,7 +13,7 @@
 #include "TeamPlannerResult.hpp"
 
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 std::string TeamPlannerRobot::toString() const {
 	std::stringstream buffer;
@@ -58,46 +58,46 @@ std::string TeamPlannerRobot::toString() const {
 }
 
 //
-//static void addToCSV(const string& rstrId, double value, std::stringstream& rStringStream, const string& rstrSeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
-//	rStringStream << std::fixed << value << rstrSeparator;
+//static void addToCSV(const string& rstrId, double value, std::stringstream& rStringStream, const string& rsMRAeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
+//	rStringStream << std::fixed << value << rsMRAeparator;
 //	if (printHeader) {
-//		rHeaderStringStream << rstrId << rstrSeparator;
+//		rHeaderStringStream << rstrId << rsMRAeparator;
 //	}
 //}
 //
-//static void addToCSV(const string& rstrId, bool value, std::stringstream& rStringStream, const string& rstrSeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
-//	rStringStream << static_cast<int>(value) << rstrSeparator;
+//static void addToCSV(const string& rstrId, bool value, std::stringstream& rStringStream, const string& rsMRAeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
+//	rStringStream << static_cast<int>(value) << rsMRAeparator;
 //	if (printHeader) {
-//		rHeaderStringStream << rstrId << rstrSeparator;
+//		rHeaderStringStream << rstrId << rsMRAeparator;
 //	}
 //}
 //
-//static void addToCSV(const string& rstrId, int value, std::stringstream& rStringStream, const string& rstrSeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
-//	rStringStream << value << rstrSeparator;
+//static void addToCSV(const string& rstrId, int value, std::stringstream& rStringStream, const string& rsMRAeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
+//	rStringStream << value << rsMRAeparator;
 //	if (printHeader) {
-//		rHeaderStringStream << rstrId << rstrSeparator;
+//		rHeaderStringStream << rstrId << rsMRAeparator;
 //	}
 //}
 
-//static void MovingObjectToCSV(const string& rstrId, const MovingObject& rObject, std::stringstream& rStringStream, const string& rstrSeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
+//static void MovingObjectToCSV(const string& rstrId, const MovingObject& rObject, std::stringstream& rStringStream, const string& rsMRAeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
 //    MRA::Geometry::Point linVel;
 //	double rotVel;
 //	rObject.getVelocity(linVel, rotVel);
-//	addToCSV(rstrId+".valid",rObject.isValid(), rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+//	addToCSV(rstrId+".valid",rObject.isValid(), rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
 //	if (rObject.isValid()) {
-//		addToCSV(rstrId+".x", rObject.getXYlocation().x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".y", rObject.getXYlocation().y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vx", linVel.x, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vy", linVel.y, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vr", rotVel, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".x", rObject.getXYlocation().x, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".y", rObject.getXYlocation().y, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vx", linVel.x, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vy", linVel.y, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vr", rotVel, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
 //	}
 //	else
 //	{
-//		addToCSV(rstrId+".x", 0.0, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".y", 0.0, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vx", 0.0, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vy", 0.0, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
-//		addToCSV(rstrId+".vr", 0.0, rStringStream, rstrSeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".x", 0.0, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".y", 0.0, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vx", 0.0, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vy", 0.0, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
+//		addToCSV(rstrId+".vr", 0.0, rStringStream, rsMRAeparator, printHeader, rHeaderStringStream);
 //	}
 //}
 

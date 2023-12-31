@@ -7,7 +7,7 @@
 #define TeamPlannerOpponent_H 1
 #include "MovingObject.h"
 
-namespace trs {
+namespace MRA {
 
 class TeamPlannerOpponent {
 public:

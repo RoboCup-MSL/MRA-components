@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.robotsports.nl"
+	targetNamespace="http://www.robotsports.nl"
+	elementFormDefault="qualified">
+
+	<element name="Situation" type="tns:StrategyType">
+		<annotation>
+			<documentation>Root element for test strategy.</documentation>
+		</annotation></element>
+
+	<complexType name="StrategyType">
+        <annotation>
+        	<documentation>Event given by the strategy tester.</documentation>
+        </annotation>
+        <sequence>
+			<element name="Description" type="string" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Description of the strategy test.</documentation>
+				</annotation>
+  			</element>
+			<element name="Options" type="tns:OptionsType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Selected options for the strategy.</documentation>
+				</annotation>
+  			</element>
+			<element name="Field" type="tns:FieldType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>field configuration.</documentation>
+				</annotation>
+  			</element>
+			<element name="Simulation" type="tns:SimulationType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>Simulation parameters.</documentation>
+				</annotation>
+  			</element>
+   			<element name="GameState" type="tns:GameStateType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>game state</documentation>
+				</annotation>
+  			</element>
+   			<element name="AttackFormation" type="tns:FormationType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>formation during attack phase</documentation>
+				</annotation>
+  			</element>
+   			<element name="DefenseFormation" type="tns:FormationType" maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>formation during defense phase</documentation>
+				</annotation>
+  			</element>
+			<element name="Ball" type="tns:BallType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>Structure contains Information about the ball.</documentation>
+				</annotation>
+  			</element>
+			<element name="LocalBall" type="tns:BallType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>Structure contains Information about the local ball.</documentation>
+				</annotation>
+  			</element>
+  			<element name="Team" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="1">
+				<annotation>
+					<documentation>own players</documentation>
+				</annotation>
+			</element>
+  			<element name="Opponent" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0">
+				<annotation>
+					<documentation>own players</documentation>
+				</annotation>
+			</element>
+			<element name="PickupPosition" type="tns:PickupPositionType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>Pickup ball information.</documentation>
+				</annotation>
+  			</element>
+			<element name="SituationInfo" type="tns:SituationInfoType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>situation info, team related.</documentation>
+				</annotation>
+  			</element>
+  		</sequence>
+	</complexType>
+
+	<complexType name="BallType">
+        <annotation>
+        	<documentation>moving ball </documentation>
+        </annotation>
+		<attribute name="x" type="double">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+	   <attribute name="velx" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity X</documentation>
+			</annotation></attribute>
+       <attribute name="vely" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity Y</documentation>
+			</annotation></attribute>
+	</complexType>
+	<complexType name="PlayerType">
+        <annotation>
+        	<documentation>moving player</documentation>
+        </annotation>
+		<attribute name="x" type="double">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+		<attribute name="rz" type="double" default="0.0">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+	   <attribute name="velx" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity X</documentation>
+			</annotation></attribute>
+       <attribute name="vely" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity Y</documentation>
+			</annotation></attribute>
+       <attribute name="velrz" type="double" default="0.0">
+			<annotation>
+				<documentation>velocity rz</documentation>
+			</annotation></attribute>
+		 <attribute name="isGoalie" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator that the player has the goalie role</documentation>
+			</annotation>
+		</attribute>
+		 <attribute name="id" type="string" default="">
+			<annotation>
+				<documentation>player-id (unique id for the player)</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="time_in_penalty_area" type="double" default="0.0">
+			<annotation>
+				<documentation>time player in closest penalty area</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="hasBall" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator that the player control the ball</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="passedBall" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator that the player passed the ball</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="previous_result_present" type="boolean" default="false">
+			<annotation>
+				<documentation>previous result present flag</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="previous_result_ts" type="double" default="0.0">
+			<annotation>
+				<documentation>previous result relative timestamp</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="previous_result_x" type="double" default="0.0">
+			<annotation>
+				<documentation>previous result relative x position</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="previous_result_y" type="double" default="0.0">
+			<annotation>
+				<documentation>previous result relative y position</documentation>
+			</annotation>
+		</attribute>
+	   <attribute name="previous_result_dynamic_role" type="tns:DynamicRoleType" default="NONE">
+			<annotation>
+				<documentation>previous result dynamic role</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="PickupPositionType">
+        <annotation>
+        	<documentation>pickup ball position information</documentation>
+        </annotation>
+		<attribute name="x" type="double" default="0.0">
+			<annotation>
+				<documentation>x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="y" type="double" default="0.0">
+			<annotation>
+				<documentation>y</documentation>
+			</annotation></attribute>
+		<attribute name="ts" type="double" default="0.0">
+			<annotation>
+				<documentation>relative pickup time in seconds</documentation>
+			</annotation></attribute>
+	   <attribute name="valid" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator that the player control the ball</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="SituationInfoType">
+        <annotation>
+        	<documentation>situation info, team related</documentation>
+        </annotation>
+        <sequence>
+		<element name="PassData" type="tns:PassDataType" maxOccurs="1" minOccurs="0">
+				<annotation>
+					<documentation>situation info, team related.</documentation>
+				</annotation>
+ 			</element>
+ 	   </sequence>	
+	   <attribute name="passing_required" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator that passing is required to able to score a valid goal</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="PassDataType">
+        <annotation>
+        	<documentation>pass information</documentation>
+        </annotation>
+		<attribute name="origin_x" type="double" default="0.0">
+			<annotation>
+				<documentation>pass from position x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="origin_y" type="double" default="0.0">
+			<annotation>
+				<documentation>pass from position y</documentation>
+			</annotation></attribute>
+		<attribute name="target_x" type="double" default="0.0">
+			<annotation>
+				<documentation>pass to position x</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="target_y" type="double" default="0.0">
+			<annotation>
+				<documentation>pass to position y</documentation>
+			</annotation></attribute>
+		<attribute name="ts" type="double" default="0.0">
+			<annotation>
+				<documentation>pass time in seconds</documentation>
+			</annotation></attribute>
+		<attribute name="velocity" type="double" default="0.0">
+			<annotation>
+				<documentation>intended ball velocity</documentation>
+			</annotation></attribute>
+		<attribute name="angle" type="double" default="0.0">
+			<annotation>
+				<documentation>intended ball velocity</documentation>
+			</annotation></attribute>
+	   <attribute name="valid" type="boolean" default="false">
+			<annotation>
+				<documentation>indicator if pass data is valid</documentation>
+			</annotation></attribute>
+	   <attribute name="target_id" type="int" default="0">
+			<annotation>
+				<documentation>target id for pass, 0 = goal else robot-id</documentation>
+			</annotation></attribute>
+	</complexType>
+	<complexType name="SimulationType">
+		<attribute name="numberOfIterations" type="integer"  default="1">
+     			<annotation>
+					<documentation>Number of iterations for simulation.</documentation>
+				</annotation>
+        </attribute>
+		<attribute name="simulateOpponent" type="boolean"  default="true">
+  				<annotation>
+					<documentation>Must opponent be simulated.</documentation>
+				</annotation>
+        </attribute>
+     </complexType>
+
+	<complexType name="OptionsType">
+        <annotation>
+        	<documentation>moving object </documentation>
+        </annotation>
+		<attribute name="calculateAllPaths" type="boolean" default="true">
+			<annotation>
+				<documentation>Must all path be calculated, even if path for this player is known.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="minimumEdgeLength" type="double"  default="0.30">
+			<annotation>
+				<documentation>Minimum distance between to vertices. This will make the path finding algorithm faster</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="maximumEdgeLength" type="double"  default="4.00">
+			<annotation>
+				<documentation>Maximum length of and edge. Edges that are longer will not be added to the graph and there not be part of a path.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="minimumDistanceToEndPoint" type="double"  default="3.00">
+			<annotation>
+				<documentation>Barriers that are far from a reasonable path are not considered. A barrier is 'near', if it is somewhat in between the end points or at small distance of an end point.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrVerticesFirstCircle" type="integer" default="6">
+			<annotation>
+				<documentation>Number of vertices on the first circle around the object. Set to 0 if none.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="firstCircleRadius" type="double" default="1">
+			<annotation>
+				<documentation>Radius of the first circle of vertices around the object.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="nrVerticesSecondCircle" type="integer" default="8">
+			<annotation>
+				<documentation>Number of vertices on the second circle around the object. Set to 0 if none.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="secondCircleRadius" type="double" default="1.60">
+			<annotation>
+				<documentation>Radius of the second circle of vertices around the object.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="safetyFactor" type="double" default="1.00">
+			<annotation>
+				<documentation>Factor for obstacle cost.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addBarierVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If vertices around barriers should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addUniformVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If uniformly distributed vertices should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="uniform_x_interval" type="double" default="2.0">
+			<annotation>
+				<documentation>spacing in x between vertices when applying uniform grid.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="uniform_y_interval" type="double" default="2.0">
+			<annotation>
+				<documentation>spacing in y between vertices when applying uniform grid.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="startingVelocityPenaltyFactor" type="double" default="1.00">
+			<annotation>
+				<documentation>Penalty for starting velocity in other direction than intended direction.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="addBallApproachVertices" type="boolean" default="true">
+			<annotation>
+				<documentation>If ball approach distributed vertices should be added.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="distToapplyBallApproachVertices" type="double" default="1.00">
+			<annotation>
+				<documentation>The distance from the border of the field, when approach vertices must be applied.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="ballApproachVerticesRadius" type="double" default="0.60">
+			<annotation>
+				<documentation>The approach vertices radius around ball.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="ballApproachNumberOfVertices" type="integer" default="8">
+			<annotation>
+				<documentation>Number of approach vertices around ball.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="manDefenseBetweenBallAndPlayer" type="boolean" default="true">
+			<annotation>
+				<documentation>when playing man defense, the player will position itself between the ball and the player.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="dist_before_penalty_area_for_sweeper" type="double" default="0.75">
+			<annotation>
+				<documentation>Minimal distance to penalty area for the sweeper.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_size" type="double" default="0.75">
+			<annotation>
+				<documentation>grid size for grid-based calculations.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="interceptionChanceStartDistance" type="double" default="1.0">
+			<annotation>
+				<documentation>distance when penalty for interception thread must be applied.</documentation>
+			</annotation>
+        </attribute>	
+		<attribute name="interceptionChanceIncreasePerMeter" type="double" default="0.25">
+			<annotation>
+				<documentation>distance increase per meter when penalty for interception thread must be applied.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="interceptionChancePenaltyFactor" type="double" default="4.0">
+			<annotation>
+				<documentation>penalty factor for interception thread calculation.</documentation>
+			</annotation>
+        </attribute>
+        
+		<attribute name="grid_close_to_ball_normal_penalty" type="double" default="17000">
+			<annotation>
+				<documentation>penalty in grid for being to close to the ball within the normal radius.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_normal_radius" type="double" default="3.1">
+			<annotation>
+				<documentation>radius to apply penalty in grid for being to close to the ball during normal situation.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_normal_penalty" type="double" default="17000">
+			<annotation>
+				<documentation>penalty in grid for being to close to the ball within the restart radius.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_normal_radius" type="double" default="3.1">
+			<annotation>
+				<documentation>radius to apply penalty in grid for being to close to the ball during normal restart situation.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_penalty_penalty" type="double" default="17000">
+			<annotation>
+				<documentation>penalty in grid for being to close to the ball within the penalty radius.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_penalty_radius" type="double" default="3.25">
+			<annotation>
+				<documentation>radius to apply penalty in grid for being to close to the ball during penalty  situation.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_dropball_penalty" type="double" default="17000">
+			<annotation>
+				<documentation>penalty in grid for being to close to the ball within the dropball radius</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_close_to_ball_restart_dropball_radius" type="double" default="1.1">
+			<annotation>
+				<documentation>radius to apply penalty in grid for being to close to the ball during dropball situation.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_opponent_goal_clearance_x" type="double" default="7.0">
+			<annotation>
+				<documentation>area-x part in near opponent goal where not to come.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_opponent_goal_clearance_y" type="double" default="2.5">
+			<annotation>
+				<documentation>area-y part in near opponent goal where not to come.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_own_goal_clearance_x" type="double" default="3">
+			<annotation>
+				<documentation>area-x part in near own goal where not to come.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="grid_own_goal_clearance_y" type="double" default="0.75">
+			<annotation>
+				<documentation>area-y part in near own goal where not to come.</documentation>
+			</annotation>
+        </attribute>
+				
+		<attribute name="nrDynamicPlannerIterations" type="integer" default="2">
+			<annotation>
+				<documentation>number of iterations for the dynamic planner (intercept ball, 0 is normal robotplanner).</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="maxPossibleLinearSpeed" type="double" default="1.5">
+			<annotation>
+				<documentation>maximum possible linear speed (used for interception calculations).</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="maxPossibleLinearAcceleration" type="double" default="1.2">
+			<annotation>
+				<documentation>maximum possible linear acceleration.</documentation>
+			</annotation>
+        </attribute>
+        <attribute name="nr_robots_needed_for_pass_play" type="int" default="2">
+        	<annotation>
+				<documentation>number of robots that must be present before pass play is used (otherwise player with ball goes to goal)</documentation>
+			</annotation>
+        </attribute>
+       <attribute name="nr_attack_support_during_defensive_period" type="int" default="0">
+       		<annotation>
+				<documentation>number of attack supporting robots when opponent is attacking </documentation>
+			</annotation>
+        </attribute>
+      <attribute name="wait_on_non_optimal_position_during_prepare_phase" type="boolean" default="false">
+      		<annotation>
+				<documentation>must attackers wait on non optimal position during prepare phase (and move to best position when game starts)</documentation>
+			</annotation>
+        </attribute>
+	 <attribute name="use_pass_to_position_for_attack_support" type="boolean" default="true">
+			<annotation>
+				<documentation>use pass to position to determin the attack support location (or move to current ball position).</documentation>
+			</annotation>
+	   </attribute>
+	<attribute name="man_to_man_defense_during_normal_play" type="boolean" default="true">
+		<annotation>
+			<documentation>apply man to man defense during normal play (bool).</documentation>
+		</annotation>
+	</attribute>
+	<attribute name="man_to_man_defense_during_setplay_against" type="boolean" default="true">
+		<annotation>
+			<documentation>apply man to man defense during setplay against (bool).</documentation>
+		</annotation>
+	</attribute>
+	<attribute name="dist_to_goal_to_mark_opponent_as_goalie" type="double" default="1.5">
+		<annotation>
+			<documentation>max distance to opponent goal to mark an opponent as goalie.</documentation>
+		</annotation>
+	</attribute>
+	<attribute name="setplay_against_dist_to_opponent" type="double" default="1.5">
+		<annotation>
+			<documentation>preferred distance to keep to opponent during setplay against.</documentation>
+		</annotation>
+	</attribute>        
+	 <attribute name="move_to_ball_left_field_position" type="boolean" default="true">
+			<annotation>
+				<documentation>move close to the position where the ball left the field.</documentation>
+			</annotation>
+	   </attribute>        
+      <attribute name="autoAssignGoalie" type="boolean" default="false">
+      		<annotation>
+				<documentation>auto assign goalie, when no dedicated goalie is present</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="preferredSetplayKicker" type="integer" default="0">
+      		<annotation>
+				<documentation>preferred player for rol setplay kicker</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="preferredSetplayReceiver" type="integer" default="0">
+      		<annotation>
+				<documentation>preferred player for rol setplay receiver</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="priority_block_max_distance" type="double" default="1.5">
+      		<annotation>
+				<documentation>distance for priority blocker to opponent</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="no_sweeper_during_setplay" type="boolean" default="true">
+      		<annotation>
+				<documentation>skip sweeper during setplay and assign extra attacksupporter</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="interceptor_assign_use_ball_velocity" type="boolean" default="true">
+      		<annotation>
+				<documentation>use ball velocity to determine the interceptor</documentation>
+			</annotation>
+        </attribute>
+      <attribute name="interceptor_assign_min_velocity_for_calculate_interception_position" type="double" default="0.5">
+      		<annotation>
+				<documentation>minimum ball velocity needed to calculate interception position for interceptor role assignment</documentation>
+			</annotation>
+        </attribute>
+        
+		<attribute name="svgDrawVelocity" type="boolean" default="true">
+			<annotation>
+				<documentation>should svg contains velocity vector drawn.</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="svgDrawEdges" type="boolean" default="false">
+			<annotation>
+				<documentation>should svg contains edges drawn.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgDefaultTargetColor" type="string" default="red">
+			<annotation>
+				<documentation>svg: default color for target.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgBallColor" type="string" default="orange">
+			<annotation>
+				<documentation>svg: color for ball.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgOriginalTargetColor" type="string" default="darkred">
+			<annotation>
+				<documentation>svg: color for the original target if target is relocated.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgTeamColor" type="string" default="magenta">
+			<annotation>
+				<documentation>svg: color for our team.</documentation>
+			</annotation>
+        </attribute>		
+		<attribute name="svgOpponentColor" type="string" default="cyan">
+			<annotation>
+				<documentation>svg: color for opponent team.</documentation>
+			</annotation>
+        </attribute>				
+		<attribute name="svgOutputFileName" type="string" default="">
+			<annotation>
+				<documentation>svg: write output to svg file with the name, if empty ("") then no file is written..</documentation>
+			</annotation>
+        </attribute>				
+		<attribute name="saveGridDataToFile" type="boolean" default="true">
+			<annotation>
+				<documentation>if true, grid data is saved to file (.gpd), for debugging purposes. file-names will be constructed from the svgOutputFileName or using a generic name if that is not available.</documentation>
+			</annotation>
+        </attribute>				
+		<attribute name="svgRobotPlanner" type="boolean" default="false">
+			<annotation>
+				<documentation>if true, robot planner writes output to svg with the filename of svgOutFileName.</documentation>
+			</annotation>
+        </attribute>				
+	</complexType>
+	<complexType name="FieldType">
+        <annotation>
+        	<documentation>Field data</documentation>
+        </annotation>
+		<attribute name="field_length" type="double" default="18.0">
+			<annotation>
+				<documentation>length of the field</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="field_width" type="double" default="12.0">
+			<annotation>
+				<documentation>width of the field</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="field_margin" type="double" default="1.0">
+			<annotation>
+				<documentation>margin between field and border</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="goal_width" type="double" default="2.0">
+			<annotation>
+				<documentation>width of goal (longest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="goal_length" type="double" default="0.5">
+			<annotation>
+				<documentation>length of goal (shortest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="center_circle_diameter" type="double" default="4.0">
+			<annotation>
+				<documentation>diameter of center circle</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="goal_area_width" type="double" default="3.5">
+			<annotation>
+				<documentation>width of goal area (longest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="goal_area_length" type="double" default="0.75">
+			<annotation>
+				<documentation>length of goal area (shortest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="penalty_area_present" type="boolean" default="true">
+			<annotation>
+				<documentation>is penalty area present</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="penalty_area_width" type="double" default="6.5">
+			<annotation>
+				<documentation>width of penalty area (longest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="penalty_area_length" type="double" default="2.25">
+			<annotation>
+				<documentation>length of penalty area (shortest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="robot_size" type="double" default="0.52">
+			<annotation>
+				<documentation>max diameter of robot</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="ball_radius" type="double" default="0.11">
+			<annotation>
+				<documentation>radius of the ball</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="field_markings_width" type="double" default="0.125">
+			<annotation>
+				<documentation>width of the outer lines of the field</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="field_markings_width_internal" type="double" default="0.125">
+			<annotation>
+				<documentation>width of the inner lines of the field</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="parking_area_width" type="double" default="0.5">
+			<annotation>
+				<documentation>width of parking area (longest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="parking_area_length" type="double" default="0.5">
+			<annotation>
+				<documentation>length of parking area (shortest side)</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="parking_distance_between_robots" type="double" default="1.0">
+			<annotation>
+				<documentation>distance between robots when parking</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="parking_distance_to_line" type="double" default="0.0">
+			<annotation>
+				<documentation>distance relative to the line to park the robot (negative inside field)</documentation>
+			</annotation>
+        </attribute>
+	</complexType>
+ 	<simpleType name="GameStateType">
+        <annotation>
+        	<documentation/>
+        </annotation>
+        <restriction base="string">
+			<enumeration value="Normal"/>
+			<enumeration value="Parking"/>
+			<enumeration value="Begin Position"/>
+			<enumeration value="Kickoff"/>
+			<enumeration value="Kickoff Against"/>
+			<enumeration value="Freekick"/>
+			<enumeration value="Freekick Against"/>
+			<enumeration value="Goalkick"/>
+			<enumeration value="Goalkick Against"/>
+			<enumeration value="Throwin"/>
+			<enumeration value="Throwin Against"/>
+			<enumeration value="Corner"/>
+			<enumeration value="Corner Against"/>
+			<enumeration value="Penalty"/>
+			<enumeration value="Penalty Against"/>
+			<enumeration value="Penalty Shootout"/>
+			<enumeration value="Penalty Shootout Against"/>
+			<enumeration value="Dropped Ball"/>
+			<enumeration value="Yellow Card Against"/>
+			<enumeration value="Red Card Against"/>
+			<enumeration value="Goal"/>
+			<enumeration value="Goal Against"/>
+ 		</restriction>
+	</simpleType>
+	<simpleType name="FormationType">
+        <annotation>
+        	<documentation/>
+        </annotation>
+        <restriction base="string">
+			<enumeration value="FORMATION_013"/>
+			<enumeration value="FORMATION_112"/>
+			<enumeration value="FORMATION_211"/>
+			<enumeration value="FORMATION_310"/>
+			<enumeration value="FORMATION_SWEEPER_ONLY"/>
+			<enumeration value="FORMATION_DEFENDER_ONLY"/>
+			<enumeration value="FORMATION_ATTACK_SUPPORT_ONLY"/>
+			<enumeration value="FORMATION_DEFENDER_ONLY"/>
+			<enumeration value="FORMATION_INTERCEPTOR_ONLY"/>
+			<enumeration value="FORMATION_SWEEPER_ONLY"/>
+			<enumeration value="FORMATION_INTERCEPTOR_ONLY"/>
+			<enumeration value="FORMATION_SETPLAY_RECEIVER_ONLY"/>
+			<enumeration value="FORMATION_SETPLAY_KICKER_ONLY"/>
+			<enumeration value="FORMATION_BALLPLAYER_ONLY"/>
+			<enumeration value="FORMATION_SEARCHFORBALL_ONLY"/>
+			<enumeration value="FORMATION_BEGINPOSITION_ONLY"/>
+			<enumeration value="FORMATION_PARKING_ONLY"/>
+			<enumeration value="FORMATION_PENALTYKICKER_ONLY"/>
+ 		</restriction>
+	</simpleType>
+	<simpleType name="DynamicRoleType">
+        <annotation>
+        	<documentation/>
+        </annotation>
+        <restriction base="string">
+        	<enumeration value="NONE"/>
+			<enumeration value="GOALKEEPER"/>
+			<enumeration value="ATTACKSUPPORTER"/>
+			<enumeration value="DEFENDER"/>
+			<enumeration value="INTERCEPTOR"/>
+			<enumeration value="SWEEPER"/>
+			<enumeration value="SETPLAY_RECEIVER"/>
+			<enumeration value="SETPLAY_KICKER"/>
+			<enumeration value="BALLPLAYER"/>
+			<enumeration value="SEARCH_FOR_BALL"/>
+			<enumeration value="BEGIN_POSITION"/>
+			<enumeration value="PARKING"/>
+			<enumeration value="PENALTY_KICKER"/>
+ 		</restriction>
+	</simpleType>
+</schema>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

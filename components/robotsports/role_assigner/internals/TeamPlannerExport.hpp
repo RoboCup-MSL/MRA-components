@@ -15,7 +15,7 @@
 #include "TeamPlannerParameters.hpp"
 
 
-namespace trs {
+namespace MRA {
 	std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix = "");
 } // namespace
 

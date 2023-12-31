@@ -23,7 +23,7 @@
  *
  */
 
-namespace trs {
+namespace MRA {
 
 class GlobalPathPlanner {
 
@@ -64,7 +64,7 @@ public:
 	void setOptions(const TeamPlannerParameters& options);
 
 	/* create graph for the provided input */
-	void createGraph(const MovingObject& start_position, const TeamPlannerData& teamplanner_data, const std::vector<trs::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+	void createGraph(const MovingObject& start_position, const TeamPlannerData& teamplanner_data, const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
 			bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
 
 	/**

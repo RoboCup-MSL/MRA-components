@@ -10,7 +10,7 @@
 #include <limits>
 #include <iostream>
 
-using namespace trs;
+using namespace MRA;
 
 // calculation position where the ball will leave the field
 MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig) {

@@ -11,7 +11,7 @@
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerParameters.hpp"
 
-namespace trs {
+namespace MRA {
 
 class SvgUtils {
 public:

@@ -6,7 +6,7 @@
 #ifndef EDGE_H
 #define EDGE_H 1
 
-namespace trs {
+namespace MRA {
 
 class Vertex;
 
@@ -16,7 +16,7 @@ class Vertex;
  */
 class Edge {
 	public:
-		trs::Vertex* m_pTarget;
+		MRA::Vertex* m_pTarget;
     	double m_dCost;
 
     	Edge(Vertex *pTarget, double dCost);

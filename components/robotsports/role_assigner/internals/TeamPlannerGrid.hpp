@@ -12,7 +12,7 @@
 #include "MovingObject.h"
 #include "TeamPlay.hpp"
 
-namespace trs {
+namespace MRA {
 
 class PlannerGridInfoData;
 class GridHeuristic;
@@ -56,7 +56,7 @@ public:
 
 private:
 	static void writeGridDataToFile(PlannerGridInfoData& pgid, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& strSituation, int gridFileNumber);
+			const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& sMRAituation, int gridFileNumber);
 	static double CalcInterceptionThreat(const std::vector<TeamPlannerRobot>& m_Team, int grid_x, int grid_y,
 			const std::vector<TeamPlannerOpponent>& opponents, double interceptionInfluenceDistance, double interceptionDistancePenaltyFactor);
 	static double calculate_a_penaly_factor_for_teammate(double ball_ax_sqr, double ball_c);
@@ -73,6 +73,6 @@ private:
 			PlannerGridInfoData &pgid);
 };
 
-} /* namespace trs */
+} /* namespace MRA */
 
 #endif /* TEAMPLANNERGRID_H_ */

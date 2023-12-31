@@ -14,7 +14,7 @@
 #include "TeamPlay.hpp"
 #include "WmTypes.h"
 
-namespace trs {
+namespace MRA {
 
 // ----------------------------------------------------------------------------------------
 class GridHeuristic {
@@ -439,7 +439,7 @@ private:
 
 
 
-} // namespace trs
+} // namespace MRA
 
 
 #endif /* PLANNER_GRID_GRIDHEURISTIC_H  */

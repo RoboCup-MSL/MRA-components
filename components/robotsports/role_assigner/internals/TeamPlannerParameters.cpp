@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace trs {
+namespace MRA {
 
 bool TeamPlannerParameters::calculateAllPaths = true;
 double TeamPlannerParameters::minimumEdgeLength = 0.30;

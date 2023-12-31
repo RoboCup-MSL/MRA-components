@@ -2,7 +2,7 @@
 #include "DynamicRoleAssignment.h"
 #include <map>
 using namespace std;
-using namespace trs;
+using namespace MRA;
 
 //---------------------------------------------------------------------------------------------------------------------
 // assign dynamic roles to available players

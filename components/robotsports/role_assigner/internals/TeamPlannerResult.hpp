@@ -11,7 +11,7 @@
 #include "FieldConfig.h"
 #include <vector>
 
-namespace trs {
+namespace MRA {
 
 class PlayerPlannerResult {
 public:

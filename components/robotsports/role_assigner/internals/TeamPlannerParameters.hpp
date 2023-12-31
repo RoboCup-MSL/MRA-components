@@ -10,7 +10,7 @@
 
 #include "planner_types.hpp" // define of planner_options_t
 
-namespace trs {
+namespace MRA {
 // Constructing a new object will set the default options.
 class TeamPlannerParameters {
 public:

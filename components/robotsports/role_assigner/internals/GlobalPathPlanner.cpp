@@ -80,8 +80,6 @@ static int svgId = -1;
  */
 GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
 	m_fieldConfig(fieldConfig),
-	m_Me(MovingObject()),
-	m_Ball(MovingObject()),
 	m_start(0),
 	m_startVelocity(0),
 	m_target(std::vector<Vertex *>()),
@@ -95,7 +93,7 @@ GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
 	m_maxFieldX(0),
 	m_maxFieldY(0)
 {
-	m_Me.getVelocity(m_startVelocity);
+	//m_Me.getVelocity(m_startVelocity);
 }
 
 GlobalPathPlanner::~GlobalPathPlanner() {
@@ -127,7 +125,7 @@ void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
 	m_options = options;
 }
 
-void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlannerData& teamplanner_data,
+void GlobalPathPlanner::createGraph(const MRA::Geometry::Pose& start_pose, const MRA::Geometry::Pose& start_vel, const TeamPlannerData& teamplanner_data,
 		const std::vector<MRA::Vertex>& targetPos,
 		planner_target_e targetFunction,
 		bool ballIsObstacle,
@@ -137,13 +135,11 @@ void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlanner
     auto ball = teamplanner_data.ball;
 
 	// TODO check on dist me to target, if large than max field. stop calculations !!!!!
-	m_Ball = ball;
-	Position startPos = start.getPosition();
 	if (m_start != 0) {
 		delete m_start;
 	}
-	m_start = new Vertex(startPos.getPoint(), 0);
-	start.getVelocity(m_startVelocity);
+	m_start = new Vertex(start_pose, 0);
+	m_startVelocity = start_vel;
 	m_vertices.push_back(m_start);
 	m_targetFunction = targetFunction;
 	for(std::vector<Vertex>::size_type pos_idx = 0; pos_idx != targetPos.size(); pos_idx++) {
@@ -173,14 +169,14 @@ void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlanner
 		if (ballIsObstacle) {
 			// handle ball as obstacle
 			if (teamplanner_data.ball_present) {
-				addOpponent(teamplanner_data.ball, true);
+				addOpponent(teamplanner_data.ball.position, true, teamplanner_data.ball);
 			}
 		}
 		for (auto opponent: teamplanner_data.opponents) {
-		    addOpponent(opponent.position, false);
+		    addOpponent(opponent.position, false, teamplanner_data.ball);
 		}
         for (auto teammate: teamplanner_data.team) {
-            addOpponent(teammate.position, false); // handle team mates as opponent (drive around them)
+            addOpponent(teammate.position, false, teamplanner_data.ball); // handle team mates as opponent (drive around them)
         }
 	}
 
@@ -192,7 +188,7 @@ void GlobalPathPlanner::createGraph(const MovingObject& start, const TeamPlanner
 	}
 
 	// Add edges
-	addEdges(avoidBallPath, rBallTargePos);
+	addEdges(avoidBallPath, rBallTargePos, teamplanner_data.ball);
 }
 
 /**
@@ -327,8 +323,8 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
 	return path2;
 }
 
-void GlobalPathPlanner::addOpponent(const MovingObject& opponent, bool skipFirstRadius) {
-    MRA::Geometry::Point v(opponent.getPosition().getPoint());
+void GlobalPathPlanner::addOpponent(const MRA::Geometry::Pose& opponent, bool skipFirstRadius, const TeamPlannerBall& ball) {
+    MRA::Geometry::Point v(opponent);
     double x = v.x;
     double y = v.y;
 
@@ -358,8 +354,8 @@ void GlobalPathPlanner::addOpponent(const MovingObject& opponent, bool skipFirst
     m_opponents.push_back(v);
 }
 
-void GlobalPathPlanner::addTeammate(const MovingObject& teamMate) {
-    MRA::Geometry::Point v(teamMate.getPosition().getPoint());
+void GlobalPathPlanner::addTeammate(const MRA::Geometry::Pose& teamMate) {
+    MRA::Geometry::Point v(teamMate);
     double x = v.x;
     double y = v.y;
 
@@ -415,7 +411,7 @@ bool GlobalPathPlanner::nearPath(const MRA::Geometry::Point& v) {
  * Inserts edges in the graph between vertices. To optimize, edges that are
  * very long are not included.
  */
-void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos) {
+void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos, const TeamPlannerBall& ball) {
 	for (std::vector<Vertex>::size_type i = 0; i < m_vertices.size() - 1; i++) {
 		for (std::vector<Vertex>::size_type j = i + 1; j < m_vertices.size(); j++) {
 			Vertex* v1 = m_vertices[i];
@@ -438,7 +434,7 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
 					double py = 0;
 					bool intersect = lineSegmentIntersection(v1->m_coordinate.x, v1->m_coordinate.y,
 							                                 v2->m_coordinate.x, v2->m_coordinate.y,
-															 m_Ball.getXYlocation().x, m_Ball.getXYlocation().y,
+															 ball.position.x, ball.position.y,
 															 rBallTargePos.x, rBallTargePos.y,
 															 px, py);
 					if (intersect) {
@@ -708,15 +704,15 @@ void GlobalPathPlanner::addPoint( const MRA::Geometry::Point& point) {
 }
 
 void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path) {
-	std::vector<MovingObject> myTeam = std::vector<MovingObject>();
-	//myTeam.push_back(MovingObject(m_Me));
+	std::vector<MRA::Geometry::Pose> myTeam = std::vector<MRA::Geometry::Pose>();
+	//myTeam.push_back(MRA::Geometry::Pose(m_Me));
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, 0.0, -1)); //TODO add id
+		myTeam.push_back(MRA::Geometry::Pose(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, 0.0)); //TODO add id
 	}
 
-	std::vector<MovingObject> opponents = std::vector<MovingObject>();
+	std::vector<MRA::Geometry::Pose> opponents = std::vector<MRA::Geometry::Pose>();
 	for(std::vector<MRA::Geometry::Point>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, 0.0, -1)); //TODO add id
+		opponents.push_back(MRA::Geometry::Pose(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, 0.0)); //TODO add id
 	}
 
 	team_planner_result_t player_paths = team_planner_result_t();

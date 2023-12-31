@@ -8,7 +8,6 @@
 
 #include "TeamPlannerExport.hpp"
 
-#include "MovingObject.h"
 #include "WmTypes.h"
 #include <vector>
 #include <iostream>
@@ -21,7 +20,7 @@
 
 namespace MRA {
 
-string GetTeamPlannerSVGname(game_state_e gamestate, string suffix) {
+std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix) {
 	// get current time, and make a string from it.
 	struct tm * timeinfo;
 	char buffer [180];
@@ -40,14 +39,14 @@ string GetTeamPlannerSVGname(game_state_e gamestate, string suffix) {
 	strftime(buffer_tmp, 80, "%Y%m%dT%H%M%S", timeinfo);
 	sprintf(buffer, "%s%03d", buffer_tmp, millisec);
 
-    string state_string = GameStateAsString(static_cast<game_state_e>(gamestate));
+    std::string state_string = GameStateAsString(static_cast<game_state_e>(gamestate));
     replace(state_string.begin(), state_string.end(), ' ', '_');
-    string full_suffix = "";
+    std::string full_suffix = "";
     if (suffix.length() > 0) {
     	full_suffix = "_" + suffix;
     }
 	int robot = 0;
-	string filename = "export.svg";
+	std::string filename = "export.svg";
 	filename =  "planner_p" + std::to_string(robot) + "_" + buffer + "_" + state_string + full_suffix + ".svg";
 	return filename;
 }

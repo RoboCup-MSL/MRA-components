@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "GlobalPathPlanner.hpp"
-#include "MovingObject.h"
-#include "Position.h"
 #include "geometry.hpp"
 #include "TeamPlannerParameters.hpp"
 
@@ -38,7 +36,7 @@ public:
      *            Number of re-planning iterations
      * @return path
      */
-    std::vector<planner_piece_t> planPath(const MovingObject& start, const TeamPlannerData& teamplanner_data,
+    std::vector<planner_piece_t> planPath(const MRA::Geometry::Pose& start_pose, const MRA::Geometry::Pose& start_vel, const TeamPlannerData& teamplanner_data,
             const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
 			double maxSpeed, int nrIterations);
 

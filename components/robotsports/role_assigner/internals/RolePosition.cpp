@@ -18,7 +18,7 @@ using namespace MRA;
 
 
 MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role, game_state_e gamestate,
-		const MovingObject& ball, const TeamPlannerState& r_state,
+		const TeamPlannerBall& ball, const TeamPlannerState& r_state,
 		std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
 		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
@@ -32,7 +32,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         gamestate == game_state_e::FREEKICK_AGAINST || gamestate == game_state_e::THROWIN_AGAINST 	) )
 	{
 		// Setplay against: man coverage for all opponents
-		rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, true /* setplay active */, teamControlBall);
+		rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball.position, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, true /* setplay active */, teamControlBall);
 		return rolePosition;
 	}
 
@@ -60,7 +60,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		else
 		{
 			MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, fieldConfig.getMaxFieldY());
-			MRA::Geometry::Point ballPos = ball.getPosition().getPoint();
+			MRA::Geometry::Point ballPos = ball.position;
 			if (fieldConfig.isInField(ballPos.x, ballPos.y, plannerOptions.outsideFieldMargin))
 			{
 				double alfa = ballPos.angle(goalPos);
@@ -84,7 +84,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		MRA::Geometry::Point shooterPosition;
 		MRA::Geometry::Point receiverPosition;
 		// Get ball position, will be the base of the positioning
-		MRA::Geometry::Point ballPosition = ball.getPosition().getPoint();
+		MRA::Geometry::Point ballPosition = ball.position;
 		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, ballPosition, r_state, gamestate, plannerOptions, fieldConfig);
 		rolePosition = shooterPosition;  // right of field, just middle of opponent half in Y
 	}
@@ -98,24 +98,24 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		MRA::Geometry::Point shooterPosition;
 		MRA::Geometry::Point receiverPosition;
 		// Get ball position, will be the base of the positioning
-		MRA::Geometry::Point ballPosition = ball.getPosition().getPoint();
+		MRA::Geometry::Point ballPosition = ball.position;
 		calculateSetPlayPosition(shooterPosition, receiverPosition, Team, ballPosition, r_state, gamestate, plannerOptions, fieldConfig);
 		rolePosition = receiverPosition;  // right of field, just middle of opponent half in Y
 	}
 	break;
 	case dr_PENALTY_DEFENDER:
 	{
-			rolePosition = TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(Team,  gamestate, 	plannerOptions, ball, Opponents,r_gridFileNumber++, fieldConfig);
+			rolePosition = TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(Team, gamestate, plannerOptions, ball.position, Opponents,r_gridFileNumber++, fieldConfig);
 	}
 	break;
 	case dr_DEFENDER:
 	{
 		if (plannerOptions.man_to_man_defense_during_normal_play) {
 			// man coverage
-			rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, false /* normal-play */, teamControlBall);
+			rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, ball.position, fieldConfig, gamestate, plannerOptions, Opponents, Team, r_gridFileNumber, false /* normal-play */, teamControlBall);
 		}
 		else {
-			rolePosition = TeamPlanner_Grid::findDefensivePosition(Team,  gamestate, 	plannerOptions, ball, Opponents,r_gridFileNumber++, fieldConfig);
+			rolePosition = TeamPlanner_Grid::findDefensivePosition(Team,  gamestate, 	plannerOptions, ball.position, Opponents,r_gridFileNumber++, fieldConfig);
 		}
 	}
 	break;
@@ -124,9 +124,10 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		if (gamestate == game_state_e::GOALKICK) {
 			position_close_to_ball = true;
 		}
-		MovingObject ballPostionToUse = ball;
+		MRA::Geometry::Pose ballPostionToUse = ball.position;
 		if (plannerOptions.use_pass_to_position_for_attack_support && pass_data.valid) {
-			ballPostionToUse.set(pass_data.target_pos.x, pass_data.target_pos.y, 0.0, 0.0, 0.0, 0.0, 1);
+			ballPostionToUse.x = pass_data.target_pos.x;
+			ballPostionToUse.y = pass_data.target_pos.y;
 		}
 
 		// check if already player moves to ball target position
@@ -150,7 +151,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 	}
 	break;
 	case dr_SWEEPER: {
-		rolePosition = TeamPlanner_Grid::findSweeperPosition(Team, gamestate, plannerOptions, ball, Opponents, r_gridFileNumber++, fieldConfig);
+		rolePosition = TeamPlanner_Grid::findSweeperPosition(Team, gamestate, plannerOptions, ball.position, Opponents, r_gridFileNumber++, fieldConfig);
 	}
 	break;
 	case dr_INTERCEPTOR: {
@@ -160,19 +161,19 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 			gamestate == game_state_e::THROWIN_AGAINST 	)
 		{
 			rolePosition = TeamPlanner_Grid::findInterceptorPositionDuringRestart(Team, gamestate, plannerOptions,
-					ball, Opponents, r_gridFileNumber++, fieldConfig);
+					ball.position, Opponents, r_gridFileNumber++, fieldConfig);
 		}
 		else {
-			MRA::Geometry::Point intercept_position = ball.getXYlocation();
+			MRA::Geometry::Point intercept_position = ball.position;
 			if (plannerOptions.interceptor_assign_use_ball_velocity &&
-				ball.getLinearVelocity() > plannerOptions.interceptor_assign_min_velocity_for_calculate_interception_position) {
+				ball.velocity.size() > plannerOptions.interceptor_assign_min_velocity_for_calculate_interception_position) {
 				// ball is moving: calculate distance to interception position per robot.
 				double maxSpeed = plannerOptions.maxPossibleLinearSpeed;
 				double bestIntercept_distance = std::numeric_limits<double>::infinity();
 				for (unsigned int idx = 0; idx < Team.size(); idx++) {
 					if (!Team[idx].assigned) {
 						// Find initial intercept point
-						MRA::Geometry::Point player_pos = Team[idx].position.getXYlocation();
+						MRA::Geometry::Point player_pos = Team[idx].position;
 						Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(ball, player_pos, maxSpeed,
 								fieldConfig, plannerOptions.move_to_ball_left_field_position);
 						if (player_pos.distanceTo(intercept_data.intercept_position) < bestIntercept_distance) {
@@ -184,7 +185,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 				rolePosition = intercept_position;
 			}
 			else {
-				rolePosition = InterceptorNormalPlayPosition(planner_target, ball, Team, Opponents,plannerOptions, fieldConfig);
+				rolePosition = InterceptorNormalPlayPosition(planner_target, ball.position, Team, Opponents,plannerOptions, fieldConfig);
 			}
 
 			int closest_to_ball_idx = FindOpponentClostestToPositionAndNotAssigned(intercept_position, fieldConfig, plannerOptions, Opponents);
@@ -196,7 +197,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 	}
 	break;
 	case dr_BALLPLAYER: {
-		MRA::Geometry::Point shootPos = TeamPlanner_Grid::findBallPlayerPosition(Team, gamestate, plannerOptions, ball, Opponents, r_gridFileNumber++, fieldConfig, ball_pickup_position, passIsRequired);
+		MRA::Geometry::Point shootPos = TeamPlanner_Grid::findBallPlayerPosition(Team, gamestate, plannerOptions, ball.position, Opponents, r_gridFileNumber++, fieldConfig, ball_pickup_position, passIsRequired);
 		rolePosition = shootPos;
 	}
 	break;
@@ -717,8 +718,8 @@ MRA::Geometry::Point RolePosition::closestTo(const MRA::Geometry::Point& referen
 //---------------------------------------------------------------------------------------------------------------------
 /**
  */
-void RolePosition::GetFixedPositions(vector<MRA::Geometry::Point>& playerPositions, game_state_e gamestate,
-		const MovingObject& globalBall, bool searchForBall,const std::vector<MRA::Geometry::Point>& parking_positions,
+void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPositions, game_state_e gamestate,
+        const TeamPlannerBall& ball, bool searchForBall,const std::vector<MRA::Geometry::Point>& parking_positions,
 		const FieldConfig& fieldConfig, const TeamPlannerParameters& plannerOptions) {
 
 	bool parking_is_left = true;
@@ -874,7 +875,7 @@ void RolePosition::print_provided_position(game_state_e gamestate, const vector<
 }
 
 MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_e& planner_target,
-		const MovingObject& globalBall, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
+		const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
 		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) {
 //
 // Set role-position to ball-position (default dist < 3.0 m) and ball in priority-block area (default y < 0)
@@ -891,14 +892,14 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
 //	    -  cross-section point of the field player with lowest cost becomes the the intercepter player
 //
 
-	MRA::Geometry::Point ballPos = globalBall.getPosition().getPoint();
+	MRA::Geometry::Point ballPos = ball;
 	MRA::Geometry::Point rolePosition = ballPos; // set default position to the ball position
 
 
 	// determine the smallest distance from any opponent to the ball
 	double smallestDistOpponentToBall = fieldConfig.getMaxPossibleFieldDistance();
 	for (auto it = Opponents.begin(); it != Opponents.end(); ++it) {
-		smallestDistOpponentToBall = min(it->position.getPosition().getPoint().distanceTo(ballPos), smallestDistOpponentToBall);
+		smallestDistOpponentToBall = min(it->position.distanceTo(ballPos), smallestDistOpponentToBall);
 	}
 
 	bool ballInArea = plannerOptions.priority_block_check_ball_in_area && (ballPos.y <= plannerOptions.priority_block_max_ball_y);
@@ -924,7 +925,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
 			if( it->player_type == player_type_e::FIELD_PLAYER && !(it->assigned)) {
 				// only unassigned field-players
 
-				MRA::Geometry::Point playerPos = it->position.getPosition().getPoint();
+				MRA::Geometry::Point playerPos = it->position;
 				double distToDefenseLine = getDistanceFromPointToLine(ballPos.x, ballPos.y, goalPos.x, goalPos.y, playerPos.x, playerPos.y);
 				double distToGoal = playerPos.distanceTo(goalPos);
 				double distToBall = playerPos.distanceTo(ballPos);
@@ -968,7 +969,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
 			for (auto it = Team.begin(); it != Team.end(); ++it) {
 				if( it->player_type == player_type_e::FIELD_PLAYER && !(it->assigned)) {
 					// only unassigned field-players
-					MRA::Geometry::Point teamMatePos = it->position.getPosition().getPoint();
+					MRA::Geometry::Point teamMatePos = it->position;
 					// calculate second location of on the perpendicular to the defense line
 					double tx1 = teamMatePos.x + (cos(goalToBallAngle+M_PI*0.5) * 1.0);
 					double ty1 = teamMatePos.y + (sin(goalToBallAngle+M_PI*0.5) * 1.0);
@@ -1009,7 +1010,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
 }
 
 int RolePosition::FindMostDangerousOpponentAndNotAssigned(
-		const MovingObject& globalBall, const FieldConfig& fieldConfig,
+		const MRA::Geometry::Pose& globalBall, const FieldConfig& fieldConfig,
 		const TeamPlannerParameters& plannerOptions,
 		const std::vector<TeamPlannerOpponent>& Opponents)
 /* find the opponent who is most dangerous and not yet assigned (= defended)
@@ -1021,11 +1022,11 @@ int RolePosition::FindMostDangerousOpponentAndNotAssigned(
 	// find closest to ball
 	vector<double> oppenent_to_ball_dist = vector<double>();
 	vector<double> oppenent_to_goal_dist = vector<double>();
-	MRA::Geometry::Point ballPos = globalBall.getPosition().getPoint();
+	MRA::Geometry::Point ballPos = globalBall;
 	MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -fieldConfig.getMaxFieldY());
 	// get distances for each opponent to ball and our goal.
 	for (unsigned idx = 0; idx < Opponents.size(); idx++) {
-		MRA::Geometry::Point opponent_position = Opponents[idx].position.getXYlocation();
+		MRA::Geometry::Point opponent_position = Opponents[idx].position;
 		oppenent_to_ball_dist.push_back(ballPos.distanceTo(opponent_position));
 		oppenent_to_goal_dist.push_back(goalPos.distanceTo(opponent_position));
 	}
@@ -1034,7 +1035,7 @@ int RolePosition::FindMostDangerousOpponentAndNotAssigned(
 	MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, fieldConfig.getMaxFieldY());
 	double closest_dist_to = std::numeric_limits<double>::infinity();
 	for (unsigned idx = 0; idx < Opponents.size(); idx++) {
-		if (Opponents[idx].position.getXYlocation().distanceTo(opponentGoal) > plannerOptions.dist_to_goal_to_mark_opponent_as_goalie) {
+		if (Opponents[idx].position.distanceTo(opponentGoal) > plannerOptions.dist_to_goal_to_mark_opponent_as_goalie) {
 			// Not opponent goalie  (too far from opponent goal)
 			if (oppenent_to_goal_dist[idx] < closest_dist_to
 					&& Opponents[idx].assigned == false) {
@@ -1064,7 +1065,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(
 	MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -fieldConfig.getMaxFieldY());
 	// get distances for each opponent to ball and our goal.
 	for (unsigned idx = 0; idx < Opponents.size(); idx++) {
-		MRA::Geometry::Point opponent_position = Opponents[idx].position.getXYlocation();
+		MRA::Geometry::Point opponent_position = Opponents[idx].position;
 		oppenent_to_ball_dist.push_back(targetPos.distanceTo(opponent_position));
 		oppenent_to_goal_dist.push_back(goalPos.distanceTo(opponent_position));
 	}
@@ -1072,7 +1073,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(
 	MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, fieldConfig.getMaxFieldY());
 	double closest_dist_to = std::numeric_limits<double>::infinity();
 	for (unsigned idx = 0; idx < Opponents.size(); idx++) {
-		if (Opponents[idx].position.getXYlocation().distanceTo(opponentGoal) > plannerOptions.dist_to_goal_to_mark_opponent_as_goalie) {
+		if (Opponents[idx].position.distanceTo(opponentGoal) > plannerOptions.dist_to_goal_to_mark_opponent_as_goalie) {
 			// Not opponent goalie  (too far from opponent goal)
 			if (oppenent_to_ball_dist[idx] < closest_dist_to
 					&& Opponents[idx].assigned == false) {
@@ -1088,7 +1089,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(
 //--------------------------------------------------------------------------
 MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
 		defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
-		const MovingObject& globalBall, const FieldConfig& fieldConfig,
+		const MRA::Geometry::Pose& globalBall, const FieldConfig& fieldConfig,
 		game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
 		std::vector<TeamPlannerOpponent>& Opponents, std::vector<TeamPlannerRobot>& Team, int& r_gridFileNumber,
 		bool setPlayActive, bool teamControlBall) {
@@ -1101,12 +1102,12 @@ MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
 		// Found opponent closest to the ball. Apply man defense for this opponent
 		Opponents[closest_to_ball_idx].assigned = true;
 		rolePosition = TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role,
-				Opponents[closest_to_ball_idx].position.getXYlocation(), Team,
+				Opponents[closest_to_ball_idx].position, Team,
 				gamestate, plannerOptions, globalBall, Opponents,
 				r_gridFileNumber++, fieldConfig, setPlayActive, teamControlBall);
 		rDefend_info.valid = true;
-		rDefend_info.defending_id = Opponents[closest_to_ball_idx].position.getLabel();
-		rDefend_info.dist_from_defending_id = Opponents[closest_to_ball_idx].position.getXYlocation().distanceTo(rolePosition);
+		rDefend_info.defending_id = Opponents[closest_to_ball_idx].label;
+		rDefend_info.dist_from_defending_id = Opponents[closest_to_ball_idx].position.distanceTo(rolePosition);
 		rDefend_info.between_ball_and_defending_pos = plannerOptions.manDefenseBetweenBallAndPlayer;
 
 	} else {

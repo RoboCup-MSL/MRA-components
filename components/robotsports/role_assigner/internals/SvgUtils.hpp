@@ -4,7 +4,6 @@
  *  @curator Jürge van Eijck
  */
 #include <vector>
-#include "MovingObject.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include "GlobalPathPlanner.hpp"

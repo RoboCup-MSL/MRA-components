@@ -17,13 +17,13 @@ string PlannerGridInfoData::toString() {
 	std::stringstream buffer;
 	buffer << "TEAM:" << endl;
 	for (auto it = this->gameData.Team.begin(); it != this->gameData.Team.end(); ++it) {
-		buffer << "x: "<< it->getPosition().getPoint().x << " y: " <<  it->getPosition().getPoint().y << endl;
+		buffer << "x: "<< it->x << " y: " <<  it->y << endl;
 	}
 	buffer << "OPPONENTS:" << endl;
 	for (auto it = this->gameData.Opponents.begin(); it != this->gameData.Opponents.end(); ++it) {
-		buffer << "x: "<< it->getPosition().getPoint().x << " y: " <<  it->getPosition().getPoint().y << endl;
+		buffer << "x: "<< it->x << " y: " <<  it->y << endl;
 	}
-	buffer<< "BALL x: "  <<  this->gameData.ball.getPosition().getPoint().x << " y: "<< this->gameData.ball.getPosition().getPoint().y << endl;
+	buffer<< "BALL x: "  <<  this->gameData.ball.x << " y: "<< this->gameData.ball.y << endl;
 	buffer << "LAYER-NAMES:" << endl;
 	for (auto it = this->name.begin();  it != this->name.end(); ++it) {
 		buffer <<  *it << endl;
@@ -40,14 +40,14 @@ void PlannerGridInfoData::saveToFile(const std::string& filename) {
 	fprintf(fp, "# GAME-DATA\n");
 	// TEAM data
 	for (auto it = this->gameData.Team.begin(); it != this->gameData.Team.end(); ++it) {
-		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getPoint().x, it->getPosition().getPoint().y);
+		fprintf(fp, " %5.2f; %5.2f;", it->x, it->y);
 	}
 	fprintf(fp, "\n");
 	for (auto it = this->gameData.Opponents.begin(); it != this->gameData.Opponents.end(); ++it) {
-		fprintf(fp, " %5.2f; %5.2f;", it->getPosition().getPoint().x, it->getPosition().getPoint().y);
+		fprintf(fp, " %5.2f; %5.2f;", it->x, it->y);
 	}
 	fprintf(fp, "\n");
-	fprintf(fp, " %5.2f; %5.2f;\n", this->gameData.ball.getPosition().getPoint().x, this->gameData.ball.getPosition().getPoint().y);
+	fprintf(fp, " %5.2f; %5.2f;\n", this->gameData.ball.x, this->gameData.ball.y);
 	fprintf(fp, "# LAYER-NAMES\n");
 	for (auto it = this->name.begin();  it != this->name.end(); ++it) {
 		fprintf(fp, "%s;", it->c_str());
@@ -112,7 +112,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 					y = std::stod(item_text);
 				}
 				if (item_nr == 2) {
-					this->gameData.Team.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, 0.0, -1));
+					this->gameData.Team.push_back(MRA::Geometry::Pose(x, y, 0.0, 0.0, 0.0, 0.0));
 					item_nr = 0;
 				}
 			}
@@ -136,7 +136,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 					y = std::stod(item_text);
 				}
 				if (item_nr == 2) {
-					this->gameData.Opponents.push_back(MovingObject(x, y, 0.0, 0.0, 0.0, 0.0,-1));
+					this->gameData.Opponents.push_back(MRA::Geometry::Pose(x, y, 0.0, 0.0, 0.0, 0.0));
 					item_nr = 0;
 				}
 			}
@@ -162,7 +162,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
 				}
 			}
 			if (item_nr == 2) {
-				this->gameData.ball = MovingObject(x, y, 0.0, 0.0, 0.0, 0.0, -1);
+				this->gameData.ball = MRA::Geometry::Pose(x, y, 0.0, 0.0, 0.0, 0.0);
 			}
 			layer_names_comment = true;
 		}

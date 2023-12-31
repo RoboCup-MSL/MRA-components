@@ -25,7 +25,7 @@ namespace MRA {
 
 
 MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
-		const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
+		const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired) {
 	const double infield_margin = 0.25;   // distance to stay from side of field
 	const unsigned nr_positions_first_circle = 8;
@@ -47,7 +47,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findBallPlayerPosition(const std::vector<
 	// add current position for ball-player
 	for (unsigned r_idx = 0; r_idx < Team.size(); r_idx++) {
 		if (Team[r_idx].controlBall) {
-			ballPlayerPos = Team[r_idx].position.getPosition().getPoint();
+			ballPlayerPos = Team[r_idx].position;
 			allowedTargetPositions.push_back(ballPlayerPos); // ballplayer current position
 			ballPlayerFound = true;
 		}
@@ -165,11 +165,11 @@ void TeamPlanner_Grid::handle_penalty_heuristics(game_state_e gamestate,
  * Most attractive position will be the position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig, bool setPlayActive, bool teamControlBall)
 {
 	// define grid of 50 cm, only in field not outside the border
-    MRA::Geometry::Point ballPos = ball.getPosition().getPoint();
+    MRA::Geometry::Point ballPos = ball;
 	double x_pos_ball = ballPos.x;
 	double y_pos_ball = ballPos.y;
 
@@ -300,7 +300,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findManToManDefensivePosition(dynamic_rol
  * Most attractive position will be the offensive position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
 
@@ -322,8 +322,8 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<T
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getPoint().x;
-	double y_pos_ball = ball.getPosition().getPoint().y;
+	double x_pos_ball = ball.x;
+	double y_pos_ball = ball.y;
 
 
 	PlannerGridInfoData pgid = PlannerGridInfoData();
@@ -337,7 +337,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<T
 	// Defend opponents on own half or close to own half
 	for (unsigned op_idx = 0; op_idx < Opponents.size(); op_idx++) {
 		TeamPlannerOpponent opponent = Opponents[op_idx];
-		MRA::Geometry::Point opponentPos = opponent.position.getPosition().getPoint();
+		MRA::Geometry::Point opponentPos = opponent.position;
 		if (opponentPos.y < 2) {
 
 			// Preferred position approx 1 meter from opponent, with a preference with the defender to the most forward defender (smallest Y)
@@ -400,7 +400,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<T
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
+	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball, fieldConfig, heuristics, pgid);
 
 	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 
@@ -427,7 +427,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePosition(const std::vector<T
  * Most attractive position will be the offensive position
  */
 MRA::Geometry::Point TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
 	double field_direction = -1.0;
@@ -505,7 +505,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOu
  */
 
 MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
     /* Position sweeper, in order of priority (weighing):
@@ -533,8 +533,8 @@ MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<Tea
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + y_grid_half;  // only half field;
 
-	double x_pos_ball = ball.getPosition().getPoint().x;
-	double y_pos_ball = ball.getPosition().getPoint().y;
+	double x_pos_ball = ball.x;
+	double y_pos_ball = ball.y;
 
 	PlannerGridInfoData pgid = PlannerGridInfoData();
 	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
@@ -605,7 +605,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findSweeperPosition(const std::vector<Tea
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
+	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball, fieldConfig, heuristics, pgid);
 
 	std::list<MRA::Geometry::Point> allowedTargetPositions = list<MRA::Geometry::Point>();
 	// create x,y grid for calculation. make 0,0 center of grid !!
@@ -676,7 +676,7 @@ MRA::Geometry::Point TeamPlanner_Grid::calculateGridValues(const std::list<MRA::
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  */
 MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, 	const MovingObject& ball, const std::vector<TeamPlannerOpponent>& Opponents,
+		const TeamPlannerParameters& plannerOptions, 	const MRA::Geometry::Pose& ball, const std::vector<TeamPlannerOpponent>& Opponents,
 		int gridFileNumber, const FieldConfig& fieldConfig)
 {
     /* Position intercepter during restart, in order of priority (weighing):
@@ -697,8 +697,8 @@ MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(cons
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getPoint().x;
-	double y_pos_ball = ball.getPosition().getPoint().y;
+	double x_pos_ball = ball.x;
+	double y_pos_ball = ball.y;
 
 	// parameters to get a minimal distance to the ball (used function is a parabola).
 	// TODO should be mixed to below, where is ball_penalty, etc used?
@@ -727,11 +727,11 @@ MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(cons
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
+	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball, fieldConfig, heuristics, pgid);
 
 
 	// Position interceptor on the 3 M circle around the ball (as close as allowed to the ball)
-	heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, ball.getPosition().getPoint(), fieldConfig.getMaxPossibleFieldDistance()));
+	heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, ball, fieldConfig.getMaxPossibleFieldDistance()));
 
 	// Position interceptor as close as possible to opponent interceptor (located within the 3 meter circle)
 	heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, Team, fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_INTERCEPTOR));
@@ -793,7 +793,7 @@ MRA::Geometry::Point TeamPlanner_Grid::findInterceptorPositionDuringRestart(cons
  * Most attractive position will be the offensive position
  */
 bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const std::vector<TeamPlannerRobot>& Team, game_state_e gamestate,
-		const TeamPlannerParameters& plannerOptions, const MovingObject& ball,
+		const TeamPlannerParameters& plannerOptions, const MRA::Geometry::Pose& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, int gridFileNumber, const FieldConfig& fieldConfig,
 		bool position_close_to_ball, bool teamControlBall)
 {
@@ -821,8 +821,8 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = ball.getPosition().getPoint().x;
-	double y_pos_ball = ball.getPosition().getPoint().y;
+	double x_pos_ball = ball.x;
+	double y_pos_ball = ball.y;
 
 	/*
 	 * Attack support position heuristics in open-play (offensive and defensive)
@@ -841,7 +841,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball.getXYlocation(), fieldConfig, heuristics, pgid);
+	handle_penalty_heuristics(gamestate, plannerOptions, Team, ball, fieldConfig, heuristics, pgid);
 
 
 	// Avoid difficult collaboration, do not position close to opponents
@@ -986,7 +986,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 // ----------------------------------------------------------
 // Save provided data to file
 void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-		const MovingObject& ball, const TeamPlannerParameters& plannerOptions, const string& sMRAituation, int gridFileNumber) {
+		const MRA::Geometry::Pose& ball, const TeamPlannerParameters& plannerOptions, const string& sMRAituation, int gridFileNumber) {
 
 	if (plannerOptions.saveGridDataToFile) {
 		string gridFileName = "";

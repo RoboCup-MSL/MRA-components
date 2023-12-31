@@ -22,7 +22,7 @@ public:
 	GridHeuristic(const char *  id_str, double w, PlannerGridInfoData& pgid);
 	virtual ~GridHeuristic();
 	virtual double getValue(double x, double y) = 0;
-	string getId() { return id; }
+	std::string getId() { return id; }
 	double getWeight() { return weight; }
 private:
 	std::string id;
@@ -329,17 +329,18 @@ class InterceptionThreatHeuristic : public GridHeuristic
 {
 public:
 	InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const MovingObject& ball,
-			const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
+	        const MRA::Geometry::Pose& ball,
+			const std::vector<TeamPlannerRobot>& Team,
+			const std::vector<TeamPlannerOpponent>& Opponents,
 			double interceptionChanceStartDistance,
 			double interceptionChanceIncreasePerMeter,
 			double interceptionChancePenaltyFactor);
 	virtual ~InterceptionThreatHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const MovingObject& m_ball;
+	const MRA::Geometry::Pose& m_ball;
 	const std::vector<TeamPlannerRobot>& m_Team;
-	std::vector<MovingObject> m_Opponents;
+	std::vector<MRA::Geometry::Pose> m_Opponents;
 	const double m_interceptionChanceStartDistance;
 	const double m_interceptionChanceIncreasePerMeter;
 	const double m_interceptionChancePenaltyFactor;
@@ -408,7 +409,7 @@ public:
 	double getValue(double x, double y);
 private:
 	const std::vector<TeamPlannerRobot>& m_Team;
-	std::vector<MovingObject> m_Opponents;
+	std::vector<MRA::Geometry::Pose> m_Opponents;
 	const double m_robotRadius;
 	ball_pickup_position_t m_ball_pickup_position;
 	const double m_interceptionChanceStartDistance;
@@ -423,7 +424,7 @@ class StayAwayFromOpponentsHeuristic : public GridHeuristic
 public:
 	StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
 			const MRA::Geometry::Point& ballPlayerPos,
-			const MovingObject& ball,
+			const MRA::Geometry::Pose& ball,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const double radius);
 	virtual ~StayAwayFromOpponentsHeuristic() {};

@@ -10,16 +10,15 @@
 
 #include <vector>
 #include <string>
-
-#include <MovingObject.h>
+#include "geometry.hpp"
 
 namespace MRA {
 
 class PlannerGridGameData {
 public:
-	std::vector<MovingObject> Team;  // me as first
-	std::vector<MovingObject> Opponents;
-	MovingObject ball;
+	std::vector<MRA::Geometry::Pose> Team;  // me as first
+	std::vector<MRA::Geometry::Pose> Opponents;
+	MRA::Geometry::Pose ball;
 };
 
 

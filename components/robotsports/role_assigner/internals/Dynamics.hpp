@@ -7,7 +7,6 @@
 #ifndef DYNAMICS_H
 #define DYNAMICS_H 1
 
-#include "MovingObject.h"
 #include "geometry.hpp"
 #include <vector>
 
@@ -35,7 +34,7 @@ class Dynamics {
 	 *            Our maximum speed. Assuming indefinite acceleration.
 	 * @return Intercept point, null if intercept is not possible.
 	 */
-	static dynamics_t interceptBall(const MovingObject& movingObject, const MRA::Geometry::Point& coordinates,
+	static dynamics_t interceptBall(const TeamPlannerBall& movingObject, const MRA::Geometry::Point& coordinates,
 			double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position);
 
 
@@ -47,7 +46,7 @@ class Dynamics {
 	 * @param rFieldConfig field configuration
 	 * @return point where ball leaves the field.
 	 */
-	static MRA::Geometry::Point calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig);
+	static MRA::Geometry::Point calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig);
 
 	/**
 	 * Calculates time necessary to traverse a path at maximum speed, assuming

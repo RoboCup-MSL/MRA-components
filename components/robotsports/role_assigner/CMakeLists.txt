@@ -4,6 +4,7 @@ set(STRATEGY_TESTER_XSD test/StrategyTester.xsd)
 set(STRATEGY_TESTER_H test/StrategyTester_generated.h)
 set(STRATEGY_TESTER_CPP StrategyTester_generated.cpp)
 
+# system dependencies
 find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread QUIET)
 
 add_library(MRA-components-robotsports-role-assigner
@@ -24,10 +25,9 @@ add_library(MRA-components-robotsports-role-assigner
     internals/TeamPlay.cpp
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp
+    internals/TeamPlannerPlayer.cpp
     temp/FieldConfig.cpp
     temp/MathUtils.cpp
-    temp/MovingObject.cpp
-    temp/Position.cpp
 )
 
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
@@ -72,6 +72,11 @@ target_include_directories(xml_test PUBLIC
 
 target_link_libraries(xml_test
     MRA-components-robotsports-role-assigner
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_THREAD_LIBRARY}
+    xerces-c
   )
 #add_custom_target(xml_test
 #  DEPENDS ${STRATEGY_TESTER_CPP}

@@ -6,14 +6,14 @@
 #ifndef TEAMPLAY_H
 #define TEAMPLAY_H 1
 
-#include "MovingObject.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
-#include <vector>
+#include "geometry.hpp"
 #include "GlobalPathPlanner.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerOpponent.hpp"
 #include "TeamPlannerParameters.hpp"
+#include <vector>
 
 
 namespace MRA {
@@ -40,7 +40,7 @@ private:
 	bool assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_idx, dynamic_role_e dr_role,
 			const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass);
 
-	vector<MovingObject> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
+	std::vector<MRA::Geometry::Pose> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
 
 	bool check_better_path_found(double& lowest_pathcost, double newPathCost, double fastestPathCost,
 			 	 	 	 	 	 const PlayerPlannerResult& new_path, const PlayerPlannerResult& fastest_path, 	double equality_cost_threshold );
@@ -55,9 +55,9 @@ private:
 
 	bool searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data);
 
-	void print_provided_position(game_state_e gamestate, const vector<vector<MRA::Geometry::Point>>& positions);
+	void print_provided_position(game_state_e gamestate, const std::vector<std::vector<MRA::Geometry::Point>>& positions);
 
-	vector<MovingObject> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
+	std::vector<MRA::Geometry::Pose> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
 	template<class T> bool safeErase(std::vector<T>& myvector, unsigned int indexElementToErase, int callingFromLine);
 
@@ -67,7 +67,7 @@ private:
 
 	void printAssignInputs(TeamPlannerData&  teamplanner_data);
 
-	double calculateShortestDistanceObjectsToTarget(const std::vector<MovingObject>& objects, const MovingObject& targetObject);
+	double calculateShortestDistanceObjectsToTarget(const std::vector<MRA::Geometry::Pose>& objects, const MRA::Geometry::Pose& targetObject);
 
 	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data);
 

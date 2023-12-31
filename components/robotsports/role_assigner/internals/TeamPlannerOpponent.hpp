@@ -5,14 +5,15 @@
  */
 #ifndef TeamPlannerOpponent_H
 #define TeamPlannerOpponent_H 1
-#include "MovingObject.h"
 
 namespace MRA {
 
 class TeamPlannerOpponent {
 public:
-	MovingObject position;
+	MRA::Geometry::Pose position;
+    MRA::Geometry::Pose velocity;
 	bool assigned;
+	int label;
 };
 
 } // namespace

@@ -106,7 +106,9 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 		controlBallByPlayerRemark = "(controlled by team-member)";
 	}
 	fprintf(fp, "\tcontrolball = %s (%ld)\n", controlBallByPlayerRemark.c_str(), controlBallByPlayer);
-	fprintf(fp, "\tglobalBall: %s\n", teamplanner_data.ball.toString().c_str());
+	fprintf(fp, "\tglobalBall: x: %4.2f y: %4.2f z: %4.2f vx: %4.2f vy: %4.2f vz: %4.2f \n",
+	        teamplanner_data.ball.position.x, teamplanner_data.ball.position.y, teamplanner_data.ball.position.z,
+	        teamplanner_data.ball.velocity.x, teamplanner_data.ball.velocity.y, teamplanner_data.ball.velocity.z);
 	fprintf(fp, "\tteam:\n");
 	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		int teamtypeId = -1;
@@ -122,8 +124,12 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	}
 	fprintf(fp, "\topponents:\n");
 	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
-		fprintf(fp, "\t\tplayer[%u] = %s\n", idx, teamplanner_data.opponents[idx].position.toString().c_str());
+		fprintf(fp, "\t\tplayer[%u] = x: %4.2f y: %4.2f rz: %4.2f vx: %4.2f vy: %4.2f vrz: %4.2f \n", idx,
+		        teamplanner_data.opponents[idx].position.x, teamplanner_data.opponents[idx].position.y, teamplanner_data.opponents[idx].position.rz,
+	            teamplanner_data.opponents[idx].velocity.x, teamplanner_data.opponents[idx].velocity.y, teamplanner_data.opponents[idx].velocity.rz);
+
 	}
+
 
 	for (unsigned long p_idx = 0; p_idx < player_paths.size(); p_idx++) {
 		Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << ":" << std::endl;
@@ -171,11 +177,10 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 //TODO-jve-MRA
 //	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(options.attack_formation).c_str());
 //	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(options.defense_formation).c_str());
-	if (teamplanner_data.ball.getPosition().getConfidence() > 0.001) {
-		MRA::Geometry::Point xyVel;
-		teamplanner_data.ball.getVelocity(xyVel);
+	if (teamplanner_data.ball.confidence > 0.001) {
+		MRA::Geometry::Point xyVel = teamplanner_data.ball.velocity;
 		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-		        teamplanner_data.ball.getPosition().getPoint().x, teamplanner_data.ball.getPosition().getPoint().y, xyVel.x, xyVel.y);
+		        teamplanner_data.ball.position.x, teamplanner_data.ball.position.y, xyVel.x, xyVel.y);
 	}
 	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		string goalieString = "";
@@ -185,7 +190,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 			}
 		}
 
-		string idString = "id=\""+ std::to_string(teamplanner_data.team[idx].position.getLabel()) + "\"";
+		string idString = "id=\""+ std::to_string(teamplanner_data.team[idx].robotId) + "\"";
 
 		string controlBallString = "";
 		if (controlBallByPlayer  == static_cast<int>(idx))
@@ -214,23 +219,21 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
         }
 
-        MRA::Geometry::Point xyVel;
-		teamplanner_data.team[idx].position.getVelocity(xyVel);
+        MRA::Geometry::Point xyVel = teamplanner_data.team[idx].velocity;
 		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" %s %s %s %s/>\n",
 				idString.c_str(),
-				teamplanner_data.team[idx].position.getPosition().getPoint().x, teamplanner_data.team[idx].position.getPosition().getPoint().y, teamplanner_data.team[idx].position.getPosition().getRotationZ(),
+				teamplanner_data.team[idx].position.x, teamplanner_data.team[idx].position.y, teamplanner_data.team[idx].position.rz,
 				xyVel.x, xyVel.y, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
 	}
 	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
-	    MRA::Geometry::Point xyVel;
-	    teamplanner_data.opponents[idx].position.getVelocity(xyVel);
-		string idString = "id=\""+ std::to_string(teamplanner_data.opponents[idx].position.getLabel()) + "\"";
+	    MRA::Geometry::Point xyVel = teamplanner_data.opponents[idx].velocity;
+		string idString = "id=\""+ std::to_string(teamplanner_data.opponents[idx].label) + "\"";
 		fprintf(fp, "  <tns:Opponent %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" />\n",
 				idString.c_str(),
-				teamplanner_data.opponents[idx].position.getPosition().getPoint().x,
-				teamplanner_data.opponents[idx].position.getPosition().getPoint().y,
-				teamplanner_data.opponents[idx].position.getPosition().getRotationZ(),
+				teamplanner_data.opponents[idx].position.x,
+				teamplanner_data.opponents[idx].position.y,
+				teamplanner_data.opponents[idx].position.rz,
 				xyVel.x, xyVel.y);
 
 	}
@@ -335,7 +338,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
 	// OPPONENTS
 	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != teamplanner_data.opponents.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.opponents[bar_idx].position.getPosition().getPoint();
+	    MRA::Geometry::Point bar_pos = teamplanner_data.opponents[bar_idx].position;
 		fprintf(fp,
 				"\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
 				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgOpponentColor.c_str(), options.svgOpponentColor.c_str());
@@ -346,8 +349,8 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	// TEAMMATES
 	// draw me first.
 	if (teamplanner_data.team.size() > 0 ) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[0].position.getPosition().getPoint();
-		double r = teamplanner_data.team[0].position.getPosition().getRotationZ() + M_PI_2;
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[0].position;
+		double r = teamplanner_data.team[0].position.rz + M_PI_2;
 		string teamColor = options.svgTeamColor;
 		string fillColor = options.svgTeamColor;
 //		if (colorMe.length() > 0) {
@@ -363,7 +366,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 		}
 	}
 	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 1; bar_idx < teamplanner_data.team.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position.getPosition().getPoint();
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
 		fprintf(fp,
 				"\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
 				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgTeamColor.c_str(), options.svgTeamColor.c_str());
@@ -486,7 +489,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
 	// put player-id on top of the players
 	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < teamplanner_data.team.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position.getPosition().getPoint();
+	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
 		long robotId = bar_idx+1;
 		if (robotIds.size() > bar_idx) {
 			robotId = robotIds[bar_idx];
@@ -498,20 +501,18 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	if (teamplanner_data.ball_present) {
 		fprintf(fp,
 				"\n<!-- globalBall -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(teamplanner_data.ball.getPosition().getPoint().x),  svgY(teamplanner_data.ball.getPosition().getPoint().y), teamplanner_data.fieldConfig.getBallRadius()); // half ball diameter
+				svgX(teamplanner_data.ball.position.x),  svgY(teamplanner_data.ball.position.y), teamplanner_data.fieldConfig.getBallRadius()); // half ball diameter
 	}
 	if (options.svgDrawVelocity) {
-	    MRA::Geometry::Point linVel;
-	    teamplanner_data.ball.getVelocity(linVel);
-		double speed  = linVel.size();
-		if (speed > 1e-6) {
-		    MRA::Geometry::Point endVelocityVector = teamplanner_data.ball.getPosition().getPoint();
+	    MRA::Geometry::Pose linVel = teamplanner_data.ball.velocity;
+		if (linVel.size() > 1e-6) {
+		    MRA::Geometry::Point endVelocityVector = teamplanner_data.ball.position;
 		    endVelocityVector += linVel;
 			// globalBall
 			//FIELD - middle line
 			fprintf(fp,
 					"\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
-					svgX(teamplanner_data.ball.getPosition().getPoint().x), svgY(teamplanner_data.ball.getPosition().getPoint().y),
+					svgX(teamplanner_data.ball.position.x), svgY(teamplanner_data.ball.position.y),
 					svgX(endVelocityVector.x), svgY(endVelocityVector.y));
 		}
 	}

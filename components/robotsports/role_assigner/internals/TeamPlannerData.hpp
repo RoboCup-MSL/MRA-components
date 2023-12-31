@@ -6,7 +6,6 @@
 #ifndef TEAM_PLANNER_DATA_H
 #define TEAM_PLANNER_DATA_H 1
 
-#include "MovingObject.h"
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include <vector>
@@ -19,12 +18,16 @@ namespace MRA {
 
 class TeamPlannerRobot {
 public:
+    bool active; // participating in the game (robot may be inactive when figuring out where it is)
+    bool assigned;
+    bool human;
     long robotId;
-    MovingObject position;
     bool controlBall;
     bool passBall; // indicator whether a pass by this player is still on its way
     player_type_e player_type;
-    bool assigned;
+    MRA::Geometry::Pose position;
+    MRA::Geometry::Pose velocity;
+    bool is_keeper;
     PlayerPlannerResult result;
     final_planner_result_t previous_result;
     dynamic_role_e dynamic_role;
@@ -35,7 +38,12 @@ public:
 
 };
 
-
+class TeamPlannerBall {
+public:
+    MRA::Geometry::Pose position;
+    MRA::Geometry::Pose velocity;
+    double confidence;
+};
 // class with state data (data for State.proto)
 class TeamPlannerState {
 public:
@@ -69,7 +77,8 @@ public:
     TeamPlannerInput() {};
     game_state_e gamestate;
     bool ball_present;
-    MovingObject ball;
+    MRA::Geometry::Pose ball;
+
     std::vector<TeamPlannerRobot> team;
     std::vector<TeamPlannerOpponent> opponents;
     std::vector<MRA::Geometry::Point> parking_positions;
@@ -93,7 +102,7 @@ public:
     /* inputs */
     game_state_e gamestate;
     bool ball_present;
-    MovingObject ball;
+    TeamPlannerBall ball;
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;

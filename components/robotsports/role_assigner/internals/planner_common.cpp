@@ -9,7 +9,7 @@
 using namespace std;
 using namespace MRA;
 
-double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec, const vector<MovingObject>& Opponents,
+double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec, const vector<MRA::Geometry::Pose>& Opponents,
 		double interceptionChanceStartDistance,
 		double interceptionChanceIncreasePerMeter,
 		double interceptionDistancePenaltyFactor)
@@ -47,7 +47,7 @@ double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA
 
 	// loop for calculating angles between receiving positions and opponents
 	for( unsigned int i = 0; i < Opponents.size(); i++){
-	    MRA::Geometry::Point opponent = Opponents[i].getPosition().getPoint();
+	    MRA::Geometry::Point opponent = Opponents[i];
 		// return true if point (x,y) is in polygon defined by the points  else return false
 		if (inTriangle(BeginXp, BeginYp, EndXm, EndYm, BeginXm, BeginYm, opponent.x , opponent.y) ||
 				inTriangle(EndXm, EndYm, BeginXp, BeginYp, EndXp, EndYp, opponent.x , opponent.y) )

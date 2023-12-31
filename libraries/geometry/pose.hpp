@@ -52,6 +52,8 @@ public:
     operator MRA::Datatypes::Point() const;
     operator MRA::Datatypes::Pose() const;
 
+    double distanceTo(const MRA::Geometry::Point& p) const;
+
     // functions call wrap_angles, left to be implemented by Position
     virtual void wrap_angles();
 

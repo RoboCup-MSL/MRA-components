@@ -20,7 +20,6 @@
 #include "xmlTeamPlanner.h"
 
 #include "StrategyTester_generated.h" // generated
-#include "MovingObject.h"
 #include "FieldConfig.h"
 #include "SvgUtils.hpp"
 #include "GlobalPathPlanner.hpp" // for print path
@@ -67,110 +66,6 @@ game_state_e getOpponentGameState(game_state_e gameState) {
 		opponentGameState = game_state_e::GOAL;
 	}
 	return opponentGameState;
-}
-
-bool updateObjects(const team_planner_result_t& player_paths,
-		int ownPlayerWithBall, const team_planner_result_t& opponent_paths,
-		int opponentWithBall, MRA::MovingObject& ball,
-		vector<MRA::MovingObject>& myTeam, vector<MRA::MovingObject>& opponents,
-		const FieldConfig& fieldConfig) {
-	// update objects with 1.0 m per interation. returns false if no new updates can be done (ball out of bounds) or all paths have been executed.
-
-	cout << "-----------------------------" << endl << flush;
-	bool ret = true;
-
-	double max_dist_per_update = 1.0;
-	const double ballToRobotDist = (fieldConfig.getRobotRadius())
-			+ (fieldConfig.getBallRadius());
-	cout << "ballToRobotDist: " << ballToRobotDist << endl << flush;
-
-	for (std::vector<unsigned int>::size_type player_idx = 0;
-			player_idx != player_paths.size(); player_idx++) {
-		double player_updated_dist = 0;
-
-		std::vector<planner_piece_t> path = player_paths[player_idx].path;
-		std::vector<unsigned int>::size_type path_idx = 1;
-		while (path_idx < path.size()
-				&& player_updated_dist < max_dist_per_update) {
-			double x1 = path[path_idx - 1].x;
-			double y1 = path[path_idx - 1].y;
-			double x2 = path[path_idx].x;
-			double y2 = path[path_idx].y;
-			Geometry::Point offset(x2 - x1, y2 - y1);
-			if (offset.size() > max_dist_per_update) {
-				double factor = max_dist_per_update / offset.size();
-				offset *= factor;
-			}
-			myTeam[player_idx].move(offset,
-					offset.size() / max_dist_per_update);
-			player_updated_dist += offset.size();
-			cout << "Updated pos: [" << player_idx << "] = "
-					<< myTeam[player_idx].toString() << endl << flush;
-			;
-			if (ownPlayerWithBall == static_cast<int>(player_idx)) {
-			    Geometry::Point lastMoveDirection(offset);
-				double ballFactor = ballToRobotDist / lastMoveDirection.size();
-				cout << "ballFactor: " << ballFactor << endl << flush;
-				lastMoveDirection *= ballFactor;
-
-				cout << "lastMoveDirection: " << lastMoveDirection.toString() << endl << flush;
-				Geometry::Point newBallVect = myTeam[player_idx].getPosition().getPoint();
-				newBallVect += lastMoveDirection;
-				ball.set(newBallVect.x, newBallVect.y, 0.0, 0.0, 0.0, 0.0, -1);
-			}
-			path_idx++;
-		}
-	}
-
-	for (std::vector<unsigned int>::size_type player_idx = 0;
-			player_idx != opponent_paths.size(); player_idx++) {
-		double player_updated_dist = 0;
-		std::vector<planner_piece_t> path = opponent_paths[player_idx].path;
-		std::vector<unsigned int>::size_type path_idx = 1;
-		while (path_idx < path.size()
-				&& player_updated_dist < max_dist_per_update) {
-			double x1 = path[path_idx - 1].x;
-			double y1 = path[path_idx - 1].y;
-			double x2 = path[path_idx].x;
-			double y2 = path[path_idx].y;
-			Geometry::Point offset(x2 - x1, y2 - y1);
-			if (offset.size() > max_dist_per_update) {
-				double factor = max_dist_per_update / offset.size();
-				offset *= factor;
-			}
-			opponents[player_idx].move(offset,
-					offset.size() / max_dist_per_update);
-			player_updated_dist += offset.size();
-			cout << "Updated pos: [" << player_idx << "] = "
-					<< opponents[player_idx].toString() << endl << flush;
-			;
-			if (opponentWithBall == static_cast<int>(player_idx)) {
-			    Geometry::Point lastMoveDirection(offset);
-				double ballFactor = ballToRobotDist / lastMoveDirection.size();
-				lastMoveDirection *= ballFactor;
-				Geometry::Point newBallVect = opponents[player_idx].getPosition().getPoint();
-                newBallVect += lastMoveDirection;
-				ball.set(newBallVect.x, newBallVect.y, 0.0, 0.0, 0.0, 0.0, -1);
-			}
-			path_idx++;
-		}
-	}
-
-	if ((ownPlayerWithBall == -1) && (opponentWithBall == -1)) {
-		double timespan = 1.0;
-		ball.move(timespan);
-	}
-
-	Geometry::Point newBallPos = ball.getPosition().getPoint();
-	double sim_margin = 0.10; // simulation margin
-	if (fabs(newBallPos.x) > (fieldConfig.getMaxFieldX() + sim_margin)) {
-		ret = false;
-	} else if (fabs(newBallPos.y)
-			> (fieldConfig.getMaxFieldY() + sim_margin)) {
-		ret = false;
-	}
-
-	return ret;
 }
 
 team_formation_e StringToFormation(const string& formation_string) {
@@ -222,13 +117,11 @@ public:
 void xmlplanner(string input_filename, unsigned runs_needed) {
 	TeamPlannerParameters plannerOptions = TeamPlannerParameters();
 
-	std::vector<MRA::MovingObject> myTeam = std::vector<MRA::MovingObject>();
-	std::vector<MRA::player_type_e> teamTypes =
-			std::vector<MRA::player_type_e>();
-	std::vector<MRA::player_type_e> opponentTypes = std::vector<
-			MRA::player_type_e>();
-	MRA::MovingObject ball = MRA::MovingObject();
-	std::vector<MRA::MovingObject> opponents = std::vector<MRA::MovingObject>();
+	std::vector<MRA::TeamPlannerRobot> myTeam = std::vector<MRA::TeamPlannerRobot>();
+	std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
+	std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
+	MRA::TeamPlannerBall ball = MRA::TeamPlannerBall();
+	std::vector<MRA::TeamPlannerOpponent> opponents = std::vector<MRA::TeamPlannerOpponent>();
 	game_state_e gameState;
 	std::string description = "";
 	FieldConfig fieldConfig = FillDefaultFieldConfig();
@@ -262,7 +155,10 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 		auto_ptr<robotsports::StrategyType> c(robotsports::Situation(filename));
 		description = c->Description();
 		if (c->Ball() != 0) {
-			ball.set(*(c->Ball()->x()), *(c->Ball()->y()), 0.0, (c->Ball()->velx()), (c->Ball()->vely()), 0.0, 0);
+			ball.position.x = *(c->Ball()->x());
+			ball.position.y = *(c->Ball()->y());
+			ball.velocity.x = c->Ball()->velx();
+			ball.velocity.y = c->Ball()->vely();
 			ball_present = true;
 		}
 
@@ -270,10 +166,7 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 		for (StrategyType::Team_const_iterator team_iter = c->Team().begin();
 				team_iter != c->Team().end(); ++team_iter) {
 			playerId++;
-			MovingObject P = MRA::MovingObject(*(*team_iter).x(),
-					*(*team_iter).y(), (*team_iter).rz(), (*team_iter).velx(),
-					(*team_iter).vely(), (*team_iter).velrz(), playerId);
-			myTeam.push_back(P);
+			TeamPlannerRobot P;
 			final_planner_result_t previous_result = { 0 };
 			previous_result.previous_result_present =
 					(*team_iter).previous_result_present();
@@ -299,7 +192,18 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 				cout << "player with ball is  " << playerId << endl;
 				ownPlayerWithBall = playerId;
 			}
-			robotIds.push_back(playerId); // start player-id with 1, loop starts with 0.
+            P.position.x = *(*team_iter).x();
+            P.position.y = *(*team_iter).y();
+            P.position.rz = (*team_iter).rz();
+            P.velocity.x = (*team_iter).velx();
+            P.velocity.y = (*team_iter).vely();
+            P.velocity.rz = (*team_iter).velrz();
+            P.controlBall = (*team_iter).hasBall();
+            P.robotId = playerId;
+            P.is_keeper = (*team_iter).isGoalie();
+            myTeam.push_back(P);
+
+            robotIds.push_back(playerId); // start player-id with 1, loop starts with 0.
 			double time_in_penalty_area = (*team_iter).time_in_penalty_area();
 			if (*(*team_iter).y() > 0) {
 				// player at opponent half
@@ -317,11 +221,6 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 				c->Opponent().begin(); opponent_iter != c->Opponent().end();
 				++opponent_iter) {
 			playerId++;
-			opponents.push_back(
-					MRA::MovingObject(*(*opponent_iter).x(),
-							*(*opponent_iter).y(), (*opponent_iter).rz(),
-							(*opponent_iter).velx(), (*opponent_iter).vely(),
-							(*opponent_iter).velrz(), 10+playerId));
 			opponentTypes.push_back(player_type_e::FIELD_PLAYER);
 			if ((*opponent_iter).isGoalie()) {
 				opponnentGoalieId = playerId;
@@ -329,6 +228,15 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 			if ((*opponent_iter).hasBall()) {
 //				opponentWithBall = playerId;
 			}
+            TeamPlannerOpponent op;
+            op.position.x  = *(*opponent_iter).x();
+            op.position.y  = *(*opponent_iter).y();
+            op.position.rz = (*opponent_iter).rz();
+            op.velocity.x  = (*opponent_iter).velx();
+            op.velocity.y  = (*opponent_iter).vely();
+            op.velocity.rz  = (*opponent_iter).velrz();
+            op.label = 10+playerId;
+            opponents.push_back(op);
 			opponentIds.push_back(playerId);
 		}
 
@@ -625,9 +533,8 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 		parking_postions.push_back(Geometry::Point(-6.375, -4.25));
 
 		if (!pickup_pos_set) {
-			Position ballPos = ball.getPosition();
-			pickup_pos.x = ballPos.getPoint().x;
-			pickup_pos.y = ballPos.getPoint().y;
+			pickup_pos.x = ball.position.x;
+			pickup_pos.y = ball.position.y;
 			pickup_pos.valid = ownPlayerWithBall >= 0;
 			pickup_pos.ts = 0.0;
 		}
@@ -813,7 +720,8 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 			team_planner_result_t org_result_paths = *(run_results[0].output.player_paths);
 			for (unsigned run_idx = 2; run_idx <= run_results.size(); ++run_idx) {
 				auto result = run_results[run_idx-1];
-				cout << "run[" << run_idx << "] ball: " << result.input.ball.toString(false) << " org ball:" << org_ball.toString(false) << endl;
+				cout << "run[" << run_idx << "] ball: x:" << result.input.ball.x << " y: "<< result.input.ball.y
+				                          << " org ball: x:" << org_ball.x << " y: " << org_ball.y << endl;
 				team_planner_result_t result_paths = *(result.output.player_paths);
 				for (unsigned player_idx = 0; player_idx != result_paths.size(); player_idx++) {
 					std::vector<planner_piece_t> path = result_paths[player_idx].path;

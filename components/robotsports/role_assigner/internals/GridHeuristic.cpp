@@ -332,7 +332,7 @@ double InfluenceOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	// add influence other players. Opponents twice team meat. 1/10 support influence (20x² ?)
 	for (unsigned bar_idx = 0; bar_idx < m_Opponents.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = m_Opponents[bar_idx].position.getPosition().getPoint();
+	    MRA::Geometry::Point bar_pos = m_Opponents[bar_idx].position;
 		if (bar_pos.distanceTo(MRA::Geometry::Point(x,y)) < m_radius) {
 			value = 1.0;
 		}
@@ -379,7 +379,7 @@ double OnLineBetweenPointsHeuristic::getValue(double x, double y){
 		if ((distPintoP1 >  distP1toP2) || (distPintoP2 >  distP1toP2) ) {
 			// P is not between P1 and P2. use shortest distance to line piece
 		    MRA::Geometry::Point p(x,y);
-			distToLinePiece = min(p.distanceTo(P1), p.distanceTo(P2));
+			distToLinePiece = std::min(p.distanceTo(P1), p.distanceTo(P2));
 		}
 		else {
 			distToLinePiece = getDistanceFromPointToLine(m_x1, m_y1, m_x2, m_y2, x, y);
@@ -503,7 +503,7 @@ NotOnLineBetweenBallAndOpponentGoalHeuristic::NotOnLineBetweenBallAndOpponentGoa
 
 // ----------------------------------------------------------------------------------------
 InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const MovingObject& ball,
+		const MRA::Geometry::Pose& ball,
 		const std::vector<TeamPlannerRobot>& Team,
 		const std::vector<TeamPlannerOpponent>& Opponents,
 		double interceptionChanceStartDistance,
@@ -512,7 +512,7 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
 											GridHeuristic(id, weight, pgid),
 											m_ball(ball),
 											m_Team(Team),
-											m_Opponents(vector<MovingObject>()),
+											m_Opponents(std::vector<MRA::Geometry::Pose>()),
 											m_interceptionChanceStartDistance(interceptionChanceStartDistance),
 											m_interceptionChanceIncreasePerMeter(interceptionChanceIncreasePerMeter),
 											m_interceptionChancePenaltyFactor(interceptionChancePenaltyFactor)
@@ -533,7 +533,7 @@ double InterceptionThreatHeuristic::getValue(double x, double y) {
 	//// Improves standing free by looking at the intercept by enemy thread
 
 	// player with ball
-    MRA::Geometry::Point ballPos = m_ball.getPosition().getPoint();
+    MRA::Geometry::Point ballPos = m_ball;
 
 	// receiving position
     MRA::Geometry::Point receivingPos = MRA::Geometry::Point(x, y);
@@ -558,7 +558,7 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
 	for (unsigned idx = 0; idx < m_Team.size(); idx++) {
 		if (!m_Team[idx].assigned ) {
 			// player is not yet assigned. If he's assigned, his position does not have an advantage anymore, so no cone for him.
-			double temp_value = m_Team[idx].position.getPosition().getPoint().distanceTo( MRA::Geometry::Point(x,y) ) / m_dScaling;
+			double temp_value = MRA::Geometry::Point(m_Team[idx].position).distanceTo( MRA::Geometry::Point(x,y) ) / m_dScaling;
 			value = ( value < temp_value ) ? value : temp_value;
 		}
 	}
@@ -618,7 +618,7 @@ double ShootOnGoalHeuristic::getValue(double x, double y) {
 		// on distance to shoot on goal (no shots on goal if too far away)
 
 		for( unsigned int i = 0; i < m_Opponents.size(); i++){
-		    MRA::Geometry::Point opponent = m_Opponents[i].position.getPosition().getPoint();
+		    MRA::Geometry::Point opponent = m_Opponents[i].position;
 			// TODO prefer locations further from any robots
 
 			//	- Filter opponents on keeper. Robot within 1.5 meter from opponent goal
@@ -658,7 +658,7 @@ PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData&
 		const TeamPlannerParameters& plannerOptions) :
 										GridHeuristic(id, weight, pgid),
 										m_Team(Team),
-										m_Opponents(vector<MovingObject>()),
+										m_Opponents(std::vector<MRA::Geometry::Pose>()),
 										m_robotRadius(fieldConfig.getRobotRadius()),
 										m_ball_pickup_position(ball_pickup_position),
 										m_interceptionChanceStartDistance(plannerOptions.interceptionChanceStartDistance),
@@ -691,7 +691,7 @@ double PassHeuristic::getValue(double x, double y) {
 		if (m_Team[team_idx].player_type != FIELD_PLAYER) {
 			continue; // skip this player; not a field player.
 		}
-		MRA::Geometry::Point teamMatePos = m_Team[team_idx].position.getPosition().getPoint();
+		MRA::Geometry::Point teamMatePos = m_Team[team_idx].position;
 
 		// calculate interception chance (default algorithm used to make pass by ball player and attack supporter for finding position.
 		double interChange = chance_of_intercept(dribbelPos, teamMatePos, m_Opponents,
@@ -724,11 +724,11 @@ double PassHeuristic::getValue(double x, double y) {
 // Calculate penalty for the position with respect to the opponents
 StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
 		const MRA::Geometry::Point& ballPlayerPos,
-		const MovingObject& ball,
+		const MRA::Geometry::Pose& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, const double radius) :
 												GridHeuristic(id, weight, pgid),
 												m_ballPlayerPos(ballPlayerPos),
-												m_ball(ball.getXYlocation()),
+												m_ball(ball),
 												m_Opponents(Opponents),
 												m_radius(radius) {
 	// calculate min and max angle. If opponent is this angle then it will be ignored (behind ball player)
@@ -739,14 +739,14 @@ StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, d
 double StayAwayFromOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	for (unsigned idx = 0; idx < m_Opponents.size(); idx++) {
-	    MRA::Geometry::Point opponentPos = m_Opponents[idx].position.getPosition().getPoint();
+	    MRA::Geometry::Point opponentPos = m_Opponents[idx].position;
 		if (opponentPos.distanceTo(MRA::Geometry::Point(x,y)) < m_radius) {
 			double ang = m_ball.angle(opponentPos);
 			bool behind_ballPlayer = (ang > m_angle_ball_ballplayer_min && ang < m_angle_ball_ballplayer_max);
 			if (!behind_ballPlayer) {
 				// opponent is in front of ball player
 				double penalty = 1.0 - (opponentPos.distanceTo(MRA::Geometry::Point(x,y)) / m_radius);
-				value = max(value, penalty);
+				value = std::max(value, penalty);
 			}
 			else {
 				// point is behind ball player so it will be ignored, but need to prevent go to this opponent.

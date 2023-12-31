@@ -13,10 +13,9 @@
 using namespace MRA;
 
 // calculation position where the ball will leave the field
-MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const MovingObject& rBallObject, const FieldConfig &rFieldConfig) {
-    MRA::Geometry::Point BallPos = rBallObject.getXYlocation();
-    MRA::Geometry::Point BallVelocity;
-	rBallObject.getVelocity(BallVelocity);
+MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig) {
+    MRA::Geometry::Point BallPos = rBallObject.position;
+    MRA::Geometry::Point BallVelocity = rBallObject.velocity;
 
 	MRA::Geometry::Point leavingPoint = BallPos;
 
@@ -70,27 +69,25 @@ MRA::Geometry::Point Dynamics::calculateBallLeavingFieldPoint(const MovingObject
 	return leavingPoint;
 }
 
-Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
+Dynamics::dynamics_t Dynamics::interceptBall(const TeamPlannerBall& rBallObject,
 		const MRA::Geometry::Point& coordinates, double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position) {
 	dynamics_t result = {};
 
 	// for clarity, lets assume Me wants to intercept a moving Ball
-	MRA::Geometry::Point ball = rBallObject.getPosition().getPoint();
-	MRA::Geometry::Point ballVelocity;
-	rBallObject.getVelocity(ballVelocity);
+	MRA::Geometry::Point ball_pos = rBallObject.position;
+	MRA::Geometry::Point ball_vel = rBallObject.velocity;
 	MRA::Geometry::Point meCoordinates = coordinates;
 
-	double ballSpeed = ballVelocity.size();
+	double ballSpeed = ball_vel.size();
 	if (ballSpeed < 0.0001) {
 		// When object is not moving, the intercept point is the object
 		// position itself
-		result.intercept_position = ball;
+		result.intercept_position = ball_pos;
 		return result;
 	}
-	double distance = meCoordinates.distanceTo(ball);
-	meCoordinates -= ball;
-	double cosBeta = meCoordinates.inproduct(ballVelocity)
-						/ (distance * ballSpeed);
+	double distance = meCoordinates.distanceTo(ball_pos);
+	meCoordinates -= ball_pos;
+	double cosBeta = meCoordinates.inproduct(ball_vel) / (distance * ballSpeed);
 
 	double relativeSpeed = fabs(ballSpeed - maxSpeed);
 	double time;
@@ -112,20 +109,21 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 		} else {
 			double time1 = (-b + sqrt(D)) / (2 * a);
 			double time2 = (-b - sqrt(D)) / (2 * a);
-			time = min(time1, time2);
+			time = std::min(time1, time2);
 			if (time < 0) {
-				time = max(time1, time2);
+				time = std::max(time1, time2);
 			}
 		}
 	}
-	result.intercept_position = ball;
+	result.intercept_position = ball_pos;
 	if (time < 0) {
 		// Intercept impossible
 		result.move_to_ball_leave_field_pos = true; // no intercept possible
 	} else {
+	    auto ballVelocity = ball_vel;
 	    ballVelocity *= time;
-	    ball += ballVelocity;
-		result.intercept_position = ball;
+	    ball_pos += ballVelocity;
+		result.intercept_position = ball_pos;
 	}
 
 	if (!fieldConfig.isInField(result.intercept_position, 0.25*fieldConfig.getRobotRadius()))
@@ -138,7 +136,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 	if (result.move_to_ball_leave_field_pos )
 	{
 		if (!move_to_ball_left_field_position) {
-			result.intercept_position = ball;
+			result.intercept_position = ball_pos;
 		}
 		else {
 			result.intercept_position = calculateBallLeavingFieldPoint(rBallObject, fieldConfig);
@@ -148,7 +146,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const MovingObject& rBallObject,
 	return result;
 }
 
-double Dynamics::timeOnPath(const vector<planner_piece_t>& path, double maxSpeed) {
+double Dynamics::timeOnPath(const std::vector<planner_piece_t>& path, double maxSpeed) {
 	// Handle boundary conditions
 	if (path.size() < 2) {
 		return 0.0;

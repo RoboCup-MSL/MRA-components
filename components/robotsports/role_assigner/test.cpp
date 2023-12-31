@@ -7,6 +7,7 @@
 #include "gmock/gmock.h"
 #include "test_factory.hpp"
 using namespace ::testing;
+#include "xmlTeamPlanner.h"
 
 // System under test:
 #include "RobotsportsRoleAssigner.hpp"
@@ -23,6 +24,14 @@ TEST(RobotsportsRoleAssignerTest, basicTick)
 
     // Assert
     EXPECT_EQ(error_value, 0);
+}
+
+// Basic tick shall run OK and return error_value 0.
+TEST(RobotsportsRoleAssignerTest, xmlTest)
+{
+    unsigned runs_needed = 1;
+    auto input_filename ="/home/jurge/MRA-components/components/robotsports/role_assigner/testdata/normal_defend_4.xml";
+    xmlplanner(input_filename, runs_needed);
 }
 
 

@@ -158,12 +158,34 @@ target_link_libraries(planner_regression_checker
 add_executable(
     robotsports_role_assigner_test
     test.cpp
+    test/xmlTeamPlanner.cpp
+    ${STRATEGY_TESTER_CPP}
 )
-target_include_directories(robotsports_role_assigner_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(robotsports_role_assigner_test  PRIVATE 
+    ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}
+    ${MRA_SOURCE_DIR}/base
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/internals
+    ${CMAKE_CURRENT_SOURCE_DIR}/temp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test    
+)
+
 target_link_libraries(
     robotsports_role_assigner_test
     MRA-components-robotsports-role-assigner
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries 
+    MRA-components-proto 
+    nlohmann_json::nlohmann_json 
+    rt 
+    GTest::gtest_main 
+    gmock
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_THREAD_LIBRARY}
+    xerces-c
 )
 
 

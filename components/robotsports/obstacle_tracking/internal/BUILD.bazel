@@ -6,7 +6,6 @@ cc_library(
     ],
     includes = [
         ".",
-        "..",
     ],
     deps = [
         "//libraries/logging",

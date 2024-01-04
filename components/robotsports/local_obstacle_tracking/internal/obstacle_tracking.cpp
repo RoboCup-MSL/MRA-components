@@ -216,7 +216,7 @@ void obstacle_tracking(double timestamp,
         // copy position and velocity data, and size, for all objects reported by filter
         //    	printf("#objects clustered %d\n", pnobj);
         unsigned i = 0;
-        output.mutable_objects()->Clear();
+        output.mutable_obstacles()->Clear();
         for (i = 0; i < pnobj; i++) {
             object_process.out[i].pos.x = pobj[4*i];
             object_process.out[i].vel.x = pobj[4*i+1];
@@ -244,7 +244,7 @@ void obstacle_tracking(double timestamp,
             trackedObject.mutable_timestamp()->CopyFrom(timestamp_obj);
             trackedObject.set_confidence(object_process.out[i].confidence);
             trackedObject.set_type(object_process.out[i].type);
-            output.mutable_objects()->Add()->CopyFrom(trackedObject);
+            output.mutable_obstacles()->Add()->CopyFrom(trackedObject);
         }
         // stub remaining out fields with zero objects
         while (i < MAXNOBJ_GLOBAL) {

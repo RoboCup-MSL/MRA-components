@@ -237,11 +237,11 @@ TEST(RobotsportsLocalObstacleTrackingTest, obstacle_min_y_left_to_right)
     double traject_dist = 5.0;
 
     auto last_output = execute_obstacle_traject_test(traject, traject_dist);
-    EXPECT_EQ(last_output.objects_size(), 1);
-    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().x(), 2.0, 0.01); // check if final speed is reached: x direction
-    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().velocity().y(), 0.0, 0.01); // check if final speed is reached: y direction
-    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().position().x(), 0.0, 0.01); // check if final speed is reached: x direction
-    EXPECT_NEAR(last_output.objects(0).pos_vel_fcs().position().y(), -4.0, 0.01); // check if final speed is reached: y direction
+    EXPECT_EQ(last_output.obstacles_size(), 1);
+    EXPECT_NEAR(last_output.obstacles(0).pos_vel_fcs().velocity().x(), 2.0, 0.01); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.obstacles(0).pos_vel_fcs().velocity().y(), 0.0, 0.01); // check if final speed is reached: y direction
+    EXPECT_NEAR(last_output.obstacles(0).pos_vel_fcs().position().x(), 0.0, 0.01); // check if final speed is reached: x direction
+    EXPECT_NEAR(last_output.obstacles(0).pos_vel_fcs().position().y(), -4.0, 0.01); // check if final speed is reached: y direction
 }
 
 // Basic tick shall run OK and return error_value 0.

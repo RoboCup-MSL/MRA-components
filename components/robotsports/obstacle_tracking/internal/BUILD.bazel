@@ -1,0 +1,16 @@
+cc_library(
+    name = "ObstacleTracking",
+    srcs = [
+    ],
+    hdrs = [
+    ],
+    includes = [
+        ".",
+    ],
+    deps = [
+        "//libraries/logging",
+        "//libraries/geometry",
+        "//components/robotsports/obstacle_tracking:datatypes",
+    ],
+    visibility = ["//visibility:public"],
+)

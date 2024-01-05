@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package MRA.RobotsportsLocalObstacleTracking;
+
+message Params
+{
+    double update_interval_vision = 1;      // update rate for vision (in seconds)
+    double update_interval_selves = 2;
+
+    bool use_shared_selves = 3; // if true, use self positions of team mates shared through network
+    double min_conf_shared_selves = 4; // minimum confidence level to include shared selves
+    double par_pclutter = 5;        // probability that new measurement is clutter
+    double par_alpha = 6;           // pnew = alpha * pexist
+    double par_sigmax = 7;          // standard deviation measurement noise, x-direction
+    double par_sigmay = 8;          // standard deviation measurement noise, y-direction
+    int32   par_nkeep = 9;           // number of hypotheses saved for next step
+    double par_pfactor = 10;         // reject hypotheses with p < pmax/pfactor
+    int32   par_nselect = 11;         // number of selected obstacles from input list
+    int32   par_maxnobj = 12;         // maximum number of obstacles in an hypothesis
+    double par_clipradius = 13;      // clipping radius relative to own position
+    double par_kscale = 14;          // scale factor for Kalman gain
+    double par_maxage = 15;          // maximum age for non-updated obstacles
+    double par_labelbound = 16;      // minimum required likelihood for obstacle association
+    bool   reset_on_error = 17;      // reset entire obstacle filter if error occurs
+}
+
+

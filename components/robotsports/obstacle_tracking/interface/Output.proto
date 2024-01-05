@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package MRA.RobotsportsObstacleTracking;
+
+import "datatypes/TrackedObject.proto";
+
+message Output
+{
+    repeated MRA.Datatypes.TrackedObject obstacles = 1;
+}
+

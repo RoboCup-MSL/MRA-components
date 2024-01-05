@@ -42,11 +42,11 @@ Container_Boundary(Sideline, "Sideline") {
 Component(opponent_with_ball, "opponent_with_ball")
 Component(local_ball_tracking, "Local Ball Tracking")
 
-Rel_U(local_obstacle_tracking, ball_tracking, "")
+Rel_U(local_obstacle_tracking, Obstacle_tracking, "")
 Rel_U(Obstacle_tracking, opponent_with_ball, "")
 Rel_U(ball_tracking, opponent_with_ball, "")
 
-Rel_U(omnivision, Obstacle_tracking, "")
+Rel_U(omnivision, local_obstacle_tracking, "")
 Rel_U(stereo_vision, local_obstacle_tracking, "")
 Rel_U(omnivision, local_ball_tracking, "")
 Rel_U(stereo_vision, local_ball_tracking, "")

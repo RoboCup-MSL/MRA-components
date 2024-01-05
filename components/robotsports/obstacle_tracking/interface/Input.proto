@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package MRA.RobotsportsObstacleTracking;
+
+import "google/protobuf/timestamp.proto";
+import "datatypes/Pose.proto";
+import "datatypes/TrackedObject.proto";
+import "datatypes/Player.proto";
+
+message Input
+{
+    repeated MRA.Datatypes.TrackedObject tracked_obstacles = 1; // obstacle candidates  [FCS]
+    repeated MRA.Datatypes.Player communicated_teammates = 2; // obstacle candidates [FCS]
+}

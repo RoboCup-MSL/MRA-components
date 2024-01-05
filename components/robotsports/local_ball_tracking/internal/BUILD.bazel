@@ -19,6 +19,7 @@ cc_library(
         "//libraries/logging",
         "//libraries/geometry",
         "//components/robotsports/local_ball_tracking:datatypes",
+        "//datatypes:MRA_cc_proto",
     ],
     visibility = ["//visibility:public"],
 )

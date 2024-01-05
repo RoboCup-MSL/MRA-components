@@ -16,12 +16,12 @@ message Params
     int32   par_nkeep = 9;           // number of hypotheses saved for next step
     double par_pfactor = 10;         // reject hypotheses with p < pmax/pfactor
     int32   par_nselect = 11;         // number of selected obstacles from input list
-    int32   par_maxnobj = 12;         // maximum number of objects in an hypothesis
+    int32   par_maxnobj = 12;         // maximum number of obstacles in an hypothesis
     double par_clipradius = 13;      // clipping radius relative to own position
     double par_kscale = 14;          // scale factor for Kalman gain
-    double par_maxage = 15;          // maximum age for non-updated objects
-    double par_labelbound = 16;      // minimum required likelihood for object association
-    bool   reset_on_error = 17;      // reset entire object filter if error occurs
+    double par_maxage = 15;          // maximum age for non-updated obstacles
+    double par_labelbound = 16;      // minimum required likelihood for obstacle association
+    bool   reset_on_error = 17;      // reset entire obstacle filter if error occurs
 }
 
 

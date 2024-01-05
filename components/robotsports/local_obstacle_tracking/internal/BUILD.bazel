@@ -7,7 +7,7 @@ cc_library(
     hdrs = [
         "sequence_clustering_track_obstacles.hpp",
         "obstacle_tracking.hpp",
-        "obstacledef.hpp"
+        "obstacle_definitions.hpp"
     ],
     includes = [
         "."

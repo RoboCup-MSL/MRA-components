@@ -74,10 +74,10 @@ class Builder():
     def run_pre_test(self) -> None:
         # wipe /tmp/testsuite_mra_logging, used via MRA_LOGGER_CONTEXT action_env, for post-testsuite inspection
         # (note how unittest test_mra_logger uses a different environment)
-        cmd = 'rm -rf /tmp/testsuites_mra_logging'
+        cmd = 'rm -rf /tmp/testsuite_mra_logging'
         self.run_cmd(cmd)
         # set test configuration (maybe we need some scripting for this ... ?)
-        cmd = 'echo \'{"folder":"/tmp/testsuites_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
+        cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
         self.run_cmd(cmd)
     def run_cmd(self, cmd: str) -> None:
         extra_opts = {}

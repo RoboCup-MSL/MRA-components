@@ -8,21 +8,21 @@
  
   Instead of using a particle filter, we apply a discrete filter to the set of hypotheses, which is of itself already a discrete stochast.
  
-  As the objects may be moving, we use a constant-velocity model-based Kalman filter to estimate the states of the detected objects.
+  As the obstacles may be moving, we use a constant-velocity model-based Kalman filter to estimate the states of the detected obstacles.
  
   Last updated: March, 19th, 2008, added bound checking and error handling
         February, 13th, 2009, adapted for sorted measurements with varying time interval in between (kalman_update)
-                                      added object labeling on creation of new object
+                                      added obstacle labeling on creation of new obstacle
  *
  * NOTE: obstacles POSITIONS are directly fed through!! Velocities are estimated not positions!!
  */
  
-#include "../../local_obstacle_tracking/internal/sequence_clustering_track_objects.hpp"
+#include "sequence_clustering_track_obstacles.hpp"
 
 #include "logging.hpp"
 
 //TODO
-#define FIELDMARGIN     0.6                 /* margin-outside-field for object clipping */
+#define FIELDMARGIN     0.6                 /* margin-outside-field for obstacle clipping */
 #define FIELDWIDTH      12.0
 #define FIELDLENGTH     20.0
 
@@ -61,11 +61,11 @@ static void isort_ascending(unsigned *idx, double *iarr, unsigned size) {
 //    int j, idx;
 //
 //    MRA_LOG_DEBUG("Hypothesis: %d", i);
-//    MRA_LOG_DEBUG("   Number of objects = %d", phyp->number_of_objects);
-//    if ( phyp->number_of_objects>0 ) {
-//        for (j=0; j<r_global_data.hyp[i].number_of_objects; j++) {
+//    MRA_LOG_DEBUG("   Number of obstacles = %d", phyp->number_of_obstacles);
+//    if ( phyp->number_of_obstacles>0 ) {
+//        for (j=0; j<r_global_data.hyp[i].number_of_obstacles; j++) {
 //        	idx=phyp->filter_id[j];
-//        	MRA_LOG_DEBUG("   Object %d at (%f, %f)", j, r_global_data.kal[idx].xh[0], r_global_data.kal[idx].xh[2]);
+//        	MRA_LOG_DEBUG("   obstacle %d at (%f, %f)", j, r_global_data.kal[idx].xh[0], r_global_data.kal[idx].xh[2]);
 //        	MRA_LOG_DEBUG("   Label = %d", r_global_data.kal[idx].label);
 //        }
 //    }
@@ -101,7 +101,7 @@ static SequenceClusterCode_e free_unused_filters(scw_global_data &r_global_data)
 
     /* check which Kalman filters are still being used */
     for (i = 0; i < r_global_data.number_hypotheses; i++) {
-        for (k = 0; k < r_global_data.hyp[i].number_of_objects; k++) {
+        for (k = 0; k < r_global_data.hyp[i].number_of_obstacles; k++) {
             idx = r_global_data.hyp[i].filter_id[k];
             //MRA_LOG_DEBUG("Kalman filter %d is still in use.", idx);
             r_global_data.kal[idx].active = 1;
@@ -136,7 +136,7 @@ static SequenceClusterCode_e free_unused_filters(scw_global_data &r_global_data)
     for (i = 0; i < MAXFIL; i++) {
         if (r_global_data.kal[i].active == 1) {
             if (r_global_data.kal[i].label >= LABEL_OFFSET) {
-                /* this is a labeled opponent object */
+                /* this is a labeled opponent obstacle */
                 label_in_use[r_global_data.kal[i].label - LABEL_OFFSET] = 1;
             }
         }
@@ -174,7 +174,7 @@ static int get_free_filter(scw_global_data&  r_global_data)
     if ( r_global_data.ff.ifree>r_global_data.ff.nfree ) {
         MRA_LOG_DEBUG("Out of Kalman filters!");
         filter_id = SC_OUT_OF_KALLMAN_FILTERS;
-        //jve-TODO: object_process.filter_error = 1;
+        //jve-TODO: obstacle_process.filter_error = 1;
     }
     
     return filter_id;
@@ -199,9 +199,9 @@ static int get_free_label(scw_global_data&  r_global_data)
 }
 
 
-static int find_associating_object(double *z, scw_global_data& r_global_data)
+static int find_associating_obstacle(double *z, scw_global_data& r_global_data)
 {
-/*  search for associating existing object for measurement z */
+/*  search for associating existing obstacle for measurement z */
     
     int imax = -1;
     double tttx, ttty, probability, max_probability = 0.0;
@@ -219,16 +219,16 @@ static int find_associating_object(double *z, scw_global_data& r_global_data)
     }
 
     if ( max_probability <= r_global_data.par.labelbound ) {
-        MRA_LOG_DEBUG("---> No associating object found.");
-        return SC_NO_ASSOCIATING_OBJECT_FOUND;
+        MRA_LOG_DEBUG("---> No associating obstacle found.");
+        return SC_NO_ASSOCIATING_OBSTACLE_FOUND;
     }
 
-    MRA_LOG_DEBUG("---> Associating object found with index %d, probability is %f", imax, max_probability);
+    MRA_LOG_DEBUG("---> Associating obstacle found with index %d, probability is %f", imax, max_probability);
     return imax;
 }
 
 
-static SequenceClusterCode_e associate_with_existing_object(int i, int j, unsigned iobj, double *z, scw_global_data &r_global_data) {
+static SequenceClusterCode_e associate_with_existing_obstacle(int i, int j, unsigned iobj, double *z, scw_global_data &r_global_data) {
     unsigned filter_id, k, m, nobj, idx;
     int free_id;
     double pnew;
@@ -240,19 +240,19 @@ static SequenceClusterCode_e associate_with_existing_object(int i, int j, unsign
     memcpy(&(r_global_data.hyp2[j]), &(r_global_data.hyp[i]), sizeof(hypothesis_w)); /* copy hypothesis */
 
     /*  probability of this hypothesis */
-    pnew = r_global_data.par.alpha * (1 - r_global_data.par.pclutter) / (r_global_data.hyp2[j].number_of_objects + r_global_data.par.alpha);
-    if (r_global_data.hyp2[j].number_of_objects == 0) {
-        return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBJECT_NO_OBJECT;
+    pnew = r_global_data.par.alpha * (1 - r_global_data.par.pclutter) / (r_global_data.hyp2[j].number_of_obstacles + r_global_data.par.alpha);
+    if (r_global_data.hyp2[j].number_of_obstacles == 0) {
+        return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBSTACLE_NO_OBSTACLE;
     }
     r_global_data.hyp2[j].probalility = r_global_data.hyp2[j].probalility * (1 - r_global_data.par.pclutter - pnew)
-            / r_global_data.hyp2[j].number_of_objects;
+            / r_global_data.hyp2[j].number_of_obstacles;
 
-    /*  all objects of old hypothesis must get a new filter */
-    for (k = 0; k < r_global_data.hyp[i].number_of_objects; k++) {
-        /* give object a new filter id */
+    /*  all obstacles of old hypothesis must get a new filter */
+    for (k = 0; k < r_global_data.hyp[i].number_of_obstacles; k++) {
+        /* give obstacle a new filter id */
         free_id = get_free_filter(r_global_data);
         if (free_id == SC_OUT_OF_KALLMAN_FILTERS) {
-            return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBJECT_FREE_FILTER;
+            return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBSTACLE_FREE_FILTER;
         }
         r_global_data.hyp2[j].filter_id[k] = free_id;
 
@@ -267,27 +267,27 @@ static SequenceClusterCode_e associate_with_existing_object(int i, int j, unsign
         r_global_data.kal[free_id].active = 1;
     }
 
-    /*  associate measurement with filter of object iobj */
+    /*  associate measurement with filter of obstacle iobj */
     r_global_data.hyp2[j].association_id = r_global_data.hyp2[j].filter_id[iobj];
 
     r_global_data.hyp2[j].hypothesis_id = j; /* label hypothesis */
 
     filter_id = r_global_data.hyp2[j].filter_id[iobj];
     if (z[3] > 0) {
-        /* inherit measurement label for known object */
+        /* inherit measurement label for known obstacle */
         r_global_data.kal[filter_id].label = z[3];
-        //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, r_global_data.kal[filter_id].label);
-        /* number of objects in this hypothesis */
-        nobj = r_global_data.hyp2[j].number_of_objects;
-        /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
+        //MRA_LOG_DEBUG("---> Label for obstacle %d inherited from measurement, label is %d.", filter_id, r_global_data.kal[filter_id].label);
+        /* number of obstacles in this hypothesis */
+        nobj = r_global_data.hyp2[j].number_of_obstacles;
+        /* check if any other obstacle in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
         for (m = 0; m < nobj; m++) {
             if (m != iobj) {
                 idx = r_global_data.hyp2[j].filter_id[m];
                 if (r_global_data.kal[idx].label == (int) z[3]) {
-                    //MRA_LOG_DEBUG("---> hyp %d: EXIST OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
+                    //MRA_LOG_DEBUG("---> hyp %d: EXIST obstacle duplicate label found (turtle %d)!", j, (int) z[3]);
                     r_global_data.kal[idx].label = get_free_label(r_global_data);
                     if (r_global_data.kal[idx].label == NO_FREE_LABEL_ID) {
-                        return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBJECT_NO_FREE_LABEL;
+                        return SC_ERROR_ASSOCIATE_WITH_EXISTING_OBSTACLE_NO_FREE_LABEL;
                     }
 
                     //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", r_global_data.kal[idx].label);
@@ -309,7 +309,7 @@ static SequenceClusterCode_e associate_with_clutter(int i, int j, scw_global_dat
     memcpy(&(r_global_data.hyp2[j]), &(r_global_data.hyp[i]), sizeof(hypothesis_w)); /* copy hypothesis */
 
     r_global_data.hyp2[j].probalility = r_global_data.hyp2[j].probalility * r_global_data.par.pclutter;
-    r_global_data.hyp2[j].association_id = NO_OBJECT_ID; /* not associated with any object */
+    r_global_data.hyp2[j].association_id = NO_OBSTACLE_ID; /* not associated with any obstacle */
 
     r_global_data.hyp2[j].hypothesis_id = j; /* label hypothesis */
 
@@ -317,7 +317,7 @@ static SequenceClusterCode_e associate_with_clutter(int i, int j, scw_global_dat
 }
 
 
-static SequenceClusterCode_e associate_with_new_object(int i, int j, double *z, scw_global_data &r_global_data) {
+static SequenceClusterCode_e associate_with_new_obstacle(int i, int j, double *z, scw_global_data &r_global_data) {
     unsigned k, m, nobj, idx;
     unsigned filter1_assoc_ptr, filter2_assoc_ptr;
     double pnew;
@@ -327,24 +327,24 @@ static SequenceClusterCode_e associate_with_new_object(int i, int j, double *z, 
         return SC_TOO_MANY_HYPOTESES;
     }
 
-    if (r_global_data.hyp[i].number_of_objects == r_global_data.par.maxnobj) {
+    if (r_global_data.hyp[i].number_of_obstacles == r_global_data.par.maxnobj) {
         return SC_MAX_REACHED;
     }
 
     memcpy(&(r_global_data.hyp2[j]), &(r_global_data.hyp[i]), sizeof(hypothesis_w)); /* copy hypothesis */
 
-    r_global_data.hyp2[j].number_of_objects++; /* new object */
+    r_global_data.hyp2[j].number_of_obstacles++; /* new obstacle */
 
     /* probability of this hypothesis */
-    pnew = r_global_data.par.alpha * (1 - r_global_data.par.pclutter) / (r_global_data.hyp[i].number_of_objects + r_global_data.par.alpha);
+    pnew = r_global_data.par.alpha * (1 - r_global_data.par.pclutter) / (r_global_data.hyp[i].number_of_obstacles + r_global_data.par.alpha);
     r_global_data.hyp2[j].probalility = r_global_data.hyp2[j].probalility * pnew;
 
-    /* all objects of old hypothesis must get a new filter */
-    for (k = 0; k < r_global_data.hyp[i].number_of_objects; k++) {
-        /* give object a new filter id */
+    /* all obstacles of old hypothesis must get a new filter */
+    for (k = 0; k < r_global_data.hyp[i].number_of_obstacles; k++) {
+        /* give obstacle a new filter id */
         free_id = get_free_filter(r_global_data);
         if ((free_id == SC_OUT_OF_KALLMAN_FILTERS) || (k >= MAXNOBJ_GLOBAL)) {
-            return SC_ERROR_ASSOCIATE_WITH_NEW_OBJECT;
+            return SC_ERROR_ASSOCIATE_WITH_NEW_OBSTACLE;
         }
         r_global_data.hyp2[j].filter_id[k] = free_id;
 
@@ -359,53 +359,53 @@ static SequenceClusterCode_e associate_with_new_object(int i, int j, double *z, 
         r_global_data.kal[free_id].active = 1;
     }
 
-    /*  create new object */
+    /*  create new obstacle */
     filter_id = get_free_filter(r_global_data);
-    if ((filter_id == SC_OUT_OF_KALLMAN_FILTERS) || ((r_global_data.hyp2[j].number_of_objects - 1) >= MAXNOBJ_GLOBAL)) {
-        return SC_ERROR_ASSOCIATE_WITH_NEW_OBJECT;
+    if ((filter_id == SC_OUT_OF_KALLMAN_FILTERS) || ((r_global_data.hyp2[j].number_of_obstacles - 1) >= MAXNOBJ_GLOBAL)) {
+        return SC_ERROR_ASSOCIATE_WITH_NEW_OBSTACLE;
     }
-    r_global_data.hyp2[j].filter_id[r_global_data.hyp2[j].number_of_objects - 1] = filter_id;
+    r_global_data.hyp2[j].filter_id[r_global_data.hyp2[j].number_of_obstacles - 1] = filter_id;
 
     /*  initialize filter initial condition at measurement z (zero-velocity) and activate filter */
     r_global_data.kal[filter_id].xh[0] = z[0];
     r_global_data.kal[filter_id].xh[2] = z[1];
-    //MRA_LOG_DEBUG("new filter and new object with x %f and y %f", z[0], z[1]);
+    //MRA_LOG_DEBUG("new filter and new obstacle with x %f and y %f", z[0], z[1]);
 
     if (z[3] > 0) {
-        /*          inherit measurement label for known object */
+        /*          inherit measurement label for known obstacle */
         r_global_data.kal[filter_id].label = z[3];
-        //MRA_LOG_DEBUG("---> Label for object %d inherited from measurement, label is %d.", filter_id, r_global_data.kal[filter_id].label);
-        /* number of objects in this hypothesis */
-        nobj = r_global_data.hyp2[j].number_of_objects;
-        /* check if any other object in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
+        //MRA_LOG_DEBUG("---> Label for obstacle %d inherited from measurement, label is %d.", filter_id, r_global_data.kal[filter_id].label);
+        /* number of obstacles in this hypothesis */
+        nobj = r_global_data.hyp2[j].number_of_obstacles;
+        /* check if any other obstacle in this hypothesis has the same turtle's label, if so, change it to a free opponent label! */
         for (m = 0; m < (nobj - 1); m++) {
             idx = r_global_data.hyp2[j].filter_id[m];
             if (r_global_data.kal[idx].label == (int) z[3]) {
-                //MRA_LOG_DEBUG("---> hyp %d: NEW OBJECT duplicate label found (turtle %d)!", j, (int) z[3]);
+                //MRA_LOG_DEBUG("---> hyp %d: NEW obstacle duplicate label found (turtle %d)!", j, (int) z[3]);
                 r_global_data.kal[idx].label = get_free_label(r_global_data);
                 if (r_global_data.kal[idx].label == NO_FREE_LABEL_ID) {
-                    return SC_ERROR_ASSOCIATE_WITH_NEW_OBJECT_NO_FREE_LABEL;
+                    return SC_ERROR_ASSOCIATE_WITH_NEW_OBSTACLE_NO_FREE_LABEL;
                 }
 
                 //MRA_LOG_DEBUG(" ... changed duplicate label to o%d", r_global_data.kal[idx].label);
             }
         }
     } else {
-        /*          check if this new object associates with an existing object */
-        assoc_id = find_associating_object(z, r_global_data);
-        if (assoc_id == SC_NO_ASSOCIATING_OBJECT_FOUND) {
-            /* no object found, assign new label */
+        /*          check if this new obstacle associates with an existing obstacle */
+        assoc_id = find_associating_obstacle(z, r_global_data);
+        if (assoc_id == SC_NO_ASSOCIATING_OBSTACLE_FOUND) {
+            /* no obstacle found, assign new label */
             free_id = get_free_label(r_global_data);
             if (free_id == NO_FREE_LABEL_ID) {
-                return SC_ERROR_ASSOCIATE_WITH_NEW_OBJECT_NO_FREE_LABEL;
+                return SC_ERROR_ASSOCIATE_WITH_NEW_OBSTACLE_NO_FREE_LABEL;
             }
             r_global_data.kal[filter_id].label = free_id;
             r_global_data.kal[filter_id].time_birth = z[4];
-            //MRA_LOG_DEBUG("---> New label for object %d, label is %d.", filter_id, free_id);
+            //MRA_LOG_DEBUG("---> New label for obstacle %d, label is %d.", filter_id, free_id);
         } else {
-            /* inherit label from associating object */
+            /* inherit label from associating obstacle */
             r_global_data.kal[filter_id].label = r_global_data.kal[assoc_id].label;
-            /* inherit birth date from associating object */
+            /* inherit birth date from associating obstacle */
             r_global_data.kal[filter_id].time_birth = r_global_data.kal[assoc_id].time_birth;
             /* merge associations */
             for (k = 0; k < ASSOC_BUFFER_LENGTH; k++) {
@@ -413,13 +413,13 @@ static SequenceClusterCode_e associate_with_new_object(int i, int j, double *z, 
                 filter2_assoc_ptr = (k + r_global_data.kal[assoc_id].assoc_ptr) % ASSOC_BUFFER_LENGTH;
                 r_global_data.kal[filter_id].associations[filter1_assoc_ptr] += r_global_data.kal[assoc_id].associations[filter2_assoc_ptr];
             }
-            //MRA_LOG_DEBUG("---> Label for object %d inherited from existing object, label is %d.", filter_id, r_global_data.kal[filter_id].label);
+            //MRA_LOG_DEBUG("---> Label for obstacle %d inherited from existing obstacle, label is %d.", filter_id, r_global_data.kal[filter_id].label);
         }
     }
 
     r_global_data.kal[filter_id].active = 1;
 
-    /* associate measurement with filter of new object */
+    /* associate measurement with filter of new obstacle */
     r_global_data.hyp2[j].association_id = filter_id;
 
     r_global_data.hyp2[j].hypothesis_id = j; /* label hypothesis */
@@ -436,8 +436,8 @@ static SequenceClusterCode_e generate_offspring(double *z, scw_global_data &r_gl
 
     for (i = 0; i < r_global_data.number_hypotheses; i++) {
 
-        for (k = 0; k < r_global_data.hyp[i].number_of_objects; k++) {
-            if (associate_with_existing_object(i, j, k, z, r_global_data) < 0) {
+        for (k = 0; k < r_global_data.hyp[i].number_of_obstacles; k++) {
+            if (associate_with_existing_obstacle(i, j, k, z, r_global_data) < 0) {
                 return SC_ERROR_IN_GENERATE_OFFSPRING_ASSCOCIATE_EXISTING;
             }
             j++; /* increment counter */
@@ -448,7 +448,7 @@ static SequenceClusterCode_e generate_offspring(double *z, scw_global_data &r_gl
         }
         j++; /* increment counter */
 
-        SequenceClusterCode_e iret = associate_with_new_object(i, j, z, r_global_data);
+        SequenceClusterCode_e iret = associate_with_new_obstacle(i, j, z, r_global_data);
         if (iret != SC_MAX_REACHED and iret != SC_SUCCESS) {
             return SC_ERROR_IN_GENERATE_OFFSPRING_ASSCOCIATE_NEW;
         }
@@ -503,7 +503,7 @@ static double kalman_update(double t, double* z, scw_global_data& r_global_data)
     double k42 = k21;
 
     for (unsigned i = 0; i < r_global_data.number_hypotheses; i++) {
-        for (unsigned k = 0; k < r_global_data.hyp[i].number_of_objects; k++) {
+        for (unsigned k = 0; k < r_global_data.hyp[i].number_of_obstacles; k++) {
             if (k >= MAXNOBJ_GLOBAL) {
                 return -1.0;
             }
@@ -511,7 +511,7 @@ static double kalman_update(double t, double* z, scw_global_data& r_global_data)
             if (tz > t) {
                 /* predict if tz greater than t */
 
-                /* prediction of object state */
+                /* prediction of obstacle state */
                 r_global_data.kal[idx].xh[0] = r_global_data.kal[idx].xh[0] + stepsize * r_global_data.kal[idx].xh[1];
                 /* kal[idx].xh[1]=kal[idx].xh[1]; */
                 r_global_data.kal[idx].xh[2] = r_global_data.kal[idx].xh[2] + stepsize * r_global_data.kal[idx].xh[3];
@@ -612,13 +612,13 @@ static unsigned buffer_sum(scw_global_data& r_global_data, unsigned id)
 }
 
 static SequenceClusterCode_e clip_time(double timestamp, scw_global_data &r_global_data) {
-    /*  clip hypotheses w.r.t. objects that have not been updated for a while */
+    /*  clip hypotheses w.r.t. obstacles that have not been updated for a while */
 
     unsigned i, j, k, m, idx, x[MAXNOBJ_GLOBAL];
 
     for (i = 0; i < r_global_data.number_hypotheses; i++) {
         k = 0;
-        while (k < r_global_data.hyp[i].number_of_objects) {
+        while (k < r_global_data.hyp[i].number_of_obstacles) {
             if (k >= MAXNOBJ_GLOBAL) {
                 return SC_CLIPTIME_ERROR;
             }
@@ -628,7 +628,7 @@ static SequenceClusterCode_e clip_time(double timestamp, scw_global_data &r_glob
 
                 /* rebuild filter_id array */
                 j = 0;
-                for (m = 0; m < r_global_data.hyp[i].number_of_objects; m++) {
+                for (m = 0; m < r_global_data.hyp[i].number_of_obstacles; m++) {
                     if (m != k) {
                         if ((m >= MAXNOBJ_GLOBAL) || (j >= MAXNOBJ_GLOBAL)) {
                             return SC_CLIPTIME_ERROR;
@@ -638,10 +638,10 @@ static SequenceClusterCode_e clip_time(double timestamp, scw_global_data &r_glob
                     }
                 }
 
-                r_global_data.hyp[i].number_of_objects = r_global_data.hyp[i].number_of_objects - 1; /* throw away object */
-                memcpy(r_global_data.hyp[i].filter_id, x, r_global_data.hyp[i].number_of_objects * sizeof(int));
+                r_global_data.hyp[i].number_of_obstacles = r_global_data.hyp[i].number_of_obstacles - 1; /* throw away obstacle */
+                memcpy(r_global_data.hyp[i].filter_id, x, r_global_data.hyp[i].number_of_obstacles * sizeof(int));
                 k = -1;
-                MRA_LOG_DEBUG("cliptime: threw away object based on too old");
+                MRA_LOG_DEBUG("cliptime: threw away obstacle based on too old");
             }
             k = k + 1;
         }
@@ -658,7 +658,7 @@ static SequenceClusterCode_e clip_rect(double xmin, double xmax, double ymin, do
 
     for (i = 0; i < r_global_data.number_hypotheses; i++) {
         k = 0;
-        while (k < r_global_data.hyp[i].number_of_objects) {
+        while (k < r_global_data.hyp[i].number_of_obstacles) {
             if (k >= MAXNOBJ_GLOBAL) {
                 return SC_CLIPRECT_ERROR;
             }
@@ -669,7 +669,7 @@ static SequenceClusterCode_e clip_rect(double xmin, double xmax, double ymin, do
 
                 /*              rebuild filter_id array */
                 j = 0;
-                for (m = 0; m < r_global_data.hyp[i].number_of_objects; m++) {
+                for (m = 0; m < r_global_data.hyp[i].number_of_obstacles; m++) {
                     if (m != k) {
                         if ((m >= MAXNOBJ_GLOBAL) || (j >= MAXNOBJ_GLOBAL)) {
                             return SC_CLIPRECT_ERROR;
@@ -679,10 +679,10 @@ static SequenceClusterCode_e clip_rect(double xmin, double xmax, double ymin, do
                     }
                 }
 
-                r_global_data.hyp[i].number_of_objects = r_global_data.hyp[i].number_of_objects - 1; /* throw away object */
-                memcpy(r_global_data.hyp[i].filter_id, x, r_global_data.hyp[i].number_of_objects * sizeof(int));
+                r_global_data.hyp[i].number_of_obstacles = r_global_data.hyp[i].number_of_obstacles - 1; /* throw away obstacle */
+                memcpy(r_global_data.hyp[i].filter_id, x, r_global_data.hyp[i].number_of_obstacles * sizeof(int));
                 k = -1;
-                MRA_LOG_DEBUG("clip_rect: threw away object outside field");
+                MRA_LOG_DEBUG("clip_rect: threw away obstacle outside field");
             }
             k = k + 1;
         }
@@ -708,10 +708,10 @@ static SequenceClusterCode_e nhyp_controller(scw_global_data &r_global_data) {
 
     psmall = p[idx[r_global_data.number_hypotheses - 1]] / r_global_data.par.pfactor;
 
-    /*  compute mean number of objects */
+    /*  compute mean number of obstacles */
     sum = 0;
     for (i = 0; i < r_global_data.number_hypotheses; i++) {
-        sum = sum + r_global_data.hyp[i].number_of_objects;
+        sum = sum + r_global_data.hyp[i].number_of_obstacles;
     }
     if (r_global_data.number_hypotheses == 0) {
         return SC_NHYP_CONTROL_ERROR;
@@ -756,11 +756,11 @@ static SequenceClusterCode_e init_hyp(hypothesis_w *phyp) {
     /* initialize hypotheses */
     for (unsigned hyp_idx = 0; hyp_idx < MAXHYP_W; hyp_idx++) {
         (phyp + hyp_idx)->hypothesis_id = hyp_idx;
-        (phyp + hyp_idx)->association_id = NO_OBJECT_ID;
+        (phyp + hyp_idx)->association_id = NO_OBSTACLE_ID;
         for (unsigned filter_idx = 0; filter_idx < MAXNOBJ_GLOBAL; filter_idx++) {
             (phyp + hyp_idx)->filter_id[filter_idx] = 0;
         }
-        (phyp + hyp_idx)->number_of_objects = 0;
+        (phyp + hyp_idx)->number_of_obstacles = 0;
         (phyp + hyp_idx)->probalility = 1.0;
     }
 
@@ -839,18 +839,18 @@ static SequenceClusterCode_e select_n_obstacles(double *z, unsigned *pn, double 
 
 
 SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *pobj_birthdate, double *pobj_assoc_buffer, double *plabel,
-        unsigned &r_number_of_objects, double *p_objects_detected, int max_num_detected_objects, scw_global_data &r_global_data) {
+        unsigned &r_number_of_obstacles, double *p_obstacles_detected, int max_num_detected_obstacles, scw_global_data &r_global_data) {
     /*
      inputs:
-     p_objects_detected        - (x, y, r, label, t) tuples of detected obstacles, padded with zeros
-     max_num_detected_objects  - maximum number of detected obstacles
+     p_obstacles_detected        - (x, y, r, label, t) tuples of detected obstacles, padded with zeros
+     max_num_detected_obstacles  - maximum number of detected obstacles
      time      - actual time
      r_global_data     - pointer to global workspace
 
-     outputs: pobj      - (x, xdot, y, ydot) position and velocity of detected objects
-     pr        - radius of detected objects
-     plabel    - label of detected objects
-     pnobj     - pointer to number of detected objects
+     outputs: pobj      - (x, xdot, y, ydot) position and velocity of detected obstacles
+     pr        - radius of detected obstacles
+     plabel    - label of detected obstacles
+     pnobj     - pointer to number of detected obstacles
      */
 
     unsigned n = 0, k = 0, idx = 0, imeas = 0, i_mape = 0, idx_t[MAX_TURTLES * MAXNOBJ_LOCAL], i = 0;
@@ -859,8 +859,8 @@ SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *
     double ts[MAX_TURTLES * MAXNOBJ_LOCAL];
 
     n = r_global_data.par.nselect;
-    MRA_LOG_DEBUG("new iteration of sc_wm with %d obstacles detected", max_num_detected_objects);
-    select_n_obstacles(zm, &n, p_objects_detected, max_num_detected_objects, x, 1000.0); /* select all obstacles */
+    MRA_LOG_DEBUG("new iteration of sc_wm with %d obstacles detected", max_num_detected_obstacles);
+    select_n_obstacles(zm, &n, p_obstacles_detected, max_num_detected_obstacles, x, 1000.0); /* select all obstacles */
 
     if (n > 0) {
         /* sort obstacles with respect to ascending time */
@@ -912,14 +912,14 @@ SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *
                 return result_value;
             }
 
-            /* Clip objects outside field */
+            /* Clip obstacles outside field */
             result_value = clip_rect(-FIELDWIDTH / 2.0 - FIELDMARGIN, FIELDWIDTH / 2.0 + FIELDMARGIN,
                     -FIELDLENGTH / 2.0 - FIELDMARGIN, FIELDLENGTH / 2.0 + FIELDMARGIN, r_global_data);
             if (result_value != SC_SUCCESS) {
                 return result_value;
             }
 
-            /* Clip objects that have not be updated for a while */
+            /* Clip obstacles that have not be updated for a while */
             result_value = clip_time(timestamp, r_global_data);
             if (result_value != SC_SUCCESS) {
                 return result_value;
@@ -938,7 +938,7 @@ SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *
             }
         }
     } else {
-        /*      clip objects that have not be updated for a while */
+        /*      clip obstacles that have not be updated for a while */
         auto result_value = clip_time(timestamp, r_global_data);
         if (result_value != SC_SUCCESS) {
             return result_value;
@@ -954,15 +954,15 @@ SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *
     i_mape = mape(r_global_data);
 
     /* return result */
-    r_number_of_objects = r_global_data.hyp[i_mape].number_of_objects;
+    r_number_of_obstacles = r_global_data.hyp[i_mape].number_of_obstacles;
 
     /* print all kalman filters */
     // printAssocId(r_global_data);
     unsigned obst_i = 0;
-    unsigned max_obst = r_number_of_objects;
+    unsigned max_obst = r_number_of_obstacles;
     for (k = 0; k < max_obst; k++) {
         if (k >= MAXNOBJ_GLOBAL) {
-            return SC_TOO_MANY_OBJECTS;
+            return SC_TOO_MANY_OBSTACLES;
         }
         idx = r_global_data.hyp[i_mape].filter_id[k];
         printAssocId(r_global_data, idx);
@@ -977,7 +977,7 @@ SequenceClusterCode_e sc_wm(double timestamp, double *pobj, double *pr, double *
         obst_i++;
 
     }
-    r_number_of_objects = max_obst;
+    r_number_of_obstacles = max_obst;
 
     /* update ring buffer pointers and clear next buffer index */
     auto result = updateRingBuffers(r_global_data);

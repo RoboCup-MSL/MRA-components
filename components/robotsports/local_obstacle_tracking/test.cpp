@@ -105,7 +105,7 @@ public:
 
     bool get_sample_data(unsigned sample_idx, ObstacleTrajectData& r_sample_data)
     {
-        bool object_detected = false;
+        bool obstacle_detected = false;
         r_sample_data.rel_time = sample_idx * sim_sample_time;
         r_sample_data.obstacle_x = m_obstacle_x + r_sample_data.rel_time * m_obstacle_vx;
         r_sample_data.obstacle_y = m_obstacle_y + r_sample_data.rel_time * m_obstacle_vy;
@@ -121,7 +121,7 @@ public:
         auto dist_robot_to_obstacle = hypot(fabs(r_sample_data.obstacle_x - r_sample_data.robot_x), fabs(r_sample_data.obstacle_y - r_sample_data.robot_y));
         if ((dist_robot_to_obstacle < m_sv_range) && fabs(angle_robot_to_obstacle) <= (0.5*m_sv_angle)) {
             // obstacle with frontcamera range and within the frontcamera vision angle
-            object_detected = true;
+            obstacle_detected = true;
 
             SimulatedObstacleCandidate bf;
             bf.x = r_sample_data.obstacle_x;
@@ -137,7 +137,7 @@ public:
 
         if (dist_robot_to_obstacle < m_ov_range) {
             // obstacle with omnivision range
-            object_detected = true;
+            obstacle_detected = true;
             SimulatedObstacleCandidate bf;
             bf.x = r_sample_data.obstacle_x;
             bf.y = r_sample_data.obstacle_y;
@@ -147,7 +147,7 @@ public:
             bf.ts = r_sample_data.rel_time;
             r_sample_data.omni_candidates.push_back(bf);
         }
-        return object_detected;
+        return obstacle_detected;
     }
 
 

@@ -4,7 +4,7 @@
 add_library(MRA-components-robotsports-local-obstacle-tracking
     tick.cpp
     internal/obstacle_tracking.cpp
-    internal/sequence_clustering_track_objects.cpp
+    internal/sequence_clustering_track_obstacles.cpp
 )
 target_include_directories(MRA-components-robotsports-local-obstacle-tracking PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging

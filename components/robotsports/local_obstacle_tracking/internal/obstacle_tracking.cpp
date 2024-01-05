@@ -1,9 +1,9 @@
 /**
  *  @file
- *  @brief   object tracking process
+ *  @brief   obstacle tracking process
  *  @curator Ton Peijnenburg
- *  @desc    determine best ball out of ball observations from various sensors
- *           using code from Tech United Turtle2, written by Rene van de Molengraft
+ *  @desc    determine best obstacles out of obstacle observations from various sensors
+ *           using code from Tech United, written by Rene van de Molengraft
  *           a very opportunistic interface is chosen, that
  *           leaves much of the original data structure in place
  */
@@ -15,12 +15,12 @@
 #include <string.h>
 #include <cmath>
 
-#include "../../local_obstacle_tracking/internal/objectdef.hpp"
-#include "../../local_obstacle_tracking/internal/sequence_clustering_track_objects.hpp"
+#include "../../local_obstacle_tracking/internal/obstacle_definitions.hpp"
+#include "../../local_obstacle_tracking/internal/sequence_clustering_track_obstacles.hpp"
 #include "logging.hpp"
 
 static scw_global_data pscgd;
-static double objects_detected[DIM*MAX_TURTLES*MAXNOBJ_LOCAL];
+static double obstacles_detected[DIM*MAX_TURTLES*MAXNOBJ_LOCAL];
 static double pobj[4*MAX_TURTLES*MAXNOBJ_LOCAL];
 static double pobj_radius[MAX_TURTLES*MAXNOBJ_LOCAL];
 static double pobj_birthdate[MAX_TURTLES*MAXNOBJ_LOCAL];
@@ -28,16 +28,16 @@ static double pobj_assoc_buffer[MAX_TURTLES*MAXNOBJ_LOCAL];
 static double pobj_label[MAX_TURTLES*MAXNOBJ_LOCAL];
 
 
-obstacle_tracking_t object_process;
+obstacle_tracking_t obstacle_process;
 
-static int processObjects(MRA::RobotsportsLocalObstacleTracking::ObstacleCandidate obstacle_candidate, double* objectData)
+static int processObstacles(MRA::RobotsportsLocalObstacleTracking::ObstacleCandidate obstacle_candidate, double* obstacleData)
 {
-    /* copy object position */
-    objectData[0] = obstacle_candidate.pose_fcs().x();			// x position in extrapolated coordinates
-    objectData[1] = obstacle_candidate.pose_fcs().y();			// y position in extrapolated coordinates
-    objectData[2] = obstacle_candidate.radius(); 			// radius of object
-    objectData[3] = 0;							// label = 0 is for unknown (default)
-    objectData[4] = google::protobuf::util::TimeUtil::TimestampToMilliseconds(obstacle_candidate.timestamp()) / 1000.0;				// timestamp
+    /* copy obstacle position */
+    obstacleData[0] = obstacle_candidate.pose_fcs().x();			// x position in extrapolated coordinates
+    obstacleData[1] = obstacle_candidate.pose_fcs().y();			// y position in extrapolated coordinates
+    obstacleData[2] = obstacle_candidate.radius(); 			// radius of obstacle
+    obstacleData[3] = 0;							// label = 0 is for unknown (default)
+    obstacleData[4] = google::protobuf::util::TimeUtil::TimestampToMilliseconds(obstacle_candidate.timestamp()) / 1000.0;				// timestamp
 
     return 1;
 }
@@ -45,20 +45,20 @@ static int processObjects(MRA::RobotsportsLocalObstacleTracking::ObstacleCandida
 int obstacle_tracking_initialize(double timestamp)
 {
     pos_t    zero_pos    = { 0.0, 0.0, 0.0, 0.0 };
-    object_t zero_object = { 0, zero_pos, zero_pos, 0.0, 0.0, 0.0 };
+    obstacle_t zero_obstacle = { 0, zero_pos, zero_pos, 0.0, 0.0, 0.0 };
 
-    // initialize object memory in output part of the sensor
+    // initialize obstacle memory in output part of the sensor
     for (int i = 0; i < MAXNOBJ_GLOBAL; i++) {
-    	object_process.out[i]= zero_object;
+        obstacle_process.out[i]= zero_obstacle;
     }
 
-    object_process.nobj = 0;
-    object_process.last_processed_vision_ts =  -1.0;
-    object_process.update_interval_vision = 0.05;
-    object_process.last_processed_selves_ts = -1.0;
-    object_process.update_interval_selves = 0.05;
+    obstacle_process.nobj = 0;
+    obstacle_process.last_processed_vision_ts =  -1.0;
+    obstacle_process.update_interval_vision = 0.05;
+    obstacle_process.last_processed_selves_ts = -1.0;
+    obstacle_process.update_interval_selves = 0.05;
 
-    // initialize static data structure for administration of objects by/from filter
+    // initialize static data structure for administration of obstacles by/from filter
     for(int i=0;i<MAXNOBJ_GLOBAL;i++){
         pobj[4*i]		= 0.0;
         pobj[4*i+1]		= 0.0;
@@ -71,26 +71,26 @@ int obstacle_tracking_initialize(double timestamp)
     }
 
     // default minimum confidence level for shared selves
-    object_process.use_shared_selves = 1;
-    object_process.min_conf_shared_selves = 0.5;
+    obstacle_process.use_shared_selves = 1;
+    obstacle_process.min_conf_shared_selves = 0.5;
 
     // initialize parameters
     // parameters for Turtle2 code
-    object_process.par_pclutter = 0.01;	/* probability that new measurement is clutter, default value is 0.001, changed to 0.02 after experimentation on 20170404 */
-    object_process.par_alpha = 0.01;	/* pnew = alpha * pexist, default value is 0.01 */
-    object_process.par_sigmax = 0.25;	/* standard deviation measurement noise, x-direction, default value is 0.250 */
-    object_process.par_sigmay = 0.25;	/* standard deviation measurement noise, y-direction, default value is 0.250 */
-    object_process.par_nkeep = 20;		/* number of hypotheses saved for next step, default is 30 */
-    object_process.par_pfactor = 10.0;	/* reject hypotheses with p < pmax/pfactor, default is 100.0 */
-    object_process.par_nselect = 32;		/* number of selected obstacles from input list, default is 385 */
-    object_process.par_maxnobj = 10;		/* maximum number of objects in an hypothesis, default is 20 */
-    object_process.par_clipradius = 1000.0;/* clipping radius relative to own position, default is 1000.0 */
-    object_process.par_kscale = 0.5;	/* scale factor for Kalman gain, default is 0.9 */
-    object_process.par_maxage = 1.0;	/* maximum age for non-updated objects, was 0.5 */
-    object_process.par_labelbound = 0.60;	/* minimum required likelihood for object association, default value is 0.95 */
+    obstacle_process.par_pclutter = 0.01;	/* probability that new measurement is clutter, default value is 0.001, changed to 0.02 after experimentation on 20170404 */
+    obstacle_process.par_alpha = 0.01;	/* pnew = alpha * pexist, default value is 0.01 */
+    obstacle_process.par_sigmax = 0.25;	/* standard deviation measurement noise, x-direction, default value is 0.250 */
+    obstacle_process.par_sigmay = 0.25;	/* standard deviation measurement noise, y-direction, default value is 0.250 */
+    obstacle_process.par_nkeep = 20;		/* number of hypotheses saved for next step, default is 30 */
+    obstacle_process.par_pfactor = 10.0;	/* reject hypotheses with p < pmax/pfactor, default is 100.0 */
+    obstacle_process.par_nselect = 32;		/* number of selected obstacles from input list, default is 385 */
+    obstacle_process.par_maxnobj = 10;		/* maximum number of obstacles in an hypothesis, default is 20 */
+    obstacle_process.par_clipradius = 1000.0;/* clipping radius relative to own position, default is 1000.0 */
+    obstacle_process.par_kscale = 0.5;	/* scale factor for Kalman gain, default is 0.9 */
+    obstacle_process.par_maxage = 1.0;	/* maximum age for non-updated obstacles, was 0.5 */
+    obstacle_process.par_labelbound = 0.60;	/* minimum required likelihood for obstacle association, default value is 0.95 */
 
-    object_process.filter_error =  0;		// this parameter is set if an error in the filter occurs, e.g. out of Kalman filters
-    object_process.reset_on_error =  1;
+    obstacle_process.filter_error =  0;		// this parameter is set if an error in the filter occurs, e.g. out of Kalman filters
+    obstacle_process.reset_on_error =  1;
 
     // initialize data structure for sequential clustering with first hypothesis
     return init_sc_wm(pscgd, timestamp);
@@ -107,41 +107,40 @@ void obstacle_tracking(double timestamp,
         state.set_is_initialized(true);
     }
 
-    // fill measurements just like balltrackpreproc.c does in Turtle2 code
 	// only now we fill with obstacles
     /* check for each sensor if new data is received */
 
     pos_t		zero_pos    = { 0.0, 0.0, 0.0, 0.0 };
-    object_t	zero_object = { 0, zero_pos, zero_pos, 0.0, 0.0, 0.0 };
+    obstacle_t	zero_obstacle = { 0, zero_pos, zero_pos, 0.0, 0.0, 0.0 };
 
     // reset filter if error has occurred and reset_on_error is set to true
-    if (object_process.filter_error and object_process.reset_on_error) {
-    	object_process.filter_error = 0;
-    	object_process.filter_reset_time = timestamp;
+    if (obstacle_process.filter_error and obstacle_process.reset_on_error) {
+        obstacle_process.filter_error = 0;
+        obstacle_process.filter_reset_time = timestamp;
     	init_sc_wm(pscgd, timestamp);
     }
 
     // copy filter parameters from shared memory so they can be updated run-time (not compile-time)
-    pscgd.par.pclutter	= object_process.par_pclutter;	// tunable parameter, default value is 0.001
-    pscgd.par.alpha		= object_process.par_alpha;		// tunable parameter, default value is 0.01
-    pscgd.par.sigmax	= object_process.par_sigmax;		// tunable parameter, default value is 0.250
-    pscgd.par.sigmay	= object_process.par_sigmay;		// tunable parameter, default value is 0.250
-    pscgd.par.nkeep		= (int) object_process.par_nkeep;		// tunable parameter, default value is 30
-    pscgd.par.pfactor	= object_process.par_pfactor;		// tunable parameter, default value is 100.0
-    pscgd.par.nselect	= (int)object_process.par_nselect;		// tunable parameter, default value is 385
-    pscgd.par.maxnobj	= (int)object_process.par_maxnobj;		// tunable parameter, default value is 20
+    pscgd.par.pclutter	= obstacle_process.par_pclutter;	// tunable parameter, default value is 0.001
+    pscgd.par.alpha		= obstacle_process.par_alpha;		// tunable parameter, default value is 0.01
+    pscgd.par.sigmax	= obstacle_process.par_sigmax;		// tunable parameter, default value is 0.250
+    pscgd.par.sigmay	= obstacle_process.par_sigmay;		// tunable parameter, default value is 0.250
+    pscgd.par.nkeep		= (int) obstacle_process.par_nkeep;		// tunable parameter, default value is 30
+    pscgd.par.pfactor	= obstacle_process.par_pfactor;		// tunable parameter, default value is 100.0
+    pscgd.par.nselect	= (int)obstacle_process.par_nselect;		// tunable parameter, default value is 385
+    pscgd.par.maxnobj	= (int)obstacle_process.par_maxnobj;		// tunable parameter, default value is 20
     if (pscgd.par.maxnobj > MAXNOBJ_GLOBAL) {
         pscgd.par.maxnobj = MAXNOBJ_GLOBAL;
     }
-    pscgd.par.clipradius = object_process.par_clipradius;	// tunable parameter, default value is 1000.0
-    pscgd.par.kscale	= object_process.par_kscale;		// tunable parameter, default value is 0.9
-    pscgd.par.maxage	= object_process.par_maxage;		// tunable parameter, default value is 0.3
-    pscgd.par.labelbound = object_process.par_labelbound;	// default value is 0.95
+    pscgd.par.clipradius = obstacle_process.par_clipradius;	// tunable parameter, default value is 1000.0
+    pscgd.par.kscale	= obstacle_process.par_kscale;		// tunable parameter, default value is 0.9
+    pscgd.par.maxage	= obstacle_process.par_maxage;		// tunable parameter, default value is 0.3
+    pscgd.par.labelbound = obstacle_process.par_labelbound;	// default value is 0.95
 
-    double last_processed_vision_timestamp = object_process.last_processed_vision_ts;
+    double last_processed_vision_timestamp = obstacle_process.last_processed_vision_ts;
 
     // first sensor is omni_vision
-    // check for updated object positions first, only then update object positions in extrapolated coordinates
+    // check for updated obstacle positions first, only then update obstacle positions in extrapolated coordinates
     // TODO may be replaced by just single check of vision updates master ts field hw.omni.ts with latest timestamp
     // check if input data is newer than data stored during the last sample
 
@@ -167,94 +166,94 @@ void obstacle_tracking(double timestamp,
         }
         MRA_LOG_DEBUG("last_omni_timestamp: %f", last_omni_timestamp);
         // check for new features from omni camera - a sinle new obstacle is enough!
-        //printf("object_process: objects %d last_omni %f last_object_process %f\n", nr_obstacles, last_omni_timestamp, last_processed_vision_timestamp);
+        //printf("obstacle_process: obstacles %d last_omni %f last_obstacle_process %f\n", nr_obstacles, last_omni_timestamp, last_processed_vision_timestamp);
         MRA_LOG_DEBUG("last_processed_vision_timestamp: %f", last_processed_vision_timestamp);
         if (last_omni_timestamp > last_processed_vision_timestamp) {
             // we have new features!
-            // copy to Tech United data structure called objects_detected array
-            // first, copy objects found by omni_vision
+            // copy to Tech United data structure called obstacles_detected array
+            // first, copy obstacles found by omni_vision
             for (auto i = 0; i < nr_obstacles; i++) {
-                // processObjects will move the data to the Tech United data structure
+                // processobstacles will move the data to the Tech United data structure
             	// add only observations that are newer than (last update + interval)
                 double obstacle_ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.obstacle_candidates(i).timestamp()) / 1000.0;
             	if (obstacle_ts > last_processed_vision_timestamp) {
-					processObjects(input.obstacle_candidates(i), &objects_detected[obstacles_this_time*DIM]);
-					MRA_LOG_DEBUG("process_objects has added obstacle at (%f,%f) with label %d and timestamp %f\n",
-					            objects_detected[obstacles_this_time*DIM],
-					            objects_detected[obstacles_this_time*DIM+1],
-					            objects_detected[obstacles_this_time*DIM+3],
-					            objects_detected[obstacles_this_time*DIM+4]);
+					processObstacles(input.obstacle_candidates(i), &obstacles_detected[obstacles_this_time*DIM]);
+					MRA_LOG_DEBUG("process_obstacles has added obstacle at (%f,%f) with label %d and timestamp %f\n",
+					        obstacles_detected[obstacles_this_time*DIM],
+					        obstacles_detected[obstacles_this_time*DIM+1],
+					        obstacles_detected[obstacles_this_time*DIM+3],
+					        obstacles_detected[obstacles_this_time*DIM+4]);
 					obstacles_this_time++;
-					// only update last_processed_vision_ts if at least one omni object has been used for updating the filter
-		            object_process.last_processed_vision_ts = last_omni_timestamp;
+					// only update last_processed_vision_ts if at least one omni obstacle has been used for updating the filter
+					obstacle_process.last_processed_vision_ts = last_omni_timestamp;
             	}
             }
         }
-        MRA_LOG_DEBUG("object_process.last_processed_vision_ts: %f", object_process.last_processed_vision_ts);
+        MRA_LOG_DEBUG("obstacle_process.last_processed_vision_ts: %f", obstacle_process.last_processed_vision_ts);
     }
 
     if (obstacles_this_time > MAX_TURTLES*MAXNOBJ_LOCAL) {
-        MRA_LOG_DEBUG("warning: object_process has more input objects this time than can be handled");
+        MRA_LOG_DEBUG("warning: obstacle_process has more input obstacles this time than can be handled");
 	}
-    MRA_LOG_DEBUG("object_process objects than can be handled: %d", obstacles_this_time);
+    MRA_LOG_DEBUG("obstacle_process obstacles than can be handled: %d", obstacles_this_time);
 
-    // stub with zero objects;
-    auto zero_obstacle = MRA::RobotsportsLocalObstacleTracking::ObstacleCandidate();
+    // stub with zero obstacles;
+    auto obstacle_candidate = MRA::RobotsportsLocalObstacleTracking::ObstacleCandidate();
     for (int k = obstacles_this_time; k < MAX_TURTLES*MAXNOBJ_LOCAL; k++) {
-		processObjects(zero_obstacle, &objects_detected[k*DIM]);
+		processObstacles(obstacle_candidate, &obstacles_detected[k*DIM]);
     }
 
     // update administration
-    object_process.nr_objects = obstacles_this_time;
+    obstacle_process.nr_obstacles = obstacles_this_time;
 
     // now run sc_bm code if obstacles are found
     unsigned pnobj;
-    int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, pnobj, objects_detected, obstacles_this_time,  pscgd);
-    MRA_LOG_DEBUG("object process | time: %6.3f  return: %3d  nr_obstacles: %3d obstacles: %3d pnob: %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
+    int ret = sc_wm(timestamp, pobj, pobj_radius, pobj_birthdate, pobj_assoc_buffer, pobj_label, pnobj, obstacles_detected, obstacles_this_time,  pscgd);
+    MRA_LOG_DEBUG("obstacle process | time: %6.3f  return: %3d  nr_obstacles: %3d obstacles: %3d pnob: %3d", timestamp, ret, nr_obstacles, obstacles_this_time, pnobj);
     if (ret == SC_SUCCESS) {
-        // update object positions in world model since a successful step has been done
-        // copy position and velocity data, and size, for all objects reported by filter
-        //    	printf("#objects clustered %d\n", pnobj);
+        // update obstacle positions in world model since a successful step has been done
+        // copy position and velocity data, and size, for all obstacles reported by filter
+        //    	printf("#obstacles clustered %d\n", pnobj);
         unsigned i = 0;
         output.mutable_obstacles()->Clear();
         for (i = 0; i < pnobj; i++) {
-            object_process.out[i].pos.x = pobj[4*i];
-            object_process.out[i].vel.x = pobj[4*i+1];
-            object_process.out[i].pos.y = pobj[4*i+2];
-            object_process.out[i].vel.y = pobj[4*i+3];
-            object_process.out[i].size =  pobj_radius[i];
-            object_process.out[i].ts = timestamp;
-            if (pobj_label[i] < OBJECT_LABEL_OWNTEAM) {
-                object_process.out[i].type = OBJECT_PLAYER_US;
+            obstacle_process.out[i].pos.x = pobj[4*i];
+            obstacle_process.out[i].vel.x = pobj[4*i+1];
+            obstacle_process.out[i].pos.y = pobj[4*i+2];
+            obstacle_process.out[i].vel.y = pobj[4*i+3];
+            obstacle_process.out[i].size =  pobj_radius[i];
+            obstacle_process.out[i].ts = timestamp;
+            if (pobj_label[i] < OBSTACLE_LABEL_OWNTEAM) {
+                obstacle_process.out[i].type = OBSTACLE_PLAYER_US;
             }
             else {
-                object_process.out[i].type = OBJECT_PLAYER_THEM;
+                obstacle_process.out[i].type = OBSTACLE_PLAYER_THEM;
             }
-            object_process.out[i].confidence = 0.8;
-            // TODO temporary assignment of object filter label to col.r for debugging purposes
+            obstacle_process.out[i].confidence = 0.8;
+            // TODO temporary assignment of obstacle filter label to col.r for debugging purposes
             //      may be used for association of opponent robot detections - this is reported but may be difficult due to noise
-            object_process.out[i].col.r = pobj_label[i];
+            obstacle_process.out[i].col.r = pobj_label[i];
 
-            auto trackedObject = MRA::Datatypes::TrackedObject();
-            trackedObject.mutable_pos_vel_fcs()->mutable_position()->set_x(object_process.out[i].pos.x);;
-            trackedObject.mutable_pos_vel_fcs()->mutable_velocity()->set_x(object_process.out[i].vel.x);
-            trackedObject.mutable_pos_vel_fcs()->mutable_position()->set_y(object_process.out[i].pos.y);;
-            trackedObject.mutable_pos_vel_fcs()->mutable_velocity()->set_y(object_process.out[i].vel.y);
-            auto timestamp_obj = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(object_process.out[i].ts * 1000);
-            trackedObject.mutable_timestamp()->CopyFrom(timestamp_obj);
-            trackedObject.set_confidence(object_process.out[i].confidence);
-            trackedObject.set_type(object_process.out[i].type);
-            output.mutable_obstacles()->Add()->CopyFrom(trackedObject);
+            auto trackedObstacle = MRA::Datatypes::TrackedObject();
+            trackedObstacle.mutable_pos_vel_fcs()->mutable_position()->set_x(obstacle_process.out[i].pos.x);;
+            trackedObstacle.mutable_pos_vel_fcs()->mutable_velocity()->set_x(obstacle_process.out[i].vel.x);
+            trackedObstacle.mutable_pos_vel_fcs()->mutable_position()->set_y(obstacle_process.out[i].pos.y);;
+            trackedObstacle.mutable_pos_vel_fcs()->mutable_velocity()->set_y(obstacle_process.out[i].vel.y);
+            auto timestamp_obj = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(obstacle_process.out[i].ts * 1000);
+            trackedObstacle.mutable_timestamp()->CopyFrom(timestamp_obj);
+            trackedObstacle.set_confidence(obstacle_process.out[i].confidence);
+            trackedObstacle.set_type(obstacle_process.out[i].type);
+            output.mutable_obstacles()->Add()->CopyFrom(trackedObstacle);
         }
-        // stub remaining out fields with zero objects
+        // stub remaining out fields with zero obstacles
         while (i < MAXNOBJ_GLOBAL) {
-            object_process.out[i] = zero_object;
+            obstacle_process.out[i] = zero_obstacle;
             i++;
         }
-        // include number of (valid) objects
-        object_process.nobj = (long)pnobj;
+        // include number of (valid) obstacles
+        obstacle_process.nobj = (long)pnobj;
         // include time stamp
-        object_process.ts = timestamp;
+        obstacle_process.ts = timestamp;
     } // if return is successful, otherwise no update
 
 }

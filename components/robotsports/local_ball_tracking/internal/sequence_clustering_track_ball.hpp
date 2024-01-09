@@ -1,8 +1,8 @@
 #ifndef SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 #define SEQ_CLUSTERING_BALL_MODEL_INCLUDE
 
-#include "../RobotsportsLocalBallTracking_datatypes.hpp"
-#include "sequence_clustering_common_defintions.hpp"
+#include "RobotsportsLocalBallTracking_datatypes.hpp"
+#include "sequence_clustering_common_definitions.hpp"
 
 /* define options for hypothesis association flag */
 typedef enum {
@@ -29,7 +29,7 @@ typedef enum sc_result {
 typedef struct tag_ball_observer {
     double        xh[6];            /* state estimate: x, xdot, y, ydot, z, zdot */
     double        time_last_update; /* time of last update */
-    balltype_e    label;            /* type of last added feature */
+    int           label;            /* type of last added feature */
     ball_update_e ball_update;      /* update flag, 0 = no update required, 1 = associate object with new feature */
     double        time;             /* time of current state estimate */
     int           uid;             /* uid set at creation */

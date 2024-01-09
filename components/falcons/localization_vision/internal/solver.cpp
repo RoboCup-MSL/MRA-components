@@ -157,7 +157,15 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
         result.push_back(lp);
     }
     int n = result.size();
-    MRA_TRACE_FUNCTION_OUTPUT(n);
+    // vector clipping
+    int max_size = _params.solver().linepoints().maxcount();
+    int dropped = 0;
+    if (n > max_size) {
+        dropped = max_size - n;
+        result.resize(max_size);
+        n = max_size;
+    }
+    MRA_TRACE_FUNCTION_OUTPUTS(n, dropped);
     return result;
 }
 
@@ -184,7 +192,7 @@ std::vector<Tracker> Solver::createTrackers() const
     //         (      0,       0,  0.5*srz)
     if (result.size() == 0)
     {
-        result.push_back(Tracker(_params, TrackerState()));
+        result.push_back(Tracker(_params));
     }
     Tracker &tracker = result.at(0);
     tracker.guess = _input.guess();
@@ -193,14 +201,17 @@ std::vector<Tracker> Solver::createTrackers() const
     // run the guesser to add more attempts/trackers
     Guesser g(_params);
     bool initial = (_state.tick() == 0);
-    g.run(result, initial);
+    g.run(result, _params, initial);
 
+    int num_trackers = result.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers);
     return result;
 }
 
 void Solver::runFitUpdateTrackers()
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers);
     // run the fit algorithm (multithreaded, one per tracker) and update trackers
     _fitAlgorithm.run(_referenceFloorMat, _linePoints, _trackers);
 
@@ -256,7 +267,7 @@ cv::Mat Solver::createDiagnosticsMat() const
 
     // add linepoints with blue/cyan color
     float ppm = _params.solver().pixelspermeter();
-    FitFunction ff(referenceFloorMat, _linePoints, ppm);
+    FitFunction ff(referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, ff.transformationMatrixRCS2FCS(_fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz));
     MRA_LOG_DEBUG("number of transformed points: %d", (int)transformed.size());
     for (const auto &point : transformed) {
@@ -280,9 +291,9 @@ cv::Mat Solver::createDiagnosticsMat() const
     MRA::Geometry::Position robotPoint(_fitResult.pose);
     MRA::Geometry::Position directionOffset = MRA::Geometry::Position(0.0, 0.4, 0.0); // point towards y direction (where the robot is aiming at)
     MRA::Geometry::Position directionPoint = directionOffset.transformRcsToFcs(robotPoint);
-	cv::circle(result, _floor.pointFcsToPixel(robotPoint), ppm * 0.28, color, linewidth);
-	cv::circle(result, _floor.pointFcsToPixel(directionPoint), ppm * 0.04, color, linewidth);
-	cv::line(result, _floor.pointFcsToPixel(robotPoint), _floor.pointFcsToPixel(directionPoint), color, linewidth);
+    cv::circle(result, _floor.pointFcsToPixel(robotPoint), ppm * 0.28, color, linewidth);
+    cv::circle(result, _floor.pointFcsToPixel(directionPoint), ppm * 0.04, color, linewidth);
+    cv::line(result, _floor.pointFcsToPixel(robotPoint), _floor.pointFcsToPixel(directionPoint), color, linewidth);
 
     // add green grid lines on top (all 1 pixel, so we can clearly see how the field lines are positioned)
     _floor.addGridLines(result, 1.0, cv::Scalar(0, 100, 0)); // 1meter grid: very faint
@@ -302,7 +313,7 @@ void Solver::manualMode()
     MRA_TRACE_FUNCTION();
     float ppm = _params.solver().pixelspermeter();
     // run the core calc() function
-    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm);
+    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
     double score = fit.calc(pose);
     // copy pose into _fitResult so local.floor will be properly created
@@ -334,9 +345,9 @@ int Solver::run()
     // create a floor (linePoints RCS, robot at (0,0,0)) for input linepoints
     _linePoints = createLinePoints();
 
-    // check for any linepoints
+    // check for enough linepoints
     // (having none at all is very unusual for a real robot, but not so much in test suite)
-    if (_linePoints.size())
+    if ((int)_linePoints.size() >= _params.solver().linepoints().mincount())
     {
         // manual mode?
         if (_params.solver().manual().enabled())
@@ -352,6 +363,10 @@ int Solver::run()
             // run the fit algorithm (multithreaded), update trackers, update _fitResult
             runFitUpdateTrackers();
         }
+    }
+    else
+    {
+        MRA_LOG_WARNING("insufficient number of linepoints: %d < %d", _linePoints.size(), _params.solver().linepoints().mincount());
     }
 
     // create and optionally dump of diagnostics data for plotting

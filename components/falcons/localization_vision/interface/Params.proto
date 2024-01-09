@@ -45,6 +45,9 @@ message LinePointParams
 {
     LinePointFitParams fit = 1;
     LinePointPlotParams plot = 2;
+    int32 maxCount = 3; // maximum number to use, just truncate input vector (original 'linePointsNumberMaximal')
+    int32 minCount = 4; // minimum number to use (original 'linePointsNumberMinimal')
+    double penaltyOutsideField = 5; // penalty per pixel outside of field+border bounds (originally 0.005)
 }
 
 message RGB

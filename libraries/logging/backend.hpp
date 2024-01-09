@@ -5,7 +5,7 @@
 #include "levels.hpp"
 #include <memory>
 #include <string>
-#include <fstream>
+#include <sstream>
 #include <variant>
 #include <google/protobuf/util/time_util.h>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
@@ -17,7 +17,7 @@ namespace MRA::Logging::backend
 {
 
 // tick logging: get binary file if configured, or NULL pointer
-std::pair<std::ofstream *, std::string> logTickBinFile(
+std::string logTickBinFile(
     MRA::Datatypes::LogSpec const &cfg,
     std::string const &componentName,
     int counter);
@@ -28,8 +28,7 @@ void logTickStart(
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
-    std::string const &binfileName,
-    std::ofstream *binfile,
+    std::ostringstream &bindata,
     int counter,
     google::protobuf::Timestamp const &timestamp,
     google::protobuf::Message const &input,
@@ -42,7 +41,7 @@ void logTickEnd(
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
-    std::ofstream *binfile,
+    std::ostringstream &bindata,
     int counter,
     double duration,
     int error_value,

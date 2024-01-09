@@ -62,16 +62,16 @@ int RobotsportsGetballFetch::RobotsportsGetballFetch::tick
         // check if not any failure mode was triggered
         if (output.actionresult() == MRA::Datatypes::RUNNING)
         {
-        	MRA::Datatypes::Pose robot_pos = ws.robot().position();
-        	MRA::Datatypes::Pose robot_vel = ws.robot().velocity();
+            MRA::Datatypes::Pose robot_pos = ws.robot().position();
+            MRA::Datatypes::Pose robot_vel = ws.robot().velocity();
 
-        	MRA::Datatypes::Pose target_pos_fc  = ws.ball().position();
-        	MRA::Datatypes::Pose target_vel_fc  = ws.ball().velocity();
+            MRA::Datatypes::Pose target_pos_fc  = ws.ball().position();
+            MRA::Datatypes::Pose target_vel_fc  = ws.ball().velocity();
 
-        	target_pos_fc.set_x(target_pos_fc.x() + target_vel_fc.x() * params.vision_delay());
-        	target_pos_fc.set_y(target_pos_fc.y() + target_vel_fc.y() * params.vision_delay());
-        	MRA::Geometry::Position target_position = target_pos_fc;
-        	target_position.faceAwayFrom(ws.robot().position());
+            target_pos_fc.set_x(target_pos_fc.x() + target_vel_fc.x() * params.vision_delay());
+            target_pos_fc.set_y(target_pos_fc.y() + target_vel_fc.y() * params.vision_delay());
+            MRA::Geometry::Position target_position = target_pos_fc;
+            target_position.faceAwayFrom(ws.robot().position());
 
             // write output
             output.mutable_target()->mutable_position()->set_x(target_pos_fc.x());

@@ -32,7 +32,7 @@
 #include "logging.hpp"
 #include <string> // memcpy
 
-#include "../RobotsportsLocalBallTracking_datatypes.hpp"
+#include "RobotsportsLocalBallTracking_datatypes.hpp"
 
 #include "sequence_clustering_best_uid.hpp"
 
@@ -1051,12 +1051,13 @@ sc_result_e sequence_clustering_track_ball(ball_estimate_t& r_ball_estimates,
     /* find number of valid features */
     n = 0;
     for (i = 0; i < max_num_balls; i++) {
-
-        MRA_LOG_DEBUG(" feature %d: x = %f, y = %f, z = %f, conf = %f", i, ball_candidates[i].x, ball_candidates[i].y, ball_candidates[i].z, ball_candidates[i].confidence);
-        if (ball_candidates[i].confidence > 0.0) { /* valid features have positive confidence value */
-            valid[n] = i; /* remember valid features */
-            ts[n] = ball_candidates[i].timestamp; /* store valid timestamps */
-            n++;
+        if (i < ball_candidates.size()) {
+            MRA_LOG_DEBUG(" feature %d: x = %f, y = %f, z = %f, conf = %f", i, ball_candidates[i].x, ball_candidates[i].y, ball_candidates[i].z, ball_candidates[i].confidence);
+            if (ball_candidates[i].confidence > 0.0) { /* valid features have positive confidence value */
+                valid[n] = i; /* remember valid features */
+                ts[n] = ball_candidates[i].timestamp; /* store valid timestamps */
+                n++;
+            }
         }
     }
 

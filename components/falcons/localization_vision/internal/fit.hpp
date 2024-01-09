@@ -24,8 +24,8 @@ struct FitResult
 class FitFunction: public cv::MinProblemSolver::Function
 {
 public:
-    FitFunction(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, float ppm);
-	double calc(const double *x) const; // this is the main scoring function to be minimized, x is a tuple (x,y,rz)
+    FitFunction(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, float ppm, float penaltyOutsideField = 0.0);
+    double calc(const double *x) const; // this is the main scoring function to be minimized, x is a tuple (x,y,rz)
     int getDims() const { return 3; }
 
     // helpers, public for testing purposes and diagnostics
@@ -38,8 +38,9 @@ public:
 private:
     cv::Mat _referenceFloor;
     std::vector<cv::Point2f> _rcsLinePoints;
-    double _rcsLinePointsPixelCount = 1.0; // for score normalization
+    int _rcsLinePointsPixelCount = 1.0; // for score normalization
     float _ppm; // needed to optimize in FCS instead of pixels
+    float _penaltyOutsideField; // score tweaking
     cv::Mat transformationMatrixFCS2PCS() const;
     mutable std::vector<MRA::Geometry::Pose> _fitpath;
 }; // class FitFunction

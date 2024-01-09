@@ -91,7 +91,7 @@ MRA::Datatypes::LogControl defaultConfiguration()
     const google::protobuf::EnumDescriptor *descriptor = MRA::Datatypes::LogLevel_descriptor();
     result.mutable_general()->set_level((MRA::Datatypes::LogLevel)descriptor->FindValueByName(level_str)->number());
     result.mutable_general()->set_enabled(true);
-    result.mutable_general()->set_dumpticks(false);
+    result.mutable_general()->set_dumpticks(MRA::Datatypes::TickDumpMode::ON_ERROR);
     result.mutable_general()->set_maxlinesize(1000);
     result.mutable_general()->set_maxfilesizemb(10.0);
     result.mutable_general()->set_pattern("[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v");
@@ -109,6 +109,7 @@ MRA::Datatypes::LogControl getConfiguration()
     // Open shared memory, initialize if not existing
     int shm_fd = shm_open(_mkShmFile().c_str(), O_RDONLY, 0666);
     if (shm_fd == -1) {
+        LOGDEBUG("shm init");
         auto cfg = defaultConfiguration();
         setConfiguration(cfg);
         return cfg;

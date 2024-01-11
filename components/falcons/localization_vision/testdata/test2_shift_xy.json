@@ -9,7 +9,7 @@
     ], "guess": {"x":-1,"y":-2,"rz":0}},
     "Params": {"solver": {"linePoints": {"minCount": 20}}},
     "Output": {"candidates":[
-        {"pose": {"x":-1,"y":-2,"rz":0}, "confidence": 0.0}
+        {"pose": {"x":-1,"y":-2,"rz":0}, "confidence": 1.0}
     ]}
 }
 

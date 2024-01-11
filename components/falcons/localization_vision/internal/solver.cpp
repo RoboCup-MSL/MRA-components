@@ -231,6 +231,9 @@ void Solver::runFitUpdateTrackers()
         _fitResult.pose = tr.fitResult;
         _fitResult.score = tr.fitScore;
         _fitResult.path = tr.fitPath;
+        MRA::Datatypes::Pose best_pose = _fitResult.pose;
+        auto best_score = _fitResult.score;
+        MRA_TRACE_FUNCTION_OUTPUTS(best_pose, best_score);
     }
 }
 
@@ -240,7 +243,7 @@ void Solver::cleanupBadTrackers()
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
 
     float scoreThreshold = _params.solver().scoring().thresholdkeepstate();
-    _trackers.erase(std::remove_if(_trackers.begin(), _trackers.end(), [scoreThreshold](Tracker const &tr) { return tr.fitScore < scoreThreshold; }), _trackers.end());
+    _trackers.erase(std::remove_if(_trackers.begin(), _trackers.end(), [scoreThreshold](Tracker const &tr) { return tr.fitScore > scoreThreshold; }), _trackers.end());
     int num_dropped = num_trackers_before - _trackers.size();
 
     int num_trackers_after = _trackers.size();
@@ -264,7 +267,7 @@ void Solver::setOutputsAndState()
         {
             Candidate c;
             c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)tr.fitResult);
-            c.set_confidence(tr.fitScore);
+            c.set_confidence(tr.confidence());
             *_output.add_candidates() = c;
         }
     }

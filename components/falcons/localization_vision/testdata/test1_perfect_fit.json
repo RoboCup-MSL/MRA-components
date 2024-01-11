@@ -7,9 +7,9 @@
         {"x":-6.9375,"y":-2},{"x":-6.9375,"y":2},{"x":-6.9375,"y":-4},{"x":-6.9375,"y":4},
         {"x":0,"y":7.4},{"x":0,"y":-7.4}
     ]},
-    "Params": {"solver": {"linePoints": {"minCount": 20}}},
+    "Params": {"solver": {"linePoints": {"minCount": 20}, "guessing": {"initial": []}}},
     "Output": {"candidates":[
-        {"pose": {"x":0,"y":0,"rz":0}, "confidence": 0.0}
+        {"pose": {"x":0,"y":0,"rz":0}, "confidence": 1.0}
     ]}
 }
 

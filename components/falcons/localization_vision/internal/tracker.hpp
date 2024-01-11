@@ -24,6 +24,9 @@ public:
     MRA::Geometry::Pose guess;
     MRA::Geometry::Pose step;
 
+    // convert back to TrackerState
+    operator TrackerState() const;
+
     // fit result, which is filled in by FitAlgorithm::run
     MRA::Geometry::Pose fitResult;
     bool fitValid;

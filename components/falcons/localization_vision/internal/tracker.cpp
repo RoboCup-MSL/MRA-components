@@ -34,8 +34,24 @@ Tracker::Tracker(Params const &params, TrackerState const &st)
     lastActive = st.lastactive();
 }
 
+Tracker::operator TrackerState() const
+{
+    MRA::FalconsLocalizationVision::TrackerState result;
+    *result.mutable_pose() = fitResult;
+    *result.mutable_creation() = creation;
+    *result.mutable_lastactive() = lastActive;
+    result.set_id(id);
+    return result;
+}
+
 float Tracker::confidence() const
 {
-    return 1.0; // TODO
+    // original Falcons localization also included things like age into this heuristic
+    // but later, responsibility and capability was shifted to WorldModel
+    // so here we keep it simple: pixel-based confidence
+    // fitScore is in range [0.0, 1.0] where 0.0 is perfect
+    // confidence however is inverted: higher is better
+    // clipping just to be safe
+    return std::max(0.0, std::min(1.0, 1.0 - fitScore));
 }
 

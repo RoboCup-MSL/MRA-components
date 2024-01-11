@@ -31,6 +31,10 @@
         "actionRadius": {"x": 0.1, "y": 0.1, "rz": 0.3},
         "maxCount": 400,
         "epsilon": 1e-4,
+        "scoring": {
+            "thresholdValid": 0.20,
+            "thresholdKeepState": 0.40
+        },
         "linePoints": {
             "fit": {"radiusConstant": 0.05, "radiusScaleFactor": -0.003, "radiusMinimum": 0.0},
             "plot": {"radius": 0.07},

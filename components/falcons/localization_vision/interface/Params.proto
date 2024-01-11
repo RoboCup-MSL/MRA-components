@@ -91,6 +91,12 @@ message BlurParams
     int32 minValue = 3; // stop when minimum intensity value is reached
 }
 
+message ScoringParams
+{
+    float thresholdValid = 1; // solver score threshold (typically about 80%, 0.20), to be marked as good enough for output
+    float thresholdKeepState = 2; // more relaxed score threshold to allow trackers in state
+}
+
 message SolverParams
 {
     int32 numExtraThreads = 1;
@@ -104,6 +110,7 @@ message SolverParams
     GuessingParams guessing = 9;
     ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver
     PathPointParams pathPoints = 11;
+    ScoringParams scoring = 12;
 }
 
 message Params

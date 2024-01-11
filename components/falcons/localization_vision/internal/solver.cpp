@@ -1,3 +1,7 @@
+// system
+#include <algorithm>
+
+// internal
 #include "solver.hpp"
 #include "guessing.hpp"
 
@@ -215,6 +219,9 @@ void Solver::runFitUpdateTrackers()
     // run the fit algorithm (multithreaded, one per tracker) and update trackers
     _fitAlgorithm.run(_referenceFloorMat, _linePoints, _trackers);
 
+    // sort trackers on decreasing quality
+    std::sort(_trackers.begin(), _trackers.end());
+
     // set _fitResult
     _fitResult.valid = false;
     if (_trackers.size())
@@ -224,19 +231,46 @@ void Solver::runFitUpdateTrackers()
         _fitResult.pose = tr.fitResult;
         _fitResult.score = tr.fitScore;
         _fitResult.path = tr.fitPath;
-        if (_fitResult.valid)
-        {
-            Candidate c;
-            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);
-            c.set_confidence(_fitResult.score);
-            *_output.add_candidates() = c;
-        }
     }
 }
 
 void Solver::cleanupBadTrackers()
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers_before = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+
+    float scoreThreshold = _params.solver().scoring().thresholdkeepstate();
+    _trackers.erase(std::remove_if(_trackers.begin(), _trackers.end(), [scoreThreshold](Tracker const &tr) { return tr.fitScore < scoreThreshold; }), _trackers.end());
+    int num_dropped = num_trackers_before - _trackers.size();
+
+    int num_trackers_after = _trackers.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+}
+
+void Solver::setOutputsAndState()
+{
+    // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
+    _state.mutable_trackers()->Clear();
+    for (auto const &tr: _trackers)
+    {
+        TrackerState ts = tr;
+        *_state.add_trackers() = ts;
+    }
+
+    // only the best trackers are set in output
+    for (auto const &tr: _trackers)
+    {
+        if (tr.fitValid)
+        {
+            Candidate c;
+            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)tr.fitResult);
+            c.set_confidence(tr.fitScore);
+            *_output.add_candidates() = c;
+        }
+    }
+
+    // update tick counter for next tick (this should be called at the end of the tick)
+    _state.set_tick(1 + _state.tick());
 }
 
 // TODO move to opencv_utils?
@@ -321,11 +355,7 @@ void Solver::manualMode()
     _fitResult.pose.y = pose[1];
     _fitResult.pose.rz = pose[2];
     _fitResult.path = fit.getPath();
-    // set output
-    Candidate c;
-    c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);
-    c.set_confidence(score);
-    *_output.add_candidates() = c;
+    _fitResult.score = score;
 }
 
 int Solver::run()
@@ -369,13 +399,15 @@ int Solver::run()
         MRA_LOG_WARNING("insufficient number of linepoints: %d < %d", _linePoints.size(), _params.solver().linepoints().mincount());
     }
 
+    // drop bad trackers
+    cleanupBadTrackers();
+
+    // set outputs and prepare for next tick
+    setOutputsAndState();
+
     // create and optionally dump of diagnostics data for plotting
     dumpDiagnosticsMat();
 
-    // prepare for next tick
-    _state.set_tick(1 + _state.tick());
-
-    // set best fit result as output, or return error code
     return 0;
 }
 

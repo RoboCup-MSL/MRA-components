@@ -37,11 +37,6 @@ void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
         // wait via ~ThreadPool
     }
 
-    // sort trackers on decreasing quality
-    std::sort(trackers.begin(), trackers.end());
-
-    // TODO: drop bad trackers
-
     int num_trackers_after = trackers.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after);
 }
@@ -80,7 +75,8 @@ FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
     result.score = cvSolver->minimize(vec);
 
     // store result
-    result.valid = true; // TODO score threshold
+    float scoreThreshold = settings.scoring().thresholdvalid();
+    result.valid = result.score <= scoreThreshold;
     result.pose.x = (vec.at<double>(0, 0));
     result.pose.y = (vec.at<double>(0, 1));
     result.pose.rz = (vec.at<double>(0, 2));

@@ -24,7 +24,7 @@ except ImportError:
     epath = os.getenv('PATH_TO_EXTENDEDLOGGING')
     if not epath:
         # try bazel dependency
-        epath = os.path.join(subprocess.getoutput('bazel info output_base'), 'external', 'extendedlogging')
+        epath = os.path.join(subprocess.getoutput('bazel info output_base 2>/dev/null').strip(), 'external', 'extendedlogging')
     if not os.path.isdir(epath):
         raise Exception('failed to find repo extendedlogging')
     sys.path.append(epath)

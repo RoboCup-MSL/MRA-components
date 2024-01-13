@@ -250,6 +250,58 @@ void Solver::cleanupBadTrackers()
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
 }
 
+// check if two positions are almost the same, optionally also taking field symmetry into account
+#include "angles.hpp"
+bool positions_equal(MRA::Geometry::Position const &pos1, MRA::Geometry::Position const &pos2, double tol_xy, double tol_rz, bool also_sym = false)
+{
+    MRA::Datatypes::Pose p1 = pos1, p2 = pos2;
+    MRA_TRACE_FUNCTION_INPUTS(p1, p2);
+    // first try data as is
+    double delta_x = pos1.x - pos2.x;
+    double delta_y = pos1.y - pos2.y;
+    double delta_rz = MRA::Geometry::wrap_pi(pos1.rz - pos2.rz);
+    bool too_close = std::max(fabs(delta_x), fabs(delta_y)) < tol_xy and fabs(delta_rz) < tol_rz;
+    MRA_LOG_DEBUG("attempt 1    delta_x=%f delta_y=%f delta_rz=%f too_close=%d", delta_x, delta_y, delta_rz, (int)too_close);
+    if (too_close) return true;
+    if (!also_sym) return false; // done
+    // now try the mirrored position
+    delta_x = pos1.x + pos2.x;
+    delta_y = pos1.y + pos2.y;
+    delta_rz = MRA::Geometry::wrap_pi(pos1.rz + pos2.rz);
+    too_close = std::max(fabs(delta_x), fabs(delta_y)) < tol_xy and fabs(delta_rz) < tol_rz;
+    MRA_LOG_DEBUG("attempt 2    delta_x=%f delta_y=%f delta_rz=%f too_close=%d", delta_x, delta_y, delta_rz, (int)too_close);
+    return too_close;
+}
+
+void Solver::cleanupDuplicateTrackers()
+{
+    int num_trackers_before = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+
+    if (_trackers.size() >= 2)
+    {
+        for (auto it = _trackers.begin() + 1; it != _trackers.end();) {
+            bool found_dupe = false;
+            for (auto it2 = _trackers.begin(); it2 != it; ++it2) {
+                bool too_close = positions_equal(it->fitResult, it2->fitResult, _params.solver().dupefiltering().tolerancexy(), _params.solver().dupefiltering().tolerancerz(), true);
+                if (too_close) {
+                    found_dupe = true;
+                    break;
+                }
+            }
+            if (found_dupe) {
+                it = _trackers.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
+    int num_dropped = num_trackers_before - _trackers.size();
+    int num_trackers_after = _trackers.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+}
+
 void Solver::setOutputsAndState()
 {
     // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
@@ -404,6 +456,9 @@ int Solver::run()
 
     // drop bad trackers
     cleanupBadTrackers();
+
+    // drop duplicate trackers
+    cleanupDuplicateTrackers();
 
     // set outputs and prepare for next tick
     setOutputsAndState();

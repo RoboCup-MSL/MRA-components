@@ -64,6 +64,7 @@ private:
     // run the fit algorithm (multithreaded) and update trackers
     void runFitUpdateTrackers();
     void cleanupBadTrackers();
+    void cleanupDuplicateTrackers();
     void setOutputsAndState();
 
     // optional debug data export

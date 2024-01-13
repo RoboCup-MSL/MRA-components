@@ -46,6 +46,10 @@
             "radius": 0.03,
             "color": {"R": 0, "G": 255, "B": 255}
         },
+        "dupeFiltering": {
+            "toleranceXY": 0.1,
+            "toleranceRz": 0.1
+        },
         "guessing": {
             "initial": [
                 {"center": {"x": -4.0, "y": -4.0}, "radius": 5.0},

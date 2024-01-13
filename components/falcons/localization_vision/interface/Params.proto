@@ -97,6 +97,12 @@ message ScoringParams
     float thresholdKeepState = 2; // more relaxed score threshold to allow trackers in state
 }
 
+message DupeFilteringParams
+{
+    float toleranceXY = 1;
+    float toleranceRz = 2;
+}
+
 message SolverParams
 {
     int32 numExtraThreads = 1;
@@ -111,6 +117,7 @@ message SolverParams
     ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver
     PathPointParams pathPoints = 11;
     ScoringParams scoring = 12;
+    DupeFilteringParams dupeFiltering = 13; // remove nearby trackers, including symmetric ones
 }
 
 message Params

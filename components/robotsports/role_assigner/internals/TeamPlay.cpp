@@ -37,15 +37,30 @@ TeamPlay::TeamPlay() : m_gridFileNumber(0) {
 
 void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, TeamPlannerOutput& r_output, const TeamPlannerParameters& plannerOptions)
 {
-//	game_state_e gamestate = input.gamestate;
-	std::vector<TeamPlannerRobot> Team =  input.team;
-	std::vector<TeamPlannerOpponent> Opponents = input.opponents;
-	TeamPlannerBall globalBall;
-	TeamPlannerData teamplanner_data; // TODO
-	game_state_e org_gamestate = input.gamestate;
+	TeamPlannerData teamplanner_data;
+	teamplanner_data.gamestate = input.gamestate;
+	teamplanner_data.ball_present = input.ball_present;
+	teamplanner_data.ball.position = input.ball;
+	teamplanner_data.parking_positions = input.parking_positions;
+	teamplanner_data.ball_pickup_position = input.ball_pickup_position;
+	teamplanner_data.passIsRequired = input.passIsRequired;
+	teamplanner_data.pass_data = input.pass_data;
+	teamplanner_data.teamFormation = input.teamFormation;
+	teamplanner_data.fieldConfig = input.fieldConfig;
+	teamplanner_data.parameters = plannerOptions;
+	teamplanner_data.teamControlBall = input.teamControlBall;
+	teamplanner_data.playerPassedBall = input.playerPassedBall;
+	teamplanner_data.team = input.team;
+	teamplanner_data.opponents = input.opponents;
+	//teamplanner_data.ballIsObstacle = input.ball;
+	//	teamplanner_data.searchForBall;
+	//	teamplanner_data.playerWhoIsPassing;
+	//	teamplanner_data.defend_info;
 
+
+
+    printAssignInputs(input);
 	if (input.gamestate != game_state_e::NONE) {
-		// printAssignInputs(input.gamestate, globalBall, Team, Opponents, plannerOptions,  input.parking_positions, input.ball_pickup_position, input.passIsRequired, teamplanner_data.pass_data);
 	}
 	if ((input.gamestate == game_state_e::NONE) ||
 			(input.gamestate == game_state_e::YELLOW_CARD_AGAINST) ||
@@ -54,10 +69,12 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			(input.gamestate == game_state_e::GOAL_AGAINST)) {
 		// unhandled game situations: cards and goals are not passed to the team planner via the game state-machine
 		for (unsigned idx = 0; idx < teamplanner_data.team.size(); idx++) {
-			(*r_output.player_paths)[idx].path = std::vector<planner_piece_t>();
-			(*r_output.player_paths)[idx].gamestate = input.gamestate;
-			(*r_output.player_paths)[idx].dynamic_role = dynamic_role_e::dr_NONE;
-			(*r_output.player_paths)[idx].defend_info.valid = false;
+		    PlayerPlannerResult player_path = {};
+		    player_path.path = std::vector<planner_piece_t>();
+		    player_path.gamestate = input.gamestate;
+		    player_path.dynamic_role = dynamic_role_e::dr_NONE;
+		    player_path.defend_info.valid = false;
+		    r_output.player_paths.push_back(player_path);
 		}
 		return; // no path will be planned if game state is NONE
 	}
@@ -79,7 +96,6 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 	// Assign players too long in any penalty area: closest position out of the penalty area
 	assignTooLongInPenaltyAreaPlayers(teamplanner_data);
 
-
 	bool searchForBall = searchForBallBehaviorNeeded(teamplanner_data);
 	for (unsigned dr_idx = 0; dr_idx < input.teamFormation.size(); dr_idx++) {
 		if (dr_idx >= teamplanner_data.team.size()) {
@@ -91,7 +107,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 
 		bool role_position_is_end_position_of_pass = false;
 		MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(teamplanner_data.defend_info, planner_target, m_gridFileNumber, input.teamFormation[dr_idx], input.gamestate,
-		        globalBall, r_state, Team, Opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position,
+		        teamplanner_data.ball, r_state, teamplanner_data.team, teamplanner_data.opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position,
 				input.passIsRequired, input.teamControlBall, input.playerPassedBall, teamplanner_data.pass_data, role_position_is_end_position_of_pass);
 		if (  searchForBall || input.gamestate == game_state_e::BEGIN_POSITION || input.gamestate ==  game_state_e::PARKING
 				|| input.gamestate ==  game_state_e::KICKOFF || input.gamestate ==  game_state_e::KICKOFF_AGAINST)
@@ -122,7 +138,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 				planner_target_e planner_target = determine_planner_target(dynamic_role_e::dr_DEFENDER, input.gamestate);
 				bool role_position_is_end_position_of_pass = false;
 				MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(teamplanner_data.defend_info, planner_target, m_gridFileNumber, dynamic_role_e::dr_DEFENDER, input.gamestate,
-				        globalBall, r_state, Team, Opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position, input.passIsRequired, input.teamControlBall, input.playerPassedBall, teamplanner_data.pass_data, role_position_is_end_position_of_pass);
+				        teamplanner_data.ball, r_state, teamplanner_data.team, teamplanner_data.opponents, plannerOptions, input.fieldConfig, input.ball_pickup_position, input.passIsRequired, input.teamControlBall, input.playerPassedBall, teamplanner_data.pass_data, role_position_is_end_position_of_pass);
 				assignAnyToPosition(teamplanner_data, static_cast<int>(ap_idx), dynamic_role_e::dr_DEFENDER,
 				        rolePosition, planner_target, role_position_is_end_position_of_pass);
 			}
@@ -143,7 +159,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 				avoidBallPath = false;
 			}
 
-			vector<MRA::Geometry::Pose> myTeam = getTeamMates(Team, idx, true);
+			vector<MRA::Geometry::Pose> myTeam = getTeamMates(teamplanner_data.team, idx, true);
 			GlobalPathPlanner visibilityGraph = GlobalPathPlanner(input.fieldConfig); // create robot planner
 			visibilityGraph.setOptions(plannerOptions);
 			// create list of possible targets for robot-planner
@@ -186,9 +202,10 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 	for (unsigned idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		if (teamplanner_data.team[idx].assigned == true) {
 			bool pathOK = stayPathWithinBoundaries(input.fieldConfig, teamplanner_data.team[idx].result);
-			(*r_output.player_paths)[idx] = teamplanner_data.team[idx].result;
-			(*r_output.player_paths)[idx].gamestate = teamplanner_data.team[idx].result.gamestate;
-			(*r_output.player_paths)[idx].dynamic_role = teamplanner_data.team[idx].dynamic_role;
+			PlayerPlannerResult planner_result  = teamplanner_data.team[idx].result;
+			planner_result.gamestate = teamplanner_data.team[idx].result.gamestate;
+			planner_result.dynamic_role = teamplanner_data.team[idx].dynamic_role;
+			r_output.player_paths.push_back(planner_result);
 			if (!pathOK && idx == 0) { // CHECK Only this robot
 				thisPlayerHasUnallowedPath = true; // this robot has wrong path
 
@@ -224,28 +241,22 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			options.svgOutputFileName = GetTeamPlannerSVGname(input.gamestate, "DYN_ROLE_NONE");
 		}
 
-        long controlBallByPlayer = -1;
-        for (unsigned r_idx = 0; r_idx < teamplanner_data.team.size(); r_idx++) {
-            if(teamplanner_data.team[r_idx].controlBall) {
-                controlBallByPlayer = static_cast<int>(r_idx);
-            }
-        }
-		SvgUtils::save_graph_as_svg(teamplanner_data, *r_output.player_paths,
-		        options, std::vector<Vertex*>(), org_gamestate, controlBallByPlayer, teamTypes, robotIds, "red");
+//		SvgUtils::save_graph_as_svg(teamplanner_data, r_output.player_paths,
+//		        options, std::vector<Vertex*>(), org_gamestate, controlBallByPlayer, teamTypes, robotIds, "red");
 
 		// create empty path for robot with wrong path
 		if (thisPlayerHasUnallowedPath) {
-			std::vector<planner_piece_t> path = (*r_output.player_paths)[0].path;
+			std::vector<planner_piece_t> path = r_output.player_paths[0].path;
 			if (!path.empty()) {
 				planner_piece_t last_piece = path[path.size()-1];
 				if (input.fieldConfig.isInReachableField(last_piece.x,last_piece.y) == false) {
-					(*r_output.player_paths)[0] = PlayerPlannerResult();
+				    r_output.player_paths[0] = PlayerPlannerResult();
 				}
 			}
 		}
 	}
 
-	//printAssignOutputs(Team, *r_output.player_paths);
+	printAssignOutputs(teamplanner_data.team, r_output.player_paths);
 	return;
 }
 
@@ -264,12 +275,12 @@ bool TeamPlay::stayPathWithinBoundaries(const FieldConfig& fieldConfig, const Pl
 }
 //---------------------------------------------------------------------------------------------------------------------
 // Print the output of TeamPlanner::Assign (debug purposes)
-void TeamPlay::printAssignOutputs(const std::vector<TeamPlannerRobot>& team, team_planner_result_t&  player_paths)
+void TeamPlay::printAssignOutputs(const std::vector<TeamPlannerRobot>& team, const team_planner_result_t&  player_paths)
 {
 	//Print final position
-	for (unsigned int player_idx = 0; player_idx < player_paths.size(); player_idx++) {
+	for (unsigned int player_idx = 0; player_idx < team.size(); player_idx++) {
 		PlayerPlannerResult playerResult = player_paths[player_idx];
-		cerr << "[" << player_idx  << "] Player-id: " << team[player_idx].robotId << DynamicRoleAsString(team[player_idx].dynamic_role) << endl;
+		cerr << "[" << player_idx  << "] Player-id: " << team[player_idx].robotId << " role: " << DynamicRoleAsString(playerResult.dynamic_role) << endl;
 		if (playerResult.path.size() > 0) {
 			cerr << "playerResult [ " << player_idx << "]  = (" << playerResult.path[playerResult.path.size()-1].x << ", "<< playerResult.path[playerResult.path.size()-1].y << ")" << endl << flush;
 		}
@@ -830,37 +841,38 @@ void TeamPlay::assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsign
 
 //---------------------------------------------------------------------------------------------------------------------
 // print the inputs of TeamPlanner::Assign for debug purposes
-void TeamPlay::printAssignInputs(TeamPlannerData&  teamplanner_data)
+void TeamPlay::printAssignInputs(const TeamPlannerInput& input)
 {
 	cerr << "Team_Planner::assign  inputs:" << endl << flush;
-	cerr << "game_state_e: " << teamplanner_data.gamestate << " (" << GameStateAsString(teamplanner_data.gamestate) << " )"<< endl << flush;
-	cerr << "global ball x: " << teamplanner_data.ball.position.x  << " y: " << teamplanner_data.ball.position.y << " z: " << teamplanner_data.ball.position.z
-	                 <<" vx: " << teamplanner_data.ball.velocity.x  << " vy: " << teamplanner_data.ball.velocity.y << " vz: " << teamplanner_data.ball.velocity.z<< endl << flush;
-	for (unsigned idx = 0; idx < teamplanner_data.team.size(); idx++) {
-		cerr << "Robot [" << idx << "] =" << endl << teamplanner_data.team[idx].toString() << endl;
+	cerr << "game_state_e: " << input.gamestate << " (" << GameStateAsString(input.gamestate) << " )"<< endl << flush;
+    cerr << "ball x: " << input.ball.x  << " y: " << input.ball.y << " z: " << input.ball.z << endl << flush;
+//	cerr << "ball x: " << input.ball.position.x  << " y: " << input.ball.position.y << " z: " << input.ball.position.z
+//	                 <<" vx: " << input.ball.velocity.x  << " vy: " << input.ball.velocity.y << " vz: " << input.ball.velocity.z<< endl << flush;
+	for (unsigned idx = 0; idx < input.team.size(); idx++) {
+		cerr << "Robot [" << idx << "] =" << endl << input.team[idx].toString() << endl;
 	}
-	cerr << "Opponents size: " << teamplanner_data.opponents.size()  << endl << flush;
-	for (unsigned int i = 0; i < teamplanner_data.opponents.size(); i++) {
-		cerr << "Opponents[" << i << "].position: x: " << teamplanner_data.opponents[i].position.x  << " y: " << teamplanner_data.opponents[i].position.y << " z: " << teamplanner_data.opponents[i].position.z
-	                     <<" vx: " << teamplanner_data.opponents[i].velocity.x  << " vy: " << teamplanner_data.opponents[i].velocity.y << " vz: " << teamplanner_data.opponents[i].velocity.z<< endl << flush;
+	cerr << "Opponents size: " << input.opponents.size()  << endl << flush;
+	for (unsigned int i = 0; i < input.opponents.size(); i++) {
+		cerr << "Opponents[" << i << "].position: x: " << input.opponents[i].position.x  << " y: " << input.opponents[i].position.y << " z: " << input.opponents[i].position.z
+	                     <<" vx: " << input.opponents[i].velocity.x  << " vy: " << input.opponents[i].velocity.y << " vz: " << input.opponents[i].velocity.z<< endl << flush;
 
 	}
-	cerr << "plannerOptions: " << teamplanner_data.parameters.toString() << endl << flush;
-	cerr << "parking positions size: " << teamplanner_data.parking_positions.size() << endl << flush;
-	for (unsigned int idx = 0; idx < teamplanner_data.parking_positions.size(); idx++) {
-		cerr << teamplanner_data.parking_positions[idx].toString() << endl << flush;
+//	cerr << "plannerOptions: " << input.parameters.toString() << endl << flush;
+	cerr << "parking positions size: " << input.parking_positions.size() << endl << flush;
+	for (unsigned int idx = 0; idx < input.parking_positions.size(); idx++) {
+		cerr << input.parking_positions[idx].toString() << endl << flush;
 	}
 
-	if (teamplanner_data.ball_pickup_position.valid)
-		cerr << "pickup: valid, x:" << std::setprecision(2) << teamplanner_data.ball_pickup_position.x << " y: " << teamplanner_data.ball_pickup_position.y << " ts:" << teamplanner_data.ball_pickup_position.ts << endl << flush;
+	if (input.ball_pickup_position.valid)
+		cerr << "pickup: valid, x:" << std::setprecision(2) << input.ball_pickup_position.x << " y: " << input.ball_pickup_position.y << " ts:" << input.ball_pickup_position.ts << endl << flush;
 	else{
 		cerr << "pickup: invalid " << endl << flush;
 	}
 
-	cerr << "passIsRequired: " << (teamplanner_data.passIsRequired ? "true" : "false") << endl << flush;
+	cerr << "passIsRequired: " << (input.passIsRequired ? "true" : "false") << endl << flush;
 
-	if (teamplanner_data.pass_data.valid) {
-		cerr << "pass_data: valid target_id: " << teamplanner_data.pass_data.target_id << endl << flush;
+	if (input.pass_data.valid) {
+		cerr << "pass_data: valid target_id: " << input.pass_data.target_id << endl << flush;
 		//		pass_data.target_id
 		//		pass_data.kicked
 		//		pass_data.origin_pos

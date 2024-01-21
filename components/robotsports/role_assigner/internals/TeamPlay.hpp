@@ -63,9 +63,9 @@ private:
 
 	bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& result);
 
-	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, team_planner_result_t&  player_paths);
+	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, const team_planner_result_t&  player_paths);
 
-	void printAssignInputs(TeamPlannerData&  teamplanner_data);
+	void printAssignInputs(const TeamPlannerInput& input);
 
 	double calculateShortestDistanceObjectsToTarget(const std::vector<MRA::Geometry::Pose>& objects, const MRA::Geometry::Pose& targetObject);
 

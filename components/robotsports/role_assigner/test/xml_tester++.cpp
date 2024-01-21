@@ -26,29 +26,25 @@ int main(int argc, char *argv[]) {
     try {
     	// Arguments will be stored here
     	std::string input_file;
-    	unsigned runs_needed;
 
     	// Configure options here
     	po::options_description desc ("Allowed options");
     	desc.add_options ()
         		("help,h", "print usage message")
-				("input-file", po::value(&input_file), "Input file")
-				("runs-needed", po::value(&runs_needed), "runs_needed");
+				("input-file,i", po::value(&input_file), "Input file");
 
     	// Parse command line arguments
     	po::variables_map vm;
     	po::store (po::command_line_parser (argc, argv).options (desc).run (), vm);
     	po::notify (vm);
     	// Check if --input is missing or --help is given
-    	if (vm.count ("help") ||
-    			!vm.count ("input-file") ||
-				!vm.count ("runs-needed")) {
+    	if (vm.count ("help") || !vm.count ("input-file")) {
     		std::cerr << desc << "\n";
     		return 1;
     	}
 
     	// call xml planner with the received parameters
-    	xmlplanner(input_file, runs_needed);
+    	xmlplanner(input_file);
     }
     catch (std::exception & e)
     {

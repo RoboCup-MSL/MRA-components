@@ -53,7 +53,7 @@ public:
 // class with outputs (data for Output.proto)
 class TeamPlannerOutput {
 public:
-    team_planner_result_t* player_paths;
+    std::vector<PlayerPlannerResult> player_paths;
     std::string pathToString();
 };
 

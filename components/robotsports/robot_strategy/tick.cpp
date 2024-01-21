@@ -14,8 +14,8 @@ using namespace MRA::RobotsportsRobotStrategy;
 
 static void getFormation013(OutputType &output,
 		                    Input_GameState gamestate,
-							bool playerControlBall,
-							bool playerPassedBall)
+							bool team_control_ball,
+							bool ball_passed)
 {
 	switch (gamestate)
 	{
@@ -44,10 +44,10 @@ static void getFormation013(OutputType &output,
 	case Input_GameState_GOAL: // intentional fall through
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 		// different role assignment when ball is passed
-		if (playerControlBall) {
+		if (team_control_ball) {
 			output.add_dynamic_roles(Output_DynamicRole_BALLPLAYER);
 		}
-		else if (playerPassedBall) { // ball is being passed
+		else if (ball_passed) { // ball is being passed
 			output.add_dynamic_roles(Output_DynamicRole_ATTACKSUPPORTER);
 		}
 		else {
@@ -68,7 +68,7 @@ static void getFormation013(OutputType &output,
 	case Input_GameState_DROPPED_BALL: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (playerControlBall) {
+		if (team_control_ball) {
 			output.add_dynamic_roles(Output_DynamicRole_BALLPLAYER);
 		}
 		else {
@@ -86,8 +86,8 @@ static void getFormation013(OutputType &output,
 
 static void getFormation112(OutputType &output,
         Input_GameState gamestate,
-		bool playerControlBall,
-		bool playerPassedBall,
+		bool team_control_ball,
+		bool ball_passed,
 		bool no_sweeper_during_setplay)
 {
 	switch (gamestate)
@@ -132,11 +132,11 @@ static void getFormation112(OutputType &output,
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (playerControlBall || playerPassedBall) {
-			if (playerControlBall) {
+		if (team_control_ball || ball_passed) {
+			if (team_control_ball) {
 				output.add_dynamic_roles(Output_DynamicRole_BALLPLAYER);
 			}
-			else if (playerPassedBall) { // ball is being passed
+			else if (ball_passed) { // ball is being passed
 				output.add_dynamic_roles(Output_DynamicRole_ATTACKSUPPORTER);
 			}
 			else {
@@ -162,8 +162,8 @@ static void getFormation112(OutputType &output,
 
 static void getFormation211(OutputType &output,
         Input_GameState gamestate,
-		bool playerControlBall,
-		bool playerPassedBall,
+		bool team_control_ball,
+		bool ball_passed,
 		bool no_sweeper_during_setplay)
 {
 	switch (gamestate) {
@@ -207,11 +207,11 @@ static void getFormation211(OutputType &output,
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (playerControlBall || playerPassedBall) {
-			if (playerControlBall) {
+		if (team_control_ball || ball_passed) {
+			if (team_control_ball) {
 				output.add_dynamic_roles(Output_DynamicRole_BALLPLAYER);
 			}
-			else if (playerPassedBall) { // ball is being passed
+			else if (ball_passed) { // ball is being passed
 				output.add_dynamic_roles(Output_DynamicRole_ATTACKSUPPORTER);
 			}
 			else {
@@ -237,8 +237,8 @@ static void getFormation211(OutputType &output,
 
 static void getFormation310(OutputType &output,
         Input_GameState gamestate,
-		bool playerControlBall,
-		bool playerPassedBall)
+		bool team_control_ball,
+		bool ball_passed)
 {
 switch (gamestate) {
 	case Input_GameState_FREEKICK: // intentional fall through
@@ -276,10 +276,10 @@ switch (gamestate) {
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (playerControlBall) {
+		if (team_control_ball) {
 			output.add_dynamic_roles(Output_DynamicRole_BALLPLAYER);
 		}
-		else if (playerPassedBall) { // ball is being passed
+		else if (ball_passed) { // ball is being passed
 			output.add_dynamic_roles(Output_DynamicRole_ATTACKSUPPORTER);
 		}
 		else {
@@ -294,63 +294,12 @@ switch (gamestate) {
 	};
 }
 
-
-
-//void TeamPlay::assign(team_planner_result_t* player_paths, game_state_e gamestate,
-//		const MovingObject& globalBall, const MovingObject& localBall, const previous_used_ball_by_planner_t& previous_global_ball,
-//		std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
-//		const PlannerOptions& plannerOptions, const FieldConfig& fieldConfig, const std::vector<Vector2D>& parking_positions,
-//		const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, const pass_data_t& pass_data)
-//{
-//	game_state_e org_gamestate = gamestate;
-//	if (gamestate != game_state_e::NONE) {
-//	}
-//	if ((gamestate == game_state_e::NONE) ||
-//			(gamestate == game_state_e::YELLOW_CARD_AGAINST) ||
-//			(gamestate == game_state_e::RED_CARD_AGAINST) ||
-//			(gamestate == game_state_e::GOAL) ||
-//			(gamestate == game_state_e::GOAL_AGAINST)) {
-//		// unhandled game situations: cards and goals are not passed to the team planner via the game state-machine
-//		return; // no path will be planned if game state is NONE
-//	}
-//	bool playerControlBall = false;
-//	bool playerPassedBall = false;
-//	for (unsigned r_idx = 0; r_idx < Team.size(); r_idx++) {
-//		if (Team[r_idx].controlBall) {
-//			playerControlBall = true;
-//		}
-//		if (Team[r_idx].passBall) {
-//			playerPassedBall = true;
-//		}
-//	}
-//	bool teamControlBall = playerPassedBall || playerControlBall;
-//
-//	if (gamestate == game_state_e::NORMAL) {
-//		if (teamControlBall) {
-//			gamestate = game_state_e::NORMAL_ATTACK;
-//		}
-//		else{
-//			gamestate = game_state_e::NORMAL_DEFEND;
-//		}
-//	}
-//
-//	team_formation_e formationToUse = plannerOptions.attack_formation;
-//
-//	if ((gamestate == NORMAL_DEFEND)
-//			|| (gamestate == KICKOFF_AGAINST) || (gamestate == FREEKICK_AGAINST) || (gamestate == GOALKICK_AGAINST)
-//			|| (gamestate == CORNER_AGAINST) || (gamestate == PENALTY_AGAINST) || (gamestate == PENALTY_SHOOTOUT_AGAINST)) {
-//		formationToUse = plannerOptions.defense_formation;
-//	}
-//	vector<dynamic_role_e> teamFormation = TeamFormation::selectTeamFormation(formationToUse, gamestate,
-//			playerControlBall, playerPassedBall, plannerOptions)
-
 static void roleOnlyFormation(OutputType &output,
 		                      Output_DynamicRole dynamic_role) {
 	for (unsigned idx = 0; idx < 4; ++idx) {
 		output.add_dynamic_roles(dynamic_role);
 	}
 }
-
 
 
 int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
@@ -366,18 +315,6 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
     int error_value = 0;
 
     // user implementation goes here
-
-    //vector<dynamic_role_e> TeamFormation::selectTeamFormation(team_formation_e team_formation, game_state_e gamestate,
-    //		bool playerControlBall, bool playerPassedBall, const PlannerOptions& plannerOptions) {
-    //	vector<dynamic_role_e> formation = vector<dynamic_role_e>();
-    //	// inputs which can be used:
-    //	//	m_plannerOptions;
-    //	//	m_ballControlledByTeam
-    //	//	m_ball_pickup_position;
-    //	// 	//	Game-stats (score)   [Future]
-	bool playerControlBall = false;
-	bool playerPassedBall = false;
-
 
     if (input.gamestate() == Input_GameState_PENALTY_SHOOTOUT_AGAINST) {
     	// formation strategy independent formation
@@ -443,18 +380,18 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
     		roleOnlyFormation(output, Output_DynamicRole_PENALTY_DEFENDER);
     		break;
     	case Params_TeamFormation_FORMATION_112:
-    		getFormation112(output, input.gamestate(), playerControlBall, playerPassedBall, params.no_sweeper_during_setplay() );
+    		getFormation112(output, input.gamestate(), input.team_control_ball(), input.ball_passed(), params.no_sweeper_during_setplay() );
     		break;
     	case Params_TeamFormation_FORMATION_211:
-    		getFormation211(output, input.gamestate(), playerControlBall, playerPassedBall, params.no_sweeper_during_setplay());
+    		getFormation211(output, input.gamestate(), input.team_control_ball(), input.ball_passed(), params.no_sweeper_during_setplay());
     		break;
     	case Params_TeamFormation_FORMATION_013:
-    		getFormation013(output, input.gamestate(), playerControlBall, playerPassedBall);
+    		getFormation013(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
     		break;
     	case Params_TeamFormation_FORMATION_310:
-    		getFormation310(output, input.gamestate(), playerControlBall, playerPassedBall);
+    		getFormation310(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
     	default:
-    		getFormation310(output, input.gamestate(), playerControlBall, playerPassedBall);
+    		getFormation310(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
     	}
     }
     return error_value;

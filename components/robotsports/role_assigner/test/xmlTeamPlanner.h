@@ -7,7 +7,7 @@
 #define XML_PLANNER_H 1
 #include <string>
 
-void xmlplanner(std::string input_filename, unsigned runs_needed);
+void xmlplanner(std::string input_filename);
 
 #endif
 

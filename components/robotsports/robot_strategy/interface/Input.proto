@@ -37,7 +37,9 @@ message Input
 		GOAL_AGAINST = 24;
 	}
 
-    MRA.Datatypes.WorldState worldstate = 1;
-    GameState gamestate = 2;
+    GameState gamestate = 1;
+    bool team_control_ball = 2;
+    bool ball_passed = 3;
+    
 }
 

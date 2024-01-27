@@ -721,7 +721,7 @@ void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_dat
 	player_paths.push_back(playerResult);
 	// TODO handle localball correctly towards svg
 	SvgUtils::save_graph_as_svg(teamplanner_data, player_paths,
-			m_options, m_vertices, game_state_e::NONE, -1, vector<player_type_e>(), vector<long>(), "red");
+			m_options, m_vertices, game_state_e::NONE, vector<player_type_e>(), vector<long>(), "red");
 }
 
 

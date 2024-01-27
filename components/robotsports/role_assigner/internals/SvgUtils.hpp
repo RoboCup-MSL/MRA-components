@@ -18,7 +18,7 @@ public:
 	static void save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	        const team_planner_result_t& player_paths,
 	        const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-			game_state_e gamestate, long controlBallByPlayer,
+			game_state_e gamestate,
 			const std::vector<player_type_e>& teamTypes,
 			const std::vector<long>& robotIds,
 			const std::string& meColor);
@@ -27,7 +27,7 @@ public:
 	        const team_planner_result_t& player_paths,
 	        const team_planner_result_t&  comparing_player_paths,
 			const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-			game_state_e gamestate, long controlBallByPlayer,
+			game_state_e gamestate,
 			const std::vector<player_type_e>& teamTypes,
 			const std::vector<long>& robotIds,
 			const std::string& meColor);

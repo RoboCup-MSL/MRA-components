@@ -46,10 +46,10 @@ double SvgUtils::svgY(double fieldY) {
 void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t& player_paths,
         const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
+		game_state_e gamestate, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
 		const std::string& colorMe) {
 	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(teamplanner_data, compare_paths, options, vertices, gamestate, controlBallByPlayer, teamTypes, robotIds, colorMe);
+	save_graph_as_svg(teamplanner_data, player_paths, compare_paths, options, vertices, gamestate, teamTypes, robotIds, colorMe);
 }
 
 
@@ -57,7 +57,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t& player_paths,
         const team_planner_result_t&  comparing_player_paths,
 		const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-		game_state_e gamestate, long controlBallByPlayer, const std::vector<player_type_e>& teamTypes,
+		game_state_e gamestate, const std::vector<player_type_e>& teamTypes,
 		const std::vector<long>& robotIds, const std::string& colorMe )
 {
 	m_fieldConfig = teamplanner_data.fieldConfig;
@@ -75,6 +75,12 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         return;
 	}
 
+	long controlBallByPlayer = -1;
+    for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
+        if (teamplanner_data.team[idx].controlBall) {
+            controlBallByPlayer = teamplanner_data.team[idx].robotId;
+        }
+    }
 
 	FILE* fp = fopen(options.svgOutputFileName.c_str(), "w");
 	// SVG header
@@ -90,6 +96,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
 
 	std::stringstream Xtext;
+
 
 
 	// print input data to svg file
@@ -129,7 +136,6 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	            teamplanner_data.opponents[idx].velocity.x, teamplanner_data.opponents[idx].velocity.y, teamplanner_data.opponents[idx].velocity.rz);
 
 	}
-
 
 	for (unsigned long p_idx = 0; p_idx < player_paths.size(); p_idx++) {
 		Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << ":" << std::endl;
@@ -486,7 +492,6 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 //		}
 
 	}
-
 	// put player-id on top of the players
 	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < teamplanner_data.team.size(); bar_idx++) {
 	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;

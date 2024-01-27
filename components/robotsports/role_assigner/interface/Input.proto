@@ -23,8 +23,6 @@ enum DynamicRole {
     BEGIN_POSITION = 10;
     PARKING = 11;
     PENALTY_KICKER = 12;
-    LOB_CALIBRATION = 13;
-    PENALTY_DEFENDER = 14;
 };
 
 
@@ -46,7 +44,28 @@ message Player
     DynamicRole dynamic_role = 11;
 }
 
+message PickUpPosition
+{
+    MRA.Datatypes.Pose position = 1; // pickup position
+    google.protobuf.Timestamp timestamp = 2; // timestamp of pickup
+}
 
+
+// part of  input data
+message PassData {
+//    bool    valid; // 1: if data is valid; 0 otherwise
+//    bool   kicked; // 1: if pass/shot has been made; 0: otherwise
+    //long   target_id; // destination of kick, where 0 is goal
+    //double velocity; // [m/s]
+    //double angle; // upwards angle
+    //MRA::Geometry::Point  origin_pos; // field coordinates of origin
+    //MRA::Geometry::Point  target_pos; // field coordinates of target
+    //double ts; // timestamp of update
+    //double eta; // estimated time of arrival at target
+};
+
+
+// class with inp
 
 message Input
 {
@@ -83,13 +102,15 @@ message Input
     GameState gamestate = 2;
     repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
     repeated Player teammates = 4;
-    // TODO: 
-    //  - passed ball is missing in Player.
-    //  - player_type_e player_type;  (keeper, reserve, fieldplayer)
-    //  - current dynamic role. 
-    //  - time_in_own_penalty_area;   (state ?)
-    //  - time_in_opponent_penalty_area; (state ?)
-    
     repeated Player opponents = 5;
+    repeated PickUpPosition pickup = 6; // pickup position
+    bool passIsRequired = 7;
+    repeated PassData pass_data = 8;
+//    std::vector<dynamic_role_e> teamFormation;
+//    std::vector<MRA::Geometry::Point> parking_positions;  // config
+//    MRA::FieldConfig fieldConfig;
+    
+    
 }
+
 

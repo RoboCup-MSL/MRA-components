@@ -399,7 +399,12 @@ void fillTeam(std::vector<MRA::TeamPlannerRobot>& myTeam, bool& r_playerPassedBa
         P.velocity.rz = (*team_iter).velrz();
         P.controlBall = (*team_iter).hasBall();
         P.robotId = playerId;
-        P.is_keeper = (*team_iter).isGoalie();
+        if ((*team_iter).isGoalie()) {
+            P.player_type = player_type_e::GOALIE;
+        }
+        else{
+            P.player_type = player_type_e::FIELD_PLAYER;
+        }
         double time_in_penalty_area = (*team_iter).time_in_penalty_area();
         if (*(*team_iter).y() > 0) {
             // player at opponent half

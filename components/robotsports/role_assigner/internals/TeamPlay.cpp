@@ -241,8 +241,7 @@ void TeamPlay::assign(const TeamPlannerInput& input, TeamPlannerState& r_state, 
 			options.svgOutputFileName = GetTeamPlannerSVGname(input.gamestate, "DYN_ROLE_NONE");
 		}
 
-		SvgUtils::save_graph_as_svg(teamplanner_data, r_output.player_paths,
-		        options, std::vector<Vertex*>(), input.gamestate, teamTypes, robotIds, "red");
+		SvgUtils::save_graph_as_svg(teamplanner_data, r_output.player_paths, std::vector<Vertex*>(), "red");
 
 		// create empty path for robot with wrong path
 		if (thisPlayerHasUnallowedPath) {

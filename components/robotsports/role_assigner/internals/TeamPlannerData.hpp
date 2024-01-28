@@ -16,6 +16,27 @@
 
 namespace MRA {
 
+typedef enum  {
+    RESERVE,
+    FIELD_PLAYER,
+    GOALIE
+} player_type_e;
+
+
+inline std::string PlayerTypeAsString(player_type_e player_type) {
+    std::string player_type_string = "";
+    switch (player_type) {
+    case player_type_e::RESERVE:      player_type_string = "RESERVE"; break;
+    case player_type_e::FIELD_PLAYER: player_type_string = "FIELD_PLAYER"; break;
+    case player_type_e::GOALIE:       player_type_string = "GOALIE"; break;
+    default:
+        player_type_string = "player_type_e (ERROR situation)";
+    }
+    return player_type_string;
+}
+
+
+
 class TeamPlannerRobot {
 public:
     bool active; // participating in the game (robot may be inactive when figuring out where it is)
@@ -27,7 +48,6 @@ public:
     player_type_e player_type;
     MRA::Geometry::Pose position;
     MRA::Geometry::Pose velocity;
-    bool is_keeper;
     PlayerPlannerResult result;
     final_planner_result_t previous_result;
     dynamic_role_e dynamic_role;

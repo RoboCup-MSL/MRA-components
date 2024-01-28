@@ -45,24 +45,22 @@ double SvgUtils::svgY(double fieldY) {
 
 void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t& player_paths,
-        const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-		game_state_e gamestate, const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
+        const std::vector<Vertex* >& vertices,
 		const std::string& colorMe) {
 	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(teamplanner_data, player_paths, compare_paths, options, vertices, gamestate, teamTypes, robotIds, colorMe);
+	save_graph_as_svg(teamplanner_data, player_paths, compare_paths, vertices, colorMe);
 }
 
 
 void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         const team_planner_result_t& player_paths,
         const team_planner_result_t&  comparing_player_paths,
-		const TeamPlannerParameters& options, const std::vector<Vertex* >& vertices,
-		game_state_e gamestate, const std::vector<player_type_e>& teamTypes,
-		const std::vector<long>& robotIds, const std::string& colorMe )
+		const std::vector<Vertex* >& vertices,
+		const std::string& colorMe )
 {
 	m_fieldConfig = teamplanner_data.fieldConfig;
 
-	if (options.svgOutputFileName.empty()) {
+	if (teamplanner_data.parameters.svgOutputFileName.empty()) {
 		return;  // No outputfile required
 	}
 
@@ -71,7 +69,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	double halfRobotSize = m_fieldConfig.getRobotRadius();
 	double robotSize = m_fieldConfig.getRobotSize();
 
-	if (not SvgUtils::doesDirectoryExists(options.svgOutputFileName)) {
+	if (not SvgUtils::doesDirectoryExists(teamplanner_data.parameters.svgOutputFileName)) {
         return;
 	}
 
@@ -82,7 +80,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
         }
     }
 
-	FILE* fp = fopen(options.svgOutputFileName.c_str(), "w");
+	FILE* fp = fopen(teamplanner_data.parameters.svgOutputFileName.c_str(), "w");
 	// SVG header
 	fprintf(fp, "<?xml version=\"1.0\" standalone=\"yes\"?>\n");
 	fprintf(fp,
@@ -92,7 +90,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 			totalFieldWidth, totalFieldLength);
 	fprintf(fp, "<desc>MSL field path</desc>\n");
 
-	fprintf(fp, "<!-- \n\nfile: %s\n", options.svgOutputFileName.c_str()); // start svg comment
+	fprintf(fp, "<!-- \n\nfile: %s\n", teamplanner_data.parameters.svgOutputFileName.c_str()); // start svg comment
 
 
 	std::stringstream Xtext;
@@ -101,7 +99,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
 	// print input data to svg file
 	fprintf(fp, "\n\n");
-	fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(gamestate).c_str(), gamestate);
+	fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(teamplanner_data.gamestate).c_str(), teamplanner_data.gamestate);
 	string controlBallByPlayerRemark = "";
 	if (controlBallByPlayer == -1) {
 		controlBallByPlayerRemark = "(not controlled by team)";
@@ -119,13 +117,8 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	fprintf(fp, "\tteam:\n");
 	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		int teamtypeId = -1;
-		if (idx < teamTypes.size()) {
-			teamtypeId = teamTypes[idx];
-		}
-		long robotId = idx;
-		if (robotIds.size() > idx) {
-			robotId = robotIds [idx];
-		}
+		teamtypeId = teamplanner_data.team[idx].player_type;
+		long robotId = teamplanner_data.team[idx].robotId;
 		fprintf(fp, "\t\tR%02ld = %s type = %s (%d)\n",
 		        robotId, teamplanner_data.team[idx].toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(teamtypeId)).c_str(), teamtypeId );
 	}
@@ -157,7 +150,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	}
 	fprintf(fp, "paths:\n%s\n", Xtext.str().c_str());
 
-	fprintf(fp, "\toptions:\n%s\n", options.toString().c_str());
+	fprintf(fp, "\toptions:\n%s\n", teamplanner_data.parameters.toString().c_str());
 	fprintf(fp, "\tfield:\n%s\n", m_fieldConfig.toString().c_str());
 	fprintf(fp, "\n");
 
@@ -179,10 +172,10 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
     fprintf(fp, "\n");
 
 	// add xml output
-	fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
+	fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(teamplanner_data.gamestate).c_str());
 //TODO-jve-MRA
-//	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(options.attack_formation).c_str());
-//	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(options.defense_formation).c_str());
+//	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(teamplanner_data.parameters.attack_formation).c_str());
+//	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(teamplanner_data.parameters.defense_formation).c_str());
 	if (teamplanner_data.ball.confidence > 0.001) {
 		MRA::Geometry::Point xyVel = teamplanner_data.ball.velocity;
 		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
@@ -190,10 +183,8 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	}
 	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
 		string goalieString = "";
-		if (idx < teamTypes.size()) {
-			if (teamTypes[idx] == GOALIE) {
-				goalieString = " isGoalie=\"true\" ";
-			}
+		if (teamplanner_data.team[idx].player_type == GOALIE) {
+		    goalieString = " isGoalie=\"true\" ";
 		}
 
 		string idString = "id=\""+ std::to_string(teamplanner_data.team[idx].robotId) + "\"";
@@ -330,7 +321,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 		fprintf(fp,
 				"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
 				svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), 0.01);
-		if (options.svgDrawEdges) {
+		if (teamplanner_data.parameters.svgDrawEdges) {
 			for (std::vector<Edge>::iterator it = v->m_neighbours.begin(); it != v->m_neighbours.end(); ++it) {
 				Edge e = *it;
 				Vertex* t = e.m_pTarget;
@@ -347,7 +338,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	    MRA::Geometry::Point bar_pos = teamplanner_data.opponents[bar_idx].position;
 		fprintf(fp,
 				"\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgOpponentColor.c_str(), options.svgOpponentColor.c_str());
+				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamplanner_data.parameters.svgOpponentColor.c_str(), teamplanner_data.parameters.svgOpponentColor.c_str());
 		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>",
 				svgX(bar_pos.x- 0.65*halfRobotSize), svgY(bar_pos.y- 0.65*halfRobotSize), bar_idx+1);
 	}
@@ -357,8 +348,8 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	if (teamplanner_data.team.size() > 0 ) {
 	    MRA::Geometry::Point bar_pos = teamplanner_data.team[0].position;
 		double r = teamplanner_data.team[0].position.rz + M_PI_2;
-		string teamColor = options.svgTeamColor;
-		string fillColor = options.svgTeamColor;
+		string teamColor = teamplanner_data.parameters.svgTeamColor;
+		string fillColor = teamplanner_data.parameters.svgTeamColor;
 //		if (colorMe.length() > 0) {
 //			fillColor = colorMe;
 //		}
@@ -375,7 +366,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
 		fprintf(fp,
 				"\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, options.svgTeamColor.c_str(), options.svgTeamColor.c_str());
+				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamplanner_data.parameters.svgTeamColor.c_str(), teamplanner_data.parameters.svgTeamColor.c_str());
 	}
 
 	string last_path_element_color = "yellow";
@@ -391,9 +382,9 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	for (team_planner_result_t::size_type pidx = 0;  pidx < player_paths.size(); pidx++) {
 //		string startStroke = "blue";
 //		if ((player_paths[pidx].path.size() > 0) && (static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::DRIBBLE)) {
-//			startStroke = options.svgBallColor;
+//			startStroke = teamplanner_data.parameters.svgBallColor;
 //		}
-		string fillColor = options.svgTeamColor;
+		string fillColor = teamplanner_data.parameters.svgTeamColor;
 //		if (pidx == 0) {
 //			if (colorMe.length() > 0) {
 //				fillColor = colorMe;
@@ -403,7 +394,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 			fprintf(fp,
 					"\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
 					(int)pidx, svgX(player_paths[pidx].path[0].x - halfRobotSize), svgY(player_paths[pidx].path[0].y + halfRobotSize), robotSize, robotSize,
-					options.svgTeamColor.c_str(), fillColor.c_str());
+					teamplanner_data.parameters.svgTeamColor.c_str(), fillColor.c_str());
 		}
 		for (std::vector<planner_piece_t>::size_type j = 1; j < player_paths[pidx].path.size(); j++) {
 			double prev_x = (player_paths[pidx]).path[j-1].x;
@@ -432,9 +423,9 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 			}
 		}
 //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-//		string target_color = options.svgDefaultTargetColor;
+//		string target_color = teamplanner_data.parameters.svgDefaultTargetColor;
 //		if ((player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-//			target_color = options.svgBallColor;
+//			target_color = teamplanner_data.parameters.svgBallColor;
 //		}
 //
 //		// draw orange circle (ball) as target
@@ -479,9 +470,9 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 			}
 		}
 //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-//		string target_color = options.svgDefaultTargetColor;
+//		string target_color = teamplanner_data.parameters.svgDefaultTargetColor;
 //		if ((comparing_player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(comparing_player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-//			target_color = options.svgBallColor;
+//			target_color = teamplanner_data.parameters.svgBallColor;
 //		}
 
 //		// draw orange circle (ball) as target
@@ -495,10 +486,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 	// put player-id on top of the players
 	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < teamplanner_data.team.size(); bar_idx++) {
 	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
-		long robotId = bar_idx+1;
-		if (robotIds.size() > bar_idx) {
-			robotId = robotIds[bar_idx];
-		}
+		long robotId = teamplanner_data.team[bar_idx].robotId;
 		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.x - 0.65*halfRobotSize), svgY(bar_pos.y - 0.65*halfRobotSize), robotId);
 	}
 
@@ -508,7 +496,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 				"\n<!-- globalBall -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
 				svgX(teamplanner_data.ball.position.x),  svgY(teamplanner_data.ball.position.y), teamplanner_data.fieldConfig.getBallRadius()); // half ball diameter
 	}
-	if (options.svgDrawVelocity) {
+	if (teamplanner_data.parameters.svgDrawVelocity) {
 	    MRA::Geometry::Pose linVel = teamplanner_data.ball.velocity;
 		if (linVel.size() > 1e-6) {
 		    MRA::Geometry::Point endVelocityVector = teamplanner_data.ball.position;
@@ -524,7 +512,7 @@ void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
 
 	fprintf(fp, "</svg>\n");
 	fclose(fp);
-	MRA_LOG_INFO("created SVG file : %s", options.svgOutputFileName.c_str());
+	MRA_LOG_INFO("created SVG file : %s", teamplanner_data.parameters.svgOutputFileName.c_str());
 }
 
 /**

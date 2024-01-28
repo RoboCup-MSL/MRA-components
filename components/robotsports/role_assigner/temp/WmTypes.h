@@ -5,12 +5,6 @@
 
 namespace MRA {
 
-typedef enum  {
-	RESERVE,
-	FIELD_PLAYER,
-	GOALIE
-} player_type_e;
-
 
 typedef enum {
 	NONE = 0,
@@ -42,17 +36,6 @@ typedef enum {
 } game_state_e;
 
 
-inline std::string PlayerTypeAsString(player_type_e player_type) {
-	std::string player_type_string = "";
-	switch (player_type) {
-	case player_type_e::RESERVE:      player_type_string = "RESERVE"; break;
-	case player_type_e::FIELD_PLAYER: player_type_string = "FIELD_PLAYER"; break;
-	case player_type_e::GOALIE:       player_type_string = "GOALIE"; break;
-	default:
-		player_type_string = "player_type_e (ERROR situation)";
-	}
-	return player_type_string;
-}
 
 inline std::string GameStateAsString(game_state_e gamestate)
 {

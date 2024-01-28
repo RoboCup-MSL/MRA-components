@@ -35,19 +35,9 @@ class Vector2D
             return (*this);
         }
 
-        double& operator [](long k)
-        {
-            return ((&x)[k]);
-        }
-
         double size() const
         {
             return sqrt(x*x+y*y);
-        }
-
-        const double& operator [](long k) const
-        {
-            return ((&x)[k]);
         }
 
         Vector2D& operator +=(const Vector2D& v)

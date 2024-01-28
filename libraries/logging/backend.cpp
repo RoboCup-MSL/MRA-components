@@ -342,7 +342,6 @@ void MraLogger::log(source_loc loc, MRA::Logging::LogLevel loglevel, const char 
             s_spdlog_logger->log(loc_spd, spdlog::level::trace, s);
             break;
         }
-        va_end(argptr);
         // TODO: why is flush needed here, why doesn't flush_on at setup() seem to work?
         s_spdlog_logger->flush();
     }

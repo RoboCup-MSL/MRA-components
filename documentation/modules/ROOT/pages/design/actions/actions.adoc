@@ -14,14 +14,16 @@ Behaviors, Skills are terms for actions.
 
 The following actions are available
 
-* <<move>>
+* <<proof_is_alive>>
+* <<positioning>>
 * <<follow_ball>>
 * <<get_bal>>
-* <<dribble>>
+* <<dribbling>>
 * <<shield_ball>>
 * <<pass>>
+* <<self_pass>>
 * <<shoot_on_target>>
-* <<keeperMove>>
+* <<keeper_move>>
 
 Each action will have a result:
 
@@ -29,8 +31,13 @@ Each action will have a result:
 * PASS (execution is FINISHED)
 * FAIL (execution is FINISHED)
 
-=== move [[move]]
-The robot will drive to a given position without the ball. The action <<dribble>> is the driving with the ball.  A property can be set to let the robot facing the ball while it is driving to the requested position.  Facing the ball make the robot  capable to react quickly on a ball moving towards the robot.
+=== proof_is_alive [[proof_is_alive]]
+The robot will proof it is alive, by executing the behavior as specified in the MSL rules. This action  can be requested by the referee to proof that a robot is still functioning.
+
+link:../../../../.././components/robotsports/proof_is_alive/README.adoc[Read-me: Proof-Is-Alive]
+
+=== positioning [[positioning]]
+The robot will drive to a given position without the ball. The action <<dribbling>> is the driving with the ball.  A property can be set to let the robot facing the ball while it is driving to the requested position.  Facing the ball make the robot  capable to react quickly on a ball moving towards the robot.
 
 ===  follow_ball [[follow_ball]]
 The robot will follow the ball by rotation at its location. The front of the robot will be facing the ball.
@@ -38,7 +45,7 @@ The robot will follow the ball by rotation at its location. The front of the rob
 include::get_ball.adoc[]
 
 
-===  dribble [[dribble]]
+===  dribbling [[dribbling]]
 Robot will move to given position with the ball. It will adjust its path and velocity to keep control over the ball.
 
 ===  shield_ball [[shield_ball]]
@@ -53,13 +60,16 @@ OpenIssue-02:: Jan: why mention minimal risk etc.? that makes it so much more co
 For RobotSports the robot with the ball decides where pass will go to. Responsibility of the action, not of the higher layer. This is less complex than higher level decision. (discuss exact contents per block)
 ====
 
+=== self_pass [[self_pass]]
+robot will pass to itself, the ball be played in front of the robot, which will take control of it (again)
+
 ===  shoot_on_target [[shoot_on_target]]
 Robot shoot to a given target position (like the goal).
 The selection of the target is the responsibility of the high layer.
 
 Rationale: shoot_on_target is more convenience for tuning and testing or demonstrations (like shoot through a hole), the goal analysis and target pos choice are a responsibility at a higher layer.
 
-===  keeperMove [[keeperMove]]
+===  keeper_move [[keeper_move]]
 Robot will defend goal line
 
 === self-pass

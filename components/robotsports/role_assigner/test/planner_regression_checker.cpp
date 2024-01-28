@@ -17,7 +17,6 @@
 #include <boost/filesystem.hpp>
 #include "SvgUtils.hpp"
 #include "FieldConfig.h"
-#include "MovingObject.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -50,8 +49,8 @@ void read_svg_comment_section(string svgFileName, vector<string>& comment_lines)
 	infile.close();
 }
 
-//  globalBall:  x: 3.50 y: -2.25 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1
-MovingObject get_ball_line(const vector<string>& comment_lines) {
+////  globalBall:  x: 3.50 y: -2.25 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1
+TeamPlannerBall get_ball_line(const vector<string>& comment_lines) {
 	string ball_string = "globalBall:";
 	double x = 0;
 	double y = 0;
@@ -69,11 +68,17 @@ MovingObject get_ball_line(const vector<string>& comment_lines) {
 		}
 	}
 	// TODO what if NOT VALID
-	MovingObject ball(x, y, rz, vx, vy, vrz, 0);
+	TeamPlannerBall ball;
+	ball.position.x = x;
+	ball.position.y = y;
+	ball.position.rz = rz;
+	ball.velocity.x = vx;
+	ball.velocity.y = vy;
+	ball.velocity.rz = vrz;
 	return ball;
 }
 
-MovingObject get_players(bool& r_valid, bool ownPlayer, int playerId, const vector<string>& comment_lines, player_type_e& playerType ) {
+TeamPlannerRobot get_players(bool& r_valid, bool ownPlayer, int playerId, const vector<string>& comment_lines, player_type_e& playerType ) {
     r_valid = false;
 	string team_string = "team:";
 	string opponents_string = "opponents:";
@@ -140,8 +145,15 @@ MovingObject get_players(bool& r_valid, bool ownPlayer, int playerId, const vect
 	}
 	int label = playerId + ownPlayer?0:10;
 	// TODO handle invalid
-	MovingObject player = MovingObject(x, y, rz, vx, vy, vrz, label);
-	playerType = static_cast<player_type_e>(itype);
+	TeamPlannerRobot player = TeamPlannerRobot();
+	player.position.x = x;
+	player.position.y = y;
+	player.position.rz = rz;
+	player.velocity.x = vx;
+	player.velocity.y = vy;
+	player.velocity.rz = vrz;
+	player.robotId = label;
+	player.player_type = static_cast<player_type_e>(itype);
 	r_valid = ivalid;
 	return player;
 }
@@ -210,12 +222,11 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
 	read_svg_comment_section(regression_dir + "/" + filename, regression_comment_lines);
 
 	cout << "filename: " << filename << endl;
-	vector<player_type_e> teamTypes = vector<player_type_e>();
-	vector<long> robotIds = vector<long>();
-	vector<MovingObject>  myTeam = vector<MovingObject>();
-	vector<MovingObject>  opponents = vector<MovingObject>();
+	vector<TeamPlannerRobot>  myTeam = vector<TeamPlannerRobot>();
+	vector<TeamPlannerRobot>  opponents = vector<TeamPlannerRobot>();
 	team_planner_result_t player_paths = team_planner_result_t();
 	team_planner_result_t comparing_player_paths = team_planner_result_t();
+    TeamPlannerData teamplanner_data;
 
 	for (int i = 0; i < 6; i++) {
 		vector<string> output_player_lines = vector<string>();
@@ -280,30 +291,26 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
 		}
 		player_type_e opponentType = player_type_e::RESERVE;
 		bool is_valid = false;
-		MovingObject opponent_player = get_players(is_valid, false, i, output_comment_lines, opponentType);
+		TeamPlannerRobot opponent_player = get_players(is_valid, false, i, output_comment_lines, opponentType);
 		if (is_valid) {
 			opponents.push_back(opponent_player);
 		}
 		player_type_e playerType = player_type_e::RESERVE;
-		MovingObject player = get_players(is_valid, true, i, output_comment_lines, playerType);
+		TeamPlannerRobot player = get_players(is_valid, true, i, output_comment_lines, playerType);
 		if (is_valid) {
 			myTeam.push_back(player);
-			teamTypes.push_back(playerType);
-			robotIds.push_back(i);
 		}
 	}
 	if (result != 0) {
-		game_state_e gamestate = game_state_e::NONE;
-		long controlBallByPlayer = -1;
-		MovingObject ball = get_ball_line(output_comment_lines);
-		cerr << "DIFF BALL : " << ball.toString() << endl << flush;
+		//game_state_e gamestate = game_state_e::NONE;
+//		long controlBallByPlayer = -1;
+		TeamPlannerBall ball = get_ball_line(output_comment_lines);
+		//cerr << "DIFF BALL : " << ball.toString() << endl << flush;
 		TeamPlannerParameters options = TeamPlannerParameters();
 		options.svgOutputFileName = "diff_" + filename;
 
 		// TODO handle localball correctly towards svg
-		bool hasTeamPlannerInputInfo = false;
-		SvgUtils::save_graph_as_svg(ball, myTeam, opponents, player_paths, comparing_player_paths,
-				options, std::vector<Vertex* >(), gamestate, controlBallByPlayer, teamTypes, robotIds, "",  fieldConfig);
+		SvgUtils::save_graph_as_svg(teamplanner_data, player_paths, comparing_player_paths, std::vector<Vertex* >(), "");
 	}
 
 	// valid if no collisions or area faults are planned.
@@ -381,55 +388,41 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
 				}
 			}
 		}
-		bool hasTeamPlannerInputInfo = false;
-		TeamPlannerInputInfo  inputInfo;
 		if (infiniteCostDetected) {
 			infinite_costs_found = infiniteCostDetected;
-			game_state_e gamestate = game_state_e::NONE;
-			int controlBallByPlayer = -1;
-			MovingObject ball = get_ball_line(output_comment_lines);
-			PlannerOptions options = PlannerOptions();
+			TeamPlannerBall ball = get_ball_line(output_comment_lines);
+            TeamPlannerParameters options = TeamPlannerParameters ();
 			options.svgOutputFileName = "inifite_costs_" + filename;
 			// TODO handle localball correctly towards svg
-			SvgUtils::save_graph_as_svg(ball, myTeam, opponents, comparing_player_paths, team_planner_result_t(),
-					options, std::vector<Vertex* >(), gamestate, controlBallByPlayer, teamTypes, robotIds, "",  fieldConfig,
-					hasTeamPlannerInputInfo, inputInfo);
+			SvgUtils::save_graph_as_svg(teamplanner_data, comparing_player_paths, team_planner_result_t(),
+					std::vector<Vertex* >(), "");
 		}
 		if (outsideReachableArea) {
 			unreachable_area_found = outsideReachableArea;
-			game_state_e gamestate = game_state_e::NONE;
-			int controlBallByPlayer = -1;
-			MovingObject ball = get_ball_line(output_comment_lines);
-			PlannerOptions options = PlannerOptions();
+			TeamPlannerBall ball = get_ball_line(output_comment_lines);
+			TeamPlannerParameters options = TeamPlannerParameters ();
 			options.svgOutputFileName = "unreachable_area_" + filename;
 			// TODO handle localball correctly towards svg
-			SvgUtils::save_graph_as_svg(ball, myTeam, opponents, comparing_player_paths, team_planner_result_t(),
-					options, std::vector<Vertex* >(), gamestate, controlBallByPlayer, teamTypes, robotIds, "",  fieldConfig,
-					hasTeamPlannerInputInfo, inputInfo);
+			SvgUtils::save_graph_as_svg(teamplanner_data, comparing_player_paths, team_planner_result_t(),
+					std::vector<Vertex* >(), "");
 		}
 		if (collisionDetected) {
 			collision_found = collisionDetected;
-			game_state_e gamestate = game_state_e::NONE;
-			int controlBallByPlayer = -1;
-			MovingObject ball = get_ball_line(output_comment_lines);
-			PlannerOptions options = PlannerOptions();
+			TeamPlannerBall ball = get_ball_line(output_comment_lines);
+			TeamPlannerParameters options = TeamPlannerParameters ();
 			options.svgOutputFileName = "collision_" + filename;
 			// TODO handle localball correctly towards svg
-			SvgUtils::save_graph_as_svg(ball, myTeam, opponents, comparing_player_paths, team_planner_result_t(),
-					options, std::vector<Vertex* >(), gamestate, controlBallByPlayer, teamTypes, robotIds, "",  fieldConfig,
-					hasTeamPlannerInputInfo, inputInfo);
+			SvgUtils::save_graph_as_svg(teamplanner_data, comparing_player_paths, team_planner_result_t(),
+					std::vector<Vertex* >(), "");
 		}
 		if (areaFault) {
 			area_fault_found = areaFault;
-			game_state_e gamestate = game_state_e::NONE;
-			int controlBallByPlayer = -1;
-			MovingObject ball = get_ball_line(output_comment_lines);
-			PlannerOptions options = PlannerOptions();
+			TeamPlannerBall ball = get_ball_line(output_comment_lines);
+			TeamPlannerParameters options = TeamPlannerParameters ();
 			options.svgOutputFileName = "areafault_" + filename;
 			// TODO handle localball correctly towards svg
-			SvgUtils::save_graph_as_svg(ball, myTeam, opponents, comparing_player_paths, team_planner_result_t(),
-					options, std::vector<Vertex* >(), gamestate, controlBallByPlayer, teamTypes, robotIds, "",  fieldConfig,
-					hasTeamPlannerInputInfo, inputInfo);
+			SvgUtils::save_graph_as_svg(teamplanner_data, comparing_player_paths, team_planner_result_t(),
+					std::vector<Vertex* >(), "");
 		}
 	}
 
@@ -441,13 +434,13 @@ int main(int argc, char *argv[]) {
 	//		cerr << "use program: " << argv[0] << " <filename.xml> " << endl;
 	//		return -1;
 	//	}
-	(void)signal(SIGSEGV, SegmentationHandler);   // install our handler
+	//(void)signal(SIGSEGV, SegmentationHandler);   // install our handler
 	try {
-	    INIReader reader("planner_regression_checker.ini");
-	    string all_known_area_faults = reader.Get("Known Areafaults", "files", ""); // read known area issue files from ini-file (multiline input)
+//	    INIReader reader("planner_regression_checker.ini");
+	    //string all_known_area_faults = reader.Get("Known Areafaults", "files", ""); // read known area issue files from ini-file (multiline input)
 	    // convert string to vector of strings (filenames)
-	    istringstream iss(all_known_area_faults);
-	    vector<string> known_area_faults(istream_iterator<string>{iss}, istream_iterator<string>());
+	    //istringstream iss(all_known_area_faults);
+	    //vector<string> known_area_faults(istream_iterator<string>{iss}, istream_iterator<string>());
 
 	    std::vector<std::string> missing_files = std::vector<std::string>();
 		// get files in output-directory
@@ -494,6 +487,7 @@ int main(int argc, char *argv[]) {
 				bool area_fault_found = false;
 				bool unreachable_area_found = false;
 				bool infinite_costs_found = false;
+				vector<string> known_area_faults = vector<string>();
 				int cmp_result = compare_svg_files(reg_file, regression_dir, output_dir, collision_found, area_fault_found,
 						unreachable_area_found, infinite_costs_found, known_area_faults);
 				if (infinite_costs_found) {

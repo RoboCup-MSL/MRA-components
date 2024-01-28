@@ -83,44 +83,43 @@ target_link_libraries(xml_test
     MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock    
   )
   
-#  target_link_libraries(planner_regression_checker
+
+# --- planner_regression_checker ---
+add_executable(planner_regression_checker
+    test/planner_regression_checker.cpp
+    #test/xmlGlobalPathPlanner.cpp
+    test/xmlTeamPlanner.cpp
+    test/planner_regression_checker.cpp
+    ${STRATEGY_TESTER_CPP}
+  )
+
+target_include_directories(planner_regression_checker PUBLIC
+    ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}
+    ${MRA_SOURCE_DIR}/base
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/internals
+    ${CMAKE_CURRENT_SOURCE_DIR}/temp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test
+    ${CMAKE_CURRENT_BINARY_DIR}/testdata
+ )
+
+target_link_libraries(planner_regression_checker
+   MRA-components-robotsports-role-assigner
+   ${Boost_FILESYSTEM_LIBRARY}
+    MRA-components-robotsports-robot-strategy
+    xerces-c
+ )
+
+#
+#target_link_libraries(planner_regression_checker
 #    MRA-components-robotsports-role-assigner
-#    #
 #  )
 #
 #add_custom_target(xml_test
 #  DEPENDS ${STRATEGY_TESTER_CPP}
 #)
-
-
-
-  # --- planner_regression_checker ---
-#[[ 
-#  add_executable(planner_regression_checker
-#    test/planner_regression_checker.cpp
-#    test/xml_tester++.cpp
-#    #test/xmlGlobalPathPlanner.cpp
-#    test/xmlTeamPlanner.cpp
-#    test/planner_regression_checker.cpp
-#    ${STRATEGY_TESTER_CPP}
-#  )
-#target_include_directories(planner_regression_checker PUBLIC
-#    ${MRA_SOURCE_DIR}/libraries/logging
-#    ${MRA_SOURCE_DIR}
-#    ${MRA_SOURCE_DIR}/base
-#    ${CMAKE_CURRENT_BINARY_DIR}
-#    ${CMAKE_CURRENT_BINARY_DIR}/interface
-#    ${CMAKE_CURRENT_SOURCE_DIR}/internals
-#    ${CMAKE_CURRENT_SOURCE_DIR}/temp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/test
-#    ${CMAKE_CURRENT_BINARY_DIR}/testdata
-# )
-#
-#target_link_libraries(planner_regression_checker
-#    MRA-components-robotsports-role-assigner
-#    #MRA-components-robotsports-robot-strategy
-#  )
-#]]
 
 #ADD_DEPENDENCIES(MRA-components-robotsports-role-assigner, ${STRATEGY_TESTER_CPP}) 
 

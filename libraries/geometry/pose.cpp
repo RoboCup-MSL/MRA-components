@@ -160,3 +160,8 @@ void Pose::wrap_angles()
     // but Position is supposed to override
 }
 
+double Pose::distanceTo(const MRA::Geometry::Point& p) const
+{
+    MRA::Geometry::Point this_point = *this;
+    return this_point.distanceTo(p);
+}

@@ -7,8 +7,8 @@ cmake_minimum_required(VERSION 3.5.1)
 project(MRA LANGUAGES CXX)
 
 # use C++17 standard, or suffer errors re. using std::filesystem
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds")
- # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-deprecated-declarations")
+ # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds -Wno-deprecated-declarations
 
 # dependency: ProtoBuf
 # check if ProtoBuf is installed

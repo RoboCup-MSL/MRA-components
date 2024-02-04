@@ -33,44 +33,6 @@ using namespace MRA;
 using namespace std;
 using namespace robotsports;
 
-game_state_e getOpponentGameState(game_state_e gameState) {
-	game_state_e opponentGameState = gameState;
-	if (opponentGameState == game_state_e::CORNER) {
-		opponentGameState = game_state_e::CORNER_AGAINST;
-	} else if (opponentGameState == game_state_e::CORNER_AGAINST) {
-		opponentGameState = game_state_e::CORNER;
-	} else if (opponentGameState == game_state_e::KICKOFF) {
-		opponentGameState = game_state_e::KICKOFF_AGAINST;
-	} else if (opponentGameState == game_state_e::KICKOFF_AGAINST) {
-		opponentGameState = game_state_e::KICKOFF;
-	} else if (opponentGameState == game_state_e::FREEKICK) {
-		opponentGameState = game_state_e::FREEKICK_AGAINST;
-	} else if (opponentGameState == game_state_e::FREEKICK_AGAINST) {
-		opponentGameState = game_state_e::FREEKICK;
-	} else if (opponentGameState == game_state_e::GOALKICK) {
-		opponentGameState = game_state_e::GOALKICK_AGAINST;
-	} else if (opponentGameState == game_state_e::GOALKICK_AGAINST) {
-		opponentGameState = game_state_e::GOALKICK;
-	} else if (opponentGameState == game_state_e::THROWIN) {
-		opponentGameState = game_state_e::THROWIN_AGAINST;
-	} else if (opponentGameState == game_state_e::THROWIN_AGAINST) {
-		opponentGameState = game_state_e::THROWIN;
-	} else if (opponentGameState == game_state_e::PENALTY) {
-		opponentGameState = game_state_e::PENALTY_AGAINST;
-	} else if (opponentGameState == game_state_e::PENALTY_AGAINST) {
-		opponentGameState = game_state_e::PENALTY;
-	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT) {
-		opponentGameState = game_state_e::PENALTY_SHOOTOUT_AGAINST;
-	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT_AGAINST) {
-		opponentGameState = game_state_e::PENALTY_SHOOTOUT;
-	} else if (opponentGameState == game_state_e::GOAL) {
-		opponentGameState = game_state_e::GOAL_AGAINST;
-	} else if (opponentGameState == game_state_e::GOAL_AGAINST) {
-		opponentGameState = game_state_e::GOAL;
-	}
-	return opponentGameState;
-}
-
 team_formation_e StringToFormation(const string& formation_string) {
 	team_formation_e formation = team_formation_e::FORMATION_013;
 	if (formation_string == "FORMATION_013") {
@@ -240,52 +202,52 @@ void fillPlannerOptions(TeamPlannerParameters& plannerOptions, auto_ptr<robotspo
     plannerOptions.svgRobotPlanner = c->Options().svgRobotPlanner();
 }
 
-game_state_e gamestate_string_to_enum(std::string& gs) {
-    game_state_e gameState  = game_state_e::NONE;
+MRA::RobotsportsRoleAssigner::Input_GameState gamestate_string_to_enum(std::string& gs) {
+    MRA::RobotsportsRoleAssigner::Input_GameState gameState  = MRA::RobotsportsRoleAssigner::Input_GameState_NONE;
     if (gs == "Normal") {
-        gameState = game_state_e::NORMAL;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_NORMAL;
     } else if (gs == "Parking") {
-        gameState = game_state_e::PARKING;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_PARKING;
     } else if (gs == "Begin Position") {
-        gameState = game_state_e::BEGIN_POSITION;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_BEGIN_POSITION;
     } else if (gs == "Kickoff") {
-        gameState = game_state_e::KICKOFF;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_KICKOFF;
     } else if (gs == "Kickoff Against") {
-        gameState = game_state_e::KICKOFF_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_KICKOFF_AGAINST;
     } else if (gs == "Freekick") {
-        gameState = game_state_e::FREEKICK;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_FREEKICK;
     } else if (gs == "Freekick Against") {
-        gameState = game_state_e::FREEKICK_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_FREEKICK_AGAINST;
     } else if (gs == "Goalkick") {
-        gameState = game_state_e::GOALKICK;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_GOALKICK;
     } else if (gs == "Goalkick Against") {
-        gameState = game_state_e::GOALKICK_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_GOALKICK_AGAINST;
     } else if (gs == "Throwin") {
-        gameState = game_state_e::THROWIN;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_THROWIN;
     } else if (gs == "Throwin Against") {
-        gameState = game_state_e::THROWIN_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_THROWIN_AGAINST;
     } else if (gs == "Corner") {
-        gameState = game_state_e::CORNER;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_CORNER;
     } else if (gs == "Corner Against") {
-        gameState = game_state_e::CORNER_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_CORNER_AGAINST;
     } else if (gs == "Penalty") {
-        gameState = game_state_e::PENALTY;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY;
     } else if (gs == "Penalty Against") {
-        gameState = game_state_e::PENALTY_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_AGAINST;
     } else if (gs == "Penalty Shootout") {
-        gameState = game_state_e::PENALTY_SHOOTOUT;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_SHOOTOUT;
     } else if (gs == "Penalty Shootout Against") {
-        gameState = game_state_e::PENALTY_SHOOTOUT_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_SHOOTOUT_AGAINST;
     } else if (gs == "Dropped Ball") {
-        gameState = game_state_e::DROPPED_BALL;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_DROPPED_BALL;
     } else if (gs == "Yellow Card Against") {
-        gameState = game_state_e::YELLOW_CARD_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_YELLOW_CARD_AGAINST;
     } else if (gs == "Red Card Against") {
-        gameState = game_state_e::RED_CARD_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_RED_CARD_AGAINST;
     } else if (gs == "Goal") {
-        gameState = game_state_e::GOAL;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_GOAL;
     } else if (gs == "Goal Against") {
-        gameState = game_state_e::GOAL_AGAINST;
+        gameState = MRA::RobotsportsRoleAssigner::Input_GameState_GOAL_AGAINST;
     } else {
         cerr << "Unknown game state in xml file: " << gs << endl;
         exit(-1);
@@ -454,14 +416,14 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
 
 }
 
-void xmlplanner(string input_filename) {
+void xmlplanner(string input_filename, RoleAssignTestData& r_data) {
     TeamPlannerParameters plannerOptions = TeamPlannerParameters();
 
     std::vector<MRA::TeamPlannerRobot> myTeam = std::vector<MRA::TeamPlannerRobot>();
     std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
     MRA::TeamPlannerBall ball = MRA::TeamPlannerBall();
     std::vector<MRA::TeamPlannerOpponent> opponents = std::vector<MRA::TeamPlannerOpponent>();
-    game_state_e gameState = game_state_e::NORMAL;
+    MRA::RobotsportsRoleAssigner::Input_GameState gameState = MRA::RobotsportsRoleAssigner::Input_GameState_NONE;
     std::string description = "";
     ball_pickup_position_t pickup_pos = { 0 };
     bool pickup_pos_set = false;
@@ -584,6 +546,12 @@ void xmlplanner(string input_filename) {
             pickup_pos.ts = 0.0;
         }
 
+
+        r_data.input.set_gamestate((MRA::RobotsportsRoleAssigner::Input_GameState)gameState);
+        r_data.input.mutable_pass_data();
+    //::google::protobuf::Timestamp* mutable_timestamp();
+//    void set_allocated_timestamp(::google::protobuf::Timestamp* tim
+
         unsigned current_run = 1;
         auto run_results = std::vector<TeamPlannerRun>();
 
@@ -606,7 +574,7 @@ void xmlplanner(string input_filename) {
         std::cout << __FILE__ << " output: " << convert_proto_to_json_str(strategy_output) << std::endl;
 
         TeamPlannerInput tp_input = {};
-        tp_input.gamestate = gameState;
+//        tp_input.gamestate = gameState;
         tp_input.fieldConfig = fieldConfig;
         tp_input.ball_pickup_position = pickup_pos;
         tp_input.passIsRequired = passIsRequired;
@@ -622,7 +590,7 @@ void xmlplanner(string input_filename) {
         tp_input.team = myTeam;
         tp_input.opponents = opponents;
 
-        std::cout << "gameState: " << gameState << " (" << GameStateAsString(gameState) << " )"<< endl << flush;
+//        std::cout << "gameState: " << gameState << " (" << GameStateAsString(gameState) << " )"<< endl << flush;
         std::cout << "tp_input.game_state_e: " << tp_input.gamestate << " (" << GameStateAsString(tp_input.gamestate) << " )"<< endl << flush;
         printInputs(tp_input);
 

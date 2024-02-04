@@ -4,6 +4,7 @@ package MRA.RobotsportsRoleAssigner;
 
 import "google/protobuf/timestamp.proto";
 import "datatypes/Pose.proto";
+import "datatypes/Point.proto";
 import "datatypes/Ball.proto";
 import "datatypes/Obstacle.proto";
 
@@ -53,15 +54,15 @@ message PickUpPosition
 
 // part of  input data
 message PassData {
-//    bool    valid; // 1: if data is valid; 0 otherwise
-//    bool   kicked; // 1: if pass/shot has been made; 0: otherwise
-    //long   target_id; // destination of kick, where 0 is goal
-    //double velocity; // [m/s]
-    //double angle; // upwards angle
-    //MRA::Geometry::Point  origin_pos; // field coordinates of origin
-    //MRA::Geometry::Point  target_pos; // field coordinates of target
-    //double ts; // timestamp of update
-    //double eta; // estimated time of arrival at target
+   bool  valid = 1; // 1: if data is valid; 0 otherwise
+   bool   kicked = 2; // 1: if pass/shot has been made; 0: otherwise
+   int32   target_id =3;  // destination of kick, where 0 is goal
+   double velocity = 4; // [m/s]
+   double angle = 5 ; // upwards angle
+   MRA.Datatypes.Point  origin_pos = 6; // field coordinates of origin
+   MRA.Datatypes.Point  target_pos = 7; // field coordinates of target
+   google.protobuf.Timestamp timestamp = 8; // timestamp of update
+   google.protobuf.Timestamp eta = 9; // estimated time of arrival at target
 };
 
 

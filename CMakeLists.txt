@@ -53,7 +53,7 @@ include(GoogleTest)
 ##########################################################
 # common datatypes
 ##########################################################
-
+# proto files for datatypes
 set(MESSAGE_PROTOS_COMMON
     datatypes/ActionResult.proto
     datatypes/Ball.proto
@@ -69,19 +69,13 @@ set(MESSAGE_PROTOS_COMMON
 )
 
 add_library(MRA-datatypes-proto)
+# generate code from protofiles and add them  intermediate library
 protobuf_generate(TARGET MRA-datatypes-proto PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-foreach (protobuf_file ${MESSAGE_PROTOS_COMMON})
-    get_filename_component(proto_name ${protobuf_file} NAME_WE)
-    get_filename_component(proto_path ${protobuf_file} ABSOLUTE)
-    set_source_files_properties(
-        "${proto_path}/${proto_name}.pb.cc"
-        "${proto_path}/${proto_name}.pb.h"
-        PROPERTIES GENERATED TRUE)
-endforeach()
 file(GLOB MRA-datatypes_generated_files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/datatype/*.pb.cc")
 target_include_directories(MRA-datatypes-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
 target_link_libraries(MRA-datatypes-proto PUBLIC ${MRA-datatypes_generated})
 
+# create library for datatypes including the generated code
 include_directories(datatypes)
 add_library(MRA-datatypes OBJECT ${MESSAGE_PROTOS_COMMON})
 target_link_libraries(MRA-datatypes PUBLIC protobuf::libprotobuf MRA-datatypes-proto)
@@ -97,27 +91,20 @@ target_link_libraries(MRA-datatypes ${MRA-datatypes_generated_files})
 
 # collect proto files from sub-directories below directory component
 FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/components *.proto)
+# generate code from protofiles and add them  intermediate library
 add_library(MRA-components-protofiles)
 protobuf_generate(TARGET MRA-components-protofiles PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-foreach (protobuf_file ${MESSAGE_PROTOS_COMPONENTS})
-    get_filename_component(proto_name ${protobuf_file} NAME_WE)
-    get_filename_component(proto_path ${MRA_BINARY_DIR}/datatypes ABSOLUTE)
-    message(STATUS "${proto_path}/${proto_name}.pb.cc")
-    set_source_files_properties(
-        "${proto_path}/${proto_name}.pb.cc"
-        "${proto_path}/${proto_name}.pb.h"
-        PROPERTIES GENERATED TRUE)
-endforeach()
 file(GLOB MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/datatype/*.pb.cc")
 target_include_directories(MRA-components-protofiles PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
 target_link_libraries(MRA-components-protofiles PUBLIC ${MRA-components-generated-files})
 
+
+# create library for MRA-component-proto with the generated code
 add_library(MRA-components-proto OBJECT ${MESSAGE_PROTOS_COMMON})
 target_link_libraries(MRA-components-proto PUBLIC protobuf::libprotobuf MRA-components-protofiles)
 set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-components-proto ${MRA-components-generated-files})     
-
 
 
 # create dummy file for creating libraries with only ohter libraries

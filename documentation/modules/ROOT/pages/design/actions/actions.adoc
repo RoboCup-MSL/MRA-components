@@ -14,7 +14,7 @@ Behaviors, Skills are terms for actions.
 
 The following actions are available
 
-* <<proof_is_alive>>
+* <<prove_is_alive>>
 * <<positioning>>
 * <<follow_ball>>
 * <<get_bal>>
@@ -31,10 +31,10 @@ Each action will have a result:
 * PASS (execution is FINISHED)
 * FAIL (execution is FINISHED)
 
-=== proof_is_alive [[proof_is_alive]]
-The robot will proof it is alive, by executing the behavior as specified in the MSL rules. This action  can be requested by the referee to proof that a robot is still functioning.
+=== prove_is_alive [[prove_is_alive]]
+The robot will prove it is alive, by executing the behavior as specified in the MSL rules. This action  can be requested by the referee to prove that a robot is still functioning.
 
-link:../../../../.././components/robotsports/proof_is_alive/README.adoc[Read-me: Proof-Is-Alive]
+link:../../../../.././components/robotsports/prove_is_alive/README.adoc[Read-me: Prove-Is-Alive]
 
 === positioning [[positioning]]
 The robot will drive to a given position without the ball. The action <<dribbling>> is the driving with the ball.  A property can be set to let the robot facing the ball while it is driving to the requested position.  Facing the ball make the robot  capable to react quickly on a ball moving towards the robot.

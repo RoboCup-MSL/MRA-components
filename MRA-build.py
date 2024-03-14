@@ -81,20 +81,22 @@ class Builder():
             # set test configuration (maybe we need some scripting for this ... ?)
             cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":"ALWAYS","maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
             self.run_cmd(cmd)
+    def print(self, s: str) -> None:
+        print(s, flush=True)
     def run_cmd(self, cmd: str) -> None:
         extra_opts = {}
         if self.dryrun:
-            print(cmd)
+            self.print(cmd)
             return
         if self.verbose:
-            print(f'running command: {cmd}')
+            self.print(f'running command: {cmd}')
         else:
             extra_opts = {'capture_output': True}
         r = subprocess.run(cmd, shell=True, **extra_opts)
         if r.returncode != 0:
             if not self.verbose:
-                print('STDOUT:\n{}\n\nSTDERR:\n{}\n'.format(r.stdout.decode(), r.stderr.decode()))
-            print(f'command "{cmd}" failed with returncode {r.returncode}')
+                self.print('STDOUT:\n{}\n\nSTDERR:\n{}\n'.format(r.stdout.decode(), r.stderr.decode()))
+            self.print(f'command "{cmd}" failed with returncode {r.returncode}')
             # no need to raise an Exception with a long uninteresting stacktrace
             sys.exit(1)
 

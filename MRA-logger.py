@@ -55,6 +55,7 @@ def parse_args(args: list) -> argparse.Namespace:
     parser.add_argument('-s', '--scope', help='apply to custom component scope, comma-separated lists of (brief) component names', type=str)
     parser.add_argument('-t', '--test', help='test mode, intended for testsuite, data gets thrown away each time', action='store_true')
     parser.add_argument('-T', '--tracing', help='enable/keep tracing during tests', action='store_true')
+    parser.add_argument('-b', '--tickbins', help='dump binary files, one per component tick', action='store_true')
     parser.add_argument('-n', '--dryrun', help='only print commands', action='store_true')
     parser.add_argument('mode', help='control mode', choices=MODES)
     return parser.parse_args(args)
@@ -70,7 +71,7 @@ class Configurator():
         self.config_filename = LOGGER_SHM_FILES[self.context]
         self.log_folder = LOGGER_FOLDERS[self.context]
         self.enabled = True
-        self.dump_ticks = False
+        self.dump_ticks = self.args.tickbins
         self.config_data = None
 
     def make_subconfig(self, component_name):
@@ -141,19 +142,18 @@ class Configurator():
 
     def run(self):
         mode = self.args.mode
+        self.read()
+        self.set('dumpTicks', self.args.tickbins)
         if mode == 'show':
-            self.read()
             self.display()
         elif mode == 'json':
             self.command(f'cat {self.config_filename}')
         elif mode == 'reset':
             self.reset()
         elif mode == 'enable':
-            self.read()
             self.set('enabled', True)
             self.write()
         elif mode == 'disable':
-            self.read()
             self.set('enabled', False)
             self.write()
         elif mode == 'wipe':

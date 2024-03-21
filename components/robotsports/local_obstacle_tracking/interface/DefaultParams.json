@@ -1,0 +1,19 @@
+{
+    "update_interval_vision": 0.05,
+    "update_interval_selves": 0.05,
+    "use_shared_selves": true,
+    "min_conf_shared_selves": 0.5,
+    "par_pclutter": 0.01,
+    "par_alpha": 0.01,
+    "par_sigmax": 0.25,
+    "par_sigmay": 0.25,
+    "par_nkeep": 20,
+    "par_pfactor": 10.0,
+    "par_nselect": 32,
+    "par_maxnobj": 10,
+    "par_clipradius": 1000.0,
+    "par_kscale": 0.5,
+    "par_maxage": 1.0,
+    "par_labelbound": 0.60,
+    "reset_on_error": true               
+ }

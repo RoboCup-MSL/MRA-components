@@ -9,5 +9,6 @@ message TrackedObject
 {
     MRA.Datatypes.PosVel pos_vel_fcs = 1;  // calculated position [MSL-FCS]
     double confidence = 2; // calculated confidence
-    google.protobuf.Timestamp timestamp = 3;  // timestamp of tracked object  
+    google.protobuf.Timestamp timestamp = 3;  // timestamp of tracked object
+    int32 type = 4; // type of object  
 }

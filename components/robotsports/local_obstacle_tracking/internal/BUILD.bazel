@@ -1,0 +1,21 @@
+cc_library(
+    name = "LocalObstacleTracking",
+    srcs = [
+        "sequence_clustering_track_obstacles.cpp",
+        "obstacle_tracking.cpp"
+    ],
+    hdrs = [
+        "sequence_clustering_track_obstacles.hpp",
+        "obstacle_tracking.hpp",
+        "obstacle_definitions.hpp"
+    ],
+    includes = [
+        "."
+    ],
+    deps = [
+        "//libraries/logging",
+        "//libraries/geometry",
+        "//components/robotsports/local_obstacle_tracking:datatypes",
+    ],
+    visibility = ["//visibility:public"],
+)

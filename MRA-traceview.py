@@ -24,7 +24,7 @@ except ImportError:
     epath = os.getenv('PATH_TO_EXTENDEDLOGGING')
     if not epath:
         # try bazel dependency
-        epath = os.path.join(subprocess.getoutput('bazel info output_base'), 'external', 'extendedlogging')
+        epath = os.path.join(subprocess.getoutput('bazel info output_base 2>/dev/null').strip(), 'external', 'extendedlogging')
     if not os.path.isdir(epath):
         raise Exception('failed to find repo extendedlogging')
     sys.path.append(epath)
@@ -38,13 +38,17 @@ DEFAULT_FOLDER = '/tmp/mra_logging'
 def parse_args():
     # modify cli
     parser = ttvlib.ttviewer.make_parser(__doc__, EXAMPLE_TXT)
+    parser.add_argument('--newest', help='newest number of files to take from folder, default guess (1 for any folder, except all for testsuite)', type=int)
     parser.add_argument('folder', help='folder to analyze', nargs='?', default=DEFAULT_FOLDER)
     return parser.parse_args()
 
 
-def determine_filenames(folder):
+def determine_filenames(folder, newest=1):
     fn = glob.glob(os.path.join(folder, '*'))
     fn = [f for f in fn if os.path.isfile(f)]
+    fn = sorted(fn, key=lambda x: os.path.getmtime(x), reverse=True)
+    if newest:
+        fn = fn[:newest]
     return fn
 
 
@@ -55,8 +59,12 @@ def pid_tid_handler(filename, jsondata):
 
 def main(**kwargs):
     # determine MRA tracing/logging files
-    filenames = determine_filenames(kwargs.get('folder'))
+    newest = None
+    if not 'testsuite' in kwargs.get('folder'):
+        newest = 1
+    filenames = determine_filenames(kwargs.get('folder'), newest)
     del kwargs['folder']
+    del kwargs['newest']
     # feed filenames and run the viewer
     kwargs['filenames'] = filenames
     kwargs['pid_tid_handler'] = pid_tid_handler

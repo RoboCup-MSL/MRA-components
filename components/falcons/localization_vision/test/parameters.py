@@ -61,7 +61,8 @@ class ParametersProxy:
         if name in self.gui_params.params:
             self.gui_params.set(name, value)
         else:
-            self.pb_params.set(name, value)
+            self.pb_params.set(name, value) # applies typecast from string
+            value = self.pb_params.get(name) # so we need to get it again
             self._update_protobuf(name, value)
 
     def __iter__(self):

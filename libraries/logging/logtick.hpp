@@ -6,7 +6,7 @@
 #include "json_convert.hpp"
 #include "logdebug.hpp"
 #include "control.hpp"
-#include <fstream>
+#include <sstream>
 
 
 namespace MRA::Logging
@@ -54,11 +54,8 @@ public:
         if (_cfg.enabled())
         {
             backend::reconfigure(_cfg);
-            // if so configured, open binary file, otherwise NULL pointer
-            std::pair<std::ofstream *, std::string> bf = backend::logTickBinFile(_cfg, _componentName, _counter);
-            _binfile = bf.first;
-            // call backend
-            backend::logTickStart(_componentName, _fileName, _lineNumber, _cfg, bf.second, _binfile, _counter, _t, _input, _params, *_state);
+            // if so configured, dump data for binary file
+            backend::logTickStart(_componentName, _fileName, _lineNumber, _cfg, _bindata, _counter, _t, _input, _params, *_state);
         }
     }
 
@@ -71,7 +68,7 @@ public:
             auto elapsed = google::protobuf::util::TimeUtil::GetCurrentTime() - _t0;
             double duration_sec = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsed);
             // call backend
-            backend::logTickEnd(_componentName, _fileName, _lineNumber, _cfg, _binfile, _counter, duration_sec, *_err, *_state, *_output, *_local);
+            backend::logTickEnd(_componentName, _fileName, _lineNumber, _cfg, _bindata, _counter, duration_sec, *_err, *_state, *_output, *_local);
         }
         // update counter for next tick
         _counter++;
@@ -92,7 +89,7 @@ private:
     std::string _fileName;
     int         _lineNumber;
     MRA::Datatypes::LogSpec _cfg;
-    std::ofstream *_binfile = nullptr;
+    std::ostringstream _bindata;
 
 }; // template class LogTick
 

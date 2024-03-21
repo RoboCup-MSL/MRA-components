@@ -46,7 +46,7 @@ private:
     // reference floor: calculate once, based on letter model and optional extra shapes
     cv::Mat _referenceFloorMat;
 public:
-    cv::Mat createReferenceFloorMat(float blurFactor = 0.0) const;
+    cv::Mat createReferenceFloorMat(bool withBlur = true) const;
 
 private:
     // initialization (a bit expensive), only once, or when parameters change
@@ -64,6 +64,8 @@ private:
     // run the fit algorithm (multithreaded) and update trackers
     void runFitUpdateTrackers();
     void cleanupBadTrackers();
+    void cleanupDuplicateTrackers();
+    void setOutputsAndState();
 
     // optional debug data export
     cv::Mat createDiagnosticsMat() const;

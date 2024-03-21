@@ -1,3 +1,7 @@
+// system
+#include <algorithm>
+
+// internal
 #include "solver.hpp"
 #include "guessing.hpp"
 
@@ -83,9 +87,9 @@ void Solver::setInput(Input const &in)
     _input = in;
 }
 
-cv::Mat Solver::createReferenceFloorMat(float blurFactor) const
+cv::Mat Solver::createReferenceFloorMat(bool withBlur) const
 {
-    MRA_TRACE_FUNCTION_INPUTS(blurFactor);
+    MRA_TRACE_FUNCTION_INPUTS(withBlur);
     cv::Mat result;
 
     // given the configured field (letter model and optional custom shapes),
@@ -102,7 +106,16 @@ cv::Mat Solver::createReferenceFloorMat(float blurFactor) const
 
     // create cv::Mat such that field is rotated screen-friendly: more columns than rows
     result = _floor.createMat();
-    _floor.shapesToCvMat(shapes, blurFactor, result);
+    _floor.shapesToCvMat(shapes, result);
+
+    // apply blur
+    if (withBlur)
+    {
+        float blurFactor = _params.solver().blur().factor();
+        int blurMaxDepth = _params.solver().blur().maxdepth();
+        uchar blurMinValue = _params.solver().blur().minvalue();
+        result = _floor.applyBlur(result, blurFactor, blurMaxDepth, blurMinValue);
+    }
 
     return result;
 }
@@ -129,7 +142,7 @@ void Solver::reinitialize()
     MRA_LOG_DEBUG("cache miss, creating reference floor");
 
     // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
-    _referenceFloorMat = createReferenceFloorMat(_params.solver().blurfactor());
+    _referenceFloorMat = createReferenceFloorMat(true);
     MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
 
     // store params into state
@@ -148,7 +161,15 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
         result.push_back(lp);
     }
     int n = result.size();
-    MRA_TRACE_FUNCTION_OUTPUT(n);
+    // vector clipping
+    int max_size = _params.solver().linepoints().maxcount();
+    int dropped = 0;
+    if (n > max_size) {
+        dropped = max_size - n;
+        result.resize(max_size);
+        n = max_size;
+    }
+    MRA_TRACE_FUNCTION_OUTPUTS(n, dropped);
     return result;
 }
 
@@ -175,7 +196,7 @@ std::vector<Tracker> Solver::createTrackers() const
     //         (      0,       0,  0.5*srz)
     if (result.size() == 0)
     {
-        result.push_back(Tracker(_params, TrackerState()));
+        result.push_back(Tracker(_params));
     }
     Tracker &tracker = result.at(0);
     tracker.guess = _input.guess();
@@ -184,16 +205,22 @@ std::vector<Tracker> Solver::createTrackers() const
     // run the guesser to add more attempts/trackers
     Guesser g(_params);
     bool initial = (_state.tick() == 0);
-    g.run(result, initial);
+    g.run(result, _params, initial);
 
+    int num_trackers = result.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers);
     return result;
 }
 
 void Solver::runFitUpdateTrackers()
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers);
     // run the fit algorithm (multithreaded, one per tracker) and update trackers
     _fitAlgorithm.run(_referenceFloorMat, _linePoints, _trackers);
+
+    // sort trackers on decreasing quality
+    std::sort(_trackers.begin(), _trackers.end());
 
     // set _fitResult
     _fitResult.valid = false;
@@ -204,19 +231,101 @@ void Solver::runFitUpdateTrackers()
         _fitResult.pose = tr.fitResult;
         _fitResult.score = tr.fitScore;
         _fitResult.path = tr.fitPath;
-        if (_fitResult.valid)
-        {
-            Candidate c;
-            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);
-            c.set_confidence(_fitResult.score);
-            *_output.add_candidates() = c;
-        }
+        MRA::Datatypes::Pose best_pose = _fitResult.pose;
+        auto best_score = _fitResult.score;
+        MRA_TRACE_FUNCTION_OUTPUTS(best_pose, best_score);
     }
 }
 
 void Solver::cleanupBadTrackers()
 {
-    MRA_TRACE_FUNCTION();
+    int num_trackers_before = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+
+    float scoreThreshold = _params.solver().scoring().thresholdkeepstate();
+    _trackers.erase(std::remove_if(_trackers.begin(), _trackers.end(), [scoreThreshold](Tracker const &tr) { return tr.fitScore > scoreThreshold; }), _trackers.end());
+    int num_dropped = num_trackers_before - _trackers.size();
+
+    int num_trackers_after = _trackers.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+}
+
+// check if two positions are almost the same, optionally also taking field symmetry into account
+#include "angles.hpp"
+bool positions_equal(MRA::Geometry::Position const &pos1, MRA::Geometry::Position const &pos2, double tol_xy, double tol_rz, bool also_sym = false)
+{
+    MRA::Datatypes::Pose p1 = pos1, p2 = pos2;
+    MRA_TRACE_FUNCTION_INPUTS(p1, p2);
+    // first try data as is
+    double delta_x = pos1.x - pos2.x;
+    double delta_y = pos1.y - pos2.y;
+    double delta_rz = MRA::Geometry::wrap_pi(pos1.rz - pos2.rz);
+    bool too_close = std::max(fabs(delta_x), fabs(delta_y)) < tol_xy and fabs(delta_rz) < tol_rz;
+    MRA_LOG_DEBUG("attempt 1    delta_x=%f delta_y=%f delta_rz=%f too_close=%d", delta_x, delta_y, delta_rz, (int)too_close);
+    if (too_close) return true;
+    if (!also_sym) return false; // done
+    // now try the mirrored position
+    delta_x = pos1.x + pos2.x;
+    delta_y = pos1.y + pos2.y;
+    delta_rz = MRA::Geometry::wrap_pi(pos1.rz + pos2.rz);
+    too_close = std::max(fabs(delta_x), fabs(delta_y)) < tol_xy and fabs(delta_rz) < tol_rz;
+    MRA_LOG_DEBUG("attempt 2    delta_x=%f delta_y=%f delta_rz=%f too_close=%d", delta_x, delta_y, delta_rz, (int)too_close);
+    return too_close;
+}
+
+void Solver::cleanupDuplicateTrackers()
+{
+    int num_trackers_before = _trackers.size();
+    MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+
+    if (_trackers.size() >= 2)
+    {
+        for (auto it = _trackers.begin() + 1; it != _trackers.end();) {
+            bool found_dupe = false;
+            for (auto it2 = _trackers.begin(); it2 != it; ++it2) {
+                bool too_close = positions_equal(it->fitResult, it2->fitResult, _params.solver().dupefiltering().tolerancexy(), _params.solver().dupefiltering().tolerancerz(), true);
+                if (too_close) {
+                    found_dupe = true;
+                    break;
+                }
+            }
+            if (found_dupe) {
+                it = _trackers.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
+    int num_dropped = num_trackers_before - _trackers.size();
+    int num_trackers_after = _trackers.size();
+    MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+}
+
+void Solver::setOutputsAndState()
+{
+    // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
+    _state.mutable_trackers()->Clear();
+    for (auto const &tr: _trackers)
+    {
+        TrackerState ts = tr;
+        *_state.add_trackers() = ts;
+    }
+
+    // only the best trackers are set in output
+    for (auto const &tr: _trackers)
+    {
+        if (tr.fitValid)
+        {
+            Candidate c;
+            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)tr.fitResult);
+            c.set_confidence(tr.confidence());
+            *_output.add_candidates() = c;
+        }
+    }
+
+    // update tick counter for next tick (this should be called at the end of the tick)
+    _state.set_tick(1 + _state.tick());
 }
 
 // TODO move to opencv_utils?
@@ -247,7 +356,7 @@ cv::Mat Solver::createDiagnosticsMat() const
 
     // add linepoints with blue/cyan color
     float ppm = _params.solver().pixelspermeter();
-    FitFunction ff(referenceFloorMat, _linePoints, ppm);
+    FitFunction ff(referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     std::vector<cv::Point2f> transformed = ff.transformPoints(_linePoints, ff.transformationMatrixRCS2FCS(_fitResult.pose.x, _fitResult.pose.y, _fitResult.pose.rz));
     MRA_LOG_DEBUG("number of transformed points: %d", (int)transformed.size());
     for (const auto &point : transformed) {
@@ -293,7 +402,7 @@ void Solver::manualMode()
     MRA_TRACE_FUNCTION();
     float ppm = _params.solver().pixelspermeter();
     // run the core calc() function
-    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm);
+    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
     double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
     double score = fit.calc(pose);
     // copy pose into _fitResult so local.floor will be properly created
@@ -301,11 +410,7 @@ void Solver::manualMode()
     _fitResult.pose.y = pose[1];
     _fitResult.pose.rz = pose[2];
     _fitResult.path = fit.getPath();
-    // set output
-    Candidate c;
-    c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)_fitResult.pose);
-    c.set_confidence(score);
-    *_output.add_candidates() = c;
+    _fitResult.score = score;
 }
 
 int Solver::run()
@@ -325,9 +430,9 @@ int Solver::run()
     // create a floor (linePoints RCS, robot at (0,0,0)) for input linepoints
     _linePoints = createLinePoints();
 
-    // check for any linepoints
+    // check for enough linepoints
     // (having none at all is very unusual for a real robot, but not so much in test suite)
-    if (_linePoints.size())
+    if ((int)_linePoints.size() >= _params.solver().linepoints().mincount())
     {
         // manual mode?
         if (_params.solver().manual().enabled())
@@ -344,14 +449,23 @@ int Solver::run()
             runFitUpdateTrackers();
         }
     }
+    else
+    {
+        MRA_LOG_WARNING("insufficient number of linepoints: %d < %d", _linePoints.size(), _params.solver().linepoints().mincount());
+    }
+
+    // drop bad trackers
+    cleanupBadTrackers();
+
+    // drop duplicate trackers
+    cleanupDuplicateTrackers();
+
+    // set outputs and prepare for next tick
+    setOutputsAndState();
 
     // create and optionally dump of diagnostics data for plotting
     dumpDiagnosticsMat();
 
-    // prepare for next tick
-    _state.set_tick(1 + _state.tick());
-
-    // set best fit result as output, or return error code
     return 0;
 }
 

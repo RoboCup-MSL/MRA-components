@@ -45,6 +45,9 @@ message LinePointParams
 {
     LinePointFitParams fit = 1;
     LinePointPlotParams plot = 2;
+    int32 maxCount = 3; // maximum number to use, just truncate input vector (original 'linePointsNumberMaximal')
+    int32 minCount = 4; // minimum number to use (original 'linePointsNumberMinimal')
+    double penaltyOutsideField = 5; // penalty per pixel outside of field+border bounds (originally 0.005)
 }
 
 message RGB
@@ -81,12 +84,31 @@ message ManualParams
     MRA.Datatypes.Pose pose = 2;
 }
 
+message BlurParams
+{
+    double factor = 1; // factor to reduce white pixel intensity value
+    int32 maxDepth = 2; // max number of steps to apply from original full-intensity pixels
+    int32 minValue = 3; // stop when minimum intensity value is reached
+}
+
+message ScoringParams
+{
+    float thresholdValid = 1; // solver score threshold (typically about 80%, 0.20), to be marked as good enough for output
+    float thresholdKeepState = 2; // more relaxed score threshold to allow trackers in state
+}
+
+message DupeFilteringParams
+{
+    float toleranceXY = 1;
+    float toleranceRz = 2;
+}
+
 message SolverParams
 {
     int32 numExtraThreads = 1;
     double pixelsPerMeter = 2; // [40.0] used to create cv::Mat
     double floorBorder = 3; // like 'L': how far to extend outside field
-    double blurFactor = 4; // blur factor, zero is no blur
+    BlurParams blur = 4; // reference floor blurring, to allow calibration inaccuracies
     MRA.Datatypes.Pose actionRadius = 5; // required: robot action radius (roughly max velocity * dt), for local optimization of previous result
     int32 maxCount = 6; // required: solver max iterations
     double epsilon = 7; // required: solver accuracy
@@ -94,6 +116,8 @@ message SolverParams
     GuessingParams guessing = 9;
     ManualParams manual = 10; // manual tuning mode, only call the calc() function, not entire solver
     PathPointParams pathPoints = 11;
+    ScoringParams scoring = 12;
+    DupeFilteringParams dupeFiltering = 13; // remove nearby trackers, including symmetric ones
 }
 
 message Params

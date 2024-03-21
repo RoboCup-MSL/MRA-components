@@ -41,7 +41,6 @@ DEBUG_OPTIONS = ['--subcommands', '--verbose_failures', '--sandbox_debug']
 ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite', '--test_env=TZ=' + TIMEZONE]
 TEST_OPTIONS = ['--test_output', 'all', '--nocache_test_results']
 TRACING_OPTIONS = ['--test_env=MRA_LOGGER_KEEP_TESTSUITE_TRACING=1']
-TESTSUITE_SHM_FILE = '/dev/shm/testsuite_mra_logging_shared_memory'
 BAZEL_ALL = '...' # see bazel syntax / cheatsheet
 DEFAULT_SCOPE = BAZEL_ALL
 DEFAULT_NUM_PARALLEL_JOBS = 4 # TODO guess? building is nowadays quite memory-intensive ... easy to lock/swap
@@ -75,12 +74,10 @@ class Builder():
     def run_pre_test(self, tracing: bool = False) -> None:
         # wipe /tmp/testsuite_mra_logging, used via MRA_LOGGER_CONTEXT action_env, for post-testsuite inspection
         # (note how unittest test_mra_logger uses a different environment)
-        cmd = 'rm -rf /tmp/testsuite_mra_logging'
-        self.run_cmd(cmd)
+        self.run_cmd('./MRA-logger.py wipe --test')
         if tracing:
-            # set test configuration (maybe we need some scripting for this ... ?)
-            cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":"ALWAYS","maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
-            self.run_cmd(cmd)
+            # set test configuration
+            self.run_cmd('./MRA-logger.py enable --test --tracing')
     def print(self, s: str) -> None:
         print(s, flush=True)
     def run_cmd(self, cmd: str) -> None:

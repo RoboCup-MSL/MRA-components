@@ -64,7 +64,7 @@ def parse_args(args: list) -> argparse.Namespace:
 class Configurator():
     def __init__(self, args):
         self.args = args
-        self.context = CONTEXTS[args.test]
+        self.context = CONTEXTS[self.args.test]
         self.level = ['INFO', 'TRACE'][self.args.tracing]
         assert(self.level in LEVELS)
         assert(self.context in CONTEXTS)
@@ -145,6 +145,7 @@ class Configurator():
         mode = self.args.mode
         self.read()
         self.set('dumpTicks', ['ON_ERROR', 'ALWAYS'][self.args.tickbins])
+        self.set('level', self.level)
         if mode == 'show':
             self.display()
         elif mode == 'json':

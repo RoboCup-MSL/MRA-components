@@ -1,4 +1,5 @@
 #include "tracker.hpp"
+#include <cmath>
 
 using namespace MRA::FalconsLocalizationVision;
 

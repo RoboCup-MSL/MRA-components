@@ -10,6 +10,7 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include <stdarg.h>
 #include <errno.h> // for program_invocation_name
+#include <fstream>
 
 
 namespace MRA::Logging::backend

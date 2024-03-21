@@ -59,6 +59,8 @@ RANGE_HINTS = {
     'actionRadius.ry': None,
     'maxCount': (0, 1000),
     'epsilon': (0.0, 1e-2),
+    'scoring.thresholdValid': (0.0, 1.0),
+    'scoring.thresholdKeepState': (0.0, 1.0),
     'linePoints.fit.radiusConstant': (0.0, 1.0),
     'linePoints.fit.radiusScaleFactor': (-0.1, 0.1),
     'linePoints.fit.radiusMinimum': (-0.1, 0.5),

@@ -36,8 +36,10 @@ Container_Boundary(actions, "Actions") {
 	Component(dribbling, "dribbling")
 	Component(shield_ball, "shield_ball")
 	Component(pass, "pass")
+	Component(selfpass, "self pass")
 	Component(shoot_on_target, "shoot_on_target")
 	Component(keeperMove, "keeperMove")
+	Component(prove_is_alive, "prove-is-alive")
  }
 
 Component(behavior_spg, "Behavior Setpoint")

@@ -7,7 +7,7 @@ endif::[]
 There are two coordinate systems:
 
 * <<Field Coordinate System (FCS)>>
-* <<Object Coordinate System (OCS)>>
+* <<Robot Coordinate System (RCS)>>
 
 
 === Field Coordinate System (FCS)
@@ -30,21 +30,21 @@ clockwise direction, and are defined in the interval [0..2π];
 * angle arithmetic uses (mod 2π).
 
 
-=== Object Coordinate System (OCS)
+=== Robot Coordinate System (RCS)
 
-The Object Coordinate System follows the right system principle;
+The Robot Coordinate System follows the right system principle;
 
-* the Object Coordinate System is defined as viewed from the middle of the object towards the front of the object (for a robot this is the side used to manipulate the ball)
+* the Robot Coordinate System is defined as viewed from the middle of the object towards the front of the robot (for a robot this is the side used to manipulate the ball)
 * the 'XY' plane is coincident with the ground;
-* the origin of the coordinate system is coincident with the center of the object;
+* the origin of the coordinate system is coincident with the center of the robot;
 * the x-axis is coincident with the center of the object and positive to the right;
 * the y-axis is positive towards the front of the object;
 * the z-axis is positive above the ground;
 
-In the figure <<OCS_figure>> the x- and y-axis of an object (robot) are shown when the object has an angle q wrt the Field Coordinate System (capital X an Y axis)
+In the figure <<RCS_figure>> the x- and y-axis of an object (robot) are shown when the object has an angle q wrt the Field Coordinate System (capital X an Y axis)
 
-[#OCS_figure]
-.Object Coordinate System
+[#RCS_figure]
+.Robot Coordinate System
 image::{imagedir}/object_coordinate_system.png[]
 
 

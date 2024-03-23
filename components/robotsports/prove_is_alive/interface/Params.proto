@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package MRA.RobotsportsProofIsAlive;
+package MRA.RobotsportsProveIsAlive;
 
 message Params
 {
-    double angle_in_degrees = 1; // rotation to proof robot is alive [deg]
+    double angle_in_degrees = 1; // rotation to Prove robot is alive [deg]
     double angle_tolerance_deg = 2; // allowed tolerance to be on requested angle
     double max_time_per_phase = 3; // time-out per phase; prevent action not ending in case of hardware failure
 }

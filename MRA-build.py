@@ -14,7 +14,7 @@ Examples:
      bazel test //... --test_output all --nocache_test_results
 * commands to build only one component
   $ ./MRA-build.py -n -s alive
-     bazel build --color=yes //robotsports/proof_is_alive
+     bazel build --color=yes //robotsports/prove_is_alive
 * test a single test case with tracing
   $ ./MRA-build.py -T -s vision -- --test_arg=--gtest_filter=FalconsLocalizationVisionTest.calc000
 * test a single test case with valgrind

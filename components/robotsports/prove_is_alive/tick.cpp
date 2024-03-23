@@ -2,7 +2,7 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "RobotsportsProofIsAlive.hpp"
+#include "RobotsportsProveIsAlive.hpp"
 
 // dependent libraries:
 #include "geometry.hpp"
@@ -13,7 +13,7 @@ using namespace MRA;
 // #define DEBUG
 
 // -----------------------------------------------------------------------------
-int RobotsportsProofIsAlive::RobotsportsProofIsAlive::tick
+int RobotsportsProveIsAlive::RobotsportsProveIsAlive::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto

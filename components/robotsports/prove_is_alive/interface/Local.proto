@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.RobotsportsProofIsAlive;
+package MRA.RobotsportsProveIsAlive;
 
 message Local
 {

@@ -1,8 +1,8 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_ROBOTSPORTS_Prove_IS_ALIVE_HPP
-#define _MRA_ROBOTSPORTS_Prove_IS_ALIVE_HPP
+#ifndef _MRA_ROBOTSPORTS_PROVE_IS_ALIVE_HPP
+#define _MRA_ROBOTSPORTS_PROVE_IS_ALIVE_HPP
 
 
 // component name definition goes on top
@@ -52,7 +52,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/robotsports/Prove_is_alive/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/robotsports/prove_is_alive/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity

@@ -140,59 +140,89 @@ cv::Point Floor::pointFcsToPixel(MRA::Datatypes::Point const &p) const
     return cv::Point((p.y() - _originY) * _ppm, (p.x() - _originX) * _ppm);
 }
 
-cv::Mat Floor::applyBlur(const cv::Mat &image, float blurFactor) const
+cv::Mat Floor::applyBlur(const cv::Mat &image, float blurFactor, int blurMaxDepth, uchar blurMinValue) const
 {
     int nx = image.cols;
     int ny = image.rows;
     MRA_TRACE_FUNCTION_INPUTS(nx, ny, blurFactor);
-    cv::Mat imageOut = image.clone(); // Create a copy of the input image
-    for (int x = 0; x < nx; x++)
+
+    // First create a list with all current white inner pixels
+    std::vector<cv::Point> whitePixels;
+    for (int x = 1; x < nx-1; x++)
     {
-        for (int y = 0; y < ny; y++)
+        for (int y = 1; y < ny-1; y++)
         {
-            if (image.at<uchar>(y, x) > 0) // Assuming white lines have pixel value greater than 0
+            if (image.at<uchar>(y, x) > 0)  // Assuming white pixels have non-zero intensity
             {
-                recursiveBlur(imageOut, x, y, blurFactor, static_cast<uchar>(blurFactor * static_cast<float>(image.at<uchar>(y, x))), 0);
+                whitePixels.push_back(cv::Point(x, y));
             }
         }
+    }
+
+    // The list of whitePixels grows with each iteration
+    // Iterate until no change
+    cv::Mat imageOut = image.clone();
+    bool done = false;
+    int iteration = 0;
+    while (!done and iteration < blurMaxDepth)
+    {
+        done = (0 == blurSinglePass(imageOut, whitePixels, blurFactor, blurMinValue));
     }
     return imageOut;
 }
 
-void Floor::recursiveBlur(cv::Mat &image, int x, int y, float blurFactor, uchar newPixelValue, int depth) const
+int Floor::blurSinglePass(cv::Mat &image, std::vector<cv::Point> &whitePixels, float blurFactor, uchar blurMinValue) const
 {
-    // NO TRACING, this recursive function is too heavy
+    MRA_TRACE_FUNCTION_INPUTS(blurFactor);
+
     int nx = image.cols;
     int ny = image.rows;
+    int numCurrent = whitePixels.size();
+    int numAdded = 0;
 
-    if (x < 0 || x >= nx || y < 0 || y >= ny)
-        return;
+    // Assign new pixels, count them
+    std::vector<cv::Point> whitePixelsCurrent = whitePixels;
+    for (const cv::Point& whitePixel : whitePixelsCurrent)
+    {
+        int x = whitePixel.x;
+        int y = whitePixel.y;
 
-    uchar currentPixel = image.at<uchar>(y, x);
+        for (int i = -1; i <= 1; ++i)
+        {
+            for (int j = -1; j <= 1; ++j)
+            {
+                int neighborX = x + i;
+                int neighborY = y + j;
 
-    if (depth && (newPixelValue <= currentPixel))
-        return;
+                if (image.at<uchar>(neighborY, neighborX) == 0)  // Assuming black pixels have intensity 0
+                {
+                    // Set neighboring black pixel to reduced pixel value
+                    uchar newValue = static_cast<uchar>(blurFactor * static_cast<float>(image.at<uchar>(y, x)));
+                    if (newValue > blurMinValue)
+                    {
+                        if (neighborX > 0 and neighborX < nx-1 and neighborY > 0 and neighborY < ny-1)
+                        {
+                            image.at<uchar>(neighborY, neighborX) = newValue;
+                            whitePixels.push_back(cv::Point(neighborX, neighborY));
+                            ++numAdded;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    image.at<uchar>(y, x) = std::max(image.at<uchar>(y, x), newPixelValue);
+    // Drop current set of white pixels, these do not need to be reconsidered anymore
+    whitePixels.erase(whitePixels.begin(), whitePixels.begin() + numCurrent);
 
-    newPixelValue = static_cast<uchar>(blurFactor * static_cast<float>(image.at<uchar>(y, x)));
-    ++depth;
-
-    // Recursively apply the algorithm to neighbors
-    recursiveBlur(image, x - 1, y - 1, blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x    , y - 1, blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x + 1, y - 1, blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x - 1, y    , blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x + 1, y    , blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x - 1, y + 1, blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x    , y + 1, blurFactor, newPixelValue, depth);
-    recursiveBlur(image, x + 1, y + 1, blurFactor, newPixelValue, depth);
+    MRA_TRACE_FUNCTION_OUTPUTS(numCurrent, numAdded);
+    return numAdded;
 }
 
-void Floor::shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, float blurFactor, cv::Mat &m) const
+void Floor::shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, cv::Mat &m) const
 {
     int numShapes = shapes.size();
-    MRA_TRACE_FUNCTION_INPUTS(numShapes, blurFactor);
+    MRA_TRACE_FUNCTION_INPUTS(numShapes);
     cv::Scalar color(255, 255, 255); // white
     for (auto const &s: shapes)
     {
@@ -231,12 +261,6 @@ void Floor::shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, floa
             auto p2 = pointFcsToPixel(pc + ps * 0.5);
             cv::rectangle(m, p1, p2, color, lw);
         }
-    }
-    // apply blur
-    int blurKernelSize = (int)(_ppm * blurFactor);
-    if (blurKernelSize)
-    {
-        m = applyBlur(m, blurFactor);
     }
 }
 

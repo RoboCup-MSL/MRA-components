@@ -48,6 +48,9 @@ RANGE_HINTS = {
     'manual.pose.z': None,
     'manual.pose.rx': None,
     'manual.pose.ry': None,
+    'blur.factor': (0.0, 1.0),
+    'blur.maxDepth': (0, 20),
+    'blur.minValue': (0, 255),
     'actionRadius.x': (0.0, 5.0),
     'actionRadius.y': (0.0, 5.0),
     'actionRadius.rz': (0.0, 7.0),
@@ -56,10 +59,15 @@ RANGE_HINTS = {
     'actionRadius.ry': None,
     'maxCount': (0, 1000),
     'epsilon': (0.0, 1e-2),
+    'scoring.thresholdValid': (0.0, 1.0),
+    'scoring.thresholdKeepState': (0.0, 1.0),
     'linePoints.fit.radiusConstant': (0.0, 1.0),
     'linePoints.fit.radiusScaleFactor': (-0.1, 0.1),
     'linePoints.fit.radiusMinimum': (-0.1, 0.5),
     'linePoints.plot.radius': (0.0, 0.3),
+    'linePoints.maxCount': (0, 400),
+    'linePoints.minCount': (0, 50),
+    'linePoints.penaltyOutsideField': (0.0, 0.1),
     'guessing.random.count': (0, 10),
     'guessing.random.searchRadius': (0.0, 5.0),
     'guessing.random.exclusionRadius': (0.0, 5.0),
@@ -168,6 +176,13 @@ class TuningTool():
 
     def tick_call(self):
         t = self.data.t
+        # feed previous guess
+        if len(self.data.output.candidates):
+            c = self.data.output.candidates[0]
+            self.data.input.guess.x = c.pose.x
+            self.data.input.guess.y = c.pose.y
+            self.data.input.guess.rz = c.pose.rz
+        # call tick
         return_tuple = pybind_ext.tick(
             #t,
             self.data.input,

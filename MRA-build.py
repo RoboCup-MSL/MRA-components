@@ -41,7 +41,6 @@ DEBUG_OPTIONS = ['--subcommands', '--verbose_failures', '--sandbox_debug']
 ENV_OPTIONS = ['--test_env=MRA_LOGGER_CONTEXT=testsuite', '--test_env=TZ=' + TIMEZONE]
 TEST_OPTIONS = ['--test_output', 'all', '--nocache_test_results']
 TRACING_OPTIONS = ['--test_env=MRA_LOGGER_KEEP_TESTSUITE_TRACING=1']
-TESTSUITE_SHM_FILE = '/dev/shm/testsuite_mra_logging_shared_memory'
 BAZEL_ALL = '...' # see bazel syntax / cheatsheet
 DEFAULT_SCOPE = BAZEL_ALL
 DEFAULT_NUM_PARALLEL_JOBS = 4 # TODO guess? building is nowadays quite memory-intensive ... easy to lock/swap
@@ -61,38 +60,40 @@ class Builder():
         """
         if clean:
             self.run_clean()
-        self.run_build(scope, tracing, jobs)
+        self.run_build(scope, jobs)
         if test or tracing:
-            self.run_pre_test()
+            self.run_pre_test(tracing)
+        if test:
             self.run_test(scope, tracing, extra_args)
     def run_clean(self) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
         raise NotImplementedError('to be implemented by cmake/bazel specific instance')
-    def run_pre_test(self) -> None:
+    def run_pre_test(self, tracing: bool = False) -> None:
         # wipe /tmp/testsuite_mra_logging, used via MRA_LOGGER_CONTEXT action_env, for post-testsuite inspection
         # (note how unittest test_mra_logger uses a different environment)
-        cmd = 'rm -rf /tmp/testsuite_mra_logging'
-        self.run_cmd(cmd)
-        # set test configuration (maybe we need some scripting for this ... ?)
-        cmd = 'echo \'{"folder":"/tmp/testsuite_mra_logging","filename":"\u003cmaincomponent\u003e_\u003cpid\u003e.spdlog","general":{"component":"MRA","level":"TRACE","enabled":true,"dumpTicks":true,"maxLineSize":1000,"maxFileSizeMB":10,"pattern":"[%Y-%m-%dT%H:%M:%S.%f] [%P/%t/%k] [%^%l%$] [%s:%#,%!] %v"}}\' > ' + TESTSUITE_SHM_FILE
-        self.run_cmd(cmd)
+        self.run_cmd('./MRA-logger.py wipe --test')
+        if tracing:
+            # set test configuration
+            self.run_cmd('./MRA-logger.py enable --test --tracing')
+    def print(self, s: str) -> None:
+        print(s, flush=True)
     def run_cmd(self, cmd: str) -> None:
         extra_opts = {}
         if self.dryrun:
-            print(cmd)
+            self.print(cmd)
             return
         if self.verbose:
-            print(f'running command: {cmd}')
+            self.print(f'running command: {cmd}')
         else:
             extra_opts = {'capture_output': True}
         r = subprocess.run(cmd, shell=True, **extra_opts)
         if r.returncode != 0:
             if not self.verbose:
-                print('STDOUT:\n{}\n\nSTDERR:\n{}\n'.format(r.stdout.decode(), r.stderr.decode()))
-            print(f'command "{cmd}" failed with returncode {r.returncode}')
+                self.print('STDOUT:\n{}\n\nSTDERR:\n{}\n'.format(r.stdout.decode(), r.stderr.decode()))
+            self.print(f'command "{cmd}" failed with returncode {r.returncode}')
             # no need to raise an Exception with a long uninteresting stacktrace
             sys.exit(1)
 
@@ -102,12 +103,10 @@ class BazelBuilder(Builder):
         Builder.__init__(self, **kwargs)
     def run_clean(self) -> None:
         self.run_cmd('bazel clean --color=yes')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         cmd_parts = ['bazel', 'build', '--jobs', str(jobs)] + ENV_OPTIONS
         if self.debug:
             cmd_parts += DEBUG_OPTIONS
-        if tracing:
-            cmd_parts += TRACING_OPTIONS
         for s in scope:
             self.run_cmd(' '.join(cmd_parts + ['--color=yes', f'//{s}']))
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
@@ -127,7 +126,7 @@ class CmakeBuilder(Builder):
         Builder.__init__(self, **kwargs)
     def run_clean(self) -> None:
         self.run_cmd('rm -rf build; mkdir build')
-    def run_build(self, scope: list, tracing: bool = False, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
+    def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         # TODO: do something with scope, it currently only works for bazel, so now everyone gets a "full" build
         self.run_cmd('cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
         self.run_cmd(f'cd build; make -j {jobs}')

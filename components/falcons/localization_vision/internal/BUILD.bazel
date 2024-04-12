@@ -13,6 +13,7 @@ cc_library(
         "floor.hpp",
         "guessing.hpp",
         "solver.hpp",
+        "threadpool.hpp",
         "tracker.hpp",
     ],
     includes = [

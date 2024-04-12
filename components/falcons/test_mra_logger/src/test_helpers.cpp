@@ -13,7 +13,7 @@ MRA::Datatypes::LogControl testConfiguration() {
     result.mutable_general()->set_component("MRA-test");
     result.mutable_general()->set_level(MRA::Datatypes::LogLevel::INFO);
     result.mutable_general()->set_enabled(true);
-    result.mutable_general()->set_dumpticks(false);
+    result.mutable_general()->set_dumpticks(MRA::Datatypes::TickDumpMode::NEVER);
     result.mutable_general()->set_maxlinesize(1000);
     result.mutable_general()->set_maxfilesizemb(10.0);
     result.mutable_general()->set_pattern("[%Y-%m-%dT%H:%M:%S.%f] [%n] [%^%l%$] [%s:%#,%!] %v");

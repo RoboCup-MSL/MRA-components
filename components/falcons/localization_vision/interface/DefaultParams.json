@@ -20,20 +20,35 @@
     },
     "shapes": [],
     "solver": {
-        "numExtraThreads": 0,
+        "numExtraThreads": 4,
         "pixelsPerMeter": 80,
         "floorBorder": 0.5,
-        "blurFactor": 0.86,
+        "blur": {
+            "factor": 0.86,
+            "maxDepth": 10,
+            "minValue": 10
+        },
         "actionRadius": {"x": 0.1, "y": 0.1, "rz": 0.3},
         "maxCount": 400,
         "epsilon": 1e-4,
+        "scoring": {
+            "thresholdValid": 0.20,
+            "thresholdKeepState": 0.40
+        },
         "linePoints": {
             "fit": {"radiusConstant": 0.05, "radiusScaleFactor": -0.003, "radiusMinimum": 0.0},
-            "plot": {"radius": 0.07}
+            "plot": {"radius": 0.07},
+            "maxCount": 100,
+            "minCount": 40,
+            "penaltyOutsideField": 0.005
         },
         "pathPoints": {
             "radius": 0.03,
             "color": {"R": 0, "G": 255, "B": 255}
+        },
+        "dupeFiltering": {
+            "toleranceXY": 0.1,
+            "toleranceRz": 0.1
         },
         "guessing": {
             "initial": [

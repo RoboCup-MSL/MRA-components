@@ -18,7 +18,8 @@ public:
 
     cv::Mat createMat() const;
     void letterModelToShapes(StandardLetterModel const &model, std::vector<MRA::Datatypes::Shape> &shapes) const;
-    void shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, float blurFactor, cv::Mat &m) const;
+    void shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, cv::Mat &m) const;
+    cv::Mat applyBlur(const cv::Mat &image, float blurFactor, int blurMaxDepth, uchar blurMinValue) const;
     cv::Point pointFcsToPixel(MRA::Datatypes::Point const &p) const;
 
     // diagnostics-specific
@@ -35,9 +36,7 @@ private:
     int _numPixelsY = 0;
 
     // blur helpers
-    cv::Mat applyBlur(const cv::Mat &image, float blurFactor) const;
-    void recursiveBlur(cv::Mat &image, int x, int y, float blurFactor, uchar newPixelValue, int depth) const;
-
+    int blurSinglePass(cv::Mat &image, std::vector<cv::Point> &whitePixels, float blurFactor, uchar blurMinValue) const;
 
 }; // class Floor
 

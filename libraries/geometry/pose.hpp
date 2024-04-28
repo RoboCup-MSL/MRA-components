@@ -54,6 +54,9 @@ public:
 
     double distanceTo(const MRA::Geometry::Point& p) const;
 
+    std::string toString() const;
+
+
     // functions call wrap_angles, left to be implemented by Position
     virtual void wrap_angles();
 

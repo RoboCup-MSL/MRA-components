@@ -27,8 +27,10 @@ public:
 	            TeamPlannerOutput& r_output,
 	            const TeamPlannerParameters& parameters);
 
+	std::vector<PlayerPlannerResult> assign(TeamPlannerData& teamplannerData); // TODO make private and use other assign
+
 private:
-	std::vector<PlayerPlannerResult> assign(TeamPlannerData& teamplannerData);
+	// std::vector<PlayerPlannerResult> assign(TeamPlannerData& teamplannerData);
 
 	class AssignToTargetData {
 	public:

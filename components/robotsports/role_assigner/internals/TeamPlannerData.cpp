@@ -57,6 +57,13 @@ std::string TeamPlannerRobot::toString() const {
 	return buffer.str();
 }
 
+
+std::string TeamPlannerBall::toString(bool full_details) {
+	std::stringstream buffer;
+	buffer << "ball position: x:" << this->position.x << " y:"<< this->position.y << endl;
+	return buffer.str();
+}
+
 //
 //static void addToCSV(const string& rstrId, double value, std::stringstream& rStringStream, const string& rsMRAeparator, bool printHeader, std::stringstream& rHeaderStringStream) {
 //	rStringStream << std::fixed << value << rsMRAeparator;

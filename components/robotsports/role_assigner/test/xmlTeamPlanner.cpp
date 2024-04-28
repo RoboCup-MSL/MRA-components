@@ -347,8 +347,79 @@ void fillOpponents(std::vector<TeamPlannerOpponent>& Opponents, auto_ptr<robotsp
 
 }
 
+void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
+		const Geometry::Position& ball_position,
+		const Geometry::Position& ball_velocity,
+        const std::vector<Geometry::Position>& myTeam,
+        const std::vector<Geometry::Position>& myTeam_vel,
+		const std::vector<int>& myTeam_labels,
+		const std::vector<Geometry::Position>& opponents,
+		const std::vector<Geometry::Position>& opponents_vel,
+		const std::vector<int>& opponents_labels,
+        bool team_controls_ball, long controlBallByPlayerId,
+        const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
+        const TeamPlannerParameters& options,
+        const std::vector<Geometry::Point>& parking_postions,
+        const previous_used_ball_by_planner_t& previous_ball,
+        const std::vector<final_planner_result_t>& previous_planner_results,
+        const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
+        long passBallByPlayerId, const pass_data_t& pass_data,
+        const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area)
+{
+	tdp.previous_ball = previous_ball;
+    // calculate assignment for the given situation
+    vector<TeamPlannerRobot> Team = vector<TeamPlannerRobot>();
+    for (unsigned idx = 0; idx < myTeam.size(); idx++) {
+        TeamPlannerRobot robot = {};
+        robot.robotId = robotIds[idx];
+        robot.labelId = myTeam_labels[idx];
+        robot.position = myTeam[idx];
+        if (controlBallByPlayerId >= 0 && robotIds[idx] == static_cast<unsigned>(controlBallByPlayerId)) {
+            robot.controlBall = true;
+        }
+        else {
+            robot.controlBall = false;
+        }
+        robot.passBall = robot.robotId == static_cast<unsigned>(passBallByPlayerId);
+        robot.player_type = teamTypes[idx];
+        robot.dynamic_role = dynamic_role_e::dr_NONE;
+        robot.assigned = false;
+        robot.result = PlayerPlannerResult();
+        if (idx < previous_planner_results.size()) {
+            robot.previous_result = previous_planner_results[idx];
+        }
+        if (idx < time_in_own_penalty_area.size()) {
+            robot.time_in_own_penalty_area = time_in_own_penalty_area[idx];
+        }
+        if (idx < time_in_opponent_penalty_area.size()) {
+            robot.time_in_opponent_penalty_area = time_in_opponent_penalty_area[idx];
+        }
+        Team.push_back(robot);
+    }
+    std::vector<TeamPlannerOpponent> Opponents = std::vector<TeamPlannerOpponent>();
+    for (unsigned idx = 0; idx < opponents.size(); idx++) {
+        TeamPlannerOpponent opponent = {};
+        opponent.position = opponents[idx];
+        opponent.label = opponents_labels[idx];
+        opponent.assigned = false;
+        Opponents.push_back(opponent);
+    }
 
-void xmlplanner(string input_filename, unsigned runs_needed) {
+    tdp.gamestate = gamestate;
+    tdp.ball.position = ball_position;
+    tdp.ball.velocity = ball_velocity;
+    tdp.team = Team;
+    tdp.opponents = Opponents;
+    tdp.parameters = options;
+    tdp.parking_positions = parking_postions;
+    tdp.ball_pickup_position = ball_pickup_position;
+    tdp.passIsRequired = passIsRequired;
+    tdp.pass_data = pass_data;
+    tdp.team_controls_ball = team_controls_ball;
+};
+
+
+void xmlplanner(string input_filename) {
     string filename = input_filename;
     bool print_only_errors = false;
     if (not print_only_errors) {
@@ -358,12 +429,14 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
     TeamPlannerParameters parameters = {};
 	std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>(); // TODO handle velocity
 	std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>(); // TODO handle velocity
+	std::vector<int> myTeam_labels = {};
 	std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
 	std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
 	Geometry::Position ball = Geometry::Position();
 	Geometry::Position ball_vel = Geometry::Position();
 	std::vector<Geometry::Position> opponents = std::vector<Geometry::Position>();
 	std::vector<Geometry::Position> opponents_vel = std::vector<Geometry::Position>();
+	std::vector<int> opponents_labels = {};
 	game_state_e gameState;
 	std::string description = "";
 	MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
@@ -404,6 +477,9 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
         for (auto idx = 0u; idx< Team.size(); idx++) {
             playerId++;
             myTeam.push_back(Team[idx].position);
+            myTeam_vel.push_back(Team[idx].velocity);
+            myTeam_labels.push_back(Team[idx].labelId);
+
             previous_planner_results.push_back(Team[idx].previous_result);
             teamTypes.push_back(Team[idx].player_type);
             time_in_own_penalty_area.push_back(Team[idx].time_in_own_penalty_area);
@@ -520,14 +596,13 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 
     unsigned current_run = 1;
     std::vector<RunData> run_results = {};
-    while (current_run <= runs_needed) {
-        string run_filename = parameters.svgOutputFileName;
-        if (not print_only_errors) {
-            cout <<" current_run = " << current_run << endl;
-            cout <<" xmlPlanner Fill DATA" << endl;
-        }
-        TeamPlannerData teamplannerData();
-        // TODO teamplannerData.fieldConfig = fieldConfig;
+	string run_filename = parameters.svgOutputFileName;
+	if (not print_only_errors) {
+		cout <<" current_run = " << current_run << endl;
+		cout <<" xmlPlanner Fill DATA" << endl;
+	}
+	TeamPlannerData teamplannerData = {};
+	// TODO teamplannerData.fieldConfig = fieldConfig;
 
 //        if (current_run > 1) {
 //            ball = run_results[0].teamplanner_data.ball;
@@ -575,98 +650,76 @@ void xmlplanner(string input_filename, unsigned runs_needed) {
 //                previous_planner_results.push_back(previous_result);
 //            }
 //        }
-        teamplannerData.fillData(gameState, ball, myTeam, opponents, team_controls_ball, ownPlayerWithBall,
-                teamTypes, robotIds, parameters, parking_postions, previous_ball, previous_planner_results,
-                pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
+	fillTeamPlannerData(teamplannerData, gameState,
+			ball,
+			ball_vel,
+			myTeam,
+			myTeam_vel,
+			myTeam_labels,
+			opponents,
+			opponents_vel,
+			opponents_labels,
+			team_controls_ball, ownPlayerWithBall,
+			teamTypes, robotIds, parameters, parking_postions, previous_ball, previous_planner_results,
+			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 
-        TeamPlay teamplay = TeamPlay();
-        player_paths = teamplay.assign(teamplannerData);
+	TeamPlay teamplay = TeamPlay();
+	player_paths = teamplay.assign(teamplannerData);
 
 
-        RunData run_data (teamplannerData, player_paths);
-        run_results.push_back(run_data);
+	RunData run_data (teamplannerData, player_paths);
+	run_results.push_back(run_data);
 
-        if (player_paths.size() > 0) {
-            if (not print_only_errors) {
-                cerr << "<< XML: print received path " << endl << flush;
-                cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
-            }
+	if (player_paths.size() > 0) {
+		if (not print_only_errors) {
+			cerr << "<< XML: print received path " << endl << flush;
+			cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
+		}
 
-            if (current_run == 1) {
-                SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
-            }
-            else {
-                if (not print_only_errors) {
-                    cout  << "CHECK for run :" << current_run << endl;
-                }
-                auto too_large_delta_pos = false;
-                team_planner_result_t org_result_paths = run_results[0].player_paths;
-                team_planner_result_t result_paths = run_results[current_run-1].player_paths;
-                for (unsigned player_idx = 0; player_idx != result_paths.size(); player_idx++) {
-                    std::vector<planner_piece_t> path = result_paths[player_idx].path;
-                    auto end_pos = Geometry::Point(path[path.size()-1].x, path[path.size()-1].y);
-                    std::vector<planner_piece_t> org_path = org_result_paths[player_idx].path;
-                    auto end_org_pos = Geometry::Point(org_path[org_path.size()-1].x, org_path[org_path.size()-1].y);
-                    if (end_pos.distanceTo(end_org_pos) > 1.0) {
-                        too_large_delta_pos = true;
-                        cout << "Run: " << current_run << " p[" << player_idx <<  "] id: " << run_results[current_run-1].teamplanner_data.team[player_idx].robotId
-                                << "pos: " <<  end_pos.toString() << "ORG pos = " << end_org_pos.toString() << " diff " << end_pos.distanceTo(end_org_pos) << " ";
-                    }
-                    if ((result_paths[player_idx].dynamic_role != org_result_paths[player_idx].dynamic_role)) {
-                        if (!(result_paths[player_idx].dynamic_role == dr_DEFENDER && org_result_paths[player_idx].dynamic_role == dr_SWEEPER)) {
-                            if (!(result_paths[player_idx].dynamic_role == dr_SWEEPER && org_result_paths[player_idx].dynamic_role == dr_DEFENDER)) {
-                                too_large_delta_pos = true;
-                                cout << "Run: " << current_run << " role " << DynamicRoleAsString(result_paths[player_idx].dynamic_role) <<  " was: " << DynamicRoleAsString(org_result_paths[player_idx].dynamic_role) << " ";
-                            }
-                        }
-                    }
-                }
-                if (too_large_delta_pos) {
-                    auto comparing_player_paths = run_results[0].player_paths;
-                    SvgUtils::plannerdata_to_svg(run_results[current_run-1].player_paths, teamplannerData, fieldConfig, run_filename, comparing_player_paths);
-                }
-                if (not print_only_errors) {
-                    cout  << "FINISHED CHECK for run :" << current_run << endl;
-                }
-            }
+		if (current_run == 1) {
+			SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
+		}
+		else {
+			if (not print_only_errors) {
+				cout  << "CHECK for run :" << current_run << endl;
+			}
+			auto too_large_delta_pos = false;
+			team_planner_result_t org_result_paths = run_results[0].player_paths;
+			team_planner_result_t result_paths = run_results[current_run-1].player_paths;
+			for (unsigned player_idx = 0; player_idx != result_paths.size(); player_idx++) {
+				std::vector<planner_piece_t> path = result_paths[player_idx].path;
+				auto end_pos = Geometry::Point(path[path.size()-1].x, path[path.size()-1].y);
+				std::vector<planner_piece_t> org_path = org_result_paths[player_idx].path;
+				auto end_org_pos = Geometry::Point(org_path[org_path.size()-1].x, org_path[org_path.size()-1].y);
+				if (end_pos.distanceTo(end_org_pos) > 1.0) {
+					too_large_delta_pos = true;
+					cout << "Run: " << current_run << " p[" << player_idx <<  "] id: " << run_results[current_run-1].teamplanner_data.team[player_idx].robotId
+							<< "pos: " <<  end_pos.toString() << "ORG pos = " << end_org_pos.toString() << " diff " << end_pos.distanceTo(end_org_pos) << " ";
+				}
+				if ((result_paths[player_idx].dynamic_role != org_result_paths[player_idx].dynamic_role)) {
+					if (!(result_paths[player_idx].dynamic_role == dr_DEFENDER && org_result_paths[player_idx].dynamic_role == dr_SWEEPER)) {
+						if (!(result_paths[player_idx].dynamic_role == dr_SWEEPER && org_result_paths[player_idx].dynamic_role == dr_DEFENDER)) {
+							too_large_delta_pos = true;
+							cout << "Run: " << current_run << " role " << DynamicRoleAsString(result_paths[player_idx].dynamic_role) <<  " was: " << DynamicRoleAsString(org_result_paths[player_idx].dynamic_role) << " ";
+						}
+					}
+				}
+			}
+			if (too_large_delta_pos) {
+				auto comparing_player_paths = run_results[0].player_paths;
+				SvgUtils::plannerdata_to_svg(run_results[current_run-1].player_paths, teamplannerData, fieldConfig, run_filename, comparing_player_paths);
+			}
+			if (not print_only_errors) {
+				cout  << "FINISHED CHECK for run :" << current_run << endl;
+			}
+		}
 
-        } else {
-            cerr << "<< XML: no path received" << endl << flush;
-        }
-        current_run++;
-        if (not print_only_errors) {
-            cerr << "<< Assign roles" << endl << flush;
-        }
-    }
-
-    // show delta results
-    if (runs_needed > 1) {
-        auto org_ball = run_results[0].teamplanner_data.ball;
-        team_planner_result_t org_result_paths = run_results[0].player_paths;
-        for (unsigned run_idx = 2; run_idx <= run_results.size(); ++run_idx) {
-            auto result = run_results[run_idx-1];
-            cout << "run[" << run_idx << "] ball: " << result.teamplanner_data.ball.toString(false) << " org ball:" << org_ball.toString(false) << endl;
-            team_planner_result_t result_paths = result.player_paths;
-            for (unsigned player_idx = 0; player_idx != result_paths.size(); player_idx++) {
-                std::vector<planner_piece_t> path = result_paths[player_idx].path;
-                auto end_pos = Geometry::Point(path[path.size()-1].x, path[path.size()-1].y);
-                std::vector<planner_piece_t> org_path = org_result_paths[player_idx].path;
-                auto end_org_pos = Geometry::Point(org_path[org_path.size()-1].x, org_path[org_path.size()-1].y);
-                cout << "p[" << player_idx <<  "] id: " << result.teamplanner_data.team[player_idx].robotId
-                     << "pos: " <<  end_pos.toString() << " ";
-                bool print_role = false;
-                if (end_pos.distanceTo(end_org_pos) > 1.0) {
-                    cout << " ORG pos = " << end_org_pos.toString() << " diff " << end_pos.distanceTo(end_org_pos) << " ";
-                    print_role = true;
-                }
-                if (print_role || (result_paths[player_idx].dynamic_role != org_result_paths[player_idx].dynamic_role)) {
-                    cout << DynamicRoleAsString(result_paths[player_idx].dynamic_role) <<  " was: " << DynamicRoleAsString(org_result_paths[player_idx].dynamic_role) << " ";
-
-                }
-                cout  << endl;
-            }
-        }
-    }
+	} else {
+		cerr << "<< XML: no path received" << endl << flush;
+	}
+	if (not print_only_errors) {
+		cerr << "<< Assign roles" << endl << flush;
+	}
 
     auto finish = std::chrono::system_clock::now();
 	double elapsed_seconds = std::chrono::duration_cast

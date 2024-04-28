@@ -442,7 +442,7 @@ using namespace MRA;
 //	return result;
 //}
 //
-//int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 //	//	if (argc < 2) {
 //	//		cerr << "use program: " << argv[0] << " <filename.xml> " << endl;
 //	//		return -1;
@@ -573,4 +573,4 @@ using namespace MRA;
 //	catch (...) {
 //		cerr << "General Exception in " << argv[0] << endl << flush;
 //	}
-//}
+}

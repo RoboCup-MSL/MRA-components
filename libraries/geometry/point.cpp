@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <ostream>
 #include <sstream>
-#include <cmath>
 
 using namespace MRA::Geometry;
 

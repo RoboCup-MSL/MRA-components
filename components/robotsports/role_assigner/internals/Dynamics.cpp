@@ -73,9 +73,9 @@ Dynamics::dynamics_t Dynamics::interceptBall(const TeamPlannerBall& rBallObject,
 	dynamics_t result = {};
 
 	// for clarity, lets assume Me wants to intercept a moving Ball
-	Geometry::Position ballVelocity = rBallObject.velocity;
+	Geometry::Point ballVelocity = Geometry::Point(rBallObject.velocity.x, rBallObject.velocity.y);
 
-	double ballSpeed = ballVelocity.norm();
+	double ballSpeed = ballVelocity.size();
 	if (ballSpeed < 0.0001) {
 		// When object is not moving, the intercept point is the object
 		// position itself
@@ -123,7 +123,9 @@ Dynamics::dynamics_t Dynamics::interceptBall(const TeamPlannerBall& rBallObject,
 		result.move_to_ball_leave_field_pos = true; // no intercept possible
 	} else {
 		result.intercept_position = ball;
-		result.intercept_position += ballVelocity.multiply(time);
+		Geometry::Point extention = ballVelocity;
+		extention *= time;
+		result.intercept_position += extention;
 	}
 
 	if (!fieldConfig.isInField(result.intercept_position, 0.25*fieldConfig.getRobotRadius()))

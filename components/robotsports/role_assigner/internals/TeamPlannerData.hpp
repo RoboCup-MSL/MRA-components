@@ -64,7 +64,10 @@ public:
     MRA::Geometry::Position velocity;
     double confidence;
     bool is_valid;
+
+    std::string toString(bool full_details);
 };
+
 // class with state data (data for State.proto)
 class TeamPlannerState {
 public:

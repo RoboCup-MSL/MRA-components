@@ -146,6 +146,13 @@ double FieldConfig::getPenaltySpotToBackline() const {
 	return PENALTY_SPOT_TO_BACKLINE;
 }
 
+double FieldConfig::getFieldMarkingsWidth() const {
+	return FIELD_MARKINGS_WIDTH;
+}
+
+double FieldConfig::getCornerCircleDiameter() const {
+	return CORNER_CIRCLE_DIAMETER;
+}
 
 FieldConfig FillDefaultFieldConfig() {
 	double robot_size = 0.5;
@@ -207,6 +214,7 @@ FieldConfig::FieldConfig(double field_length, double field_width, double field_m
 	PARKING_DISTANCE_TO_LINE = parking_distance_to_line;
 	PENALTY_SPOT_TO_BACKLINE = penalty_spot_to_backline;
 	MIN_DIST_TO_GOAL_AREA = 0.25;
+	CORNER_CIRCLE_DIAMETER = 0.75;
 }
 
 bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) const {

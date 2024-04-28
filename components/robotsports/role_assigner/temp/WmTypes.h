@@ -6,37 +6,6 @@
 namespace MRA {
 
 
-typedef enum {
-	NONE = 0,
-	NORMAL = 1,
-	NORMAL_ATTACK = 2,
-	NORMAL_DEFEND = 3,
-	PARKING = 4,
-	BEGIN_POSITION = 5,
-	KICKOFF = 6,
-	KICKOFF_AGAINST = 7,
-	FREEKICK = 8,
-	FREEKICK_AGAINST = 9,
-	GOALKICK = 10,
-	GOALKICK_AGAINST = 11,
-	THROWIN = 12,
-	THROWIN_AGAINST = 13,
-	CORNER = 14,
-	CORNER_AGAINST = 15,
-	PENALTY = 16,
-	PENALTY_AGAINST = 17,
-	PENALTY_SHOOTOUT = 18,
-	PENALTY_SHOOTOUT_AGAINST = 19,
-	DROPPED_BALL = 20,
-	YELLOW_CARD_AGAINST = 21,
-	RED_CARD_AGAINST = 22,
-	GOAL = 23,
-	GOAL_AGAINST = 24,
-	GAME_STATE_NR_ITEMS = 25
-} game_state_e;
-
-
-
 inline std::string GameStateAsString(game_state_e gamestate)
 {
 	std::string gamestate_remark = "";
@@ -86,7 +55,7 @@ inline std::string PlannerTargetAsString(planner_target_e target) {
 	case planner_target_e::PREPARE_DROPBALL:        targetString = "Prepare dropball"; break;
 	case planner_target_e::GOTO_TARGET_POSITION:    targetString = "goto target position"; break;
 	case planner_target_e::SWEEPER:                 targetString = "Sweeper"; break;
-	case planner_target_e::GOALIE:                  targetString = "Goalie"; break;
+	case planner_target_e::GOALIE_POSITION:         targetString = "Goalie"; break;
 	case planner_target_e::GOTO_TARGET_POSITION_SLOW:  targetString = "goto target position slow"; break;
 	case planner_target_e::PRIORITY_BLOCK:          targetString = "Priority Block"; break;
 	default:

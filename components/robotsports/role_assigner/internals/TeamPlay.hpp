@@ -6,7 +6,7 @@
 #ifndef TEAMPLAY_H
 #define TEAMPLAY_H 1
 
-#include "WmTypes.h"
+#include "planner_types.hpp"
 #include "FieldConfig.h"
 #include "geometry.hpp"
 #include "GlobalPathPlanner.hpp"
@@ -14,7 +14,7 @@
 #include "TeamPlannerOpponent.hpp"
 #include "TeamPlannerParameters.hpp"
 #include <vector>
-
+#include "geometry.hpp"
 
 namespace MRA {
 
@@ -25,9 +25,11 @@ public:
 	void assign(const TeamPlannerInput& input,
 	            TeamPlannerState& r_state,
 	            TeamPlannerOutput& r_output,
-	            const TeamPlannerParameters& plannerOptions);
+	            const TeamPlannerParameters& parameters);
 
 private:
+	std::vector<PlayerPlannerResult> assign(TeamPlannerData& teamplannerData);
+
 	class AssignToTargetData {
 	public:
 		unsigned team_idx;
@@ -40,7 +42,7 @@ private:
 	bool assignAnyToPosition(TeamPlannerData&  teamplanner_data, int role_idx, dynamic_role_e dr_role,
 			const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass);
 
-	std::vector<MRA::Geometry::Pose> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
+	std::vector<MRA::Geometry::Position> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
 
 	bool check_better_path_found(double& lowest_pathcost, double newPathCost, double fastestPathCost,
 			 	 	 	 	 	 const PlayerPlannerResult& new_path, const PlayerPlannerResult& fastest_path, 	double equality_cost_threshold );
@@ -51,13 +53,13 @@ private:
 
 	planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-	void assignToFixedPositions(TeamPlannerData&  teamplanner_data, unsigned playerlist_idx, dynamic_role_e dynamic_role);
+	void assignToFixedPositions(TeamPlannerData& teamplanner_data);
 
 	bool searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data);
 
 	void print_provided_position(game_state_e gamestate, const std::vector<std::vector<MRA::Geometry::Point>>& positions);
 
-	std::vector<MRA::Geometry::Pose> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
+	std::vector<MRA::Geometry::Position> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
 	template<class T> bool safeErase(std::vector<T>& myvector, unsigned int indexElementToErase, int callingFromLine);
 
@@ -65,13 +67,15 @@ private:
 
 	void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, const team_planner_result_t&  player_paths);
 
-	void printAssignInputs(const TeamPlannerInput& input);
+	void printAssignInputs(const TeamPlannerInput& input, const TeamPlannerParameters& parameters);
 
-	double calculateShortestDistanceObjectsToTarget(const std::vector<MRA::Geometry::Pose>& objects, const MRA::Geometry::Pose& targetObject);
+	double calculateShortestDistanceObjectsToTarget(const std::vector<MRA::Geometry::Position>& objects, const MRA::Geometry::Position& targetObject);
 
 	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data);
 
 	bool AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_data, dynamic_role_e dr_role, planner_target_e planner_target, const MRA::Geometry::Point& targetPos);
+
+	Geometry::Point updatePositionIfNotAllowed(const Geometry::Point& playerPosition, dynamic_role_e dr_role, const Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
 
 	int m_gridFileNumber;
 };

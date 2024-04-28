@@ -7,6 +7,9 @@
 #ifndef PLANNER_TYPES_H
 #define PLANNER_TYPES_H 1
 
+namespace MRA {
+
+
 typedef enum  {
 	GOTO_BALL = 0,
 	DRIBBLE = 1,
@@ -17,7 +20,7 @@ typedef enum  {
 	PREPARE_DROPBALL = 6,
 	GOTO_TARGET_POSITION = 7,
 	SWEEPER = 8,
-	GOALIE = 9,
+	GOALIE_POSITION = 9,
 	GOTO_TARGET_POSITION_SLOW = 10,
 	PRIORITY_BLOCK = 11
 } planner_target_e;
@@ -228,5 +231,37 @@ typedef struct ball_pickup_position_s {
 	double ts;
 } ball_pickup_position_t;
 
+
+
+typedef enum {
+	NONE = 0,
+	NORMAL = 1,
+	NORMAL_ATTACK = 2,
+	NORMAL_DEFEND = 3,
+	PARKING = 4,
+	BEGIN_POSITION = 5,
+	KICKOFF = 6,
+	KICKOFF_AGAINST = 7,
+	FREEKICK = 8,
+	FREEKICK_AGAINST = 9,
+	GOALKICK = 10,
+	GOALKICK_AGAINST = 11,
+	THROWIN = 12,
+	THROWIN_AGAINST = 13,
+	CORNER = 14,
+	CORNER_AGAINST = 15,
+	PENALTY = 16,
+	PENALTY_AGAINST = 17,
+	PENALTY_SHOOTOUT = 18,
+	PENALTY_SHOOTOUT_AGAINST = 19,
+	DROPPED_BALL = 20,
+	YELLOW_CARD_AGAINST = 21,
+	RED_CARD_AGAINST = 22,
+	GOAL = 23,
+	GOAL_AGAINST = 24,
+	GAME_STATE_NR_ITEMS = 25
+} game_state_e;
+
+} // end namespace MRA
 
 #endif

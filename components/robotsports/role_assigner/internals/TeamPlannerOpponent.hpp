@@ -10,10 +10,10 @@ namespace MRA {
 
 class TeamPlannerOpponent {
 public:
-	MRA::Geometry::Pose position;
-    MRA::Geometry::Pose velocity;
-	bool assigned;
-	int label;
+    MRA::Geometry::Position position;
+    MRA::Geometry::Position velocity;
+    bool assigned;
+    int label;
 };
 
 } // namespace

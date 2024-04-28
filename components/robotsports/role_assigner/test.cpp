@@ -31,8 +31,8 @@ TEST(RobotsportsRoleAssignerTest, xmlTest)
 {
     auto input_filename ="/home/jurge/MRA-components/components/robotsports/role_assigner/testdata/normal_defend_4.xml";
     std::cerr << "Starting: " << __func__ << " with: " << input_filename << std::endl << std::flush;
-    RoleAssignTestData data;
-    xmlplanner(input_filename, data);
+//    RoleAssignTestData data;
+    xmlplanner(input_filename);
 }
 
 

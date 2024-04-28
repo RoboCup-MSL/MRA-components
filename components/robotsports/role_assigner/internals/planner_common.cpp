@@ -9,7 +9,8 @@
 using namespace std;
 using namespace MRA;
 
-double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec, const vector<MRA::Geometry::Pose>& Opponents,
+double chance_of_intercept(const MRA::Geometry::Point& pass_begin_vec, const MRA::Geometry::Point& pass_end_vec,
+		const vector<MRA::Geometry::Position>& Opponents,
 		double interceptionChanceStartDistance,
 		double interceptionChanceIncreasePerMeter,
 		double interceptionDistancePenaltyFactor)

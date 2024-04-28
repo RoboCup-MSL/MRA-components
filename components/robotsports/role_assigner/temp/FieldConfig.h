@@ -46,6 +46,7 @@ public:
 	double getFullFieldLength() const;
 	double getFullFieldWidth()  const;
 	double getFieldMargin()  const;
+	double getFieldMarkingsWidth() const;
 	double getCenterCirleDiameter() const;
 	double getCenterCirleRadius() const;
 	double getRobotSize() const;
@@ -80,6 +81,7 @@ public:
 	double getParkingDistanceToLine() const;
 
 	double getPenaltySpotToBackline() const;
+	double getCornerCircleDiameter() const;
 
 public: // data is public, to avoid vision updates. In the future: data is private, vision code is using functions. TODO
 	//"FieldLength: Length of the playing field [m]",
@@ -137,6 +139,7 @@ public: // data is public, to avoid vision updates. In the future: data is priva
 
 	double MIN_DIST_TO_GOAL_AREA;
 
+	double CORNER_CIRCLE_DIAMETER;
 private:
 	bool m_is_mobile_field;
 };

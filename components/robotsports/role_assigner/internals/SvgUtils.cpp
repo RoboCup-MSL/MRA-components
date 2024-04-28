@@ -4,13 +4,9 @@
  *  @curator Jürge van Eijck
  */
 #include "SvgUtils.hpp"
-
 #include "FieldConfig.h"
 #include "MathUtils.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-
-//#include "TeamPlannerRobot.hpp"
+#include "logging.hpp"
 #include <iostream>
 #include <ostream>
 #include <sstream>
@@ -21,504 +17,628 @@
 #include <list>
 #include <limits>
 #include <map>
+#include <vector>
 #include <cmath>
-#include "logging.hpp"
-
+#include <sys/stat.h>
 using namespace std;
 using namespace MRA;
 
-FieldConfig SvgUtils::m_fieldConfig = FillDefaultFieldConfig();
+FieldConfig SvgUtils::m_fieldConfig(FillDefaultFieldConfig());
 
 /**
  * Get svg x coordinate for given field X
  */
 double SvgUtils::svgX(double fieldX) {
-	return m_fieldConfig.getMaxFullFieldX() + fieldX;
+    return m_fieldConfig.getMaxFullFieldX() + fieldX;
 }
 
 /**
  * Get svg x coordinate for given field Y
  */
 double SvgUtils::svgY(double fieldY) {
-	return m_fieldConfig.getMaxFullFieldY() - fieldY;
-}
-
-void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
-        const team_planner_result_t& player_paths,
-        const std::vector<Vertex* >& vertices,
-		const std::string& colorMe) {
-	team_planner_result_t compare_paths = team_planner_result_t();
-	save_graph_as_svg(teamplanner_data, player_paths, compare_paths, vertices, colorMe);
+    return m_fieldConfig.getMaxFullFieldY() - fieldY;
 }
 
 
-void SvgUtils::save_graph_as_svg(const TeamPlannerData & teamplanner_data,
-        const team_planner_result_t& player_paths,
-        const team_planner_result_t&  comparing_player_paths,
-		const std::vector<Vertex* >& vertices,
-		const std::string& colorMe )
-{
-	m_fieldConfig = teamplanner_data.fieldConfig;
+void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
+    std::vector<PlayerPlannerResult>  comparing_player_paths = {};
+    plannerdata_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
+}
 
-	if (teamplanner_data.parameters.svgOutputFileName.empty()) {
-		return;  // No outputfile required
-	}
 
-	double totalFieldLength = m_fieldConfig.getFullFieldLength();
-	double totalFieldWidth = m_fieldConfig.getFullFieldWidth();
-	double halfRobotSize = m_fieldConfig.getRobotRadius();
-	double robotSize = m_fieldConfig.getRobotSize();
+void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<PlayerPlannerResult>&  comparing_player_paths) {
+#if 0
+    if (save_name.empty()) {
+        return;  // No outputfile required
+    }
 
-	if (not SvgUtils::doesDirectoryExists(teamplanner_data.parameters.svgOutputFileName)) {
-        return;
-	}
-
-	long controlBallByPlayer = -1;
-    for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
-        if (teamplanner_data.team[idx].controlBall) {
-            controlBallByPlayer = teamplanner_data.team[idx].robotId;
+    FileParts parts = FileUtils::fileparts(save_name);
+    if (parts.path.size() > 0) {
+        if (!FileUtils::isDirectory(parts.path)) {
+            Logging::ERROR("Not existing directory: \"%s\"", parts.path.c_str());
+            return;
         }
     }
 
-	FILE* fp = fopen(teamplanner_data.parameters.svgOutputFileName.c_str(), "w");
-	// SVG header
-	fprintf(fp, "<?xml version=\"1.0\" standalone=\"yes\"?>\n");
-	fprintf(fp,
-			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
-	fprintf(fp,
-			"<svg width=\"%4.2fcm\" height=\"%4.2fcm\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n",
-			totalFieldWidth, totalFieldLength);
-	fprintf(fp, "<desc>MSL field path</desc>\n");
+    m_fieldConfig = fieldConfig;
 
-	fprintf(fp, "<!-- \n\nfile: %s\n", teamplanner_data.parameters.svgOutputFileName.c_str()); // start svg comment
-
-
-	std::stringstream Xtext;
+    TeamPlannerBall ball = data.ball;
+    TeamPlannerParameters parameters = data.parameters;
+    std::vector<Vertex* > vertices = std::vector<Vertex* >();
+    game_state_e gamestate = data.gamestate;
+    std::vector<MRA::Geometry::Point> parking_positions;
+    std::vector<MRA::Geometry::Position> myTeam = {};
+    for (auto idx = 0u; idx < data.team.size(); idx++) {
+        myTeam.push_back(data.team[idx].position);
+    }
 
 
+    double totalFieldLength = fieldConfig.getFullFieldLength();
+    double totalFieldWidth = fieldConfig.getFullFieldWidth();
+    double halfRobotSize = fieldConfig.getRobotRadius();
+    double robotSize = fieldConfig.getRobotSize();
 
-	// print input data to svg file
-	fprintf(fp, "\n\n");
-	fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(teamplanner_data.gamestate).c_str(), teamplanner_data.gamestate);
-	string controlBallByPlayerRemark = "";
-	if (controlBallByPlayer == -1) {
-		controlBallByPlayerRemark = "(not controlled by team)";
-	}
-	else if (controlBallByPlayer == 0) {
-		controlBallByPlayerRemark = "(controlled by me)";
-	}
-	else {
-		controlBallByPlayerRemark = "(controlled by team-member)";
-	}
-	fprintf(fp, "\tcontrolball = %s (%ld)\n", controlBallByPlayerRemark.c_str(), controlBallByPlayer);
-	fprintf(fp, "\tglobalBall: x: %4.2f y: %4.2f z: %4.2f vx: %4.2f vy: %4.2f vz: %4.2f \n",
-	        teamplanner_data.ball.position.x, teamplanner_data.ball.position.y, teamplanner_data.ball.position.z,
-	        teamplanner_data.ball.velocity.x, teamplanner_data.ball.velocity.y, teamplanner_data.ball.velocity.z);
-	fprintf(fp, "\tteam:\n");
-	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
-		int teamtypeId = -1;
-		teamtypeId = teamplanner_data.team[idx].player_type;
-		long robotId = teamplanner_data.team[idx].robotId;
-		fprintf(fp, "\t\tR%02ld = %s type = %s (%d)\n",
-		        robotId, teamplanner_data.team[idx].toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(teamtypeId)).c_str(), teamtypeId );
-	}
-	fprintf(fp, "\topponents:\n");
-	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
-		fprintf(fp, "\t\tplayer[%u] = x: %4.2f y: %4.2f rz: %4.2f vx: %4.2f vy: %4.2f vrz: %4.2f \n", idx,
-		        teamplanner_data.opponents[idx].position.x, teamplanner_data.opponents[idx].position.y, teamplanner_data.opponents[idx].position.rz,
-	            teamplanner_data.opponents[idx].velocity.x, teamplanner_data.opponents[idx].velocity.y, teamplanner_data.opponents[idx].velocity.rz);
+    FILE* fp = fopen(save_name.c_str(), "w");
+    // SVG header
+    fprintf(fp, "<?xml version=\"1.0\" standalone=\"yes\"?>\n");
+    fprintf(fp,
+            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+    fprintf(fp,
+            "<svg width=\"%4.2fcm\" height=\"%4.2fcm\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n",
+            totalFieldWidth, totalFieldLength);
+    fprintf(fp, "<desc>MSL field path</desc>\n");
 
-	}
+    fprintf(fp, "<!-- \n\nfile: %s\n", save_name.c_str()); // start svg comment
 
-	for (unsigned long p_idx = 0; p_idx < player_paths.size(); p_idx++) {
-		Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << ":" << std::endl;
-			Xtext << "\tDynamic-role: " << DynamicRoleAsString(player_paths[p_idx].dynamic_role) << endl;
-			Xtext << "\tGame State: " << GameStateAsString(player_paths[p_idx].gamestate) << endl;
-			Xtext << "\tTarget position : " << player_paths[p_idx].target.toString() << endl;
-			Xtext << "\tPlanner target type  " << PlannerTargetAsString(player_paths[p_idx].planner_target) << endl;
-			Xtext << "\tDefend info valid:  " << player_paths[p_idx].defend_info.valid ;
-			Xtext << " id: " << player_paths[p_idx].defend_info.defending_id;
-			Xtext << " ball-rbt: " << player_paths[p_idx].defend_info.between_ball_and_defending_pos;
-			Xtext << " dist: " << player_paths[p_idx].defend_info.dist_from_defending_id << endl;
-		for (unsigned long idx = 0; idx < player_paths[p_idx].path.size(); idx++) {
-			Xtext << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << player_paths[p_idx].path[idx].x <<
-					" y: " << player_paths[p_idx].path[idx].y <<
-					" cost: " << player_paths[p_idx].path[idx].cost;
-			std::string targetString = PlannerTargetAsString(static_cast<planner_target_e>(player_paths[p_idx].path[idx].target));
-			Xtext << " target: " << targetString << " (" << player_paths[p_idx].path[idx].target<< ")"<<  std::endl;
-		}
-	}
-	fprintf(fp, "paths:\n%s\n", Xtext.str().c_str());
 
-	fprintf(fp, "\toptions:\n%s\n", teamplanner_data.parameters.toString().c_str());
-	fprintf(fp, "\tfield:\n%s\n", m_fieldConfig.toString().c_str());
-	fprintf(fp, "\n");
+    std::stringstream Xtext;
 
-    fprintf(fp, "\tpass_is_required: %s\n", teamplanner_data.passIsRequired ? "true" : "false");
-    fprintf(fp, "\tpassing player: %d\n", teamplanner_data.playerWhoIsPassing);
-    fprintf(fp, "\tpickup ball valid: %s\n", teamplanner_data.ball_pickup_position.valid ? "true" : "false");
-    fprintf(fp, "\tpickup ball x: %4.2f\n", teamplanner_data.ball_pickup_position.x);
-    fprintf(fp, "\tpickup ball y: %4.2f\n", teamplanner_data.ball_pickup_position.y);
-    fprintf(fp, "\tpickup ball ts: %4.2f\n", teamplanner_data.ball_pickup_position.ts);
-//    teamplanner_data.team[r_idx].previous_result
-    for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
-        fprintf(fp, "\tprev result[%u]: valid: %s\n", idx, teamplanner_data.team[idx].previous_result.previous_result_present ? "true" : "false");
-        fprintf(fp, "\tprev result[%u]: role: %s\n", idx, DynamicRoleAsString((dynamic_role_e)teamplanner_data.team[idx].previous_result.dynamic_role).c_str());
-        fprintf(fp, "\tprev result[%u]: end pos x: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.end_position.x);
-        fprintf(fp, "\tprev result[%u]: end pos y: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.end_position.y);
-        fprintf(fp, "\tprev result[%u]: end pos target: %ld\n", idx, teamplanner_data.team[idx].previous_result.end_position.target);
-        fprintf(fp, "\tprev result[%u]: ts: %4.2f\n", idx, teamplanner_data.team[idx].previous_result.ts);
+
+    // print input data to svg file
+    fprintf(fp, "\n\n");
+    fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(gamestate).c_str(), gamestate);
+    fprintf(fp, "\torignal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
+    string controlBallByPlayerRemark = "";
+
+    int controlBallByPlayerIdx = -1;
+    int controlBallById = -1;
+    for (auto idx = 0u; idx < data.team.size(); idx++) {
+        if (data.team[idx].controlBall) {
+            controlBallByPlayerIdx = idx;
+            controlBallById = data.team[idx].robotId;
+        }
+    }
+
+    if (controlBallByPlayerIdx == -1) {
+        controlBallByPlayerRemark = "(not controlled by robot in team)";
+    }
+    else if (controlBallByPlayerIdx == 0) {
+        controlBallByPlayerRemark = "(controlled by me)";
+    }
+    else {
+        controlBallByPlayerRemark = "(controlled by team-member)";
+    }
+    fprintf(fp, "\tteam_control_ball = %s\n", boolToString(data.team_controls_ball).c_str());
+    fprintf(fp, "\tcontrolball = %s", controlBallByPlayerRemark.c_str());
+    if (controlBallByPlayerIdx >= 0) {
+        fprintf(fp, " (idx: %d id: %d)", controlBallByPlayerIdx, controlBallById);
     }
     fprintf(fp, "\n");
 
-	// add xml output
-	fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(teamplanner_data.gamestate).c_str());
-//TODO-jve-MRA
-//	fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(teamplanner_data.parameters.attack_formation).c_str());
-//	fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(teamplanner_data.parameters.defense_formation).c_str());
-	if (teamplanner_data.ball.confidence > 0.001) {
-		MRA::Geometry::Point xyVel = teamplanner_data.ball.velocity;
-		fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
-		        teamplanner_data.ball.position.x, teamplanner_data.ball.position.y, xyVel.x, xyVel.y);
-	}
-	for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
-		string goalieString = "";
-		if (teamplanner_data.team[idx].player_type == GOALIE) {
-		    goalieString = " isGoalie=\"true\" ";
-		}
+    fprintf(fp, "\tglobalBall: %s\n", ball.toString().c_str());
+    fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.previous_ball_present).c_str());
+    if (data.previous_ball.previous_ball_present) {
+        fprintf(fp, " x=%4.2f y=%4.2f", data.previous_ball.x, data.previous_ball.y);
+    }
+    fprintf(fp, "\n");
 
-		string idString = "id=\""+ std::to_string(teamplanner_data.team[idx].robotId) + "\"";
+    fprintf(fp, "\tpass_is_required: %s\n", boolToString(data.passIsRequired).c_str());
 
-		string controlBallString = "";
-		if (controlBallByPlayer  == static_cast<int>(idx))
-		{
-			controlBallString = " hasBall=\"true\" ";
-		}
-		string passedBallString = "";
-		string previous_result_string = "";
+    fprintf(fp, "\tpass_data - valid %s\n", boolToString(data.pass_data.valid).c_str());
+    if (data.pass_data.valid) {
+        fprintf(fp, "\t PassData origin_x=%4.3f origin_y=%4.3f target_x=%4.3f target_y=%4.3f velocity=%4.3f angle= %4.3f ts=%4.3f/>\n",
+                data.pass_data.origin_pos.x, data.pass_data.origin_pos.y, data.pass_data.target_pos.x, data.pass_data.target_pos.y,
+                data.pass_data.velocity, data.pass_data.angle, data.pass_data.ts);
+    }
 
-		if (teamplanner_data.playerWhoIsPassing == static_cast<int>(idx))
+    //fprintf(fp, "\tpassing player: %d\n", data.playerWhoIsPassing);
+    fprintf(fp, "\tpickup ball valid: %s\n", boolToString(data.ball_pickup_position.valid).c_str());
+    fprintf(fp, "\tpickup ball x: %4.2f\n", data.ball_pickup_position.x);
+    fprintf(fp, "\tpickup ball y: %4.2f\n", data.ball_pickup_position.y);
+    fprintf(fp, "\tpickup ball ts: %4.2f\n", data.ball_pickup_position.ts);
+    fprintf(fp, "\n");
+
+
+    fprintf(fp, "\tteam:\n");
+    for (unsigned int idx = 0; idx < data.team.size(); idx++) {
+        TeamPlannerRobot rbt = data.team[idx];
+        fprintf(fp, "\t\tR%02ld = %s type = %s (%d)\n",
+                rbt.robotId, rbt.position.toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(), rbt.player_type );
+        fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
+                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(rbt.dynamic_role).c_str(),
+                rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
+        auto prev_res = rbt.previous_result;
+        fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.previous_result_present).c_str());
+        if (prev_res.previous_result_present)
+        {
+            fprintf(fp, " role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
+                    DynamicRoleAsString(static_cast<dynamic_role_e>(prev_res.dynamic_role)).c_str(), prev_res.end_position.x, prev_res.end_position.y,
+                    PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)).c_str(), prev_res.ts);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fprintf(fp, "\topponents:\n");
+    for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
+        fprintf(fp, "\t\tplayer[%u] = %s\n", idx, data.opponents[idx].position.toString().c_str());
+    }
+
+
+    for (unsigned long p_idx = 0; p_idx < player_paths.size(); p_idx++) {
+        long robotId = data.team[p_idx].robotId;
+        auto player_path = player_paths[p_idx];
+        Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
+        Xtext << "\tDynamic-role: " << DynamicRoleAsString(player_path.dynamic_role) << endl;
+        Xtext << "\tGame State: " << GameStateAsString(player_path.gamestate) << endl;
+        Xtext << "\tTarget position : " << player_path.target.toString() << endl;
+        Xtext << "\tPlanner target type  " << PlannerTargetAsString(player_path.planner_target) << endl;
+        Xtext << "\tTarget_position_is_end_position_of_pass: " << boolToString(player_path.target_position_is_end_position_of_pass) << endl;
+        Xtext << "\tDefend info valid:  " << boolToString(player_path.defend_info.valid);
+        if (player_path.defend_info.valid) {
+            Xtext << " defending_id: " << player_path.defend_info.defending_id;
+            Xtext << " between_ball_and_defending_pos: " << boolToString(player_path.defend_info.between_ball_and_defending_pos);
+            Xtext << " dist_from_defending_id: " << player_path.defend_info.dist_from_defending_id << endl;
+        }
+        else {
+            Xtext << endl;
+        }
+        std::vector<planner_piece_t> path;
+        for (unsigned long idx = 0; idx < player_path.path.size(); idx++) {
+            Xtext << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << player_path.path[idx].x <<
+                    " y: " << player_path.path[idx].y <<
+                    " cost: " << player_path.path[idx].cost;
+            std::string targetString = PlannerTargetAsString(static_cast<planner_target_e>(player_path.path[idx].target));
+            Xtext << " target: " << targetString << " (" << player_path.path[idx].target<< ")"<<  std::endl;
+        }
+    }
+
+    fprintf(fp, "paths:\n%s\n", Xtext.str().c_str());
+
+    fprintf(fp, "\tparameters:\n%s\n", parameters.toString().c_str());
+    fprintf(fp, "\tfield:\n%s\n", fieldConfig.toString().c_str());
+    fprintf(fp, "\n");
+
+
+    // add xml output
+    string decription = "xml from svg-file: " + save_name;
+    string new_save_name = save_name;
+    new_save_name.replace(new_save_name.find(".svg"), new_save_name.length(), "_NEW.svg");
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    fprintf(fp, "<tns:Situation xmlns:tns=\"http://www.robotsports.nl\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.robotsports.nl ../StrategyTester.xsd\">\n");
+    fprintf(fp, "<tns:Description>%s</tns:Description>\n", decription.c_str());
+    fprintf(fp, "<tns:Options svgOutputFileName=\"%s_NEW\"\n", save_name.c_str());
+    fprintf(fp, "	addBallApproachVertices=\"%s\"\n", boolToString(data.parameters.addBallApproachVertices).c_str());
+    fprintf(fp, "   addBarierVertices=\"%s\"\n", boolToString(data.parameters.addBarierVertices).c_str());
+    fprintf(fp, "   addUniformVertices=\"%s\"\n", boolToString(data.parameters.addBallApproachVertices).c_str());
+    fprintf(fp, "   autoAssignGoalie=\"%s\"\n", boolToString(data.parameters.autoAssignGoalie).c_str());
+    fprintf(fp, "   ballApproachNumberOfVertices=\"%d\"\n", data.parameters.ballApproachNumberOfVertices);
+    fprintf(fp, "   ballApproachVerticesRadius=\"%4.3f\"\n", data.parameters.ballApproachVerticesRadius);
+    fprintf(fp, "   calculateAllPaths=\"%s\"\n", boolToString(data.parameters.autoAssignGoalie).c_str());
+    fprintf(fp, "   dist_before_penalty_area_for_sweeper=\"%4.3f\"\n", data.parameters.dist_before_penalty_area_for_sweeper);
+    fprintf(fp, "   dist_to_goal_to_mark_opponent_as_goalie=\"%4.3f\"\n", data.parameters.dist_to_goal_to_mark_opponent_as_goalie);
+    fprintf(fp, "   distToapplyBallApproachVertices=\"%4.3f\"\n", data.parameters.distToapplyBallApproachVertices);
+    fprintf(fp, "   firstCircleRadius=\"%4.3f\"\n", data.parameters.firstCircleRadius);
+    fprintf(fp, "   grid_close_to_ball_normal_penalty=\"%4.3f\"\n", data.parameters.grid_close_to_ball_normal_penalty);
+    fprintf(fp, "   grid_close_to_ball_normal_radius=\"%4.3f\"\n", data.parameters.grid_close_to_ball_normal_radius);
+    fprintf(fp, "   grid_close_to_ball_restart_dropball_penalty=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_dropball_penalty);
+    fprintf(fp, "   grid_close_to_ball_restart_dropball_radius=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_dropball_radius);
+    fprintf(fp, "   grid_close_to_ball_restart_normal_penalty=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_normal_penalty);
+    fprintf(fp, "   grid_close_to_ball_restart_normal_radius=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_normal_radius);
+    fprintf(fp, "   grid_close_to_ball_restart_penalty_penalty=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_penalty_penalty);
+    fprintf(fp, "   grid_close_to_ball_restart_penalty_radius=\"%4.3f\"\n", data.parameters.grid_close_to_ball_restart_penalty_radius);
+    fprintf(fp, "   grid_opponent_goal_clearance_x=\"%4.3f\"\n", data.parameters.grid_opponent_goal_clearance_x);
+    fprintf(fp, "   grid_opponent_goal_clearance_y=\"%4.3f\"\n", data.parameters.grid_opponent_goal_clearance_y);
+    fprintf(fp, "   grid_own_goal_clearance_x=\"%4.3f\"\n", data.parameters.grid_own_goal_clearance_x);
+    fprintf(fp, "   grid_own_goal_clearance_y=\"%4.3f\"\n", data.parameters.grid_own_goal_clearance_y);
+    fprintf(fp, "   grid_size=\"%4.3f\"\n", data.parameters.grid_size);
+    fprintf(fp, "   interceptionChanceIncreasePerMeter=\"%4.3f\"\n", data.parameters.interceptionChanceIncreasePerMeter);
+    fprintf(fp, "   interceptionChancePenaltyFactor=\"%4.3f\"\n", data.parameters.interceptionChancePenaltyFactor);
+    fprintf(fp, "   interceptionChanceStartDistance=\"%4.3f\"\n", data.parameters.interceptionChanceStartDistance);
+    fprintf(fp, "   interceptor_assign_min_velocity_for_calculate_interception_position=\"%4.3f\"\n", data.parameters.interceptor_assign_min_velocity_for_calculate_interception_position);
+    fprintf(fp, "   interceptor_assign_use_ball_velocity=\"%s\"\n", boolToString(data.parameters.interceptor_assign_use_ball_velocity).c_str());
+    fprintf(fp, "   man_to_man_defense_during_normal_play=\"%s\"\n", boolToString(data.parameters.man_to_man_defense_during_normal_play).c_str());
+    fprintf(fp, "   man_to_man_defense_during_setplay_against=\"%s\"\n", boolToString(data.parameters.man_to_man_defense_during_setplay_against).c_str());
+    fprintf(fp, "   manDefenseBetweenBallAndPlayer=\"%s\"\n", boolToString(data.parameters.manDefenseBetweenBallAndPlayer).c_str());
+    fprintf(fp, "   maximumEdgeLength=\"%4.3f\"\n", data.parameters.maximumEdgeLength);
+    fprintf(fp, "   maxPossibleLinearAcceleration=\"%4.3f\"\n", data.parameters.maxPossibleLinearAcceleration);
+    fprintf(fp, "   maxPossibleLinearSpeed=\"%4.3f\"\n", data.parameters.maxPossibleLinearSpeed);
+    fprintf(fp, "   minimumDistanceToEndPoint=\"%4.3f\"\n", data.parameters.minimumDistanceToEndPoint);
+    fprintf(fp, "   minimumEdgeLength=\"%4.3f\"\n", data.parameters.minimumEdgeLength);
+    fprintf(fp, "   move_to_ball_left_field_position=\"%s\"\n", boolToString(data.parameters.move_to_ball_left_field_position).c_str());
+    fprintf(fp, "   no_sweeper_during_setplay=\"%s\"\n", boolToString(data.parameters.no_sweeper_during_setplay).c_str());
+    fprintf(fp, "   nr_attack_support_during_defensive_period=\"%d\"\n", data.parameters.nr_attack_support_during_defensive_period);
+    fprintf(fp, "   nr_robots_needed_for_pass_play=\"%d\"\n", data.parameters.nr_robots_needed_for_pass_play);
+    fprintf(fp, "   nrDynamicPlannerIterations=\"%d\"\n", data.parameters.nrDynamicPlannerIterations);
+    fprintf(fp, "   nrVerticesFirstCircle=\"%d\"\n", data.parameters.nrVerticesFirstCircle);
+    fprintf(fp, "   nrVerticesSecondCircle=\"%d\"\n", data.parameters.nrVerticesSecondCircle);
+    fprintf(fp, "   preferredSetplayKicker=\"%d\"\n", data.parameters.preferredSetplayKicker);
+    fprintf(fp, "   preferredSetplayReceiver=\"%d\"\n", data.parameters.preferredSetplayReceiver);
+    fprintf(fp, "   previous_role_bonus_end_pos_radius=\"%4.3f\"\n", data.parameters.previous_role_bonus_end_pos_radius);
+    fprintf(fp, "   priority_block_max_distance=\"%4.3f\"\n", data.parameters.priority_block_max_distance);
+    fprintf(fp, "   safetyFactor=\"%4.3f\"\n", data.parameters.safetyFactor);
+    fprintf(fp, "   secondCircleRadius=\"%4.3f\"\n", data.parameters.secondCircleRadius);
+    fprintf(fp, "   setplay_against_dist_to_opponent=\"%4.3f\"\n", data.parameters.setplay_against_dist_to_opponent);
+    fprintf(fp, "   startingVelocityPenaltyFactor=\"%4.3f\"\n", data.parameters.startingVelocityPenaltyFactor);
+    fprintf(fp, "   svgBallColor=\"orange\"\n");
+    fprintf(fp, "   svgDefaultTargetColor=\"red\"\n");
+    fprintf(fp, "   svgDrawEdges=\"false\"\n");
+    fprintf(fp, "   svgDrawVelocity=\"true\"\n");
+    fprintf(fp, "   svgOriginalTargetColor=\"darkred\"\n");
+    fprintf(fp, "   svgOpponentColor=\"cyan\"\n");
+    fprintf(fp, "   svgTeamColor=\"magenta\"\n");
+    fprintf(fp, "   saveGridDataToFile=\"%s\"\n", boolToString(data.parameters.saveGridDataToFile).c_str());
+    fprintf(fp, "   svgRobotPlanner=\"false\"\n");
+    fprintf(fp, "   uniform_x_interval=\"%4.3f\"\n", data.parameters.uniform_x_interval);
+    fprintf(fp, "   uniform_y_interval=\"%4.3f\"\n", data.parameters.uniform_y_interval);
+    fprintf(fp, "   use_pass_to_position_for_attack_support=\"%s\"\n", boolToString(data.parameters.use_pass_to_position_for_attack_support).c_str());
+    fprintf(fp, "   wait_on_non_optimal_position_during_prepare_phase=\"%s\"\n", boolToString(data.parameters.wait_on_non_optimal_position_during_prepare_phase).c_str());
+    fprintf(fp, "/>\n");
+    fprintf(fp, "  <tns:Field field_width=\"%4.3f\" field_length=\"%4.3f\" field_margin=\"%4.2f\" goal_width=\"%4.3f\" goal_length=\"%4.3f\" goal_area_width=\"%4.3f\" goal_area_length=\"%4.3f\"\n"
+                "             penalty_area_present=\"%s\" penalty_area_width=\"%4.3f\" penalty_area_length=\"%4.3f\" center_circle_diameter=\"%4.3f\" robot_size=\"%4.3f\"\n"
+                "             ball_radius=\"%4.3f\" field_markings_width=\"%4.3f\" parking_area_width=\"%4.3f\" parking_area_length=\"%4.3f\" parking_distance_between_robots=\"%4.3f\"\n"
+                "             parking_distance_to_line=\"%4.3f\" corner_circle_diameter=\"%4.3f\" penalty_spot_to_backline=\"%4.3f\" />\n",
+        fieldConfig.getFieldWidth(),fieldConfig.getFieldLength(), fieldConfig.getFieldMargin(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength(),
+        boolToString(fieldConfig.isPenaltyAreaPresent()).c_str(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength(), fieldConfig.getCenterCirleDiameter(), fieldConfig.getRobotSize(),
+        fieldConfig.getBallRadius(), fieldConfig.getFieldMarkingsWidth(), fieldConfig.getParkingAreaWidth(), fieldConfig.getParkingAreaLength(), fieldConfig.getParkingDistanceBetweenPlayers(), fieldConfig.getParkingDistanceToLine(),
+        fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
+    fprintf(fp, "  <tns:Simulation numberOfIterations=\"1\" simulateOpponent=\"false\"/>\n");
+    fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
+    fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(parameters.attack_formation).c_str());
+    fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(parameters.defense_formation).c_str());
+    if (ball.position.getConfidence() > 0.001) {
+        fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
+                ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
+    }
+    if (data.previous_ball.previous_ball_present) {
+        fprintf(fp, "  <tns:PreviousBall x=\"%4.2f\" y=\"%4.2f\"/>\n", data.previous_ball.x, data.previous_ball.y);
+     }
+    for (unsigned int idx = 0; idx < data.team.size(); idx++) {
+        string goalieString = "";
+        if (data.team[idx].player_type == GOALIE) {
+            goalieString = " isGoalie=\"true\" ";
+        }
+
+        string idString = "id=\""+ std::to_string(data.team[idx].robotId) + "\"";
+        string labelString = "label=\""+ std::to_string(data.team[idx].labelId) + "\"";
+
+        string controlBallString = "";
+        if (controlBallByPlayerIdx  == static_cast<int>(idx))
+        {
+            controlBallString = " hasBall=\"true\" ";
+        }
+        string passedBallString = "";
+        string previous_result_string = "";
+        if (data.team[idx].passBall)
         {
             passedBallString = "passedBall=\"true\"";
         }
-        if (teamplanner_data.team[idx].previous_result.previous_result_present)
+        if (data.team[idx].previous_result.previous_result_present)
         {
+            auto previous_result = data.team[idx].previous_result;
             std::stringstream previous_result_Xtext;
             previous_result_Xtext << " previous_result_present=\"true\" "
-                                   <<" previous_result_ts=\""  << teamplanner_data.team[idx].previous_result.ts << "\""
-                                   <<" previous_result_x=\""   << teamplanner_data.team[idx].previous_result.end_position.x << "\""
-                                   <<" previous_result_y=\""   << teamplanner_data.team[idx].previous_result.end_position.y << "\""
-                                   <<" previous_result_dynamic_role=\""
-                                   << DynamicRoleAsString(static_cast<dynamic_role_e>(teamplanner_data.team[idx].previous_result.dynamic_role))
-                                   <<"\"";
+                    <<" previous_result_ts=\""  << previous_result.ts << "\""
+                    <<" previous_result_x=\""   << previous_result.end_position.x << "\""
+                    <<" previous_result_y=\""   << previous_result.end_position.y << "\""
+                    <<" previous_result_dynamic_role=\""
+                    << DynamicRoleAsString(static_cast<dynamic_role_e>(previous_result.dynamic_role))
+                    <<"\"";
 
             previous_result_string= previous_result_Xtext.str();;
 
         }
+        fprintf(fp, "  <tns:Team %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
+                idString.c_str(), labelString.c_str(),
+                data.team[idx].position.x, data.team[idx].position.y, data.team[idx].position.rz,
+				data.team[idx].velocity.x, data.team[idx].velocity.y, rzvel, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
-        MRA::Geometry::Point xyVel = teamplanner_data.team[idx].velocity;
-		fprintf(fp, "  <tns:Team %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" %s %s %s %s/>\n",
-				idString.c_str(),
-				teamplanner_data.team[idx].position.x, teamplanner_data.team[idx].position.y, teamplanner_data.team[idx].position.rz,
-				xyVel.x, xyVel.y, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
+    }
+    for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
+        string idString = "id=\""+ std::to_string(idx+1) + "\"";
+        string labelString = "label=\""+ std::to_string(data.opponents[idx].labelId) + "\"";
+        fprintf(fp, "  <tns:Opponent %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
+                idString.c_str(), labelString.c_str(),
+                data.opponents[idx].position.x, data.opponents[idx].position.y, data.opponents[idx].position.position.rz,
+				data.opponents[idx].velocity.x, data.opponents[idx].velocity.y, data.opponents[idx].velocity.rz);
 
-	}
-	for (unsigned int idx = 0; idx < teamplanner_data.opponents.size(); idx++) {
-	    MRA::Geometry::Point xyVel = teamplanner_data.opponents[idx].velocity;
-		string idString = "id=\""+ std::to_string(teamplanner_data.opponents[idx].label) + "\"";
-		fprintf(fp, "  <tns:Opponent %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" />\n",
-				idString.c_str(),
-				teamplanner_data.opponents[idx].position.x,
-				teamplanner_data.opponents[idx].position.y,
-				teamplanner_data.opponents[idx].position.rz,
-				xyVel.x, xyVel.y);
-
-	}
-
+    }
     // write pickup ball info as svg input if possible
     string validString = "valid=\"false\"";
-    if (teamplanner_data.ball_pickup_position.valid) {
+    if (data.ball_pickup_position.valid) {
         validString = "valid=\"true\"";
     }
 
     fprintf(fp, "  <tns:PickupPosition x=\"%4.3f\" y=\"%4.3f\" ts=\"%4.3f\" %s />\n",
-            teamplanner_data.ball_pickup_position.x, teamplanner_data.ball_pickup_position.y, teamplanner_data.ball_pickup_position.ts, validString.c_str());
+            data.ball_pickup_position.x, data.ball_pickup_position.y, data.ball_pickup_position.ts, validString.c_str());
 
 
     // write situation info as svg input if possible
     string passRequiredString = "passing_required=\"false\"";
-    if (teamplanner_data.passIsRequired)
+    if (data.passIsRequired)
     {
         passRequiredString = "passing_required=\"true\"";
     }
 
-    fprintf(fp, "  <tns:SituationInfo %s>\n", passRequiredString.c_str());
+    string team_control_ballString = "team_controls_ball=\"false\"";
+    if (data.team_controls_ball) {
+        team_control_ballString = "team_controls_ball=\"true\"";
+    }
+    fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), team_control_ballString.c_str());
     string pass_data_valid_str = "valid=\"false\"";
-    if (teamplanner_data.pass_data.valid)
+    if (data.pass_data.valid)
     {
         pass_data_valid_str = "valid=\"true\"";
     }
-    fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\"/>\n",
-            pass_data_valid_str.c_str(), teamplanner_data.pass_data.origin_pos.x, teamplanner_data.pass_data.origin_pos.y, teamplanner_data.pass_data.target_pos.x, teamplanner_data.pass_data.target_pos.y,
-            teamplanner_data.pass_data.velocity, teamplanner_data.pass_data.angle, teamplanner_data.pass_data.ts);
+    fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\" target_id=\"%ld\"/>\n",
+            pass_data_valid_str.c_str(), data.pass_data.origin_pos.x, data.pass_data.origin_pos.y, data.pass_data.target_pos.x, data.pass_data.target_pos.y,
+            data.pass_data.velocity, data.pass_data.angle, data.pass_data.ts, data.pass_data.target_id);
     fprintf(fp, "  </tns:SituationInfo>\n");
     fprintf(fp, "</tns:Situation>\n");
 
-	fprintf(fp, "\n-->\n"); // // end svg comment
+    fprintf(fp, "\n-->\n"); // // end svg comment
 
 
-	//FIELD - total green field
-	fprintf(fp,
-			"<rect x=\"0cm\" y=\"0cm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke-width=\"0.02cm\" />\n",
-			totalFieldWidth, totalFieldLength);
-	//FIELD - outer field lines
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"/>",
-			m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldWidth(), m_fieldConfig.getFieldLength());
-	//FIELD - middle line
-	fprintf(fp,
-			"<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"white\"/>\n",
-			m_fieldConfig.getFieldMargin(), m_fieldConfig.getMaxFieldY()+m_fieldConfig.getFieldMargin(), m_fieldConfig.getFieldWidth()+m_fieldConfig.getFieldMargin(), m_fieldConfig.getMaxFieldY()+m_fieldConfig.getFieldMargin());
-	//FIELD - middle circle
-	fprintf(fp,
-			"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"  />\n",
-			totalFieldWidth*0.5,  totalFieldLength*0.5, m_fieldConfig.getCenterCirleDiameter()*0.5);
+    //FIELD - total green field
+    fprintf(fp,
+            "<rect x=\"0cm\" y=\"0cm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke-width=\"0.02cm\" />\n",
+            totalFieldWidth, totalFieldLength);
+    //FIELD - outer field lines
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"/>",
+            fieldConfig.getFieldMargin(), fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth(), fieldConfig.getFieldLength());
+    //FIELD - middle line
+    fprintf(fp,
+            "<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"white\"/>\n",
+            fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth()+fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin());
+    //FIELD - middle circle
+    fprintf(fp,
+            "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"  />\n",
+            totalFieldWidth*0.5,  totalFieldLength*0.5, fieldConfig.getCenterCirleDiameter()*0.5);
 
-	// PENALTY AREAS
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getPenaltyAreaWidth()*0.5), m_fieldConfig.getFieldMargin(), m_fieldConfig.getPenaltyAreaWidth(), m_fieldConfig.getPenaltyAreaLength());
+    // PENALTY AREAS
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
 
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getPenaltyAreaWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()-m_fieldConfig.getPenaltyAreaLength(), m_fieldConfig.getPenaltyAreaWidth(), m_fieldConfig.getPenaltyAreaLength());
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getPenaltyAreaLength(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
 
-	// GOAL AREAS
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalAreaWidth()*0.5), m_fieldConfig.getFieldMargin(), m_fieldConfig.getGoalAreaWidth(), m_fieldConfig.getGoalAreaLength());
+    // GOAL AREAS
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
 
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalAreaWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()-m_fieldConfig.getGoalAreaLength(), m_fieldConfig.getGoalAreaWidth(), m_fieldConfig.getGoalAreaLength());
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getGoalAreaLength(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
 
-	//FIELD - goals
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"plum\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.5), m_fieldConfig.getFieldMargin()-m_fieldConfig.getGoalLength(), m_fieldConfig.getGoalWidth(), m_fieldConfig.getGoalLength());
-	fprintf(fp,
-			"<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\"  fill=\"powderblue\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.5), m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength(), m_fieldConfig.getGoalWidth(), m_fieldConfig.getGoalLength());
-	// indicate own goal with text own goal
-	fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" fill=\"darkred\">OWN</text>",
-			(totalFieldWidth*0.5)-(m_fieldConfig.getGoalWidth()*0.2),
-			m_fieldConfig.getFieldMargin()+m_fieldConfig.getFieldLength()+(m_fieldConfig.getGoalLength()*0.75));
+    //FIELD - goals
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"plum\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()-fieldConfig.getGoalLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+    fprintf(fp,
+            "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\"  fill=\"powderblue\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
+            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+    // indicate own goal with text own goal
+    fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" fill=\"darkred\">OWN</text>",
+            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.2),
+            fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()+(fieldConfig.getGoalLength()*0.75));
 
-	//vertices
-	for (std::vector<Vertex* >::size_type j = 0; j < vertices.size(); j++) {
-		Vertex* v = vertices[j];
+    //vertices
+    for (std::vector<Vertex* >::size_type j = 0; j < vertices.size(); j++) {
+        Vertex* v = vertices[j];
 
-		fprintf(fp,
-				"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), 0.01);
-		if (teamplanner_data.parameters.svgDrawEdges) {
-			for (std::vector<Edge>::iterator it = v->m_neighbours.begin(); it != v->m_neighbours.end(); ++it) {
-				Edge e = *it;
-				Vertex* t = e.m_pTarget;
-				fprintf(fp,
-						"<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.025cm\"  stroke=\"pink\"/>\n",
-						svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), svgX(t->m_coordinate.x),  svgY(t->m_coordinate.y));
+        fprintf(fp,
+                "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
+                svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), 0.01);
+        if (parameters.svgDrawEdges) {
+            for (std::vector<Edge>::iterator it = v->m_neighbours.begin(); it != v->m_neighbours.end(); ++it) {
+                Edge e = *it;
+                Vertex* t = e.m_pTarget;
+                fprintf(fp,
+                        "<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.025cm\"  stroke=\"pink\"/>\n",
+                        svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), svgX(t->m_coordinate.x),  svgY(t->m_coordinate.y));
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	// OPPONENTS
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx != teamplanner_data.opponents.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.opponents[bar_idx].position;
-		fprintf(fp,
-				"\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamplanner_data.parameters.svgOpponentColor.c_str(), teamplanner_data.parameters.svgOpponentColor.c_str());
-		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>",
-				svgX(bar_pos.x- 0.65*halfRobotSize), svgY(bar_pos.y- 0.65*halfRobotSize), bar_idx+1);
-	}
+    // OPPONENTS
+    for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx != data.opponents.size(); bar_idx++) {
+        Vector2D bar_pos = data.opponents[bar_idx].position.getXYlocation();
+        fprintf(fp,
+                "\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
+                svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, parameters.svgOpponentColor.c_str(), parameters.svgOpponentColor.c_str());
+        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>",
+                svgX(bar_pos.x- 0.65*halfRobotSize), svgY(bar_pos.y- 0.65*halfRobotSize), bar_idx+1);
+    }
 
-	// TEAMMATES
-	// draw me first.
-	if (teamplanner_data.team.size() > 0 ) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[0].position;
-		double r = teamplanner_data.team[0].position.rz + M_PI_2;
-		string teamColor = teamplanner_data.parameters.svgTeamColor;
-		string fillColor = teamplanner_data.parameters.svgTeamColor;
-//		if (colorMe.length() > 0) {
-//			fillColor = colorMe;
-//		}
-		fprintf(fp,
-				"\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
-		if (controlBallByPlayer == 0) {
-			fprintf(fp,
-					"\n<!-- aiming -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.05cm\"  stroke=\"yellow\"/>\n",
-					svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));
-		}
-	}
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 1; bar_idx < teamplanner_data.team.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
-		fprintf(fp,
-				"\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-				svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamplanner_data.parameters.svgTeamColor.c_str(), teamplanner_data.parameters.svgTeamColor.c_str());
-	}
+    // TEAMMATES
+    // draw me first.
+    if (data.team.size() > 0 ) {
+        Vector2D bar_pos = data.team[0].position.getXYlocation();
+        double r = data.team[0].position.position.rz + M_PI_2;
+        string teamColor = parameters.svgTeamColor;
+        string fillColor = parameters.svgTeamColor;
+        if (parameters.svgMeColor.length() > 0) {
+            fillColor = parameters.svgMeColor;
+        }
+        fprintf(fp,
+                "\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
+                svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
+        if (controlBallByPlayerIdx == 0) {
+            fprintf(fp,
+                    "\n<!-- aiming -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.05cm\"  stroke=\"yellow\"/>\n",
+                    svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));
+        }
+    }
+    for(std::vector<Vector2D>::size_type bar_idx = 1; bar_idx < data.team.size(); bar_idx++) {
+        Vector2D bar_pos = data.team[bar_idx].position.getXYlocation();
+        fprintf(fp,
+                "\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
+                svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, parameters.svgTeamColor.c_str(), parameters.svgTeamColor.c_str());
+    }
 
-	string last_path_element_color = "yellow";
-	string path_color = "blue";
-	string additional_options = "";
-	if (comparing_player_paths.size() > 0)
-	{
-		last_path_element_color = "darkolivegreen";
-		path_color = "darkolivegreen";
-		additional_options = " stroke-dasharray=\"10 4\" ";
-	}
-	// draw path
-	for (team_planner_result_t::size_type pidx = 0;  pidx < player_paths.size(); pidx++) {
-//		string startStroke = "blue";
-//		if ((player_paths[pidx].path.size() > 0) && (static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::DRIBBLE)) {
-//			startStroke = teamplanner_data.parameters.svgBallColor;
-//		}
-		string fillColor = teamplanner_data.parameters.svgTeamColor;
-//		if (pidx == 0) {
-//			if (colorMe.length() > 0) {
-//				fillColor = colorMe;
-//			}
-//		}
-		if (player_paths[pidx].path.size() > 0) {
-			fprintf(fp,
-					"\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
-					(int)pidx, svgX(player_paths[pidx].path[0].x - halfRobotSize), svgY(player_paths[pidx].path[0].y + halfRobotSize), robotSize, robotSize,
-					teamplanner_data.parameters.svgTeamColor.c_str(), fillColor.c_str());
-		}
-		for (std::vector<planner_piece_t>::size_type j = 1; j < player_paths[pidx].path.size(); j++) {
-			double prev_x = (player_paths[pidx]).path[j-1].x;
-			double prev_y = (player_paths[pidx]).path[j-1].y;
-			double new_x = (player_paths[pidx]).path[j].x;
-			double new_y = (player_paths[pidx]).path[j].y;
-			if (j == 1) {
-				// start first path piece not in middle of player but near the edge of the player
-			    MRA::Geometry::Point prev_pos(prev_x, prev_y);
-			    MRA::Geometry::Point new_pos(new_x, new_y);
-				double alfa = prev_pos.angle(new_pos);
-				prev_x = prev_x - (cos(alfa) * halfRobotSize);
-				prev_y = prev_y - (sin(alfa) * halfRobotSize);
+    string last_path_element_color = "yellow";
+    string path_color = "blue";
+    string additional_parameters = "";
+    if (comparing_player_paths.size() > 0)
+    {
+        last_path_element_color = "darkolivegreen";
+        path_color = "darkolivegreen";
+        additional_parameters = " stroke-dasharray=\"10 4\" ";
+    }
+    // draw path
+    for (auto pidx = 0u;  pidx < player_paths.size(); pidx++) {
+        auto player_path = player_paths[pidx];
+        string fillColor = parameters.svgTeamColor;
+        if (parameters.svgMeColor.length() > 0) {
+            fillColor = parameters.svgMeColor;
+        }
+        if (player_path.path.size() > 0) {
+            fprintf(fp,
+                    "\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
+                    (int)pidx, svgX(player_path.path[0].x - halfRobotSize), svgY(player_path.path[0].y + halfRobotSize), robotSize, robotSize,
+					parameters.svgTeamColor.c_str(), fillColor.c_str());
+        }
+        for (std::vector<planner_piece_t>::size_type j = 1; j < player_path.path.size(); j++) {
+            double prev_x = (player_path).path[j-1].x;
+            double prev_y = (player_path).path[j-1].y;
+            double new_x = (player_path).path[j].x;
+            double new_y = (player_path).path[j].y;
+            if (j == 1) {
+                // start first path piece not in middle of player but near the edge of the player
+                Vector2D prev_pos(prev_x, prev_y);
+                Vector2D new_pos(new_x, new_y);
+                double alfa = prev_pos.angle(new_pos);
+                prev_x = prev_x - (cos(alfa) * halfRobotSize);
+                prev_y = prev_y - (sin(alfa) * halfRobotSize);
 
-			}
-			fprintf(fp,
-					"\n<!-- path player %d-->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"%s\" %s/>\n",
-					(int)pidx,svgX(prev_x),  svgY(prev_y), svgX(new_x), svgY(new_y), path_color.c_str(), additional_options.c_str());
-			if (j == player_paths[pidx].path.size()-1) {
-				// last element
-					fprintf(fp,
-							"\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-							(int)pidx, svgX((player_paths[pidx].path[j]).x),  svgY((player_paths[pidx].path[j]).y), m_fieldConfig.getBallRadius()*1.5,
-							last_path_element_color.c_str() /* fill color */, last_path_element_color.c_str() /* line color */); // half ball diameter
+            }
+            fprintf(fp,
+                    "\n<!-- path player %d-->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"%s\" %s/>\n",
+                    (int)pidx,svgX(prev_x),  svgY(prev_y), svgX(new_x), svgY(new_y), path_color.c_str(), additional_parameters.c_str());
+            if (j == player_path.path.size()-1) {
+                // last element
+                fprintf(fp,
+                        "\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+                        (int)pidx, svgX((player_path.path[j]).x),  svgY((player_path.path[j]).y), fieldConfig.getBallRadius()*1.5,
+                        last_path_element_color.c_str() /* fill color */, last_path_element_color.c_str() /* line color */); // half ball diameter
 
-			}
-		}
-//		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-//		string target_color = teamplanner_data.parameters.svgDefaultTargetColor;
-//		if ((player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-//			target_color = teamplanner_data.parameters.svgBallColor;
-//		}
-//
-//		// draw orange circle (ball) as target
-//		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-//			fprintf(fp,
-//					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), m_fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
-//		}
+            }
+        }
+        //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
+        //		string target_color = parameters.svgDefaultTargetColor;
+        //		if ((player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
+        //			target_color = parameters.svgBallColor;
+        //		}
+        //
+        //		// draw orange circle (ball) as target
+        //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
+        //			fprintf(fp,
+        //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+        //					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //		}
 
-	}
+    }
 
-	string compare_last_path_element_color = "yellow";
-	string compare_path_color = "blue";
+    string compare_last_path_element_color = "yellow";
+    string compare_path_color = "blue";
 
-	for (team_planner_result_t::size_type pidx = 0;  pidx < comparing_player_paths.size(); pidx++) {
-		string startStroke = "blue";
+    for (auto pidx = 0u;  pidx < comparing_player_paths.size(); pidx++) {
+        string startStroke = "blue";
 
-		for (std::vector<planner_piece_t>::size_type j = 1; j < comparing_player_paths[pidx].path.size(); j++) {
-			double prev_x = (comparing_player_paths[pidx]).path[j-1].x;
-			double prev_y = (comparing_player_paths[pidx]).path[j-1].y;
-			double new_x = (comparing_player_paths[pidx]).path[j].x;
-			double new_y = (comparing_player_paths[pidx]).path[j].y;
-			if (j == 1) {
-				// start first path piece not in middle of player but near the edge of the player
-			    MRA::Geometry::Point prev_pos(prev_x, prev_y);
-			    MRA::Geometry::Point new_pos(new_x, new_y);
-				double alfa = prev_pos.angle(new_pos);
-				prev_x = prev_x - (cos(alfa) * halfRobotSize);
-				prev_y = prev_y - (sin(alfa) * halfRobotSize);
+        for (std::vector<planner_piece_t>::size_type j = 1; j < comparing_player_paths[pidx].path.size(); j++) {
+            double prev_x = (comparing_player_paths[pidx]).path[j-1].x;
+            double prev_y = (comparing_player_paths[pidx]).path[j-1].y;
+            double new_x = (comparing_player_paths[pidx]).path[j].x;
+            double new_y = (comparing_player_paths[pidx]).path[j].y;
+            if (j == 1) {
+                // start first path piece not in middle of player but near the edge of the player
+                Vector2D prev_pos(prev_x, prev_y);
+                Vector2D new_pos(new_x, new_y);
+                double alfa = prev_pos.angle(new_pos);
+                prev_x = prev_x - (cos(alfa) * halfRobotSize);
+                prev_y = prev_y - (sin(alfa) * halfRobotSize);
 
-			}
-			fprintf(fp,
-					"\n<!-- comparing player %d path-->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"%s\"/>\n",
-					(int)pidx, svgX(prev_x),  svgY(prev_y), svgX(new_x),  svgY(new_y), compare_path_color.c_str());
-			if (j == comparing_player_paths[pidx].path.size()-1) {
-				// last element
-				fprintf(fp,
-						"\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-						(int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), m_fieldConfig.getBallRadius()*1.5,
-						compare_last_path_element_color.c_str() /* fill color */, compare_last_path_element_color.c_str() /* line color */); // half ball diameter
+            }
+            fprintf(fp,
+                    "\n<!-- comparing player %d path-->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"%s\"/>\n",
+                    (int)pidx, svgX(prev_x),  svgY(prev_y), svgX(new_x),  svgY(new_y), compare_path_color.c_str());
+            if (j == comparing_player_paths[pidx].path.size()-1) {
+                // last element
+                fprintf(fp,
+                        "\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+                        (int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), fieldConfig.getBallRadius()*1.5,
+                        compare_last_path_element_color.c_str() /* fill color */, compare_last_path_element_color.c_str() /* line color */); // half ball diameter
 
-			}
-		}
-//		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-//		string target_color = teamplanner_data.parameters.svgDefaultTargetColor;
-//		if ((comparing_player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(comparing_player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-//			target_color = teamplanner_data.parameters.svgBallColor;
-//		}
+            }
+        }
+        //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
+        //		string target_color = parameters.svgDefaultTargetColor;
+        //		if ((comparing_player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(comparing_player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
+        //			target_color = parameters.svgBallColor;
+        //		}
 
-//		// draw orange circle (ball) as target
-//		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-//			fprintf(fp,
-//					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-//					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), m_fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
-//		}
+        //		// draw orange circle (ball) as target
+        //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
+        //			fprintf(fp,
+        //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+        //					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //		}
 
-	}
-	// put player-id on top of the players
-	for(std::vector<MRA::Geometry::Point>::size_type bar_idx = 0; bar_idx < teamplanner_data.team.size(); bar_idx++) {
-	    MRA::Geometry::Point bar_pos = teamplanner_data.team[bar_idx].position;
-		long robotId = teamplanner_data.team[bar_idx].robotId;
-		fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.x - 0.65*halfRobotSize), svgY(bar_pos.y - 0.65*halfRobotSize), robotId);
-	}
+    }
 
-	// BALL
-	if (teamplanner_data.ball_present) {
-		fprintf(fp,
-				"\n<!-- globalBall -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-				svgX(teamplanner_data.ball.position.x),  svgY(teamplanner_data.ball.position.y), teamplanner_data.fieldConfig.getBallRadius()); // half ball diameter
-	}
-	if (teamplanner_data.parameters.svgDrawVelocity) {
-	    MRA::Geometry::Pose linVel = teamplanner_data.ball.velocity;
-		if (linVel.size() > 1e-6) {
-		    MRA::Geometry::Point endVelocityVector = teamplanner_data.ball.position;
-		    endVelocityVector += linVel;
-			// globalBall
-			//FIELD - middle line
-			fprintf(fp,
-					"\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
-					svgX(teamplanner_data.ball.position.x), svgY(teamplanner_data.ball.position.y),
-					svgX(endVelocityVector.x), svgY(endVelocityVector.y));
-		}
-	}
+    // put player-id on top of the players
+    for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx < data.team.size(); bar_idx++) {
+        Vector2D bar_pos = data.team[bar_idx].position.getXYlocation();
+        long robotId = data.team[bar_idx].robotId;
+        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.x - 0.65*halfRobotSize), svgY(bar_pos.y - 0.65*halfRobotSize), robotId);
+    }
 
-	fprintf(fp, "</svg>\n");
-	fclose(fp);
-	MRA_LOG_INFO("created SVG file : %s", teamplanner_data.parameters.svgOutputFileName.c_str());
+    // BALL
+    if (ball.isValid()) {
+        fprintf(fp,
+                "\n<!-- Ball -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
+                svgX(ball.position.x),  svgY(ball.position.y), fieldConfig.getBallRadius()); // half ball diameter
+    }
+    if (parameters.svgDrawVelocity) {
+        Vector2D linVel;
+        double vrz;
+        ball.getVelocity(linVel, vrz);
+        double speed  = linVel.norm();
+        if (speed > 1e-6) {
+            Vector2D endVelocityVector = ball.position.add(linVel);
+            //FIELD - middle line
+            fprintf(fp,
+                    "\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
+                    svgX(ball.position.x), svgY(ball.position.y),
+                    svgX(endVelocityVector.x), svgY(endVelocityVector.y));
+        }
+    }
+
+    fprintf(fp, "</svg>\n");
+    fclose(fp);
+    logAlways("created SVG file : %s", save_name.c_str());
+#endif
 }
+
 
 /**
  * return true if path is a directory, otherwise return false
- */
-bool SvgUtils::doesDirectoryExists(const string& filename) {
+*/
+bool SvgUtils::doesDirectoryExists(const std::string& filename) {
     // split filename in fileparts (compared to matlab fileparts function)
     // split in path, name and extension
     bool is_dir = false;
@@ -540,5 +660,7 @@ bool SvgUtils::doesDirectoryExists(const string& filename) {
     return is_dir;
 }
 
-
-
+std::string SvgUtils::boolToString(bool b)
+{
+    return b ? "true" : "false";
+}

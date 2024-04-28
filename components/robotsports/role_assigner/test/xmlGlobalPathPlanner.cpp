@@ -14,8 +14,8 @@
 #include "GlobalPathPlannerTester_generated.h" // generated
 #include "MovingObject.h"
 #include "GlobalPathPlanner.h"
-#include "FieldConfig.h"
-#include "SvgUtils.h"
+#include "Field.h"
+#include "SvgUtils.hpp"
 
 using namespace MRA;
 using namespace std;
@@ -25,13 +25,13 @@ void xmlGlobalPathPlanner(char * input_filename) {
 
 	PlannerOptions plannerOptions = PlannerOptions();
 
-	std::vector<MRA::MovingObject> teammates = std::vector<MRA::MovingObject>();
-	MRA::MovingObject ball = MRA::MovingObject();
-	MRA::MovingObject me = MRA::MovingObject();
-	std::vector<MRA::MovingObject> opponents = std::vector<MRA::MovingObject>();
+	std::vector<trs::MovingObject> teammates = std::vector<trs::MovingObject>();
+	trs::MovingObject ball = trs::MovingObject();
+	trs::MovingObject me = trs::MovingObject();
+	std::vector<trs::MovingObject> opponents = std::vector<trs::MovingObject>();
 	planner_target_e plannerObjective;
 	std::string description = "";
-	std::vector<MRA::Vertex> targets = std::vector<MRA::Vertex>();;
+	std::vector<trs::Vertex> targets = std::vector<trs::Vertex>();;
 	string filename = input_filename;
 
 	cout << "reading file : " << filename << endl << flush;
@@ -46,20 +46,20 @@ void xmlGlobalPathPlanner(char * input_filename) {
 
 		int label = 1;
 		for (GlobalPathPlannerType::Team_const_iterator team_iter = c->Team().begin(); team_iter != c->Team().end(); ++team_iter) {
-			teammates.push_back(MRA::MovingObject(*(*team_iter).x(), *(*team_iter).y(), (*team_iter).rz(),
+			teammates.push_back(trs::MovingObject(*(*team_iter).x(), *(*team_iter).y(), (*team_iter).rz(),
 					(*team_iter).velx(), (*team_iter).vely(), (*team_iter).velrz(), label, true));
 			label ++;
 		}
 
 		label = 11;
 		for (GlobalPathPlannerType::Opponent_const_iterator opponent_iter = c->Opponent().begin(); opponent_iter != c->Opponent().end(); ++opponent_iter) {
-			opponents.push_back(MRA::MovingObject(*(*opponent_iter).x(), *(*opponent_iter).y(), (*opponent_iter).rz(),
+			opponents.push_back(trs::MovingObject(*(*opponent_iter).x(), *(*opponent_iter).y(), (*opponent_iter).rz(),
 					(*opponent_iter).velx(), (*opponent_iter).vely(), (*opponent_iter).velrz(), label, true));
 			label ++;
 		}
 
 		for (GlobalPathPlannerType::Target_const_iterator target_iter = c->Target().begin(); target_iter != c->Target().end(); ++target_iter) {
-			targets.push_back(MRA::Vertex(Vector2D(*(*target_iter).x(), *(*target_iter).y()), (*target_iter).distToTarget(), (*target_iter).cost()));
+			targets.push_back(trs::Vertex(Vector2D(*(*target_iter).x(), *(*target_iter).y()), (*target_iter).distToTarget(), (*target_iter).cost()));
 		}
 
 
@@ -158,7 +158,7 @@ void xmlGlobalPathPlanner(char * input_filename) {
 	auto start = std::chrono::system_clock::now();
 	std::vector<std::vector<planner_piece_t>> player_paths = std::vector<vector<planner_piece_t>>();
 
-	FieldConfig fieldConfig = FillDefaultFieldConfig();
+	FieldConfig fieldConfig(Field::defaultFieldConfig());
 	GlobalPathPlanner globalPathPlanner = GlobalPathPlanner(fieldConfig);
 	globalPathPlanner.setOptions(plannerOptions);
 	bool ballIsObstacle = false;

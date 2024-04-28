@@ -46,7 +46,7 @@ class Dynamics {
 	 * @param rFieldConfig field configuration
 	 * @return point where ball leaves the field.
 	 */
-	static MRA::Geometry::Point calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig);
+	static MRA::Geometry::Position calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig);
 
 	/**
 	 * Calculates time necessary to traverse a path at maximum speed, assuming

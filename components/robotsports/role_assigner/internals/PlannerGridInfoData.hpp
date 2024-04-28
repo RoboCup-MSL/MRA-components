@@ -16,9 +16,9 @@ namespace MRA {
 
 class PlannerGridGameData {
 public:
-	std::vector<MRA::Geometry::Pose> Team;  // me as first
-	std::vector<MRA::Geometry::Pose> Opponents;
-	MRA::Geometry::Pose ball;
+	std::vector<Geometry::Position> team;  // me as first
+	std::vector<Geometry::Position> opponents;
+	Geometry::Point ball;
 };
 
 
@@ -45,6 +45,6 @@ public:
 	void readFromFile(const std::string& filename);
 };
 
-} /* namespace MRA */
+} /* namespace trs */
 
 #endif /* PLANNERGRIDINFODATA_H_ */

@@ -44,8 +44,7 @@ int main(int argc, char *argv[]) {
     	}
 
     	// call xml planner with the received parameters
-    	RoleAssignTestData data;
-    	xmlplanner(input_file, data);
+    	xmlplanner(input_file);
     }
     catch (std::exception & e)
     {

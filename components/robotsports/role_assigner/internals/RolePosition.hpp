@@ -21,65 +21,38 @@ namespace MRA {
 
 class RolePosition {
 public:
-	static MRA::Geometry::Point determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
-			dynamic_role_e dynamic_role, game_state_e gamestate,
-			const TeamPlannerBall& ball, const TeamPlannerState& r_state,
-			std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerOpponent>& Opponents,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig,
-			const ball_pickup_position_t& ball_pickup_position, bool passIsRequired, bool teamControlBall,
-			bool playerPassedBall, const pass_data_t& pass_data, bool& r_role_position_is_end_position_of_pass);
+	static Geometry::Point determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
+			dynamic_role_e dynamic_role, TeamPlannerData& r_teamplannerData, bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
 
-	static void GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPositions, game_state_e gamestate,
-			const TeamPlannerBall& ball, bool searchForBall,
-			const std::vector<MRA::Geometry::Point>& parking_positions, const FieldConfig& fieldConfig, const TeamPlannerParameters& plannerOptions);
+	static void GetFixedPositions(std::vector<Geometry::Point>& playerPositions, const TeamPlannerData& r_teamplannerData);
 
 	static MRA::Geometry::Point closestTo(const MRA::Geometry::Point& reference_point, const std::vector<MRA::Geometry::Point>& positions);
 
 private:
-	static int FindOpponentClostestToPositionAndNotAssigned(
-			const MRA::Geometry::Point& targetPos, const FieldConfig& fieldConfig,
-			const TeamPlannerParameters& plannerOptions,
-			const std::vector<TeamPlannerOpponent>& Opponents);
+	static int FindOpponentClostestToPositionAndNotAssigned(const Geometry::Point& targetPos, const TeamPlannerData& r_teamplannerData);
 
-	static int FindMostDangerousOpponentAndNotAssigned(
-			const MRA::Geometry::Pose& globalBall, const FieldConfig& fieldConfig,
-			const TeamPlannerParameters& plannerOptions,
-			const std::vector<TeamPlannerOpponent>& Opponents);
+	static int FindMostDangerousOpponentAndNotAssigned(const TeamPlannerData& r_teamplannerData);
 
-	static void getSearchForBallPositions(std::vector<MRA::Geometry::Point>& playerPositions, game_state_e gamestate, const FieldConfig& fieldConfig);
+	static void getSearchForBallPositions(std::vector<Geometry::Point>& playerPositions, const TeamPlannerData& r_teamplannerData);
 
-	static void print_provided_position(game_state_e gamestate, const std::vector<std::vector<MRA::Geometry::Point>>& positions);
+	static void print_provided_position(game_state_e gamestate, const std::vector<std::vector<Geometry::Point>>& positions);
+	static void calculateSetPlayPosition(Geometry::Point& shooterPosition, Geometry::Point& receiverPosition, const TeamPlannerData& r_teamplannerData);
 
-	static void calculateSetPlayPosition(MRA::Geometry::Point& shooterPosition, MRA::Geometry::Point& receiverPosition,
-			const std::vector<TeamPlannerRobot>& Team, const MRA::Geometry::Point& ballPosition, const TeamPlannerState& r_state,
-			game_state_e gamestate, const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+	static Geometry::Point calculateSetPlayReceiverPosition(const TeamPlannerData& r_teamplannerData);
 
-	static MRA::Geometry::Point calculateSetPlayReceiverPosition(const std::vector<TeamPlannerRobot>& Team,
-			                                    const MRA::Geometry::Point& globalBallPosition,
-			                                    const TeamPlannerState& r_state,
-												game_state_e gamestate,
-												const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+	static Geometry::Point InterceptorNormalPlayPosition(planner_target_e& planner_target, const TeamPlannerData& r_teamplannerData);
+	static Geometry::Point setplay_receiver_position_90deg_to_ball_goal(const TeamPlannerData& r_teamplannerData);
 
-	static MRA::Geometry::Point InterceptorNormalPlayPosition(planner_target_e& planner_target, const MRA::Geometry::Pose& globalBall,
-			const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
-	static MRA::Geometry::Point setplay_receiver_position_90deg_to_ball_goal(const MRA::Geometry::Point& globalBallPosition, const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+	static bool calculateSetPlayReceiverMinTurnPosition(const TeamPlannerData& r_teamplannerData, Geometry::Point& receiverPosition);
 
-	static bool calculateSetPlayReceiverMinTurnPosition(const FieldConfig& fieldConfig, const MRA::Geometry::Point& globalBallPosition,
-			const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition);
+	static bool calculateSetPlayReceiverOnLobShotLinePosition(const TeamPlannerData& r_teamplannerData, Geometry::Point& receiverPosition);
 
-	static bool calculateSetPlayReceiverOnLobShotLinePosition(const FieldConfig& fieldConfig, const MRA::Geometry::Point& globalBallPosition,
-			const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition);
+	static bool calculateSetPlayReceiverConservativePosition(const TeamPlannerData& r_teamplannerData, Geometry::Point& receiverPosition);
 
-	static bool calculateSetPlayReceiverConservativePosition(const FieldConfig& fieldConfig, const MRA::Geometry::Point& globalBallPosition,
-				const TeamPlannerParameters& plannerOptions, MRA::Geometry::Point& receiverPosition);
-
-	static MRA::Geometry::Point calculateManToManDefensePosition(defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
-			const MRA::Geometry::Pose& ball, const FieldConfig& fieldConfig,
-			game_state_e gamestate, const TeamPlannerParameters& plannerOptions,
-			std::vector<TeamPlannerOpponent>& Opponents, std::vector<TeamPlannerRobot>& Team, int& r_gridFileNumber,
-			bool setPlayActive, bool teamControlBall);
+	static Geometry::Position calculateManToManDefensePosition(defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
+	        TeamPlannerData& r_teamplannerData, int& r_gridFileNumber, bool setPlayActive);
 };
+
 
 } // namespace
 

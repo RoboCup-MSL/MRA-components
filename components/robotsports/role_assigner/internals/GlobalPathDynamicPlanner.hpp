@@ -36,7 +36,8 @@ public:
      *            Number of re-planning iterations
      * @return path
      */
-    std::vector<planner_piece_t> planPath(const MRA::Geometry::Pose& start_pose, const MRA::Geometry::Pose& start_vel, const TeamPlannerData& teamplanner_data,
+    std::vector<planner_piece_t> planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
+    		const TeamPlannerData& teamplanner_data,
             const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
 			double maxSpeed, int nrIterations);
 

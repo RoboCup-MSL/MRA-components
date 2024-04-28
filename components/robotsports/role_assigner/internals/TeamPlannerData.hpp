@@ -43,11 +43,12 @@ public:
     bool assigned;
     bool human;
     long robotId;
+    long labelId;  // NEW
     bool controlBall;
     bool passBall; // indicator whether a pass by this player is still on its way
     player_type_e player_type;
-    MRA::Geometry::Pose position;
-    MRA::Geometry::Pose velocity;
+    MRA::Geometry::Position position;
+    MRA::Geometry::Position velocity;
     PlayerPlannerResult result;
     final_planner_result_t previous_result;
     dynamic_role_e dynamic_role;
@@ -55,14 +56,14 @@ public:
     double time_in_opponent_penalty_area;
 
     std::string toString() const;
-
 };
 
 class TeamPlannerBall {
 public:
-    MRA::Geometry::Pose position;
-    MRA::Geometry::Pose velocity;
+    MRA::Geometry::Position position;
+    MRA::Geometry::Position velocity;
     double confidence;
+    bool is_valid;
 };
 // class with state data (data for State.proto)
 class TeamPlannerState {
@@ -84,8 +85,8 @@ typedef struct pass_data_s {
     long   target_id; // destination of kick, where 0 is goal
     double velocity; // [m/s]
     double angle; // upwards angle
-    MRA::Geometry::Point  origin_pos; // field coordinates of origin
-    MRA::Geometry::Point  target_pos; // field coordinates of target
+    MRA::Geometry::Position  origin_pos; // field coordinates of origin
+    MRA::Geometry::Position  target_pos; // field coordinates of target
     double ts; // timestamp of update
     double eta; // estimated time of arrival at target
 } pass_data_t;
@@ -97,11 +98,11 @@ public:
     TeamPlannerInput() {};
     game_state_e gamestate;
     bool ball_present;
-    MRA::Geometry::Pose ball;
+    MRA::Geometry::Position ball;
 
     std::vector<TeamPlannerRobot> team;
     std::vector<TeamPlannerOpponent> opponents;
-    std::vector<MRA::Geometry::Point> parking_positions;
+    std::vector<MRA::Geometry::Position> parking_positions;
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;
     pass_data_t pass_data;
@@ -138,6 +139,8 @@ public:
     bool searchForBall;
     int playerWhoIsPassing;
     defend_info_t defend_info;
+    bool team_controls_ball; // NEW
+    previous_used_ball_by_planner_t previous_ball = {};
 
     // internal administration
     std::vector<TeamPlannerRobot> team;

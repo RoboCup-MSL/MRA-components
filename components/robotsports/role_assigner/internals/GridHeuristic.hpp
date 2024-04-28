@@ -8,11 +8,11 @@
 #ifndef PLANNER_GRID_GRIDHEURISTIC_H
 #define PLANNER_GRID_GRIDHEURISTIC_H 1
 
-#include "FieldConfig.h"
-#include "PlannerGridInfoData.hpp"
-#include "TeamPlannerParameters.hpp"
 #include "TeamPlay.hpp"
+#include "PlannerGridInfoData.hpp"
+#include "FieldConfig.h"
 #include "WmTypes.h"
+#include <string>
 
 namespace MRA {
 
@@ -126,7 +126,7 @@ class InOppenentPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
 	InOppenentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ class InOwnPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
 	InOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ class InOwnGoalAreaHeuristic : public InSquareHeuristic
 {
 public:
 	InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig);
+			const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
 };
 
 
@@ -286,11 +286,11 @@ class DistanceToHeuristic : public GridHeuristic
 {
 public:
 	DistanceToHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const MRA::Geometry::Point& pos, double dScaling);
+			const Geometry::Position& pos, double dScaling);
 	virtual ~DistanceToHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const MRA::Geometry::Point m_pos;
+	const Geometry::Position m_pos;
 	const double m_dScaling;
 };
 
@@ -300,11 +300,11 @@ class DistanceToPointHeuristic : public GridHeuristic
 {
 public:
 	DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const MRA::Geometry::Point& pos, double dScaling, double maxRange, bool inverted);
+			const Geometry::Point& pos, double dScaling, double maxRange, bool inverted);
 	virtual ~DistanceToPointHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const MRA::Geometry::Point m_pos;
+	const Geometry::Point m_pos;
 	const double m_dScaling;
 	double m_dMaxRange;
 	bool m_bInverted;
@@ -329,18 +329,17 @@ class InterceptionThreatHeuristic : public GridHeuristic
 {
 public:
 	InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-	        const MRA::Geometry::Pose& ball,
-			const std::vector<TeamPlannerRobot>& Team,
-			const std::vector<TeamPlannerOpponent>& Opponents,
+			const Geometry::Point& ball,
+			const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
 			double interceptionChanceStartDistance,
 			double interceptionChanceIncreasePerMeter,
 			double interceptionChancePenaltyFactor);
 	virtual ~InterceptionThreatHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const MRA::Geometry::Pose& m_ball;
+	const Geometry::Point& m_ball;
 	const std::vector<TeamPlannerRobot>& m_Team;
-	std::vector<MRA::Geometry::Pose> m_Opponents;
+	std::vector<Geometry::Position> m_Opponents;
 	const double m_interceptionChanceStartDistance;
 	const double m_interceptionChanceIncreasePerMeter;
 	const double m_interceptionChancePenaltyFactor;
@@ -387,7 +386,7 @@ public:
 private:
 	const std::vector<TeamPlannerRobot>& m_Team;
 	const std::vector<TeamPlannerOpponent>& m_Opponents;
-	const MRA::Geometry::Point m_opponentGoal;
+	const Geometry::Point m_opponentGoal;
 	const double m_rightPole_x;
 	const double m_leftPole_x;
 	const double m_robotRadius;
@@ -404,12 +403,12 @@ public:
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const FieldConfig& fieldConfig,
 			const ball_pickup_position_t& ball_pickup_position,
-			const TeamPlannerParameters& plannerOptions);
+			const TeamPlannerParameters& parameters);
 	virtual ~PassHeuristic() {};
 	double getValue(double x, double y);
 private:
 	const std::vector<TeamPlannerRobot>& m_Team;
-	std::vector<MRA::Geometry::Pose> m_Opponents;
+	std::vector<Geometry::Position> m_Opponents;
 	const double m_robotRadius;
 	ball_pickup_position_t m_ball_pickup_position;
 	const double m_interceptionChanceStartDistance;
@@ -423,15 +422,15 @@ class StayAwayFromOpponentsHeuristic : public GridHeuristic
 {
 public:
 	StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const MRA::Geometry::Point& ballPlayerPos,
-			const MRA::Geometry::Pose& ball,
+			const Geometry::Position& ballPlayerPos,
+			const Geometry::Position& ball,
 			const std::vector<TeamPlannerOpponent>& Opponents,
 			const double radius);
 	virtual ~StayAwayFromOpponentsHeuristic() {};
 	double getValue(double x, double y);
 private:
-	const MRA::Geometry::Point& m_ballPlayerPos;
-	const MRA::Geometry::Point m_ball;
+	const Geometry::Position& m_ballPlayerPos;
+	const Geometry::Point m_ball;
 	const std::vector<TeamPlannerOpponent>& m_Opponents;
 	const double m_radius;
 	double m_angle_ball_ballplayer_min;
@@ -440,7 +439,7 @@ private:
 
 
 
-} // namespace MRA
+} // namespace trs
 
 
 #endif /* PLANNER_GRID_GRIDHEURISTIC_H  */

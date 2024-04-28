@@ -29,11 +29,11 @@ class GlobalPathPlanner {
 private:
 	FieldConfig m_fieldConfig;
 	Vertex * m_start;
-	MRA::Geometry::Point m_startVelocity;
+	MRA::Geometry::Position m_startVelocity;
 	std::vector<Vertex *> m_target;
 	std::vector<Vertex *> m_vertices;
-	std::vector<MRA::Geometry::Point> m_teammates;
-	std::vector<MRA::Geometry::Point> m_opponents;
+	std::vector<MRA::Geometry::Position> m_teammates;
+	std::vector<MRA::Geometry::Position> m_opponents;
 	std::vector<Vertex* > m_approachVertices;
 	std::vector<Vertex* > m_addPoints;
 	TeamPlannerParameters m_options;
@@ -61,8 +61,8 @@ public:
 	void setOptions(const TeamPlannerParameters& options);
 
 	/* create graph for the provided input */
-	void createGraph(const MRA::Geometry::Pose& start_pose, const MRA::Geometry::Pose& start_vel,
-	        const TeamPlannerData& teamplanner_data, const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+	void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
+	        const TeamPlannerData& teamplanner_data, const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
 			bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
 
 	/**
@@ -85,10 +85,10 @@ private:
 
 	bool equalToTarget(const Vertex* v);
 
-	void addOpponent(const MRA::Geometry::Pose& opponent, bool skipFirstRadius, const TeamPlannerBall& ball);
-	void addTeammate(const MRA::Geometry::Pose& teammate);
+	void addOpponent(const MRA::Geometry::Position& opponent, bool skipFirstRadius, const TeamPlannerBall& ball);
+	void addTeammate(const MRA::Geometry::Position& teammate);
 
-	bool nearPath(const MRA::Geometry::Point& v);
+	bool nearPath(const MRA::Geometry::Position& v);
 
 	void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos, const TeamPlannerBall& ball);
 
@@ -103,7 +103,7 @@ private:
 
 	void addEnemyGoalApproachVertices();
 
-	void addPoint( const MRA::Geometry::Point& point);
+	void addPoint( const MRA::Geometry::Position& point);
 
 };
 

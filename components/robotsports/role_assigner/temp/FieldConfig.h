@@ -20,7 +20,7 @@ public:
 			double penalty_area_length, double parking_area_width, double parking_area_length,
 			double parking_distance_between_robots, double parking_distance_to_line,
 			double robot_size, double ball_radius, double field_markings_width, double field_markings_width_internal,
-			double penalty_spot_to_backline, bool is_mobile_field);
+			double penalty_spot_to_backline);
 
 	/* check if point is in the playing field and is minimal the given margin from the edge of the playing field. A positive margin is within the playing field.  */
 	bool isInField(const MRA::Geometry::Point& r_pos, double margin) const;
@@ -140,8 +140,6 @@ public: // data is public, to avoid vision updates. In the future: data is priva
 	double MIN_DIST_TO_GOAL_AREA;
 
 	double CORNER_CIRCLE_DIAMETER;
-private:
-	bool m_is_mobile_field;
 };
 
 	FieldConfig FillDefaultFieldConfig(); // only for off-line tests (automatic tests)

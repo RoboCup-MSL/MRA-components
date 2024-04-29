@@ -177,11 +177,10 @@ FieldConfig FillDefaultFieldConfig() {
 	double field_markings_width = 0.125;
 	double field_markings_width_internal = 0.125;
 	double penalty_spot_to_backline = 3.0;
-	bool is_mobile_field = false;
 	return FieldConfig(field_length, field_width, field_margin, goal_width, goal_length,
 			center_circle_diameter, goal_area_width, goal_area_length, penalty_area_present, penalty_area_width,
 			penalty_area_length, parking_area_width, parking_area_length, parking_distance_between_robots, parking_distance_to_line, robot_size,
-			ball_radius, field_markings_width, field_markings_width_internal, penalty_spot_to_backline, is_mobile_field);
+			ball_radius, field_markings_width, field_markings_width_internal, penalty_spot_to_backline);
 }
 
 FieldConfig::FieldConfig(double field_length, double field_width, double field_margin, double goal_width, double goal_length,
@@ -189,8 +188,7 @@ FieldConfig::FieldConfig(double field_length, double field_width, double field_m
 		double penalty_area_length, double parking_area_width, double parking_area_length,
 		double parking_distance_between_robots, double parking_distance_to_line,
 		double robot_size, double ball_radius, double field_markings_width, double field_markings_width_internal,
-		double penalty_spot_to_backline, bool is_mobile_field) :
-		m_is_mobile_field(is_mobile_field)
+		double penalty_spot_to_backline)
 {
 
 	FIELD_LENGTH = field_length;

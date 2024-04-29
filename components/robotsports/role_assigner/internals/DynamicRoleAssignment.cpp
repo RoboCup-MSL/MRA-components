@@ -6,7 +6,6 @@ using namespace MRA;
 
 //---------------------------------------------------------------------------------------------------------------------
 // assign dynamic roles to available players
-// TODO: put in seperate file
 void DynamicRoleAssignment::assignDynamicRolesToPlayers(const vector<dynamic_role_e>& teamFormation, std::vector<TeamPlannerRobot>& Team) {
 	// sort players on id by put them in a map. Map is sorted by the key (= robotId)
 	std::map <long, unsigned> idmap;

@@ -134,7 +134,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     // print input data to svg file
     fprintf(fp, "\n\n");
     fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(gamestate).c_str(), gamestate);
-    //TODO: needed ? fprintf(fp, "\torignal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
+    fprintf(fp, "\toriginal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
     string controlBallByPlayerRemark = "";
 
     int controlBallByPlayerIdx = -1;
@@ -330,8 +330,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
     fprintf(fp, "  <tns:Simulation numberOfIterations=\"1\" simulateOpponent=\"false\"/>\n");
     fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
-//TODO    fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(parameters.attack_formation).c_str());
-//TODO    fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(parameters.defense_formation).c_str());
     if (ball.is_valid) {
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
                 ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
@@ -508,9 +506,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         double r = data.team[0].position.rz + M_PI_2;
         string teamColor = parameters.svgTeamColor;
         string fillColor = parameters.svgTeamColor;
-//TODO        if (parameters.svgMeColor.length() > 0) {
-//            fillColor = parameters.svgMeColor;
-//        }
         fprintf(fp,
                 "\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
@@ -540,9 +535,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     for (auto pidx = 0u;  pidx < player_paths.size(); pidx++) {
         auto player_path = player_paths[pidx];
         string fillColor = parameters.svgTeamColor;
-//TODO        if (parameters.svgMeColor.length() > 0) {
-//            fillColor = parameters.svgMeColor;
-//        }
         if (player_path.path.size() > 0) {
             fprintf(fp,
                     "\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",

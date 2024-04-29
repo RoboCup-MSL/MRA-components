@@ -987,7 +987,7 @@ void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const Team
 			stream << "planner_grid_" << strSituation << "_" <<  gridFileNumber << ".gpd";
 			gridFileName = stream.str();
 		}
-		//TODO jve logAlways("save grid data to = %s", gridFileName.c_str(), __FILE__, __LINE__);
+		MRA_LOG_INFO("save grid data to = %s", gridFileName.c_str(), __FILE__, __LINE__);
 		pgid.saveToFile(gridFileName);
 	}
 }

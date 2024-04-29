@@ -19,7 +19,14 @@ public:
 			double center_circle_diameter, double goal_area_width, double goal_area_length, bool penalty_area_present, double penalty_area_width,
 			double penalty_area_length, double parking_area_width, double parking_area_length,
 			double parking_distance_between_robots, double parking_distance_to_line,
-			double robot_size, double ball_radius, double field_markings_width, double field_markings_width_internal,
+			double robot_size, double ball_radius, double field_markings_width, double corner_circle_diameter,
+			double penalty_spot_to_backline);
+
+	void setConfig(double field_length, double field_width, double field_margin, double goal_width, double goal_length,
+			double center_circle_diameter, double goal_area_width, double goal_area_length, bool penalty_area_present, double penalty_area_width,
+			double penalty_area_length, double parking_area_width, double parking_area_length,
+			double parking_distance_between_robots, double parking_distance_to_line,
+			double robot_size, double ball_radius, double field_markings_width, double corner_circle_diameter,
 			double penalty_spot_to_backline);
 
 	/* check if point is in the playing field and is minimal the given margin from the edge of the playing field. A positive margin is within the playing field.  */
@@ -83,63 +90,61 @@ public:
 	double getPenaltySpotToBackline() const;
 	double getCornerCircleDiameter() const;
 
-public: // data is public, to avoid vision updates. In the future: data is private, vision code is using functions. TODO
+private:
 	//"FieldLength: Length of the playing field [m]",
-	double FIELD_LENGTH;
+	double m_field_length;
 
 	//"FieldWidth: Width of the playing field [m]"
-	double FIELD_WIDTH;
+	double m_field_width;
 
 	//"FieldMargin: Margin [m] around the field"
-	double FIELD_MARGIN;
+	double m_field_margin;
 
 	//"GoalWidth: Width [m] of the goal", Double.class, 2.0);
-	double GOAL_WIDTH;
+	double m_goal_width;
 
 	//"GoalLength: Length [m] of the goal"
-	double GOAL_LENGTH;
+	double m_goal_length;
 
 	// "CenterCircleDiameter: Diameter [m] of the center circle",
-	double CENTER_CIRCLE_DIAMETER;
+	double m_center_circle_diameter;
 
 	// "GoalAreaWidth: Width [m] of goal area"
-	double GOAL_AREA_WIDTH;
+	double m_goal_area_width;
 
 	//"GoalAreaLength: Length [m] of goal area"
-	double GOAL_AREA_LENGTH;
+	double m_goal_area_length;
 
 	// "PenaltyAreaPresent: does field have a penalty area?"
-	bool PENALTY_AREA_PRESENT;
+	bool m_penalty_area_present;
 
 	// "GoalAreaWidth: Width [m] of goal area"
-	double PENALTY_AREA_WIDTH;
+	double m_penalty_area_width;
 
 	//"GoalAreaLength: Length [m] of goal area"
-	double PENALTY_AREA_LENGTH;
+	double m_penalty_area_length;
 
 	// max size of the robot (in 1 dim) [m]
-	double ROBOTSIZE;
+	double m_robot_size;
 
 	// radius of the ball [m]
-	double BALL_RADIUS;
+	double m_ball_radius;
 
-	double FIELD_MARKINGS_WIDTH; // [m]
+	double m_field_markings_width; // [m]
 
-	double FIELD_MARKINGS_WIDTH_INTERNAL; // [m]
+	double m_parking_area_width; // [m] area where players will be parked
 
-	double PARKING_AREA_WIDTH; // [m] area where players will be parked
+	double m_parking_area_length; // [m] area where players will be parked
 
-	double PARKING_AREA_LENGTH; // [m] area where players will be parked
+	double m_parking_distance_between_robots; // [m] between the parked robots (between the middle of the robots)
 
-	double PARKING_DISTANCE_BETWEEN_ROBOTS; // [m] between the parked robots (between the middle of the robots)
+	double m_parking_distance_to_line; // [m] to line for parking : + is outside. 0 is on the line
 
-	double PARKING_DISTANCE_TO_LINE; // [m] to line for parking : + is outside. 0 is on the line
+	double m_penalty_spot_to_backline;
 
-	double PENALTY_SPOT_TO_BACKLINE;
+	double m_minimum_distance_to_goal_area; // TODO needed or part of parameters?
 
-	double MIN_DIST_TO_GOAL_AREA;
-
-	double CORNER_CIRCLE_DIAMETER;
+	double m_corner_circle_diameter;
 };
 
 	FieldConfig FillDefaultFieldConfig(); // only for off-line tests (automatic tests)

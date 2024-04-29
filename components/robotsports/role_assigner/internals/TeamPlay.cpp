@@ -45,6 +45,7 @@ void TeamPlay::assign(const TeamPlannerInput& input,
 
 std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerData)
 {
+	teamplannerData.original_gamestate = teamplannerData.gamestate;
     std::vector<PlayerPlannerResult> player_paths;
 	if (teamplannerData.gamestate != game_state_e::NONE) {
 		// printAssignInputs(gamestate, ball, Team, Opponents, parameters,  parking_positions, ball_pickup_position, passIsRequired, pass_data);

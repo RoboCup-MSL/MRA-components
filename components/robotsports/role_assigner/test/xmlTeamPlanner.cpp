@@ -245,31 +245,15 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
         // If field info is present then overwrite the defaults with values from the xml file
     	fieldConfig = FillDefaultFieldConfig();
     	// TODO used setting functions
-    	fieldConfig.FIELD_WIDTH = c->Field()->field_width();
-        fieldConfig.FIELD_LENGTH = c->Field()->field_length();
-        fieldConfig.FIELD_MARGIN = c->Field()->field_margin();
-        fieldConfig.FIELD_MARKINGS_WIDTH = c->Field()->field_markings_width();
-        fieldConfig.CENTER_CIRCLE_DIAMETER = c->Field()->center_circle_diameter();
 
-        fieldConfig.GOAL_WIDTH = c->Field()->goal_width();
-        fieldConfig.GOAL_LENGTH = c->Field()->goal_length();
-
-        fieldConfig.GOAL_AREA_WIDTH = c->Field()->goal_area_width();
-        fieldConfig.GOAL_AREA_LENGTH = c->Field()->goal_area_length();
-
-        fieldConfig.PENALTY_AREA_PRESENT = c->Field()->penalty_area_present();
-        fieldConfig.PENALTY_AREA_WIDTH = c->Field()->penalty_area_width();
-        fieldConfig.PENALTY_AREA_LENGTH = c->Field()->penalty_area_length();
-
-        fieldConfig.ROBOTSIZE = c->Field()->robot_size();
-        fieldConfig.BALL_RADIUS = c->Field()->ball_radius();
-
-        fieldConfig.PARKING_AREA_WIDTH = c->Field()->parking_area_width();
-        fieldConfig.PARKING_AREA_LENGTH = c->Field()->parking_area_length();
-        fieldConfig.PARKING_DISTANCE_BETWEEN_ROBOTS = c->Field()->parking_distance_between_robots();
-        fieldConfig.PARKING_DISTANCE_TO_LINE = c->Field()->parking_distance_to_line();
-        fieldConfig.CORNER_CIRCLE_DIAMETER  = c->Field()->corner_circle_diameter();
-        fieldConfig.PENALTY_SPOT_TO_BACKLINE  = c->Field()->penalty_spot_to_backline();
+    	fieldConfig.setConfig(c->Field()->field_length(), c->Field()->field_width(), c->Field()->field_margin(), c->Field()->goal_width(), c->Field()->goal_length(),
+    			c->Field()->center_circle_diameter(),
+				c->Field()->goal_area_width(), c->Field()->goal_area_length(),
+				c->Field()->penalty_area_present(), c->Field()->penalty_area_width(), c->Field()->penalty_area_length(),
+				c->Field()->parking_area_width(), c->Field()->parking_area_length(),
+				c->Field()->parking_distance_between_robots(), c->Field()->parking_distance_to_line(),
+				c->Field()->robot_size(), c->Field()->ball_radius(), c->Field()->field_markings_width(),
+				c->Field()->corner_circle_diameter(), c->Field()->penalty_spot_to_backline());
     }
 }
 

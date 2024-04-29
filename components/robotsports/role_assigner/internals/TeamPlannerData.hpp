@@ -146,6 +146,7 @@ public:
     previous_used_ball_by_planner_t previous_ball = {};
 
     // internal administration
+    game_state_e original_gamestate;
     std::vector<TeamPlannerRobot> team;
     std::vector<TeamPlannerOpponent> opponents;
 };

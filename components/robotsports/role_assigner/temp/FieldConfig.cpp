@@ -16,11 +16,11 @@ const int NRPLAYERS = 5; // max players per team
 namespace MRA {
 
 double FieldConfig::getFieldLength() const {
-	return FIELD_LENGTH;
+	return m_field_length;
 }
 
 double FieldConfig::getFieldWidth()  const {
-	return FIELD_WIDTH;
+	return m_field_width;
 }
 
 double FieldConfig::getFullFieldLength() const {
@@ -32,11 +32,11 @@ double FieldConfig::getFullFieldWidth()  const {
 }
 
 double FieldConfig::getFieldMargin()  const {
-	return FIELD_MARGIN;
+	return m_field_margin;
 }
 
 double FieldConfig::getCenterCirleDiameter()  const {
-	return CENTER_CIRCLE_DIAMETER;
+	return m_center_circle_diameter;
 }
 
 double FieldConfig::getCenterCirleRadius()  const {
@@ -44,11 +44,11 @@ double FieldConfig::getCenterCirleRadius()  const {
 }
 
 double FieldConfig::getRobotSize()  const {
-	return ROBOTSIZE;
+	return m_robot_size;
 }
 
 double FieldConfig::getRobotRadius()  const {
-	return ROBOTSIZE * 0.5;
+	return m_robot_size * 0.5;
 }
 
 double FieldConfig::getMaxFullFieldX() const  {
@@ -84,35 +84,35 @@ double FieldConfig::getMaxPossibleFieldDistance() const {
 }
 
 double FieldConfig::getBallRadius() const {
-	return BALL_RADIUS;
+	return m_ball_radius;
 }
 
 double FieldConfig::getGoalAreaWidth() const {
-	return GOAL_AREA_WIDTH;
+	return m_goal_area_width;
 }
 
 double FieldConfig::getGoalAreaLength() const {
-	return GOAL_AREA_LENGTH;
+	return m_goal_area_length;
 }
 
 bool FieldConfig::isPenaltyAreaPresent() const {
-	return PENALTY_AREA_PRESENT;
+	return m_penalty_area_present;
 }
 
 double FieldConfig::getPenaltyAreaWidth() const {
-	return PENALTY_AREA_WIDTH;
+	return m_penalty_area_width;
 }
 
 double FieldConfig::getPenaltyAreaLength() const {
-	return PENALTY_AREA_LENGTH;
+	return m_penalty_area_length;
 }
 
 double FieldConfig::getGoalLength() const {
-	return GOAL_LENGTH;
+	return m_goal_length;
 }
 
 double FieldConfig::getGoalWidth() const {
-	return GOAL_WIDTH;
+	return m_goal_width;
 }
 
 MRA::Geometry::Point FieldConfig::getOpponentGoal() const {
@@ -127,31 +127,31 @@ MRA::Geometry::Point FieldConfig::getOwnGoal() const {
 
 
 double FieldConfig::getParkingAreaWidth() const {
-	return PARKING_AREA_WIDTH;
+	return m_parking_area_width;
 }
 
 double FieldConfig::getParkingAreaLength() const {
-	return PARKING_AREA_LENGTH;
+	return m_parking_area_length;
 }
 
 double FieldConfig::getParkingDistanceBetweenPlayers() const {
-	return PARKING_DISTANCE_BETWEEN_ROBOTS;
+	return m_parking_distance_between_robots;
 }
 
 double FieldConfig::getParkingDistanceToLine() const {
-	return PARKING_DISTANCE_TO_LINE;
+	return m_parking_distance_to_line;
 }
 
 double FieldConfig::getPenaltySpotToBackline() const {
-	return PENALTY_SPOT_TO_BACKLINE;
+	return m_penalty_spot_to_backline;
 }
 
 double FieldConfig::getFieldMarkingsWidth() const {
-	return FIELD_MARKINGS_WIDTH;
+	return m_field_markings_width;
 }
 
 double FieldConfig::getCornerCircleDiameter() const {
-	return CORNER_CIRCLE_DIAMETER;
+	return m_corner_circle_diameter;
 }
 
 FieldConfig FillDefaultFieldConfig() {
@@ -183,36 +183,52 @@ FieldConfig FillDefaultFieldConfig() {
 			ball_radius, field_markings_width, field_markings_width_internal, penalty_spot_to_backline);
 }
 
+
 FieldConfig::FieldConfig(double field_length, double field_width, double field_margin, double goal_width, double goal_length,
 		double center_circle_diameter, double goal_area_width, double goal_area_length, bool penalty_area_present, double penalty_area_width,
 		double penalty_area_length, double parking_area_width, double parking_area_length,
 		double parking_distance_between_robots, double parking_distance_to_line,
-		double robot_size, double ball_radius, double field_markings_width, double field_markings_width_internal,
+		double robot_size, double ball_radius, double field_markings_width, double corner_circle_diameter,
+		double penalty_spot_to_backline)
+{
+	setConfig(field_length, field_width, field_margin, goal_width, goal_length,
+			center_circle_diameter, goal_area_width, goal_area_length, penalty_area_present, penalty_area_width,
+			penalty_area_length, parking_area_width, parking_area_length,
+			parking_distance_between_robots, parking_distance_to_line,
+			robot_size, ball_radius, field_markings_width, corner_circle_diameter,
+			penalty_spot_to_backline);
+}
+
+
+void FieldConfig::setConfig(double field_length, double field_width, double field_margin, double goal_width, double goal_length,
+		double center_circle_diameter, double goal_area_width, double goal_area_length, bool penalty_area_present, double penalty_area_width,
+		double penalty_area_length, double parking_area_width, double parking_area_length,
+		double parking_distance_between_robots, double parking_distance_to_line,
+		double robot_size, double ball_radius, double field_markings_width, double corner_circle_diameter,
 		double penalty_spot_to_backline)
 {
 
-	FIELD_LENGTH = field_length;
-	FIELD_WIDTH  = field_width;
-	FIELD_MARGIN = field_margin;
-	GOAL_WIDTH = goal_width;
-	GOAL_LENGTH = goal_length;
-	CENTER_CIRCLE_DIAMETER = center_circle_diameter;
-	GOAL_AREA_WIDTH = goal_area_width;
-	GOAL_AREA_LENGTH = goal_area_length;
-	PENALTY_AREA_PRESENT = penalty_area_present;
-	PENALTY_AREA_WIDTH = penalty_area_width;
-	PENALTY_AREA_LENGTH = penalty_area_length;
-	ROBOTSIZE = robot_size;
-	BALL_RADIUS = ball_radius;
-	FIELD_MARKINGS_WIDTH = field_markings_width;
-	FIELD_MARKINGS_WIDTH_INTERNAL = field_markings_width_internal;
-	PARKING_AREA_WIDTH = parking_area_width;
-	PARKING_AREA_LENGTH = parking_area_length;
-	PARKING_DISTANCE_BETWEEN_ROBOTS = parking_distance_between_robots;
-	PARKING_DISTANCE_TO_LINE = parking_distance_to_line;
-	PENALTY_SPOT_TO_BACKLINE = penalty_spot_to_backline;
-	MIN_DIST_TO_GOAL_AREA = 0.25;
-	CORNER_CIRCLE_DIAMETER = 0.75;
+	m_field_length = field_length;
+	m_field_width  = field_width;
+	m_field_margin = field_margin;
+	m_goal_width = goal_width;
+	m_goal_length = goal_length;
+	m_center_circle_diameter = center_circle_diameter;
+	m_goal_area_width = goal_area_width;
+	m_goal_area_length = goal_area_length;
+	m_penalty_area_present = penalty_area_present;
+	m_penalty_area_width = penalty_area_width;
+	m_penalty_area_length = penalty_area_length;
+	m_robot_size = robot_size;
+	m_ball_radius = ball_radius;
+	m_field_markings_width = field_markings_width;
+	m_parking_area_width = parking_area_width;
+	m_parking_area_length = parking_area_length;
+	m_parking_distance_between_robots = parking_distance_between_robots;
+	m_parking_distance_to_line = parking_distance_to_line;
+	m_penalty_spot_to_backline = penalty_spot_to_backline;
+	m_corner_circle_diameter = corner_circle_diameter;
+	m_minimum_distance_to_goal_area = 0.25;
 }
 
 bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) const {
@@ -221,7 +237,7 @@ bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) co
 
 bool FieldConfig::isInField(double x, double y, double margin) const {
 	/* check if point is in the field */
-	bool inField = (fabs(y) <= (0.5*FIELD_LENGTH)-margin) && (fabs(x) <= (0.5*FIELD_WIDTH)-margin);
+	bool inField = (fabs(y) <= (0.5*m_field_length)-margin) && (fabs(x) <= (0.5*m_field_width)-margin);
 	return inField;
 }
 
@@ -252,14 +268,14 @@ bool FieldConfig::isInOpponentGoalArea(double x, double y) const {
 bool FieldConfig::isInOwnGoalArea(double x, double y)  const {
 	bool inGoalArea = false;
 	/* check if point is in the goal */
-	if ((y <= -(FIELD_LENGTH/2)) && (y >= -(FIELD_LENGTH/2) - (GOAL_LENGTH + MIN_DIST_TO_GOAL_AREA)) &&
-	    (fabs(x) <= (GOAL_WIDTH/2 + MIN_DIST_TO_GOAL_AREA))) {
+	if ((y <= -(m_field_length/2)) && (y >= -(m_field_length/2) - (m_goal_length + m_minimum_distance_to_goal_area)) &&
+	    (fabs(x) <= (m_goal_width/2 + m_minimum_distance_to_goal_area))) {
 		inGoalArea = true;
 	}
 	/* check if point is in the goal-area */
-	else if ((y <= -(FIELD_LENGTH/2) + GOAL_AREA_LENGTH + MIN_DIST_TO_GOAL_AREA) &&
-			 (y >= -(FIELD_LENGTH/2)) &&
-   	         (fabs(x) <= (GOAL_AREA_WIDTH/2 + MIN_DIST_TO_GOAL_AREA))) {
+	else if ((y <= -(m_field_length/2) + m_goal_area_length + m_minimum_distance_to_goal_area) &&
+			 (y >= -(m_field_length/2)) &&
+   	         (fabs(x) <= (m_goal_area_width/2 + m_minimum_distance_to_goal_area))) {
 		inGoalArea = true;
 	}
 	return inGoalArea;
@@ -269,9 +285,9 @@ bool FieldConfig::isInOwnGoalArea(double x, double y)  const {
 bool FieldConfig::isInOpponentPenaltyArea(double x, double y) const {
 	bool inPenaltyArea = false;
 	/* check if point is in the penalty-area */
-	if ((y >= (FIELD_LENGTH/2) - PENALTY_AREA_LENGTH) &&
-	    (y <= (FIELD_LENGTH/2)) &&
-   	    (fabs(x) <= PENALTY_AREA_WIDTH/2)) {
+	if ((y >= (m_field_length/2) - m_penalty_area_length) &&
+	    (y <= (m_field_length/2)) &&
+   	    (fabs(x) <= m_penalty_area_width/2)) {
 		inPenaltyArea = true;
 	}
 	return inPenaltyArea;
@@ -281,9 +297,9 @@ bool FieldConfig::isInOpponentPenaltyArea(double x, double y) const {
 bool FieldConfig::isInOwnPenaltyArea(double x, double y, double margin) const {
 	bool inPenaltyArea = false;
 	/* check if point is in the penalty-area */
-	if ((y <= -(FIELD_LENGTH/2) + PENALTY_AREA_LENGTH + margin) &&
-	    (y >= -(FIELD_LENGTH/2)) &&
-   	    (fabs(x) <= PENALTY_AREA_WIDTH/2)+margin) {
+	if ((y <= -(m_field_length/2) + m_penalty_area_length + margin) &&
+	    (y >= -(m_field_length/2)) &&
+   	    (fabs(x) <= m_penalty_area_width/2)+margin) {
 		inPenaltyArea = true;
 	}
 	return inPenaltyArea;
@@ -296,25 +312,24 @@ bool FieldConfig::isInOwnPenaltyArea(double x, double y) const {
 
 string FieldConfig::toString() const {
 	std::stringstream buffer;
-	buffer << "FIELD_LENGTH = " << FIELD_LENGTH << endl;
-	buffer << "FIELD_WIDTH = " << FIELD_WIDTH << endl;
-	buffer << "FIELD_MARGIN = " << FIELD_MARGIN << endl;
-	buffer << "GOAL_WIDTH = " << GOAL_WIDTH << endl;
-	buffer << "GOAL_LENGTH = " << GOAL_LENGTH << endl;
-	buffer << "CENTER_CIRCLE_DIAMETER = " << CENTER_CIRCLE_DIAMETER << endl;
-	buffer << "GOAL_AREA_WIDTH = " << GOAL_AREA_WIDTH << endl;
-	buffer << "GOAL_AREA_LENGTH = " << GOAL_AREA_LENGTH << endl;
-	buffer << "PENALTY_AREA_PRESENT = " << PENALTY_AREA_PRESENT << endl;
-	buffer << "PENALTY_AREA_WIDTH = " << PENALTY_AREA_WIDTH << endl;
-	buffer << "PENALTY_AREA_LENGTH = " << PENALTY_AREA_LENGTH << endl;
-	buffer << "ROBOTSIZE = " << ROBOTSIZE << endl;
-	buffer << "BALL_RADIUS = " << BALL_RADIUS << endl;
-	buffer << "FIELD_MARKINGS_WIDTH = " << FIELD_MARKINGS_WIDTH << endl;
-	buffer << "FIELD_MARKINGS_WIDTH_INTERNAL = " << FIELD_MARKINGS_WIDTH_INTERNAL << endl;
-	buffer << "PARKING_AREA_WIDTH = " << PARKING_AREA_WIDTH << endl;
-	buffer << "PARKING_AREA_LENGTH = " << PARKING_AREA_LENGTH << endl;
-	buffer << "PARKING_DISTANCE_BETWEEN_ROBOTS = " << PARKING_DISTANCE_BETWEEN_ROBOTS << endl;
-	buffer << "PARKING_DISTANCE_TO_LINE = " << PARKING_DISTANCE_TO_LINE << endl;
+	buffer << "FIELD_LENGTH = " << m_field_length << endl;
+	buffer << "FIELD_WIDTH = " << m_field_width << endl;
+	buffer << "FIELD_MARGIN = " << m_field_margin << endl;
+	buffer << "GOAL_WIDTH = " << m_goal_width << endl;
+	buffer << "GOAL_LENGTH = " << m_goal_length << endl;
+	buffer << "CENTER_CIRCLE_DIAMETER = " << m_center_circle_diameter << endl;
+	buffer << "GOAL_AREA_WIDTH = " << m_goal_area_width << endl;
+	buffer << "GOAL_AREA_LENGTH = " << m_goal_area_length << endl;
+	buffer << "PENALTY_AREA_PRESENT = " << m_penalty_area_present << endl;
+	buffer << "PENALTY_AREA_WIDTH = " << m_penalty_area_width << endl;
+	buffer << "PENALTY_AREA_LENGTH = " << m_penalty_area_length << endl;
+	buffer << "ROBOTSIZE = " << m_robot_size << endl;
+	buffer << "BALL_RADIUS = " << m_ball_radius << endl;
+	buffer << "FIELD_MARKINGS_WIDTH = " << m_field_markings_width << endl;
+	buffer << "PARKING_AREA_WIDTH = " << m_parking_area_width << endl;
+	buffer << "PARKING_AREA_LENGTH = " << m_parking_area_length << endl;
+	buffer << "PARKING_DISTANCE_BETWEEN_ROBOTS = " << m_parking_distance_between_robots << endl;
+	buffer << "PARKING_DISTANCE_TO_LINE = " << m_parking_distance_to_line << endl;
 
 
 	return buffer.str();

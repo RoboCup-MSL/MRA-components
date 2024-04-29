@@ -767,7 +767,7 @@ void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPo
 		/**
 		 * Assign players to positions for an offensive kickoff
 		 * Kick off setup is determined by the KickOffSide
-		 * TODO: find a better solution to integrate the 2m rule...
+		 * TODO improvement: find a better solution to integrate the 2m rule...
 		 */
 		playerPositions.push_back( MRA::Geometry::Point(r_teamplannerData.parameters.kickoff_fp1_x, r_teamplannerData.parameters.kickoff_fp1_y));
 		playerPositions.push_back( MRA::Geometry::Point(r_teamplannerData.parameters.kickoff_fp2_x, r_teamplannerData.parameters.kickoff_fp2_y));

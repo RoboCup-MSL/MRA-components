@@ -14,7 +14,7 @@ Examples:
      bazel test //... --test_output all --nocache_test_results
 * commands to build only one component
   $ ./MRA-build.py -n -s alive
-     bazel build --color=yes //robotsports/proof_is_alive
+     bazel build --color=yes //robotsports/prove_is_alive
 * test a single test case with tracing
   $ ./MRA-build.py -T -s vision -- --test_arg=--gtest_filter=FalconsLocalizationVisionTest.calc000
 * test a single test case with valgrind
@@ -128,7 +128,7 @@ class CmakeBuilder(Builder):
         self.run_cmd('rm -rf build; mkdir build')
     def run_build(self, scope: list, jobs: int = DEFAULT_NUM_PARALLEL_JOBS) -> None:
         # TODO: do something with scope, it currently only works for bazel, so now everyone gets a "full" build
-        self.run_cmd('cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
+        self.run_cmd('mkdir build; cd build; cmake .. -G "Unix Makefiles"') # TODO: also support ninja?
         self.run_cmd(f'cd build; make -j {jobs}')
     def run_test(self, scope: list, tracing: bool = False, extra_args: list = []) -> None:
         cmd = f'cd build; ctest --rerun-failed --output-on-failure'

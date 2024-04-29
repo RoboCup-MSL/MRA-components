@@ -1,14 +1,14 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_ROBOTSPORTS_PROOF_IS_ALIVE_HPP
-#define _MRA_ROBOTSPORTS_PROOF_IS_ALIVE_HPP
+#ifndef _MRA_ROBOTSPORTS_PROVE_IS_ALIVE_HPP
+#define _MRA_ROBOTSPORTS_PROVE_IS_ALIVE_HPP
 
 
 // component name definition goes on top
 // (when logging.hpp is used internally in a component, then component name may resolve to "unknown")
 #ifndef MRA_COMPONENT_NAME
-#define MRA_COMPONENT_NAME "RobotsportsProofIsAlive"
+#define MRA_COMPONENT_NAME "RobotsportsProveIsAlive"
 #endif
 
 
@@ -18,26 +18,26 @@
 #include "logging.hpp"
 
 // generated protobuf types from interface of this component
-#include "RobotsportsProofIsAlive_datatypes.hpp"
+#include "RobotsportsProveIsAlive_datatypes.hpp"
 
 
 
 
-namespace MRA::RobotsportsProofIsAlive
+namespace MRA::RobotsportsProveIsAlive
 {
 
-typedef MRA::RobotsportsProofIsAlive::Input InputType;
-typedef MRA::RobotsportsProofIsAlive::Params ParamsType;
-typedef MRA::RobotsportsProofIsAlive::State StateType;
-typedef MRA::RobotsportsProofIsAlive::Output OutputType;
-typedef MRA::RobotsportsProofIsAlive::Local LocalType;
+typedef MRA::RobotsportsProveIsAlive::Input InputType;
+typedef MRA::RobotsportsProveIsAlive::Params ParamsType;
+typedef MRA::RobotsportsProveIsAlive::State StateType;
+typedef MRA::RobotsportsProveIsAlive::Output OutputType;
+typedef MRA::RobotsportsProveIsAlive::Local LocalType;
 
 
-class RobotsportsProofIsAlive: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
+class RobotsportsProveIsAlive: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
 {
 public:
-    RobotsportsProofIsAlive() {};
-    ~RobotsportsProofIsAlive() {};
+    RobotsportsProveIsAlive() {};
+    ~RobotsportsProveIsAlive() {};
 
     // user implementation
     int tick(
@@ -52,7 +52,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/robotsports/proof_is_alive/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/robotsports/prove_is_alive/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity
@@ -96,20 +96,20 @@ public:
         return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, local);
     };
 
-}; // class RobotsportsProofIsAlive
+}; // class RobotsportsProveIsAlive
 
 
 // configuration handling
 inline ParamsType defaultParams()
 {
-    return RobotsportsProofIsAlive().defaultParams();
+    return RobotsportsProveIsAlive().defaultParams();
 }
 inline ParamsType loadParams(std::string configFile)
 {
     return MRA::LoadDefaultParams<ParamsType>(configFile);
 }
 
-} // namespace MRA::RobotsportsProofIsAlive
+} // namespace MRA::RobotsportsProveIsAlive
 
 
 #endif

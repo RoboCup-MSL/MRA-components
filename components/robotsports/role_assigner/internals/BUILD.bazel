@@ -9,7 +9,7 @@ cc_library(
         "GridHeuristic.cpp",
         "planner_common.cpp",
         "PlannerGridInfoData.cpp",
-        "PlannerOptions.cpp",
+        "TeamPlannerParameters.cpp",
         "RolePosition.cpp",
         "SvgUtils.cpp",
         "TeamFormation.cpp",
@@ -28,7 +28,7 @@ cc_library(
         "planner_common.hpp",
         "planner_types.hpp",
         "PlannerGridInfoData.hpp",
-        "PlannerOptions.hpp",
+        "TeamPlannerParameters.hpp",
         "RolePosition.hpp",
         "SvgUtils.hpp",
         "TeamFormation.hpp",
@@ -46,7 +46,7 @@ cc_library(
     deps = [
         "//libraries/logging",
         "//libraries/geometry",
-        "//components/robotsports/reole_assigner:datatypes",
+        "//components/robotsports/role_assigner:datatypes",
     ],
     visibility = ["//visibility:public"],
 )

@@ -7,6 +7,7 @@ cc_library(
         "RobotsportsRoleAssigner_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/robotsports/role_assigner/interface:interface",
     ],
@@ -25,7 +26,9 @@ cc_library(
     deps = [
         "//base:abstract_interface",
         ":datatypes",
+        "//components/robotsports/role_assigner/internals:RoleAssigner",
         "//libraries/logging",
+        "//libraries/geometry",
     ],
 )
 

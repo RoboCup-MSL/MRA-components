@@ -7,6 +7,7 @@ cc_library(
         "RobotsportsRobotStrategy_datatypes.hpp",
     ],
     visibility = ["//visibility:public"],
+    includes = ["."],
     deps = [
         "//components/robotsports/robot_strategy/interface:interface",
     ],

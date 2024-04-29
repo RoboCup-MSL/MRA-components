@@ -9,15 +9,15 @@
 using namespace ::testing;
 
 // System under test:
-#include "RobotsportsProofIsAlive.hpp"
+#include "RobotsportsProveIsAlive.hpp"
 #include <cmath>
 using namespace MRA;
 
 // Basic tick shall run OK and return error_value 0.
-TEST(RobotsportsProofIsAliveTest, basicTick)
+TEST(RobotsportsProveIsAliveTest, basicTick)
 {
     // Arrange
-    auto m = RobotsportsProofIsAlive::RobotsportsProofIsAlive();
+    auto m = RobotsportsProveIsAlive::RobotsportsProveIsAlive();
 
     // Act
     int error_value = m.tick();
@@ -35,14 +35,14 @@ google::protobuf::Timestamp timeFromDouble(google::protobuf::Timestamp const &t0
 }
 
 // Turn test check if all target positions are correct
-TEST(RobotsportsProofIsAliveTest, turnTest)
+TEST(RobotsportsProveIsAliveTest, turnTest)
 {
     // Arrange
-    auto m = RobotsportsProofIsAlive::RobotsportsProofIsAlive();
-    auto input = RobotsportsProofIsAlive::Input();
-    auto output = RobotsportsProofIsAlive::Output();
-    auto state = RobotsportsProofIsAlive::State();
-    auto local = RobotsportsProofIsAlive::Local();
+    auto m = RobotsportsProveIsAlive::RobotsportsProveIsAlive();
+    auto input = RobotsportsProveIsAlive::Input();
+    auto output = RobotsportsProveIsAlive::Output();
+    auto state = RobotsportsProveIsAlive::State();
+    auto local = RobotsportsProveIsAlive::Local();
     auto params = m.defaultParams();
     google::protobuf::Timestamp t0 = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
 
@@ -84,14 +84,14 @@ TEST(RobotsportsProofIsAliveTest, turnTest)
 }
 
 // Time out test, check if time out is reported when turn took too long
-TEST(RobotsportsProofIsAliveTest, timeoutTest)
+TEST(RobotsportsProveIsAliveTest, timeoutTest)
 {
     // Arrange
-    auto m = RobotsportsProofIsAlive::RobotsportsProofIsAlive();
-    auto input = RobotsportsProofIsAlive::Input();
-    auto output = RobotsportsProofIsAlive::Output();
-    auto state = RobotsportsProofIsAlive::State();
-    auto local = RobotsportsProofIsAlive::Local();
+    auto m = RobotsportsProveIsAlive::RobotsportsProveIsAlive();
+    auto input = RobotsportsProveIsAlive::Input();
+    auto output = RobotsportsProveIsAlive::Output();
+    auto state = RobotsportsProveIsAlive::State();
+    auto local = RobotsportsProveIsAlive::Local();
     auto params = m.defaultParams();
     google::protobuf::Timestamp t0 = google::protobuf::util::TimeUtil::GetCurrentTime(); // arbitrary
     input.mutable_worldstate()->mutable_robot()->set_active(true);
@@ -115,12 +115,12 @@ TEST(RobotsportsProofIsAliveTest, timeoutTest)
 }
 
 // Basic tick shall run OK and return error_value 0.
-TEST(RobotsportsProofIsAliveTest, robotInactiveTest)
+TEST(RobotsportsProveIsAliveTest, robotInactiveTest)
 {
     // Arrange
-    auto m = RobotsportsProofIsAlive::RobotsportsProofIsAlive();
-    auto input = RobotsportsProofIsAlive::Input();
-    auto output = RobotsportsProofIsAlive::Output();
+    auto m = RobotsportsProveIsAlive::RobotsportsProveIsAlive();
+    auto input = RobotsportsProveIsAlive::Input();
+    auto output = RobotsportsProveIsAlive::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(false);
 
     // Act

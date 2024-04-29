@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>reachable paths with ball behind oppenent goal and player on left side of the field at opponent half</tns:Description>
+  <tns:Options svgOutputFileName="output_team/reachable_position_7.svg"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="0.0" y="17.5"/>
+  <tns:Team x="-6.0" y="6.0"/>
+</tns:Situation>
+

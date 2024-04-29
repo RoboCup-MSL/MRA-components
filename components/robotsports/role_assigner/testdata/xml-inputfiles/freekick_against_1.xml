@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>test freekick against</tns:Description>
+  <tns:Options svgOutputFileName="output_team/freekick_against_1.svg"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Freekick Against</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-2.0" y="2.75"/>
+  <tns:Team x="1.0" y="-3.0"/>
+  <tns:Team x="-2.0" y="4.0"/>
+  <tns:Team x="2.0" y="1.0"/>
+  <tns:Team x="-2.0" y="-3.0"/>
+  <tns:Team x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Opponent x="1.0" y="2.0"/>
+  <tns:Opponent x="-2.0" y="2.0"/>
+  <tns:Opponent x="2.0" y="2.0"/>
+  <tns:Opponent x="0.25" y="8.5" isGoalie="true"/>
+  <tns:Opponent x="4.0" y="5.0"/>
+</tns:Situation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

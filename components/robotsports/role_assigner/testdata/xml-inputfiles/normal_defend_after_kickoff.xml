@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>test defending  after kickoff signal, ball not reported as controlle by us</tns:Description>
+  <tns:Options svgOutputFileName="output_team/normal_defend_after_kickoff.svg"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="0.0" y="-0.15"/>
+  <tns:Team x="0.5" y="0.1"/>
+  <tns:Team x="5.0" y="-0.75"/>
+  <tns:Team x="-5.0" y="-0.75"/>
+  <tns:Team x="2.5" y="-2.5"/>
+  <tns:Team x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Opponent x="3.0" y="3.0"/>
+  <tns:Opponent x="-3.0" y="3.0"/>
+  <tns:Opponent x="0" y="5"/>
+  <tns:Opponent x="0.25" y="8.5" isGoalie="true"/>
+  <tns:Opponent x="0.5" y="7.5"/>
+</tns:Situation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

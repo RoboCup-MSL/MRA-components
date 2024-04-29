@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>ball kicked to goal</tns:Description>
+  <tns:Options svgOutputFileName="output_team/ball_kicked_1.svg" use_pass_to_position_for_attack_support="true"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="1.20" y="2.05" velx="0.00" vely="0.00"/>
+  <tns:Team x="0.614" y="1.893" rz="-1.314" velx="-0.393" vely="0.227" velrz="0.000"  passedBall="true"/>
+  <tns:Team x="3.563" y="2.682" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
+  <tns:PickupPosition x="0.000" y="0.000" ts="84825.324" valid="false" />
+  <tns:SituationInfo team_controls_ball="true" passing_required="false">
+  	<tns:PassData valid="true" origin_x="0.614" origin_y="1.893" target_x="0" target_y="9.0" angle="0.0" velocity="1.0" ts="0.1" target_id="0"/>
+  </tns:SituationInfo>
+</tns:Situation>
+

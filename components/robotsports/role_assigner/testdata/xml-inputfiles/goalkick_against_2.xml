@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>goalkick against 2 - real occurred in game against Falcons on 2019-01-10</tns:Description>
+  <tns:Options svgOutputFileName="output_team/goalkick_against_2.svg"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Goalkick Against</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="3.0" y="6.0" velx="0.0" vely="0.0"/>
+  <tns:Team x="1.0" y="-3.0"/>
+  <tns:Team x="-2.0" y="4.0"/>
+  <tns:Team x="2.0" y="1.0"/>
+  <tns:Team x="-2.0" y="-3.0"/>
+  <tns:Team x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Opponent x="3.5" y="6.5"/>
+  <tns:Opponent x="1.0" y="6.0"/>
+  <tns:Opponent x="5.0" y="-2.5"/>
+  <tns:Opponent x="-3.0" y="-2.0"/>
+  <tns:Opponent x="0.25" y="8.5" isGoalie="true"/>
+</tns:Situation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

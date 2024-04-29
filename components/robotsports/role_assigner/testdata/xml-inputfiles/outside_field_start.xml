@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>wrong sweeper swap issue #79</tns:Description>
+  <tns:Options svgOutputFileName="output_team/outside_field_start.svg" autoAssignGoalie="false" preferredSetplayKicker="3" preferredSetplayReceiver="2" />
+  <tns:Field field_length="18.141" field_width="12.146" field_margin="1.0" />
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-0.26" y="9.99" velx="0.27" vely="0.07"/>
+  <tns:Team id="2" x="6.775" y="0.976" rz="0.656" velx="0.226" vely="-1.107" velrz="-0.063"     previous_result_present="true"  previous_result_ts="51562" previous_result_x="3.0365" previous_result_y="-4.53525" previous_result_dynamic_role="DEFENDER"/>
+  <tns:Team id="1" x="2.100" y="0.467" rz="0.239" velx="-0.238" vely="1.457" velrz="0.000"     previous_result_present="true"  previous_result_ts="51562.1" previous_result_x="3.0365" previous_result_y="4.53525" previous_result_dynamic_role="SWEEPER"/>
+  <tns:Team id="3" x="-3.145" y="-3.535" rz="-0.203" velx="-0.825" vely="1.822" velrz="0.000"     previous_result_present="true"  previous_result_ts="51562.1" previous_result_x="-3.42091" previous_result_y="9.2005" previous_result_dynamic_role="INTERCEPTOR"/>
+  <tns:PickupPosition x="0.000" y="0.000" ts="51562.106" valid="false" />
+  <tns:SituationInfo passing_required="false">
+    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
+  </tns:SituationInfo>
+</tns:Situation>
+

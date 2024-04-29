@@ -45,17 +45,54 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     plannerdata_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
 }
 
+// Data class for storing file parts
+class FileParts
+{
+public:
+    std::string path;
+    std::string name;
+    std::string ext;
+};
+
+// split filename in fileparts (compared to matlab fileparts function)
+// split in path, name and extension
+static FileParts fileparts(const std::string& filename)
+{
+    int idx0 = filename.rfind("/");
+    int idx1 = filename.rfind(".");
+
+    FileParts fp;
+    fp.path = filename.substr(0,idx0+1);
+    fp.name = filename.substr(idx0+1,idx1-idx0-1);
+    fp.ext  = filename.substr(idx1);
+    return fp;
+}
+
+/**
+ * return true if path is a directory, otherwise return false
+ */
+static bool isDirectory(const string& path)
+{
+	struct stat info;
+
+    if(stat( path.c_str(), &info ) != 0) {
+        return false;
+    }
+    else if(info.st_mode & S_IFDIR) {
+        return true;
+    }
+    return false;
+}
 
 void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<PlayerPlannerResult>&  comparing_player_paths) {
-#if 0
     if (save_name.empty()) {
         return;  // No outputfile required
     }
 
-    FileParts parts = FileUtils::fileparts(save_name);
+    FileParts parts = fileparts(save_name);
     if (parts.path.size() > 0) {
-        if (!FileUtils::isDirectory(parts.path)) {
-            Logging::ERROR("Not existing directory: \"%s\"", parts.path.c_str());
+        if (!isDirectory(parts.path)) {
+            MRA_LOG_ERROR("Not existing directory: \"%s\"", parts.path.c_str());
             return;
         }
     }
@@ -97,7 +134,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     // print input data to svg file
     fprintf(fp, "\n\n");
     fprintf(fp, "\tgamestate = %s (%d)\n", GameStateAsString(gamestate).c_str(), gamestate);
-    fprintf(fp, "\torignal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
+    //TODO: needed ? fprintf(fp, "\torignal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
     string controlBallByPlayerRemark = "";
 
     int controlBallByPlayerIdx = -1;
@@ -125,7 +162,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     }
     fprintf(fp, "\n");
 
-    fprintf(fp, "\tglobalBall: %s\n", ball.toString().c_str());
+    fprintf(fp, "\tglobalBall: position: %s velocity: %s\n", ball.position.toString().c_str(), ball.velocity.toString().c_str());
     fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.previous_ball_present).c_str());
     if (data.previous_ball.previous_ball_present) {
         fprintf(fp, " x=%4.2f y=%4.2f", data.previous_ball.x, data.previous_ball.y);
@@ -293,9 +330,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
     fprintf(fp, "  <tns:Simulation numberOfIterations=\"1\" simulateOpponent=\"false\"/>\n");
     fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(gamestate).c_str());
-    fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(parameters.attack_formation).c_str());
-    fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(parameters.defense_formation).c_str());
-    if (ball.position.getConfidence() > 0.001) {
+//TODO    fprintf(fp, "  <tns:AttackFormation>%s</tns:AttackFormation>\n", FormationAsString(parameters.attack_formation).c_str());
+//TODO    fprintf(fp, "  <tns:DefenseFormation>%s</tns:DefenseFormation>\n", FormationAsString(parameters.defense_formation).c_str());
+    if (ball.is_valid) {
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
                 ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
     }
@@ -340,15 +377,15 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp, "  <tns:Team %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
                 idString.c_str(), labelString.c_str(),
                 data.team[idx].position.x, data.team[idx].position.y, data.team[idx].position.rz,
-				data.team[idx].velocity.x, data.team[idx].velocity.y, rzvel, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
+				data.team[idx].velocity.x, data.team[idx].velocity.y, data.team[idx].velocity.rz, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
     }
     for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
         string idString = "id=\""+ std::to_string(idx+1) + "\"";
-        string labelString = "label=\""+ std::to_string(data.opponents[idx].labelId) + "\"";
+        string labelString = "label=\""+ std::to_string(data.opponents[idx].label) + "\"";
         fprintf(fp, "  <tns:Opponent %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
                 idString.c_str(), labelString.c_str(),
-                data.opponents[idx].position.x, data.opponents[idx].position.y, data.opponents[idx].position.position.rz,
+                data.opponents[idx].position.x, data.opponents[idx].position.y, data.opponents[idx].position.rz,
 				data.opponents[idx].velocity.x, data.opponents[idx].velocity.y, data.opponents[idx].velocity.rz);
 
     }
@@ -436,7 +473,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
             fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()+(fieldConfig.getGoalLength()*0.75));
 
     //vertices
-    for (std::vector<Vertex* >::size_type j = 0; j < vertices.size(); j++) {
+    for (auto j = 0u; j < vertices.size(); j++) {
         Vertex* v = vertices[j];
 
         fprintf(fp,
@@ -455,25 +492,25 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     }
 
     // OPPONENTS
-    for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx != data.opponents.size(); bar_idx++) {
-        Vector2D bar_pos = data.opponents[bar_idx].position.getXYlocation();
+    for(auto bar_idx = 0u; bar_idx != data.opponents.size(); bar_idx++) {
+        Geometry::Position bar_pos = data.opponents[bar_idx].position;
         fprintf(fp,
                 "\n<!-- Opponent -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, parameters.svgOpponentColor.c_str(), parameters.svgOpponentColor.c_str());
-        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>",
+        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%u</text>",
                 svgX(bar_pos.x- 0.65*halfRobotSize), svgY(bar_pos.y- 0.65*halfRobotSize), bar_idx+1);
     }
 
     // TEAMMATES
     // draw me first.
     if (data.team.size() > 0 ) {
-        Vector2D bar_pos = data.team[0].position.getXYlocation();
-        double r = data.team[0].position.position.rz + M_PI_2;
+    	Geometry::Position bar_pos = data.team[0].position;
+        double r = data.team[0].position.rz + M_PI_2;
         string teamColor = parameters.svgTeamColor;
         string fillColor = parameters.svgTeamColor;
-        if (parameters.svgMeColor.length() > 0) {
-            fillColor = parameters.svgMeColor;
-        }
+//TODO        if (parameters.svgMeColor.length() > 0) {
+//            fillColor = parameters.svgMeColor;
+//        }
         fprintf(fp,
                 "\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
@@ -483,8 +520,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
                     svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));
         }
     }
-    for(std::vector<Vector2D>::size_type bar_idx = 1; bar_idx < data.team.size(); bar_idx++) {
-        Vector2D bar_pos = data.team[bar_idx].position.getXYlocation();
+    for(auto bar_idx = 1u; bar_idx < data.team.size(); bar_idx++) {
+    	Geometry::Point bar_pos = data.team[bar_idx].position;
         fprintf(fp,
                 "\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, parameters.svgTeamColor.c_str(), parameters.svgTeamColor.c_str());
@@ -503,24 +540,24 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     for (auto pidx = 0u;  pidx < player_paths.size(); pidx++) {
         auto player_path = player_paths[pidx];
         string fillColor = parameters.svgTeamColor;
-        if (parameters.svgMeColor.length() > 0) {
-            fillColor = parameters.svgMeColor;
-        }
+//TODO        if (parameters.svgMeColor.length() > 0) {
+//            fillColor = parameters.svgMeColor;
+//        }
         if (player_path.path.size() > 0) {
             fprintf(fp,
                     "\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                     (int)pidx, svgX(player_path.path[0].x - halfRobotSize), svgY(player_path.path[0].y + halfRobotSize), robotSize, robotSize,
 					parameters.svgTeamColor.c_str(), fillColor.c_str());
         }
-        for (std::vector<planner_piece_t>::size_type j = 1; j < player_path.path.size(); j++) {
+        for (auto j = 1u; j < player_path.path.size(); j++) {
             double prev_x = (player_path).path[j-1].x;
             double prev_y = (player_path).path[j-1].y;
             double new_x = (player_path).path[j].x;
             double new_y = (player_path).path[j].y;
             if (j == 1) {
                 // start first path piece not in middle of player but near the edge of the player
-                Vector2D prev_pos(prev_x, prev_y);
-                Vector2D new_pos(new_x, new_y);
+            	Geometry::Point prev_pos(prev_x, prev_y);
+            	Geometry::Point new_pos(new_x, new_y);
                 double alfa = prev_pos.angle(new_pos);
                 prev_x = prev_x - (cos(alfa) * halfRobotSize);
                 prev_y = prev_y - (sin(alfa) * halfRobotSize);
@@ -559,15 +596,15 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     for (auto pidx = 0u;  pidx < comparing_player_paths.size(); pidx++) {
         string startStroke = "blue";
 
-        for (std::vector<planner_piece_t>::size_type j = 1; j < comparing_player_paths[pidx].path.size(); j++) {
+        for (auto j = 1u; j < comparing_player_paths[pidx].path.size(); j++) {
             double prev_x = (comparing_player_paths[pidx]).path[j-1].x;
             double prev_y = (comparing_player_paths[pidx]).path[j-1].y;
             double new_x = (comparing_player_paths[pidx]).path[j].x;
             double new_y = (comparing_player_paths[pidx]).path[j].y;
             if (j == 1) {
                 // start first path piece not in middle of player but near the edge of the player
-                Vector2D prev_pos(prev_x, prev_y);
-                Vector2D new_pos(new_x, new_y);
+                Geometry::Point prev_pos(prev_x, prev_y);
+                Geometry::Point new_pos(new_x, new_y);
                 double alfa = prev_pos.angle(new_pos);
                 prev_x = prev_x - (cos(alfa) * halfRobotSize);
                 prev_y = prev_y - (sin(alfa) * halfRobotSize);
@@ -601,25 +638,24 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     }
 
     // put player-id on top of the players
-    for(std::vector<Vector2D>::size_type bar_idx = 0; bar_idx < data.team.size(); bar_idx++) {
-        Vector2D bar_pos = data.team[bar_idx].position.getXYlocation();
+    for(auto bar_idx = 0u; bar_idx < data.team.size(); bar_idx++) {
+        Geometry::Point bar_pos = data.team[bar_idx].position;
         long robotId = data.team[bar_idx].robotId;
         fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"large\" font-weight-absolute=\"bold\" fill=\"black\">%lu</text>", svgX(bar_pos.x - 0.65*halfRobotSize), svgY(bar_pos.y - 0.65*halfRobotSize), robotId);
     }
 
     // BALL
-    if (ball.isValid()) {
+    if (ball.is_valid) {
         fprintf(fp,
                 "\n<!-- Ball -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
                 svgX(ball.position.x),  svgY(ball.position.y), fieldConfig.getBallRadius()); // half ball diameter
     }
     if (parameters.svgDrawVelocity) {
-        Vector2D linVel;
-        double vrz;
-        ball.getVelocity(linVel, vrz);
-        double speed  = linVel.norm();
+    	Geometry::Point linVel(ball.velocity.x, ball.velocity.y);
+        double speed  = linVel.size();
         if (speed > 1e-6) {
-            Vector2D endVelocityVector = ball.position.add(linVel);
+        	Geometry::Point endVelocityVector(ball.position.x, ball.position.y);
+        	endVelocityVector += linVel;
             //FIELD - middle line
             fprintf(fp,
                     "\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",
@@ -630,8 +666,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
 
     fprintf(fp, "</svg>\n");
     fclose(fp);
-    logAlways("created SVG file : %s", save_name.c_str());
-#endif
+    printf("created SVG file : %s", save_name.c_str());
+    MRA_LOG_INFO("created SVG file : %s", save_name.c_str());
 }
 
 

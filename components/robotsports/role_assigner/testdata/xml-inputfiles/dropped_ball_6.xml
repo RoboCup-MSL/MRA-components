@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>dropped ball situation - field occupation from European Open 2022-11</tns:Description>
+  <tns:Options svgOutputFileName="output_team/dropped_ball_6.svg" use_pass_to_position_for_attack_support="false"/>
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
+  <tns:GameState>Dropped Ball</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="4.25" y="4.0"/>
+  <tns:Team x="0.0" y="-9.0" rz="0.0" isGoalie="true"/>
+  <tns:Team x="-2.5" y="3.5" rz="0.0"/>
+  <tns:Team x="-1.75" y="-1.75" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Team x="-0.25" y="-0.75" rz="0.0"/>
+  <tns:Team x="6.0" y="2.5" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Opponent x="0.0" y="9.0" isGoalie="true"/>
+  <tns:Opponent x="1.2" y="6.0"/>
+  <tns:Opponent x="4.50" y="4.25"/>
+  <tns:Opponent x="4.5" y="-6.0"/>
+ </tns:Situation> 

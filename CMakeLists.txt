@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-arr
 # install on Ubuntu: sudo apt-get install protobuf-compiler
 find_package(Protobuf)
 if(NOT PROTOBUF_FOUND)
-message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
+  message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
@@ -23,10 +23,12 @@ find_library(PROTOBUF_LIBRARY protobuf)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-# dependency gtest 
-find_package(GTest)
-if(NOT GTEST_FOUND)
-message(FATAL_ERROR "GTest could not be find by cmake. Install Gtest (e.g. sudo apt-get install libgtest-dev)")
+if (MRA_TEST_ENABLED)
+  # dependency gtest
+  find_package(GTest)
+  if(NOT GTEST_FOUND)
+    message(FATAL_ERROR "GTest could not be find by cmake. Install Gtest (e.g. sudo apt-get install libgtest-dev)")
+  endif()
 endif()
 
 # dependency: json
@@ -37,8 +39,10 @@ FetchContent_MakeAvailable(json)
 ##########################################################
 # testing
 ##########################################################
-enable_testing()
-include(CTest)
+if (MRA_TEST_ENABLED)
+ enable_testing()
+ include(CTest)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(

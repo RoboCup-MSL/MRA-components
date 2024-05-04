@@ -304,12 +304,16 @@ void Solver::cleanupDuplicateTrackers()
 
 void Solver::setOutputsAndState()
 {
+    MRA_TRACE_FUNCTION();
     // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
+    // also, the number of iterations per tracker is stored in diagnostics output
     _state.mutable_trackers()->Clear();
+    _diag.mutable_numberoftries()->Clear();
     for (auto const &tr: _trackers)
     {
         TrackerState ts = tr;
         *_state.add_trackers() = ts;
+        _diag.add_numberoftries(tr.fitPath.size());
     }
 
     // only the best trackers are set in output
@@ -365,7 +369,7 @@ cv::Mat Solver::createDiagnosticsMat() const
     }
 
     // add fit path
-    MRA_LOG_DEBUG("number of points in fit path: %d", (int)_fitResult.path.size());
+    MRA_LOG_DEBUG("number of iterations (fit path): %d", (int)_fitResult.path.size());
     std::vector<cv::Point2f> pathPoints;
     std::transform(_fitResult.path.begin(), _fitResult.path.end(), std::back_inserter(pathPoints),
                    [](const MRA::Geometry::Pose& obj) { return cv::Point2f(obj.x, obj.y); });

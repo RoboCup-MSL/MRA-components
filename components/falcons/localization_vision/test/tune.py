@@ -209,7 +209,11 @@ class TuningTool():
         self.info['best candidate'] = 'N/A'
         if len(self.data.output.candidates):
             c = self.data.output.candidates[0]
-            self.info['best candidate'] = 'best candidate: x={:7.3f} y={:7.3f} rz={:7.3f} conf={:5.3f}'.format(c.pose.x, c.pose.y, c.pose.rz, c.confidence)
+            numberOfTries = self.data.local.numberOfTries[0]
+            self.info['best candidate'] = 'best candidate: {"pose":{' \
+                + '"x":{:.6f},"y":{:.6f},"rz":{:.6f}'.format(c.pose.x, c.pose.y, c.pose.rz) \
+                + '},"confidence":' + '{:.6f}'.format(c.confidence) \
+                + ',"numberOfTries":' + '{:d}'.format(numberOfTries)
         # Make array of lines (using OrderedDict and layout specification preference from INFO_LINES)
         # Replace missing data with empty strings, to keep consistent line layout/spacing
         info_lines = self.info.values()

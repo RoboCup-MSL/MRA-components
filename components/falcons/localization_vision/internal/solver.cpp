@@ -318,7 +318,8 @@ void Solver::setOutputsAndState()
         if (tr.fitValid)
         {
             Candidate c;
-            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)tr.fitResult);
+            MRA::Geometry::Position pc(tr.fitResult); // wrap the rz angle, as the solver is not confining itself to (-pi,pi)
+            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)pc);
             c.set_confidence(tr.confidence());
             *_output.add_candidates() = c;
         }

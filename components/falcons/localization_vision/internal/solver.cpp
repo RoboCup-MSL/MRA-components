@@ -122,7 +122,7 @@ cv::Mat Solver::createReferenceFloorMat(bool withBlur) const
 
 void Solver::reinitialize()
 {
-    MRA_TRACE_FUNCTION();
+    MRA_TRACE_FUNCTION_INPUT(_reinit);
     // first check the flag
     if (!_reinit) return;
 
@@ -132,21 +132,29 @@ void Solver::reinitialize()
     std::string stateParamsStr, paramsStr;
     _state.params().SerializeToString(&stateParamsStr);
     _params.SerializeToString(&paramsStr);
-    bool cache_hit = (stateParamsStr == paramsStr) && _state.has_referencefloor();
+    bool state_equal = (stateParamsStr == paramsStr);
+    if (!state_equal) {
+        MRA_LOG_DEBUG("stateParamsStr %3d %s", (int)stateParamsStr.size(), convert_proto_to_json_str(_state.params()).c_str());
+        MRA_LOG_DEBUG("     paramsStr %3d %s", (int)paramsStr.size(), convert_proto_to_json_str(_params).c_str());
+    }
+    bool state_floor = _state.has_referencefloor();
+    bool cache_hit = state_equal && state_floor;
     if (cache_hit)
     {
         MRA::OpenCVUtils::deserializeCvMat(_state.referencefloor(), _referenceFloorMat);
-        return;
     }
+    else
+    {
+        MRA_LOG_DEBUG("cache miss, creating reference floor");
 
-    MRA_LOG_DEBUG("cache miss, creating reference floor");
+        // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
+        _referenceFloorMat = createReferenceFloorMat(true);
+        MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
 
-    // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
-    _referenceFloorMat = createReferenceFloorMat(true);
-    MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
-
-    // store params into state
-    _state.mutable_params()->CopyFrom(_params);
+        // store params into state
+        _state.mutable_params()->CopyFrom(_params);
+    }
+    MRA_TRACE_FUNCTION_OUTPUTS(cache_hit, state_equal, state_floor);
 }
 
 std::vector<cv::Point2f> Solver::createLinePoints() const

@@ -3,6 +3,7 @@
 #include "json_convert.hpp"
 #include "spdlogformatter.hpp" // our customizations
 #include "logdebug.hpp"
+#include "datatypes/TickMetaData.pb.h"
 #include <memory>
 #include <unistd.h>
 #include "spdlog/spdlog.h"  // spdlog API: https://github.com/gabime/spdlog
@@ -98,6 +99,7 @@ void logTickEnd(
     MRA::Datatypes::LogSpec const &cfg,
     std::ostringstream &bindata,
     int counter,
+    google::protobuf::Timestamp const &timestamp,
     double duration,
     int error_value,
     google::protobuf::Message const &state,
@@ -127,6 +129,13 @@ void logTickEnd(
             dumpPbToSs(output, bindata);
             dumpPbToSs(diag, bindata);
             dumpPbToSs(state, bindata);
+            MRA::Datatypes::TickMetaData meta;
+            meta.set_component(componentName);
+            meta.set_counter(counter);
+            *meta.mutable_timestamp() = timestamp;
+            meta.set_duration(duration);
+            meta.set_return_code(error_value);
+            dumpPbToSs(meta, bindata);
             std::string filename = logTickBinFile(cfg, componentName, counter);
             if (filename.size()) {
                 std::ofstream binfile(filename, std::ios::binary);

@@ -43,6 +43,7 @@ void logTickEnd(
     MRA::Datatypes::LogSpec const &cfg,
     std::ostringstream &bindata,
     int counter,
+    google::protobuf::Timestamp const &timestamp,
     double duration,
     int error_value,
     google::protobuf::Message const &state,

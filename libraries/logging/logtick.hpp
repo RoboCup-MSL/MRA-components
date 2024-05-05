@@ -68,7 +68,7 @@ public:
             auto elapsed = google::protobuf::util::TimeUtil::GetCurrentTime() - _t0;
             double duration_sec = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsed);
             // call backend
-            backend::logTickEnd(_componentName, _fileName, _lineNumber, _cfg, _bindata, _counter, duration_sec, *_err, *_state, *_output, *_local);
+            backend::logTickEnd(_componentName, _fileName, _lineNumber, _cfg, _bindata, _counter, _t0, duration_sec, *_err, *_state, *_output, *_local);
         }
         // update counter for next tick
         _counter++;

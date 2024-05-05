@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package MRA.Datatypes;
+
+// extra data for use in binary tick .bin files
+message TickMetaData
+{
+    string component = 1; // full name of the component, for example "RobotsportsProveIsAlive"
+    int32 counter = 2; // tick counter, also used in filename of .bin
+    google.protobuf.Timestamp timestamp = 3; // timestamp at tick start
+    double duration = 4; // elapsed time in seconds
+    int32 return_code = 5; // error value, 0 is ok
+}
+

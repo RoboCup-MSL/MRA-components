@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 package MRA.Datatypes;
 
 // extra data for use in binary tick .bin files
-message TickMetaData
+message Meta
 {
     string component = 1; // full name of the component, for example "RobotsportsProveIsAlive"
     int32 counter = 2; // tick counter, also used in filename of .bin

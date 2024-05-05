@@ -3,7 +3,7 @@
 #include "json_convert.hpp"
 #include "spdlogformatter.hpp" // our customizations
 #include "logdebug.hpp"
-#include "datatypes/TickMetaData.pb.h"
+#include "datatypes/Meta.pb.h"
 #include <memory>
 #include <unistd.h>
 #include "spdlog/spdlog.h"  // spdlog API: https://github.com/gabime/spdlog
@@ -129,7 +129,7 @@ void logTickEnd(
             dumpPbToSs(output, bindata);
             dumpPbToSs(diag, bindata);
             dumpPbToSs(state, bindata);
-            MRA::Datatypes::TickMetaData meta;
+            MRA::Datatypes::Meta meta;
             meta.set_component(componentName);
             meta.set_counter(counter);
             *meta.mutable_timestamp() = timestamp;

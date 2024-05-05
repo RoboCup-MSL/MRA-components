@@ -8,6 +8,7 @@ set(MESSAGE_PROTOS_COMMON
     BallCandidate.proto
     CvMat.proto
     Logging.proto
+    Meta.proto
     Obstacle.proto
     Player.proto
     Point.proto
@@ -15,7 +16,6 @@ set(MESSAGE_PROTOS_COMMON
     PosVel.proto
     Shapes.proto
     TrackedObject.proto
-    TickMetaData.proto
     WorldState.proto
 )
 message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")

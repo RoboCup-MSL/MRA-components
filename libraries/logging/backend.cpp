@@ -126,16 +126,16 @@ void logTickEnd(
         bool do_tickdump = (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ALWAYS) or (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ON_ERROR and error_value != 0);
         if (do_tickdump)
         {
-            dumpPbToSs(output, bindata);
-            dumpPbToSs(diag, bindata);
-            dumpPbToSs(state, bindata);
             MRA::Datatypes::Meta meta;
             meta.set_component(componentName);
             meta.set_counter(counter);
             *meta.mutable_timestamp() = timestamp;
             meta.set_duration(duration);
             meta.set_return_code(error_value);
-            dumpPbToSs(meta, bindata);
+            dumpPbToSs(meta, bindata); // meta goes first! so for instance python tooling can figure out which protobuf types to use beyond
+            dumpPbToSs(output, bindata);
+            dumpPbToSs(diag, bindata);
+            dumpPbToSs(state, bindata);
             std::string filename = logTickBinFile(cfg, componentName, counter);
             if (filename.size()) {
                 std::ofstream binfile(filename, std::ios::binary);

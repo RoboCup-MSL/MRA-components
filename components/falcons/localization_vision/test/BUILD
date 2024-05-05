@@ -48,3 +48,16 @@ py_binary(
     ],
 )
 
+py_binary(
+    name = "print",
+    srcs = [
+        "print.py",
+        "common.py",
+    ],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//components/falcons/localization_vision/interface:interface_py",
+    ],
+)
+

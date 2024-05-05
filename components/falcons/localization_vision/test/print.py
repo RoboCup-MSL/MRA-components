@@ -9,6 +9,7 @@ Print data from .bin file. Can print all except CvMat objects, those can be plot
 import sys
 import argparse
 import json
+import copy
 from google.protobuf.message import Message
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.json_format import MessageToJson
@@ -16,10 +17,8 @@ from google.protobuf.json_format import MessageToJson
 # own modules
 import common
 
-
-
-BLACKLIST = []
-
+# constants
+ELEMENTS = common.FILE_ELEMENTS + ('state_change',)
 
 
 def parse_args(args: list) -> argparse.Namespace:
@@ -35,11 +34,12 @@ def parse_args(args: list) -> argparse.Namespace:
     parser.add_argument('-J', '--no-json', dest='json', help='do not print as json string, instead use protobuf string formatting, multiline', action='store_false')
     parser.add_argument('-i', '--indent-json', help='json indentation to use', default=None)
     parser.add_argument('-b', '--binary', help='do not strip binary data', action='store_true')
+    parser.add_argument('-s', '--full-state', help='print full state, both before and after, instead of only state change', action='store_true')
     parser.add_argument('datafile', help='data file (.bin) to load')
     return parser.parse_args(args)
 
 
-def reduce_protobuf_message(message: Message, options: dict = {}) -> Message:
+def protobuf_message_reduction(message: Message, options: dict = {}) -> Message:
     """
     Recursively removes / replaces data from a Protobuf message (protobuf v3).
     """
@@ -57,8 +57,17 @@ def reduce_protobuf_message(message: Message, options: dict = {}) -> Message:
             if options.get('repeated_clear'):
                 getattr(message, field.name).clear()
         elif isinstance(getattr(message, field.name), Message):
-            reduce_protobuf_message(getattr(message, field.name), options)
+            protobuf_message_reduction(getattr(message, field.name), options)
     return message
+
+
+def protobuf_message_difference(message1, message2):
+    difference = copy.deepcopy(message1)  # Create a copy of message1
+    for field in difference.DESCRIPTOR.fields:
+        if getattr(message1, field.name) == getattr(message2, field.name):
+            # If fields are equal, remove them from the difference message
+            difference.ClearField(field.name)
+    return difference
 
 
 def main(args: argparse.Namespace) -> None:
@@ -78,19 +87,28 @@ def main(args: argparse.Namespace) -> None:
             args.indent_json = int(args.indent_json)
         except:
             pass
+    # state diff
+    if not args.full_state:
+        # calculate state change
+        state_change = protobuf_message_difference(data.state_before, data.state_after)
+        # store change and remove state_before + state_after
+        delattr(data, 'state_before')
+        delattr(data, 'state_after')
+        setattr(data, 'state_change', state_change)
     # start printing after optionally massaging data
-    for e in common.FILE_ELEMENTS: # input, params, state, output etc
-        # general reduction
-        v = reduce_protobuf_message(getattr(data, e), options)
-        # more custom reduction
-        if e == 'input' and not args.landmarks:
-            v.landmarks.clear()
-        # print
-        print('\n' + e + ':\n')
-        if args.json:
-            print(MessageToJson(v, indent=args.indent_json))
-        else:
-            print(v)
+    for e in ELEMENTS: # input, params, state, output etc
+        if hasattr(data, e):
+            # general reduction
+            v = protobuf_message_reduction(getattr(data, e), options)
+            # more custom reduction
+            if e == 'input' and not args.landmarks:
+                v.landmarks.clear()
+            # print
+            print('\n' + e + ':\n')
+            if args.json:
+                print(MessageToJson(v, indent=args.indent_json))
+            else:
+                print(v)
 
 
 if __name__ == '__main__':

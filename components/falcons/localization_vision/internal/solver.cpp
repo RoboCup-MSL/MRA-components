@@ -337,6 +337,17 @@ void Solver::setOutputsAndState()
         }
     }
 
+    // manual mode?
+    if (_params.solver().manual().enabled())
+    {
+        Candidate c;
+        MRA::Geometry::Position pc(_fitResult.pose);
+        c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)pc);
+        c.set_confidence(1.0 - _fitResult.score);
+        *_output.add_candidates() = c;
+        _diag.add_numberoftries(_fitResult.path.size());
+    }
+
     // update tick counter for next tick (this should be called at the end of the tick)
     _state.set_tick(1 + _state.tick());
 }
@@ -412,18 +423,31 @@ void Solver::dumpDiagnosticsMat()
 
 void Solver::manualMode()
 {
-    MRA_TRACE_FUNCTION();
+    bool converge = _params.solver().manual().converge();
+    MRA_TRACE_FUNCTION_INPUT(converge);
     float ppm = _params.solver().pixelspermeter();
-    // run the core calc() function
-    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
-    double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
-    double score = fit.calc(pose);
-    // copy pose into _fitResult so local.floor will be properly created
-    _fitResult.pose.x = pose[0];
-    _fitResult.pose.y = pose[1];
-    _fitResult.pose.rz = pose[2];
-    _fitResult.path = fit.getPath();
-    _fitResult.score = score;
+    if (converge)
+    {
+        FalconsLocalizationVision::FitCore fit;
+        fit.configure(_params.solver());
+        _fitResult = fit.run(_referenceFloorMat, _linePoints, _params.solver().manual().pose(), _params.solver().actionradius());
+    }
+    else
+    {
+        // run the core calc() function
+        FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
+        double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
+        double score = fit.calc(pose);
+        // copy pose into _fitResult so local.floor will be properly created
+        _fitResult.pose.x = pose[0];
+        _fitResult.pose.y = pose[1];
+        _fitResult.pose.rz = pose[2];
+        _fitResult.path = fit.getPath();
+        _fitResult.score = score;
+    }
+    auto pose = _fitResult.pose;
+    auto score = _fitResult.score;
+    MRA_TRACE_FUNCTION_OUTPUTS(pose.x, pose.y, pose.rz, score);
 }
 
 int Solver::run()

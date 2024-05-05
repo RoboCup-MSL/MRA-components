@@ -82,6 +82,7 @@ message ManualParams
 {
     bool enabled = 1;
     MRA.Datatypes.Pose pose = 2;
+    bool converge = 3;
 }
 
 message BlurParams

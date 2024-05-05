@@ -61,3 +61,21 @@ py_binary(
     ],
 )
 
+py_binary(
+    name = "calc",
+    srcs = [
+        "calc.py",
+        "common.py",
+    ],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//components/falcons/localization_vision/interface:interface_py",
+    ],
+    data = [
+        ":pybind_ext.so",
+        "@com_google_protobuf//:protobuf_python",
+        "@extendedlogging//:extendedlogging",
+    ],
+)
+

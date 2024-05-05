@@ -77,7 +77,7 @@ class Builder():
         self.run_cmd('./MRA-logger.py wipe --test')
         if tracing:
             # set test configuration
-            self.run_cmd('./MRA-logger.py enable --test --tracing')
+            self.run_cmd('./MRA-logger.py enable --test --tracing --tickbins') # TODO: opt-out for tickbins?
     def print(self, s: str) -> None:
         print(s, flush=True)
     def run_cmd(self, cmd: str) -> None:

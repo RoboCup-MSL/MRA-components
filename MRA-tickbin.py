@@ -99,7 +99,10 @@ class Data():
             # dynamic import of component interface
             key_module = '{:s}_pb2'.format(Key) # example Input_pb2
             module_name = 'components.{:s}.interface.{:s}'.format(self.meta.subfolder.replace('/', '.'), key_module, Key)
-            module = importlib.import_module(module_name)
+            try:
+                module = importlib.import_module(module_name)
+            except:
+                continue
             # construct message and merge from raw data
             msg = getattr(module, Key)()
             msg.MergeFromString(self.raw_data[elem])
@@ -150,8 +153,9 @@ def main(args: argparse.Namespace) -> None:
     # state before and after
     # TODO: option to calculate state change? difflib?
     if not args.state:
-        delattr(data, 'state_before')
-        delattr(data, 'state_after')
+        for s in ('state_before', 'state_after'):
+            if hasattr(data, s):
+                delattr(data, s)
     # start printing after optionally massaging data
     elements = FILE_ELEMENTS # input, params, state, output etc
     for e in elements:

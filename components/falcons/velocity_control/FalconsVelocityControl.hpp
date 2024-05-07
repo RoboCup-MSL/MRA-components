@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "FalconsVelocityControl"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "falcons/velocity_control"
+#endif
 
 
 #include "abstract_interface.hpp"

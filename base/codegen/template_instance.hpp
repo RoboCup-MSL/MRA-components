@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "COMPONENT_CPP_NAME_CAMELCASE"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "COMPONENT_REL_PATH"
+#endif
 
 
 #include "abstract_interface.hpp"

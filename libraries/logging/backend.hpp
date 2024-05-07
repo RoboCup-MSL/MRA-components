@@ -38,6 +38,7 @@ void logTickStart(
 // tick logging: write logging/data at end of tick
 void logTickEnd(
     std::string const &componentName,
+    std::string const &componentRelPath,
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,

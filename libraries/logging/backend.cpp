@@ -38,7 +38,7 @@ std::string logTickBinFile(
 
 // dump protobuf data to ostringstream file
 template <typename T>
-void dumpPbToSs(T const &pbObject, std::ostringstream &ss)
+int dumpPbToSs(T const &pbObject, std::ostringstream &ss)
 {
     // serialize the protobuf object to a string
     std::ostringstream oss;
@@ -48,6 +48,7 @@ void dumpPbToSs(T const &pbObject, std::ostringstream &ss)
     int byteCount = static_cast<int>(serializedData.size());
     ss.write(reinterpret_cast<const char*>(&byteCount), sizeof(int));
     ss.write(serializedData.c_str(), byteCount);
+    return byteCount;
 }
 
 // tick logging: write logging/data at start of tick
@@ -94,6 +95,7 @@ void logTickStart(
 // tick logging: write logging/data at end of tick
 void logTickEnd(
     std::string const &componentName,
+    std::string const &componentRelPath,
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
@@ -128,18 +130,20 @@ void logTickEnd(
         {
             MRA::Datatypes::Meta meta;
             meta.set_component(componentName);
+            meta.set_subfolder(componentRelPath);
             meta.set_counter(counter);
             *meta.mutable_timestamp() = timestamp;
             meta.set_duration(duration);
             meta.set_return_code(error_value);
-            dumpPbToSs(meta, bindata); // meta goes first! so for instance python tooling can figure out which protobuf types to use beyond
             dumpPbToSs(output, bindata);
             dumpPbToSs(diag, bindata);
             dumpPbToSs(state, bindata);
             std::string filename = logTickBinFile(cfg, componentName, counter);
             if (filename.size()) {
                 std::ofstream binfile(filename, std::ios::binary);
-                const std::string& data = bindata.str();
+                std::ostringstream bindata_header;
+                dumpPbToSs(meta, bindata_header); // meta goes first! so for instance python tooling can figure out which protobuf types to use beyond
+                const std::string& data = bindata_header.str() + bindata.str();
                 logger->log(loc, MRA::Logging::DEBUG, "dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
                 LOGDEBUG("dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
                 binfile.write(data.data(), data.size());

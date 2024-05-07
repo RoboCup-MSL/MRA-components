@@ -21,10 +21,11 @@ template <typename Ti, typename Tp, typename Ts, typename To, typename Tl>
 class LogTick
 {
 public:
-    LogTick(std::string componentName, std::string fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Tl *local, int *error_value)
+    LogTick(std::string componentName, std::string componentRelPath, std::string fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Tl *local, int *error_value)
     :
         // store data for inspection later
         _componentName(componentName),
+        _componentRelPath(componentRelPath),
         _fileName(fileName),
         _lineNumber(lineNumber),
         _t(timestamp),
@@ -68,7 +69,7 @@ public:
             auto elapsed = google::protobuf::util::TimeUtil::GetCurrentTime() - _t0;
             double duration_sec = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsed);
             // call backend
-            backend::logTickEnd(_componentName, _fileName, _lineNumber, _cfg, _bindata, _counter, _t0, duration_sec, *_err, *_state, *_output, *_local);
+            backend::logTickEnd(_componentName, _componentRelPath, _fileName, _lineNumber, _cfg, _bindata, _counter, _t0, duration_sec, *_err, *_state, *_output, *_local);
         }
         // update counter for next tick
         _counter++;
@@ -86,6 +87,7 @@ private:
     int        *_err;
     static int  _counter;
     std::string _componentName;
+    std::string _componentRelPath;
     std::string _fileName;
     int         _lineNumber;
     MRA::Datatypes::LogSpec _cfg;

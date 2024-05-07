@@ -4,7 +4,26 @@
 Print contents of a tick .bin file.
 """
 
-EXAMPLE_TEXT = None
+EXAMPLE_TEXT = """Example:
+
+    ./MRA-tickbin.py /tmp/testsuite_mra_logging/tickbins/tick_RobotsportsProveIsAlive_1.bin 
+
+    meta:
+    {"component": "RobotsportsProveIsAlive", "subfolder": "robotsports/prove_is_alive", "counter": 1, "timestamp": "2024-05-07T19:28:41.346076942Z", "duration": 0.0009431870000000001}
+
+    input:
+    {"worldstate": {"robot": {"active": true}}}
+
+    params:
+    {"angleInDegrees": 15.0, "angleToleranceDeg": 1.0, "maxTimePerPhase": 10.0}
+
+    output:
+    {"actionresult": "RUNNING", "target": {"position": {"rz": 0.2617993877991494}}}
+
+    local:
+    {}
+"""
+
 
 # python modules
 import sys
@@ -51,7 +70,7 @@ def parse_args(args: list) -> argparse.Namespace:
     Use argparse to parse command line arguments.
     """
     descriptionTxt = __doc__
-    exampleTxt = ''
+    exampleTxt = EXAMPLE_TEXT
     class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
         pass
     parser = argparse.ArgumentParser(description=descriptionTxt, epilog=exampleTxt, formatter_class=CustomFormatter)

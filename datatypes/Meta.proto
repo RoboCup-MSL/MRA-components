@@ -8,9 +8,10 @@ package MRA.Datatypes;
 message Meta
 {
     string component = 1; // full name of the component, for example "RobotsportsProveIsAlive"
-    int32 counter = 2; // tick counter, also used in filename of .bin
-    google.protobuf.Timestamp timestamp = 3; // timestamp at tick start
-    double duration = 4; // elapsed time in seconds
-    int32 return_code = 5; // error value, 0 is ok
+    string subfolder = 2; // name of the subfolder in components/, for example "robotsports/prove_is_alive"
+    int32 counter = 3; // tick counter, also used in filename of .bin
+    google.protobuf.Timestamp timestamp = 4; // timestamp at tick start
+    double duration = 5; // elapsed time in seconds
+    int32 return_code = 6; // error value, 0 is ok
 }
 

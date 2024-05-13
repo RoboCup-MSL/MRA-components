@@ -2,14 +2,13 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>input-set: own team complete and 1 ball, but no opponents on field</tns:Description>
   <tns:Options svgOutputFileName="output_team/no_opponent_kickoff.svg" svgDrawEdges="true" />
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Kickoff</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
    <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="0.0" y="0.0"/>
-  <tns:Team x="1.0" y="-3.0"/>
-  <tns:Team x="-2.0" y="4.0"/>
-  <tns:Team x="2.0" y="1.0"/>
-  <tns:Team x="-2.0" y="-3.0"/>
-  <tns:Team x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Team id="1" label="1" x="1.0" y="-3.0"/>
+  <tns:Team id="2" label="2" x="-2.0" y="4.0"/>
+  <tns:Team id="3" label="3" x="2.0" y="1.0"/>
+  <tns:Team id="4" label="4" x="-2.0" y="-3.0"/>
+  <tns:Team id="5" label="5" x="0.0" y="-8.0" isGoalie="true"/>
  </tns:Situation>

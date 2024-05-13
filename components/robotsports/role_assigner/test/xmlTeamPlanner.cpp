@@ -299,9 +299,8 @@ void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, boo
         P.time_in_own_penalty_area = (*team_iter).time_in_own_penalty_area();
         P.time_in_opponent_penalty_area =  (*team_iter).time_in_enemy_penalty_area();
         P.passBall = (*team_iter).passedBall();
-        P.dynamic_role = dynamic_role_e::dr_NONE;
         P.assigned = false;
-        P.result = PlayerPlannerResult();
+        P.result = {};
         P.previous_result = previous_result;
 
         Team.push_back(P);
@@ -343,7 +342,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         bool team_controls_ball, long controlBallByPlayerId,
         const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
         const TeamPlannerParameters& options,
-        const std::vector<Geometry::Point>& parking_postions,
+        const std::vector<Geometry::Point>& parking_positions,
         const previous_used_ball_by_planner_t& previous_ball,
         const std::vector<final_planner_result_t>& previous_planner_results,
         const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
@@ -366,9 +365,8 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         }
         robot.passBall = robot.robotId == static_cast<unsigned>(passBallByPlayerId);
         robot.player_type = teamTypes[idx];
-        robot.dynamic_role = dynamic_role_e::dr_NONE;
         robot.assigned = false;
-        robot.result = PlayerPlannerResult();
+        robot.result = {};
         if (idx < previous_planner_results.size()) {
             robot.previous_result = previous_planner_results[idx];
         }
@@ -395,7 +393,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.team = Team;
     tdp.opponents = Opponents;
     tdp.parameters = options;
-    tdp.parking_positions = parking_postions;
+    tdp.parking_positions = parking_positions;
     tdp.ball_pickup_position = ball_pickup_position;
     tdp.passIsRequired = passIsRequired;
     tdp.pass_data = pass_data;
@@ -568,12 +566,12 @@ void xmlplanner(string input_filename) {
         cerr << ">>>> Assign roles" << endl << flush;
     }
     //cerr << "\t >>>> Options" << plannerOptions.toString() << endl << flush;
-    std::vector<Geometry::Point> parking_postions = std::vector<Geometry::Point>();
-    parking_postions.push_back(Geometry::Point(-6.375, -0.25));
-    parking_postions.push_back(Geometry::Point(-6.375, -1.25));
-    parking_postions.push_back(Geometry::Point(-6.375, -2.25));
-    parking_postions.push_back(Geometry::Point(-6.375, -3.25));
-    parking_postions.push_back(Geometry::Point(-6.375, -4.25));
+    std::vector<Geometry::Point> parking_positions = std::vector<Geometry::Point>();
+    parking_positions.push_back(Geometry::Point(-6.375, -0.25));
+    parking_positions.push_back(Geometry::Point(-6.375, -1.25));
+    parking_positions.push_back(Geometry::Point(-6.375, -2.25));
+    parking_positions.push_back(Geometry::Point(-6.375, -3.25));
+    parking_positions.push_back(Geometry::Point(-6.375, -4.25));
 
     if (!pickup_pos_set) {
         pickup_pos.x = ball.x;
@@ -601,7 +599,7 @@ void xmlplanner(string input_filename) {
 			opponents_vel,
 			opponents_labels,
 			team_controls_ball, ownPlayerWithBall,
-			teamTypes, robotIds, parameters, parking_postions, previous_ball, previous_planner_results,
+			teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
 			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 
 	TeamPlay teamplay = TeamPlay();

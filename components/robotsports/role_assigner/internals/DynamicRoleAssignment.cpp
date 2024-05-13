@@ -21,14 +21,14 @@ void DynamicRoleAssignment::assignDynamicRolesToPlayers(const vector<dynamic_rol
 			if (teamFormation[dr_idx] == dr_GOALKEEPER) {
 				if (Team[robotIdx].player_type == player_type_e::GOALIE) {
 					role_assigned = true;
-					Team[robotIdx].dynamic_role = dr_GOALKEEPER;
+					Team[robotIdx].result.dynamic_role = dr_GOALKEEPER;
 				}
 			}
 			else {
 				// not goalie
-				if ((Team[robotIdx].player_type != player_type_e::GOALIE) && Team[robotIdx].dynamic_role == dr_NONE) {
+				if ((Team[robotIdx].player_type != player_type_e::GOALIE) && Team[robotIdx].result.dynamic_role == dr_NONE) {
 					role_assigned = true;
-					Team[robotIdx].dynamic_role = teamFormation[dr_idx];
+					Team[robotIdx].result.dynamic_role = teamFormation[dr_idx];
 				}
 			}
 		}

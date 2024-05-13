@@ -2,18 +2,17 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>throwin with valid pass data, player not have a detour (issue 11 - gitlab)</tns:Description>
   <tns:Options svgOutputFileName="output_team/throwin_3.svg"/>
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Throwin</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="5.80" y="-1.33" velx="-0.11" vely="0.05"/>
-  <tns:Team id="3" x="2.956" y="-3.769" rz="-0.836" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="77203.9" previous_result_x="3.59525" previous_result_y="-1.89933" previous_result_dynamic_role="SETPLAY_RECEIVER"/>
-  <tns:Team id="1" x="0.219" y="-8.445" rz="1.461" velx="0.184" vely="0.115" velrz="0.000"  isGoalie="true"    />
-  <tns:Team id="4" x="6.081" y="-1.547" rz="0.934" velx="-0.076" vely="0.194" velrz="0.000"   hasBall="true"  passedBall="true" />
-  <tns:Opponent id="14" x="-1.388" y="-9.050" rz="0.000" velx="0.179" vely="0.032" velrz="0.000" />
-  <tns:Opponent id="13" x="2.623" y="-0.783" rz="0.000" velx="-0.085" vely="0.086" velrz="0.000" />
+  <tns:Team id="3" label="3" x="2.956" y="-3.769" rz="-0.836" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="77203.9" previous_result_x="3.59525" previous_result_y="-1.89933" previous_result_dynamic_role="SETPLAY_RECEIVER"/>
+  <tns:Team id="1" label="1" x="0.219" y="-8.445" rz="1.461" velx="0.184" vely="0.115" velrz="0.000"  isGoalie="true"    />
+  <tns:Team id="4" label="4" x="6.081" y="-1.547" rz="0.934" velx="-0.076" vely="0.194" velrz="0.000"   hasBall="true"  passedBall="true" />
+  <tns:Opponent label="11" id="14" x="-1.388" y="-9.050" rz="0.000" velx="0.179" vely="0.032" velrz="0.000" />
+  <tns:Opponent label="12" id="13" x="2.623" y="-0.783" rz="0.000" velx="-0.085" vely="0.086" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="77204.002" valid="false" />
-  <tns:SituationInfo passing_required="false">
+  <tns:SituationInfo passing_required="false" team_controls_ball="true">
     <tns:PassData valid="true" origin_x="6.081" origin_y="-1.547" target_x="-0.002" target_y="-5.625" velocity="3.950" angle="0.000" ts="77203.985"/>
   </tns:SituationInfo>
 </tns:Situation>

@@ -2,10 +2,9 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>Milestone A: normal play 1 robot with ball on field line</tns:Description>
   <tns:Options svgOutputFileName="output_team/ms-A.svg" svgDrawEdges="true" />
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="-5.75" y="-2.0"/>
-  <tns:Team x="0.0" y="0.0"/>
+  <tns:Team id="1" label="1" x="0.0" y="0.0"/>
  </tns:Situation>

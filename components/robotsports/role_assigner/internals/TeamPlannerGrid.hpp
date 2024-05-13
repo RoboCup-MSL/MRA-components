@@ -38,12 +38,12 @@ public:
 
 	static MRA::Geometry::Position findInterceptorPositionDuringRestart(const TeamPlannerData& r_teamplannerData, int gridFileNumber);
 
-	static bool  findAttackSupportPosition(MRA::Geometry::Point& rSupportPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, int gridFileNumber, bool position_close_to_ball);
+	static bool  findAttackSupportPosition(MRA::Geometry::Point& rSupportPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, int gridFileNumber, bool position_close_to_ball);
 
 	static MRA::Geometry::Position findDefensivePositionDuringPenaltyShootOut(const TeamPlannerData& r_teamplannerData, int gridFileNumber);
 
 private:
-	static void writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, const std::string& strSituation, int gridFileNumber);
+	static void writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, const std::string& strSituation, int gridFileNumber);
 
 	static double CalcInterceptionThreat(const TeamPlannerData& r_teamplannerData, int grid_x, int grid_y, double interceptionInfluenceDistance, double interceptionDistancePenaltyFactor);
 	static double calculate_a_penaly_factor_for_teammate(double ball_ax_sqr, double ball_c);
@@ -51,7 +51,7 @@ private:
 	static MRA::Geometry::Position calculateGridValues(const std::list<MRA::Geometry::Position>& allowedTargetPositions,
 			std::vector<GridHeuristic*> heuristics, const TeamPlannerParameters& parameters, PlannerGridInfoData& pgid) ;
 
-	static void handle_penalty_heuristics(const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, std::vector<GridHeuristic*> &heuristics, PlannerGridInfoData &pgid);
+	static void handle_penalty_heuristics(const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, std::vector<GridHeuristic*> &heuristics, PlannerGridInfoData &pgid);
 };
 
 } /* namespace trs */

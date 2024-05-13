@@ -525,7 +525,7 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
 	}
 	// avoid being intercepted by own team mate (attack supporter)
 	for (unsigned idx = 0; idx < Team.size(); idx++) {
-		if (Team[idx].assigned && Team[idx].dynamic_role == dr_ATTACKSUPPORTER) {
+		if (Team[idx].assigned && Team[idx].result.dynamic_role == dr_ATTACKSUPPORTER) {
 			m_Opponents.push_back(Team[idx].position);
 		}
 	}

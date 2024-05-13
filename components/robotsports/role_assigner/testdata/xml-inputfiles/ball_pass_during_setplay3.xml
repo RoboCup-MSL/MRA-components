@@ -4,18 +4,17 @@
   <tns:Options svgOutputFileName="output_team/ball_pass_during_setplay3.svg" 
 	autoAssignGoalie="false" 
 	use_pass_to_position_for_attack_support="true"/>
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="1.20" y="-3.05" velx="0.00" vely="0.00"/>
-  <tns:Team x="0.614" y="-3.893" rz="-1.314" velx="-0.393" vely="0.227" velrz="0.000"  passedBall="true"/>
-  <tns:Team x="3.563" y="2.682" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
-  <tns:Team x="-4.00" y="3.00" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
-  <tns:Team x="2.00" y="4.00" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
-  <tns:Opponent x="-3.25" y="3.0"/>
+  <tns:Team id="1" label="1" x="0.614" y="-3.893" rz="-1.314" velx="-0.393" vely="0.227" velrz="0.000"  passedBall="true"/>
+  <tns:Team id="2" label="2" x="3.563" y="2.682" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
+  <tns:Team id="3" label="3" x="-4.00" y="3.00" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
+  <tns:Team id="4" label="4" x="2.00" y="4.00" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
+  <tns:Opponent label="11" x="-3.25" y="3.0"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="84825.324" valid="false" />
-  <tns:SituationInfo passing_required="false">
+  <tns:SituationInfo passing_required="false" team_controls_ball="true">
   	<tns:PassData valid="true" origin_x="0.614" origin_y="-3.893" target_x="3.550" target_y="2.65" angle="0.0" velocity="1.0" ts="0.1" target_id="2"/>
   </tns:SituationInfo>
 </tns:Situation>

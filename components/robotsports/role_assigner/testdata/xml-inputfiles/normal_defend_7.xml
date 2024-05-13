@@ -2,16 +2,15 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>end position is in opponent goal area - game against Falcons 2 mar 2023 - issue 5 situation 1</tns:Description>
   <tns:Options svgOutputFileName="output_team/normal_defend_7.svg"/>
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="2.12" y="-0.24" velx="-0.28" vely="1.84"/>
-  <tns:Team id="2" x="1.325" y="-1.200" rz="-1.588" velx="0.367" vely="-0.006" velrz="0.000"    />
-  <tns:Team id="1" x="0.105" y="-8.464" rz="-0.172" velx="-0.059" vely="-0.083" velrz="0.000"  isGoalie="true"    />
-  <tns:Team id="3" x="2.642" y="-3.283" rz="1.820" velx="-1.171" vely="-1.609" velrz="0.000"    />
+  <tns:Team id="2" label="2" x="1.325" y="-1.200" rz="-1.588" velx="0.367" vely="-0.006" velrz="0.000"    />
+  <tns:Team id="1" label="1" x="0.105" y="-8.464" rz="-0.172" velx="-0.059" vely="-0.083" velrz="0.000"  isGoalie="true"    />
+  <tns:Team id="3" label="3" x="2.642" y="-3.283" rz="1.820" velx="-1.171" vely="-1.609" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="75595.473" valid="false" />
-  <tns:SituationInfo passing_required="false">
+  <tns:SituationInfo passing_required="false" team_controls_ball="false">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
   </tns:SituationInfo>
 </tns:Situation>

@@ -49,12 +49,12 @@ public:
     player_type_e player_type;
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
-    PlayerPlannerResult result;
     final_planner_result_t previous_result;
-    dynamic_role_e dynamic_role;
     double time_in_own_penalty_area;
     double time_in_opponent_penalty_area;
 
+    PlayerPlannerResult result = {};
+    static bool CompareRobotId(const TeamPlannerRobot& r1, const TeamPlannerRobot&  r2);
     std::string toString() const;
 };
 
@@ -147,8 +147,11 @@ public:
 
     // internal administration
     game_state_e original_gamestate;
-    std::vector<TeamPlannerRobot> team;
-    std::vector<TeamPlannerOpponent> opponents;
+    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
+    std::vector<TeamPlannerOpponent> opponents = {};
+
+    unsigned this_player_idx = 0; // idex of this robot: Team will be sorted on RobotId.
+    unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.
 };
 
 } // namespace

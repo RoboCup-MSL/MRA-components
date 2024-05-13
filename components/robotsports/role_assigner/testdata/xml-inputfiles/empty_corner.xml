@@ -2,9 +2,8 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test empty input-set:  play 1 robot without ball on field line</tns:Description>
   <tns:Options svgOutputFileName="output_team/empty_corner.svg" svgDrawEdges="true" />
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Corner</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
-  <tns:Team x="0.0" y="0.0"/>
+  <tns:Team id="1" label="1" x="0.0" y="0.0"/>
  </tns:Situation>

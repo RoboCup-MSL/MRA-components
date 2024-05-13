@@ -30,14 +30,14 @@ paths:
 Player 0 (id: 1) : 
 	Dynamic-role: PARKING
 	Game State: Parking
-	Target position : x: -6.38 y: -0.25
+	Target position : x: -6.38 y: -3.25
 	Planner target type  goto target position slow
 	Target_position_is_end_position_of_pass: false
 	Defend info valid:  false
 Path[0]: x: 0.00 y: 0.00 cost: 0.00 target: goto target position slow (10)
-Path[0]: x: -2.25 y: 0.75 cost: 3.37 target: goto target position slow (10)
-Path[0]: x: -4.25 y: 0.75 cost: 5.37 target: goto target position slow (10)
-Path[0]: x: -6.38 y: -0.25 cost: 7.72 target: goto target position slow (10)
+Path[0]: x: -2.25 y: -1.25 cost: 3.57 target: goto target position slow (10)
+Path[0]: x: -4.25 y: -1.25 cost: 5.57 target: goto target position slow (10)
+Path[0]: x: -6.38 y: -3.25 cost: 8.49 target: goto target position slow (10)
 
 	options:
 calculateAllPaths = 1
@@ -88,7 +88,7 @@ priority_block_max_opponent_to_ball_dist = 3
 priority_block_check_ball_in_area = 1
 priority_block_check_opponent_close_to_ball = 1
 priority_block_min_distance = 0.75
-priority_block_max_distance = 2
+priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
 attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 attack attack_formation = FORMATION_112
@@ -98,7 +98,7 @@ restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
 select_lowest_robot_nr_for_dynamic_role = 1
 previous_role_bonus_must_be_applied = 1
-previous_role_bonus_end_pos_radius = 1.5
+previous_role_bonus_end_pos_radius = 1
 use_pass_to_position_for_attack_support = 1
 no_sweeper_during_setplay= 1
 interceptor_assign_use_ball_velocity = 1
@@ -119,6 +119,8 @@ mobile_field_restart_shooter_ball_dist = 0.8
 mobile_field_setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = 1
 auto_save_svg_period = 10
+auto_save_svg_from_ts = 0
+auto_save_svg_to_ts = 0
 svgOutputFileName = output_team/empty_parking.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
@@ -184,14 +186,89 @@ PARKING_DISTANCE_BETWEEN_ROBOTS = 1
 PARKING_DISTANCE_TO_LINE = 0.5
 
 
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+<tns:Description>xml from svg-file: output_team/empty_parking.svg</tns:Description>
+<tns:Options svgOutputFileName="output_team/empty_parking.svg_NEW"
+   addBallApproachVertices="true"
+   addBarierVertices="true"
+   addUniformVertices="true"
+   autoAssignGoalie="false"
+   ballApproachNumberOfVertices="8"
+   ballApproachVerticesRadius="0.600"
+   calculateAllPaths="true"
+   dist_before_penalty_area_for_sweeper="0.750"
+   dist_to_goal_to_mark_opponent_as_goalie="1.500"
+   distToapplyBallApproachVertices="1.000"
+   firstCircleRadius="1.000"
+   grid_close_to_ball_normal_penalty="17000.000"
+   grid_close_to_ball_normal_radius="3.100"
+   grid_close_to_ball_restart_dropball_penalty="17000.000"
+   grid_close_to_ball_restart_dropball_radius="1.100"
+   grid_close_to_ball_restart_normal_penalty="17000.000"
+   grid_close_to_ball_restart_normal_radius="3.100"
+   grid_close_to_ball_restart_penalty_penalty="17000.000"
+   grid_close_to_ball_restart_penalty_radius="3.250"
+   grid_opponent_goal_clearance_x="7.000"
+   grid_opponent_goal_clearance_y="2.500"
+   grid_own_goal_clearance_x="3.000"
+   grid_own_goal_clearance_y="0.750"
+   grid_size="0.750"
+   interceptionChanceIncreasePerMeter="0.250"
+   interceptionChancePenaltyFactor="4.000"
+   interceptionChanceStartDistance="1.000"
+   interceptor_assign_min_velocity_for_calculate_interception_position="0.500"
+   interceptor_assign_use_ball_velocity="true"
+   man_to_man_defense_during_normal_play="true"
+   man_to_man_defense_during_setplay_against="true"
+   manDefenseBetweenBallAndPlayer="true"
+   maximumEdgeLength="4.000"
+   maxPossibleLinearAcceleration="1.200"
+   maxPossibleLinearSpeed="1.500"
+   minimumDistanceToEndPoint="3.000"
+   minimumEdgeLength="0.300"
+   move_to_ball_left_field_position="true"
+   no_sweeper_during_setplay="true"
+   nr_attack_support_during_defensive_period="0"
+   nr_robots_needed_for_pass_play="2"
+   nrDynamicPlannerIterations="2"
+   nrVerticesFirstCircle="6"
+   nrVerticesSecondCircle="8"
+   preferredSetplayKicker="0"
+   preferredSetplayReceiver="0"
+   previous_role_bonus_end_pos_radius="1.000"
+   priority_block_max_distance="1.500"
+   safetyFactor="1.000"
+   secondCircleRadius="1.600"
+   setplay_against_dist_to_opponent="1.500"
+   startingVelocityPenaltyFactor="1.000"
+   svgBallColor="orange"
+   svgDefaultTargetColor="red"
+   svgDrawEdges="false"
+   svgDrawVelocity="true"
+   svgOriginalTargetColor="darkred"
+   svgOpponentColor="cyan"
+   svgTeamColor="magenta"
+   saveGridDataToFile="true"
+   svgRobotPlanner="false"
+   uniform_x_interval="2.000"
+   uniform_y_interval="2.000"
+   use_pass_to_position_for_attack_support="true"
+   wait_on_non_optimal_position_during_prepare_phase="false"
+/>
+  <tns:Field field_width="12.000" field_length="18.000" field_margin="1.50" goal_width="2.000" goal_length="0.500" goal_area_width="3.500" goal_area_length="0.750"
+             penalty_area_present="true" penalty_area_width="6.500" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.500"
+             ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
+             parking_distance_to_line="0.500" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
+  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Parking</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="0.00" y="0.00" velx="0.00" vely="0.00"/>
-  <tns:Team id="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="1" label="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
-  <tns:SituationInfo passing_required="false">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
+  <tns:SituationInfo passing_required="false" team_controls_ball="false">
+    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="-1"/>
   </tns:SituationInfo>
 </tns:Situation>
 
@@ -213,14 +290,14 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="7.25cm" y="10.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- path player 0-->
-<line x1="7.26cm" y1="10.42cm" x2="5.25cm" y2="9.75cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="7.28cm" y1="10.62cm" x2="5.25cm" y2="11.75cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path player 0-->
-<line x1="5.25cm" y1="9.75cm" x2="3.25cm" y2="9.75cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="5.25cm" y1="11.75cm" x2="3.25cm" y2="11.75cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path player 0-->
-<line x1="3.25cm" y1="9.75cm" x2="1.12cm" y2="10.75cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="3.25cm" y1="11.75cm" x2="1.12cm" y2="13.75cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path-end player 0-->
-<circle cx="1.12cm" cy="10.75cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+<circle cx="1.12cm" cy="13.75cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="7.34cm" y="10.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text></svg>

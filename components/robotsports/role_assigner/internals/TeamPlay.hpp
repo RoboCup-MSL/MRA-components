@@ -34,8 +34,8 @@ private:
 
 	class AssignToTargetData {
 	public:
-		unsigned team_idx;
-		long robotId;
+		bool available;
+		double totalCost;
 		double distToTarget;
 		bool hasPreviousTarget;
 		double distToPreviousTarget;
@@ -59,11 +59,7 @@ private:
 
 	bool searchForBallBehaviorNeeded(TeamPlannerData& teamplanner_data);
 
-	void print_provided_position(game_state_e gamestate, const std::vector<std::vector<MRA::Geometry::Point>>& positions);
-
 	std::vector<MRA::Geometry::Position> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
-
-	template<class T> bool safeErase(std::vector<T>& myvector, unsigned int indexElementToErase, int callingFromLine);
 
 	bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& result);
 
@@ -75,9 +71,16 @@ private:
 
 	void ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  teamplanner_data);
 
-	bool AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_data, dynamic_role_e dr_role, planner_target_e planner_target, const MRA::Geometry::Point& targetPos);
+	bool AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_data, dynamic_role_e dr_role, planner_target_e planner_target, const MRA::Geometry::Point& targetPos, int role_idx);
+
+	void assignParkingPositions(TeamPlannerData& teamplanner_data);
+
+    void assignBeginPositions(TeamPlannerData& teamplanner_data);
+
 
 	Geometry::Point updatePositionIfNotAllowed(const Geometry::Point& playerPosition, dynamic_role_e dr_role, const Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
+
+	void calculatePathForRobot(TeamPlannerData& r_teamplannerData, unsigned idx);
 
 	int m_gridFileNumber;
 };

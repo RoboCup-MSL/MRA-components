@@ -2,14 +2,13 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>setplay positioning at own side</tns:Description>
   <tns:Options svgOutputFileName="output_team/setplay_positioning_at_own_side_1.svg"/>
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Freekick</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="5.5" y="-8.5"/>
-  <tns:Team x="2.0" y="3.0"/>
-  <tns:Team x="-2.0" y="2.0"/>
-  <tns:Team x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Team id="1" label="1" x="2.0" y="3.0"/>
+  <tns:Team id="2" label="2" x="-2.0" y="2.0"/>
+  <tns:Team id="3" label="3" x="0.0" y="-8.0" isGoalie="true"/>
 </tns:Situation>
 
 

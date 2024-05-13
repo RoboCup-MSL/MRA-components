@@ -119,7 +119,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlann
 	return bestPosition;
 }
 
-void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, vector<GridHeuristic*> &heuristics, PlannerGridInfoData &pgid)
+void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPositionToUse, vector<GridHeuristic*> &heuristics, PlannerGridInfoData &pgid)
 {
 	// Handle penalty related heuristics (used for multiple roles)
 
@@ -127,7 +127,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
 		// penalty needs minimal distance to ball of ca 3.5 m (minimal 3 meter in robocup rules)
 		auto ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_penalty; // default
 		auto ball_radius = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_radius;
-		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", ball_penalty, pgid, r_ballPostionToUse.x, r_ballPostionToUse.y, ball_radius));
+		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", ball_penalty, pgid, r_ballPositionToUse.x, r_ballPositionToUse.y, ball_radius));
 	}
 
 	if (r_teamplannerData.gamestate == game_state_e::PENALTY_AGAINST) {
@@ -143,7 +143,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
 		heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 2000.0, pgid, r_teamplannerData.team, 1.5));
 
 		// Prefer position close too the ball
-		heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid, r_ballPostionToUse, 8.0, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), false));
+		heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid, r_ballPositionToUse, 8.0, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), false));
 	}
 	if (r_teamplannerData.gamestate == game_state_e::PENALTY) {
 		// Not allow to be in opponent penalty area (RoboCup rules)
@@ -774,7 +774,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(c
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, int gridFileNumber, bool position_close_to_ball)
+bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, int gridFileNumber, bool position_close_to_ball)
 {
     /* Position attack support, in order of priority (weighing):
      *
@@ -800,8 +800,8 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = r_ballPostionToUse.x;
-	double y_pos_ball = r_ballPostionToUse.y;
+	double x_pos_ball = r_balPositionToUse.x;
+	double y_pos_ball = r_balPositionToUse.y;
 
 	/*
 	 * Attack support position heuristics in open-play (offensive and defensive)
@@ -820,7 +820,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(r_teamplannerData, r_ballPostionToUse, heuristics, pgid);
+	handle_penalty_heuristics(r_teamplannerData, r_balPositionToUse, heuristics, pgid);
 
 
 	// Avoid difficult collaboration, do not position close to opponents
@@ -853,7 +853,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 		}
 
 		// Avoid difficult collaboration, not behind opponent (from ball position)
-		heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_ballPostionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
+		heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_balPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
 		        r_teamplannerData.parameters.interceptionChanceStartDistance,
 				r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
 				r_teamplannerData.parameters.interceptionChancePenaltyFactor));
@@ -879,7 +879,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	// Do not position close to attack supporters path position
 	std::vector<TeamPlannerRobot> AttackSupportTeam = vector<TeamPlannerRobot>();
 	for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-		if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
+		if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
 			AttackSupportTeam.push_back(r_teamplannerData.team[idx]);
 		}
 	}
@@ -924,7 +924,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 
 
 	bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
-	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_ballPostionToUse, "FindOffensive", gridFileNumber);
+	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_balPositionToUse, "FindOffensive", gridFileNumber);
 
 	bool prepare_phase = (r_teamplannerData.gamestate == game_state_e::CORNER) || (r_teamplannerData.gamestate == game_state_e::GOALKICK) ||
 			             (r_teamplannerData.gamestate == game_state_e::FREEKICK || (r_teamplannerData.gamestate == game_state_e::THROWIN));
@@ -934,7 +934,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 		const unsigned nr_wait_positions = 8;   // check for 8 positions 1.5 meter around best position
 		const double radius_non_opt_wait = 2.0;
 		const double infield_margin = 0.25;   // distance to stay from side of field
-		InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_ballPostionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
+		InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_balPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
 		        r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
 		        r_teamplannerData.parameters.interceptionChancePenaltyFactor);
 
@@ -965,7 +965,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 
 // ----------------------------------------------------------
 // Save provided data to file
-void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPostionToUse, const std::string& strSituation, int gridFileNumber) {
+void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, const std::string& strSituation, int gridFileNumber) {
 
 	if (r_teamplannerData.parameters.saveGridDataToFile) {
 		string gridFileName = "";
@@ -975,7 +975,7 @@ void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const Team
 		for (auto it = r_teamplannerData.opponents.begin(); it != r_teamplannerData.opponents.end(); ++it) {
 			pgid.gameData.opponents.push_back(it->position);
 		}
-		pgid.gameData.ball = r_ballPostionToUse;
+		pgid.gameData.ball = r_balPositionToUse;
 		if (!r_teamplannerData.parameters.svgOutputFileName.empty()) {
 			// svg filename provided
 			std::stringstream stream("");

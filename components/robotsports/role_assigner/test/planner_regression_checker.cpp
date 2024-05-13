@@ -294,7 +294,7 @@ using namespace MRA;
 //		game_state_e gamestate = game_state_e::NONE;
 //		long controlBallByPlayerId = -1;
 //		bool team_controls_ball = false;
-//		std::vector<Vector2D> parking_postions = {};
+//		std::vector<Vector2D> parking_positions = {};
 //		previous_used_ball_by_planner_t previous_ball = {};
 //		ball_pickup_position_t ball_pickup_position = {};
 //		bool passIsRequired = false;
@@ -311,7 +311,7 @@ using namespace MRA;
 //        TeamPlannerData teamplannerData(fieldConfig);
 //        teamplannerData.fillData(gamestate, ball, myTeam, opponents,
 //                team_controls_ball, controlBallByPlayerId, teamTypes, robotIds, options,
-//                parking_postions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
+//                parking_positions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
 //                passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 //
 //	    SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, save_name, comparing_player_paths);
@@ -400,7 +400,7 @@ using namespace MRA;
 //		    bool team_controls_ball = false;
 //		    MovingObject ball = get_ball_line(output_comment_lines);
 //		    PlannerOptions options = PlannerOptions();
-//		    std::vector<Vector2D> parking_postions = {};
+//		    std::vector<Vector2D> parking_positions = {};
 //		    previous_used_ball_by_planner_t previous_ball = {};
 //		    ball_pickup_position_t ball_pickup_position = {};
 //		    bool passIsRequired = false;
@@ -413,7 +413,7 @@ using namespace MRA;
 //		    TeamPlannerData teamplannerData(fieldConfig);
 //		    teamplannerData.fillData(gamestate, ball, myTeam, opponents,
 //		            team_controls_ball, controlBallByPlayerId, teamTypes, robotIds, options,
-//		            parking_postions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
+//		            parking_positions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
 //		            passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 //
 //		    if (infiniteCostDetected) {

@@ -2,23 +2,22 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test freekick against with previous results</tns:Description>
   <tns:Options svgOutputFileName="output_team/freekick_against_2.svg"/>
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Freekick Against</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="-2.25" y="2.75" velx="0.00" vely="0.00"/>
-  <tns:Team x="1.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="-1.73167" previous_result_y="-0.600805" previous_result_dynamic_role="SWEEPER"/>
-  <tns:Team x="-2.000" y="4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="1.27569" previous_result_y="3.02643" previous_result_dynamic_role="DEFENDER"/>
-  <tns:Team x="2.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="0.669786" previous_result_y="0.863803" previous_result_dynamic_role="INTERCEPTOR"/>
-  <tns:Team x="-2.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="2.22051" previous_result_y="4.47331" previous_result_dynamic_role="ATTACKSUPPORTER"/>
-  <tns:Team x="0.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="0" previous_result_y="-8.5" previous_result_dynamic_role="GOALKEEPER"/>
-  <tns:Opponent x="1.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent x="-2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent x="2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Team id="1" label="1" x="1.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="-1.73167" previous_result_y="-0.600805" previous_result_dynamic_role="SWEEPER"/>
+  <tns:Team id="2" label="2" x="-2.000" y="4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="1.27569" previous_result_y="3.02643" previous_result_dynamic_role="DEFENDER"/>
+  <tns:Team id="3" label="3" x="2.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="0.669786" previous_result_y="0.863803" previous_result_dynamic_role="INTERCEPTOR"/>
+  <tns:Team id="4" label="4" x="-2.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="2.22051" previous_result_y="4.47331" previous_result_dynamic_role="ATTACKSUPPORTER"/>
+  <tns:Team id="5" label="5" x="0.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"     previous_result_present="true"  previous_result_ts="0.125" previous_result_x="0" previous_result_y="-8.5" previous_result_dynamic_role="GOALKEEPER"/>
+  <tns:Opponent label="11" x="1.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent label="12" x="-2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent label="13" x="2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent label="14" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent label="15" x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="-2.000" y="2.750" ts="0.000" valid="false" />
-  <tns:SituationInfo passing_required="false">
+  <tns:SituationInfo passing_required="false"  team_controls_ball="false">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
   </tns:SituationInfo>  
 </tns:Situation>

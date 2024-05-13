@@ -17,11 +17,11 @@ using namespace MRA;
 
 std::string TeamPlannerRobot::toString() const {
 	std::stringstream buffer;
-	buffer << "ID: " + robotId   << " type: " << PlayerTypeAsString(player_type) << endl
+	buffer << "ID: " << robotId   << " type: " << PlayerTypeAsString(player_type) << endl
 		   << "Position x: " << position.x  << " y: " << position.y  << " rz: " << position.rz <<  " control ball: " <<  controlBall << endl
 		   << "pass is on its way: " << passBall << endl
 		    << "assigned: " << assigned << endl;
-	buffer << " dynamic role: " << DynamicRoleAsString(result.dynamic_role) <<
+	buffer << " dynamic role: " << DynamicRoleAsString(result.dynamic_role) << " (rank: " << result.role_rank << " )"
       		  " gamestate: " << GameStateAsString(result.gamestate) << endl;
 	if (result.defend_info.valid) {
 		buffer << " Defend info: valid: true id: "<< result.defend_info.defending_id;
@@ -57,6 +57,10 @@ std::string TeamPlannerRobot::toString() const {
 	return buffer.str();
 }
 
+
+bool TeamPlannerRobot::CompareRobotId(const TeamPlannerRobot& r1, const TeamPlannerRobot&  r2) {
+return (r1.robotId < r2.robotId);
+}
 
 std::string TeamPlannerBall::toString(bool full_details) {
 	std::stringstream buffer;

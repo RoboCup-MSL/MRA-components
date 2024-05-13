@@ -120,10 +120,10 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 		if (r_teamplannerData.gamestate == game_state_e::GOALKICK) {
 			position_close_to_ball = true;
 		}
-		Geometry::Point ballPostionToUse = r_teamplannerData.ball.position;
+		Geometry::Point ballPositionToUse = r_teamplannerData.ball.position;
 		if (r_teamplannerData.parameters.use_pass_to_position_for_attack_support && r_teamplannerData.pass_data.valid) {
-			ballPostionToUse.x = r_teamplannerData.pass_data.target_pos.x;
-			ballPostionToUse.y = r_teamplannerData.pass_data.target_pos.y;
+			ballPositionToUse.x = r_teamplannerData.pass_data.target_pos.x;
+			ballPositionToUse.y = r_teamplannerData.pass_data.target_pos.y;
 		}
 
 		// check if already player moves to ball target position
@@ -141,7 +141,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
 			rolePosition = MRA::Geometry::Point(r_teamplannerData.pass_data.target_pos.x, r_teamplannerData.pass_data.target_pos.y);
 			r_role_position_is_end_position_of_pass = true;
 		} else {
-			TeamPlanner_Grid::findAttackSupportPosition(rolePosition, r_teamplannerData, ballPostionToUse, r_gridFileNumber++, position_close_to_ball);
+			TeamPlanner_Grid::findAttackSupportPosition(rolePosition, r_teamplannerData, ballPositionToUse, r_gridFileNumber++, position_close_to_ball);
 		}
 	}
 	break;
@@ -698,69 +698,59 @@ MRA::Geometry::Point RolePosition::closestTo(const MRA::Geometry::Point& referen
 /**
  */
 void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPositions, const TeamPlannerData& r_teamplannerData) {
+    // provide list of fixed positions for the field-players for the defined game-situation.
 
-	bool parking_is_left = true;
-	if (!r_teamplannerData.parking_positions.empty()) {
-		parking_is_left = (r_teamplannerData.parking_positions[0].x < 0);
-	}
+    if (r_teamplannerData.gamestate == game_state_e::BEGIN_POSITION) {
+        // provide list for fixed positions in case of BEGIN_POSITION for the field-players
+        // BEGIN_POSITION normally occurs before begin of a half (first half/second half).
 
-	if (r_teamplannerData.gamestate == game_state_e::BEGIN_POSITION) {
-		/**
-		 * Assign algorithm used for begin of a half (first half/second half). Assign all players to a begin position
-		 * Internally a list of begin positions is created (most imported position first). Then the players will be assigned to
-		 * the positions, with use of the path-calculation.
-		 */
-		MRA::Geometry::Point fordwardRight = MRA::Geometry::Point( 1.0, -(r_teamplannerData.fieldConfig.getCenterCirleRadius() + r_teamplannerData.fieldConfig.getRobotRadius())-1);
-		MRA::Geometry::Point fordwardLeft  = MRA::Geometry::Point(-1.0, -(r_teamplannerData.fieldConfig.getCenterCirleRadius() + r_teamplannerData.fieldConfig.getRobotRadius())-1);
-		if (parking_is_left) {
-			playerPositions.push_back(fordwardRight);
-			playerPositions.push_back(fordwardLeft);
-		}
-		else {
-			playerPositions.push_back(fordwardLeft);
-			playerPositions.push_back(fordwardRight);
-		}
-		MRA::Geometry::Point backRight = MRA::Geometry::Point(  (r_teamplannerData.fieldConfig.getMaxFieldX()*0.5) + 0.5, -(r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-0.3);
-		MRA::Geometry::Point backLeft  = MRA::Geometry::Point( -(r_teamplannerData.fieldConfig.getMaxFieldX()*0.5) - 0.5, -(r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-0.3);
-		if (parking_is_left) {
-			playerPositions.push_back(backRight);
-			playerPositions.push_back(backLeft);
-		}
-		else {
-			playerPositions.push_back(backLeft);
-			playerPositions.push_back(backRight);
-		}
-	}
-	else if (r_teamplannerData.gamestate == game_state_e::PARKING) {
-		// select position closest to default goalie position as parking position for the goalie
-		MRA::Geometry::Point goalieDefaultPosition = MRA::Geometry::Point(0, -r_teamplannerData.fieldConfig.getMaxFieldY());
-		MRA::Geometry::Point goalieParkingPosition = closestTo(goalieDefaultPosition, r_teamplannerData.parking_positions);
+        // Begin-positions:
+        // - Goalie in goal.
+        // - For field players: 5 positions:
+        //   - 2 (inner) positions in middle near are close the middle circle (forward-positions: Left, Right)
+        //   - 2 (outer) positions more close to own goal (back-positions: Left, Right)
+        //   - goalie position  in case their is not goalie set but team have 5 players
 
-		std::vector<MRA::Geometry::Point> fieldplayer_parking_positions = std::vector<MRA::Geometry::Point>();
-		for (auto it = r_teamplannerData.parking_positions.begin(); it != r_teamplannerData.parking_positions.end(); ++it) {
-			MRA::Geometry::Point parking_pos = *it;
-			if (parking_pos.equals(goalieParkingPosition) == false) {
-				fieldplayer_parking_positions.push_back(parking_pos);
-			}
-		}
+        // define forward positions based on parking location.
+        MRA::Geometry::Point fordwardRight = MRA::Geometry::Point( 1.0, -(r_teamplannerData.fieldConfig.getCenterCirleRadius() + r_teamplannerData.fieldConfig.getRobotRadius())-1);
+        MRA::Geometry::Point fordwardLeft  = MRA::Geometry::Point(-1.0, -(r_teamplannerData.fieldConfig.getCenterCirleRadius() + r_teamplannerData.fieldConfig.getRobotRadius())-1);
+        playerPositions.push_back(fordwardRight);
+        playerPositions.push_back(fordwardLeft);
+        // define back position based on parking position
+        MRA::Geometry::Point backRight = MRA::Geometry::Point(  (r_teamplannerData.fieldConfig.getMaxFieldX()*0.5) + 0.5, -(r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-0.3);
+        MRA::Geometry::Point backLeft  = MRA::Geometry::Point( -(r_teamplannerData.fieldConfig.getMaxFieldX()*0.5) - 0.5, -(r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-0.3);
+        playerPositions.push_back(backRight);
+        playerPositions.push_back(backLeft);
 
-		/**
-		 * Assign algorithm used for parking game situation. Assign all players to a place in the parking lot.
-		 * Internally a list of parking positions is created (most imported position first). Then the players will be assigned to
-		 * the positions, with use of the path-calculation.
-		 */
-		if (r_teamplannerData.parking_positions.size() > 0) {
-			playerPositions.push_back(fieldplayer_parking_positions[0]);
-		}
-		if (r_teamplannerData.parking_positions.size() > 1) {
-			playerPositions.push_back(fieldplayer_parking_positions[1]);
-		}
-		if (r_teamplannerData.parking_positions.size() > 2) {
-			playerPositions.push_back(fieldplayer_parking_positions[2]);
-		}
-		if (r_teamplannerData.parking_positions.size() > 3) {
-			playerPositions.push_back(fieldplayer_parking_positions[3]);
-		}
+        // add goalie begin position for the case there is no goalie present
+        double goalieYPosition = -r_teamplannerData.fieldConfig.getMaxFieldY()+0.5;
+        MRA::Geometry::Point goaliePosition = MRA::Geometry::Point(0, goalieYPosition); // center of the goal;
+        playerPositions.push_back(goaliePosition);
+    }
+    else if (r_teamplannerData.gamestate == game_state_e::PARKING) {
+        // provide list for fixed positions in case of PARKING
+
+        // select position closest to default goalie position as parking position for the goalie
+        MRA::Geometry::Point goalieDefaultPosition = MRA::Geometry::Point(0, -r_teamplannerData.fieldConfig.getMaxFieldY());
+        MRA::Geometry::Point goalieParkingPosition = closestTo(goalieDefaultPosition, r_teamplannerData.parking_positions);
+
+        // provide list for fixed positions in case of PARKING for the field-players
+        // Parking-positions:
+        // - Parking-position for Goalie: closest to own goal.
+        // - For field players: 5 positions:
+        //   - add parking position in order of provided list of parking positions, but skip the position for goalie
+        //   - Parking-position for Goalie in case their is not goalie set but team have 5 players
+
+        std::vector<MRA::Geometry::Point> fieldplayer_parking_positions = vector<MRA::Geometry::Point>();
+        // add parking spots in reversed order
+        for (auto it = r_teamplannerData.parking_positions.rbegin(); it != r_teamplannerData.parking_positions.rend(); ++it) {
+            MRA::Geometry::Point parking_pos = *it;
+            if (parking_pos.equals(goalieParkingPosition) == false) {
+                playerPositions.push_back(parking_pos);
+            }
+        }
+        // add goalie parking position for the case there is no goalie present
+        playerPositions.push_back(goalieParkingPosition);
 	}
 	else if (r_teamplannerData.gamestate == game_state_e::KICKOFF) {
 

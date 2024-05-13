@@ -2,13 +2,12 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test auto assign goalie with two players, a preferred kicker and receiver </tns:Description>
   <tns:Options svgOutputFileName="output_team/auto_assing_keeper_03.svg" autoAssignGoalie="true" preferredSetplayKicker="1" preferredSetplayReceiver="2" />
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="-2.0" y="2.75" velx="0.5" vely="0.5"/>
-  <tns:Team x="-2.0" y="4.0"/>
-  <tns:Team x="1.0"  y="3.0"/>
+  <tns:Team id="1" label="1" x="-2.0" y="4.0"/>
+  <tns:Team id="2" label="2" x="1.0"  y="3.0"/>
  </tns:Situation>
 
 

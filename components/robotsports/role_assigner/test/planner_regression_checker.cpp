@@ -565,6 +565,14 @@ int main(int argc, char *argv[]) {
 // 		cout << "#AREA_FAULTS = " << nr_area_faults_found << endl;
 // 		cout << "#UNREACHABLE AREA = " << nr_unreachable_area << endl;
 // 		cout << "#INFINITE COSTS = " << nr_infinite_costs << endl;
+//             cout << endl;
+//             cout << endl;
+//             if (nr_failed > 0) {
+//                cout << "Failed files can be compared:" << endl;
+//                cout << "   reference-files in directory: " << compare_old << endl;
+//                cout << "   new-files  in directory     : " << compare_new << endl;
+//             } 
+//
 //	}
 //	catch (std::exception & e)
 //	{

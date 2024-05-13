@@ -10,7 +10,6 @@
             <element name="Description" type="string" maxOccurs="1" minOccurs="1">  <annotation> <documentation>Description of the strategy test.</documentation> </annotation> </element>
             <element name="Options" type="tns:OptionsType" maxOccurs="1" minOccurs="1"> <annotation> <documentation>Selected options for the strategy.</documentation> </annotation> </element>
             <element name="Field" type="tns:FieldType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>field configuration.</documentation> </annotation> </element>
-            <element name="Simulation" type="tns:SimulationType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>Simulation parameters.</documentation> </annotation></element>
             <element name="GameState" type="tns:GameStateType" maxOccurs="1" minOccurs="1"> <annotation> <documentation>game state</documentation> </annotation> </element>
             <element name="AttackFormation" type="tns:FormationType" maxOccurs="1" minOccurs="1"> <annotation> <documentation>formation during attack phase</documentation> </annotation> </element>
             <element name="DefenseFormation" type="tns:FormationType" maxOccurs="1" minOccurs="1"> <annotation> <documentation>formation during defense phase</documentation> </annotation> </element>
@@ -20,6 +19,7 @@
             <element name="Opponent" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0"> <annotation> <documentation>own players</documentation> </annotation> </element>
             <element name="PickupPosition" type="tns:PickupPositionType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>Pickup ball information.</documentation> </annotation> </element>
             <element name="SituationInfo" type="tns:SituationInfoType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>situation info, team related.</documentation> </annotation> </element>
+            <element name="ParkingInfo" type="tns:ParkingInfoType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>parking positions.</documentation> </annotation> </element>
           </sequence>
     </complexType>
     <complexType name="BallType"> <annotation> <documentation>moving ball </documentation> </annotation>
@@ -27,8 +27,6 @@
         <attribute name="y" type="double"> <annotation> <documentation>y</documentation> </annotation></attribute>
         <attribute name="velx" type="double" default="0.0"> <annotation> <documentation>velocity X</documentation> </annotation></attribute>
         <attribute name="vely" type="double" default="0.0"> <annotation> <documentation>velocity Y</documentation> </annotation></attribute>
-        <attribute name="label" type="integer" default="-1"> <annotation> <documentation>label of ball</documentation> </annotation></attribute>
-        <attribute name="valid" type="boolean" default="true"> <annotation> <documentation>valid flag</documentation> </annotation></attribute>
     </complexType>
     <complexType name="PreviousBallType"> <annotation> <documentation>previous ball location</documentation> </annotation>
         <attribute name="x" type="double" default="0.0"> <annotation> <documentation>x</documentation> </annotation> </attribute>
@@ -42,9 +40,8 @@
         <attribute name="vely" type="double" default="0.0"> <annotation> <documentation>velocity Y</documentation> </annotation></attribute>
         <attribute name="velrz" type="double" default="0.0"> <annotation> <documentation>velocity rz</documentation> </annotation></attribute>
         <attribute name="isGoalie" type="boolean" default="false"> <annotation> <documentation>indicator that the player has the goalie role</documentation> </annotation> </attribute>
-        <attribute name="id" type="string" default=""> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
-        <attribute name="label" type="integer" default="-1"> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
-        <attribute name="valid" type="boolean" default="true"> <annotation><documentation>valid-flag</documentation> </annotation> </attribute>
+        <attribute name="id" type="integer"> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
+        <attribute name="label" type="integer"> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
         <attribute name="time_in_own_penalty_area" type="double" default="0.0"> <annotation> <documentation>time player in own penalty area</documentation> </annotation> </attribute>
         <attribute name="time_in_enemy_penalty_area" type="double" default="0.0"> <annotation> <documentation>time player in enemy penalty area</documentation> </annotation> </attribute>
         <attribute name="hasBall" type="boolean" default="false"> <annotation> <documentation>indicator that the player control the ball</documentation> </annotation> </attribute>
@@ -66,7 +63,7 @@
             <element name="PassData" type="tns:PassDataType" maxOccurs="1" minOccurs="0">  <annotation> <documentation>situation info, team related.</documentation> </annotation> </element>
         </sequence>    
         <attribute name="team_controls_ball" type="boolean"> <annotation> <documentation>situation info, team_controls_ball</documentation>  </annotation> </attribute >
-        <attribute name="passing_required" type="boolean" default="false"> <annotation> <documentation>indicator that passing is required to able to score a valid goal</documentation> </annotation> </attribute>
+        <attribute name="passing_required" type="boolean"> <annotation> <documentation>indicator that passing is required to able to score a valid goal</documentation> </annotation> </attribute>
     </complexType>
     <complexType name="PassDataType">  <annotation>  <documentation>pass information</documentation>   </annotation>
         <attribute name="origin_x" type="double" default="0.0"> <annotation> <documentation>pass from position x</documentation>    </annotation>  </attribute>
@@ -78,10 +75,6 @@
         <attribute name="angle" type="double" default="0.0">    <annotation> <documentation>intended ball velocity</documentation> </annotation> </attribute>
         <attribute name="valid" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
         <attribute name="target_id" type="int" default="0"> <annotation> <documentation>target id for pass, 0 = goal else robot-id</documentation> </annotation></attribute>
-    </complexType>
-    <complexType name="SimulationType"> 
-        <attribute name="numberOfIterations" type="integer" default="1"> <annotation> <documentation>Number of iterations for simulation.</documentation> </annotation> </attribute>
-        <attribute name="simulateOpponent" type="boolean"  default="true"> <annotation> <documentation>Must opponent be simulated.</documentation> </annotation> </attribute>
     </complexType>
     <complexType name="OptionsType"> <annotation> <documentation>moving object </documentation> </annotation>
         <attribute name="addBallApproachVertices" type="boolean" default="true"> <annotation> <documentation>If ball approach distributed vertices should be added.</documentation> </annotation> </attribute>
@@ -249,4 +242,14 @@
             <enumeration value="PENALTY_DEFENDER"/>
          </restriction>
     </simpleType>
+    <complexType name="ParkingInfoType"> <annotation> <documentation>parking info</documentation> </annotation>
+        <sequence>
+            <element name="ParkingPosition" type="tns:ParkingPositionType" maxOccurs="5" minOccurs="5">  <annotation> <documentation>a parking position.</documentation> </annotation> </element>
+          </sequence>
+    </complexType>
+    <complexType name="ParkingPositionType"> <annotation> <documentation>a parking position</documentation> </annotation>
+        <attribute name="x" type="double"> <annotation> <documentation>x</documentation> </annotation> </attribute>
+        <attribute name="y" type="double"> <annotation> <documentation>y</documentation> </annotation> </attribute>
+    </complexType>
+
 </schema>

@@ -419,6 +419,12 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
             pass_data_valid_str.c_str(), data.pass_data.origin_pos.x, data.pass_data.origin_pos.y, data.pass_data.target_pos.x, data.pass_data.target_pos.y,
             data.pass_data.velocity, data.pass_data.angle, data.pass_data.ts, data.pass_data.target_id);
     fprintf(fp, "  </tns:SituationInfo>\n");
+    fprintf(fp, "  <tns:ParkingInfo>\n");
+    for (auto idx = 0u; idx < data.parking_positions.size(); idx++) {
+        fprintf(fp, "    <tns:ParkingPosition x=\"%4.2f\" y=\"%4.2f\"/>\n", data.parking_positions[idx].x, data.parking_positions[idx].y);
+    }
+    fprintf(fp, "  </tns:ParkingInfo>\n");
+
     fprintf(fp, "</tns:Situation>\n");
 
     fprintf(fp, "\n-->\n"); // // end svg comment

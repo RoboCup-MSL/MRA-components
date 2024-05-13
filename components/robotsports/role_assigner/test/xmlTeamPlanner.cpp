@@ -182,7 +182,7 @@ void getPlannerOptions(TeamPlannerParameters & options, auto_ptr<robotsports::St
     options.svgOutputFileName = c->Options().svgOutputFileName();
     options.saveGridDataToFile = c->Options().saveGridDataToFile();
     options.svgRobotPlanner = c->Options().svgRobotPlanner();
-//TODO new / added ? removed?    options.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
+    options.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
     options.priority_block_max_distance = c->Options().priority_block_max_distance();
 }
 
@@ -281,20 +281,30 @@ void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, boo
         } else {
             P.player_type = player_type_e::FIELD_PLAYER;
         }
-        if ((*team_iter).hasBall()) {
-            cout << "player with ball is  " << playerId << endl;
-            r_team_has_ball = true;
-        }
+
+
         P.position = Geometry::Position(*team_iter->x(), *team_iter->y(), team_iter->rz());
         P.velocity= Geometry::Position(team_iter->velx(), team_iter->vely(), team_iter->velrz());
-        P.labelId = (*team_iter).label();
-        P.controlBall = (*team_iter).hasBall();
-        P.robotId = playerId;
-        if ((*team_iter).isGoalie()) {
-            P.player_type = player_type_e::GOALIE;
+        
+        // id of robot must be defined in xml-file
+        if (not (*team_iter).id()) {
+            cout << "No id defined for robot" << endl;
+            exit(1);
         }
-        else{
-            P.player_type = player_type_e::FIELD_PLAYER;
+     	P.robotId = (*team_iter).id().get();
+
+        // label of robot must be defined in xml-file
+        if (not (*team_iter).label()) {
+            cout << "label-id not defined for an own player" << endl;
+            exit(1);
+        }
+        P.labelId = (*team_iter).label().get();
+
+
+        P.controlBall = (*team_iter).hasBall();
+        if (P.controlBall) {
+            cout << "player with ball is  " << P.robotId << endl;
+            r_team_has_ball = true;
         }
         P.time_in_own_penalty_area = (*team_iter).time_in_own_penalty_area();
         P.time_in_opponent_penalty_area =  (*team_iter).time_in_enemy_penalty_area();
@@ -317,9 +327,15 @@ void fillOpponents(std::vector<TeamPlannerOpponent>& Opponents, auto_ptr<robotsp
             c->Opponent().begin(); opponent_iter != c->Opponent().end();
             ++opponent_iter) {
         playerId++;
-        long labelId = (*opponent_iter).label();
+        if (not (*opponent_iter).label()) {
+            cout << "label-id not defined for a player of the opponents" << endl;
+            exit(1);
+        }
+        long labelId = (*opponent_iter).label().get();
         if (labelId < 10) {
             labelId = playerId + 10;
+            cout <<  " labe-id must be above 10 for an opponent." << endl;
+            exit(1);
         }
         TeamPlannerOpponent opponent;
         opponent.position = Geometry::Position(*opponent_iter->x(), *opponent_iter->y(), opponent_iter->rz());
@@ -435,6 +451,7 @@ void xmlplanner(string input_filename) {
 
     std::vector<TeamPlannerRobot> Team = {};
     std::vector<TeamPlannerOpponent> Opponents = {};
+    vector<Geometry::Point> parking_positions = {};
 
 	bool passIsRequired = false;
 	bool team_controls_ball = false;
@@ -457,9 +474,8 @@ void xmlplanner(string input_filename) {
 		}
 
         fillTeam(Team, playerPassedBall, team_has_ball, c);
-        long playerId = 0;
+
         for (auto idx = 0u; idx< Team.size(); idx++) {
-            playerId++;
             myTeam.push_back(Team[idx].position);
             myTeam_vel.push_back(Team[idx].velocity);
             myTeam_labels.push_back(Team[idx].labelId);
@@ -469,10 +485,10 @@ void xmlplanner(string input_filename) {
             time_in_own_penalty_area.push_back(Team[idx].time_in_own_penalty_area);
             time_in_opponent_penalty_area.push_back(Team[idx].time_in_opponent_penalty_area);
             if  (Team[idx].passBall) {
-                passBallByPlayer = playerId;
+                passBallByPlayer = Team[idx].robotId;
             }
             if  (Team[idx].controlBall) {
-                ownPlayerWithBall  = playerId;
+                ownPlayerWithBall  = Team[idx].robotId;
             }
             robotIds.push_back(Team[idx].robotId); // start player-id with 1, loop starts with 0.
         }
@@ -531,6 +547,22 @@ void xmlplanner(string input_filename) {
             previous_ball.x = c->PreviousBall()->x();
             previous_ball.y = c->PreviousBall()->y();
         }
+
+        if (c->ParkingInfo()) {
+            auto parkpos_list = c->ParkingInfo().get().ParkingPosition();
+            for (auto parkpos_iter = parkpos_list.begin(); parkpos_iter != parkpos_list.end(); ++parkpos_iter) {
+                parking_positions.push_back(Geometry::Point((*parkpos_iter).x().get(), (*parkpos_iter).y().get()));
+            }
+        }
+        else {
+            // default parking positions
+            parking_positions.push_back(Geometry::Point(-6.375, -0.25));
+            parking_positions.push_back(Geometry::Point(-6.375, -1.25));
+            parking_positions.push_back(Geometry::Point(-6.375, -2.25));
+            parking_positions.push_back(Geometry::Point(-6.375, -3.25));
+            parking_positions.push_back(Geometry::Point(-6.375, -4.25));
+        }
+
 	} catch (const xml_schema::exception& e) {
 		cerr << e << endl;
 		return;
@@ -565,13 +597,6 @@ void xmlplanner(string input_filename) {
     if (not print_only_errors) {
         cerr << ">>>> Assign roles" << endl << flush;
     }
-    //cerr << "\t >>>> Options" << plannerOptions.toString() << endl << flush;
-    std::vector<Geometry::Point> parking_positions = std::vector<Geometry::Point>();
-    parking_positions.push_back(Geometry::Point(-6.375, -0.25));
-    parking_positions.push_back(Geometry::Point(-6.375, -1.25));
-    parking_positions.push_back(Geometry::Point(-6.375, -2.25));
-    parking_positions.push_back(Geometry::Point(-6.375, -3.25));
-    parking_positions.push_back(Geometry::Point(-6.375, -4.25));
 
     if (!pickup_pos_set) {
         pickup_pos.x = ball.x;

@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "FalconsLocalizationVision"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "falcons/localization_vision"
+#endif
 
 
 #include "abstract_interface.hpp"

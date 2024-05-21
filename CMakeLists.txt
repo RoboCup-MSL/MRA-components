@@ -66,6 +66,7 @@ set(MESSAGE_PROTOS_COMMON
     datatypes/Ball.proto
     datatypes/CvMat.proto
     datatypes/Logging.proto
+    datatypes/Meta.proto
     datatypes/Obstacle.proto
     datatypes/Player.proto
     datatypes/Point.proto
@@ -90,6 +91,13 @@ set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-datatypes PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-datatypes ${MRA-datatypes_generated_files})     
 
+# generate Python files from protofiles, copy to build/datatypes directory
+protobuf_generate(TARGET MRA-datatypes-proto PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE python OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/datatypes)
+file(GLOB PYTHON_FILES "${CMAKE_CURRENT_BINARY_DIR}/datatypes/*.py")
+foreach(PYTHON_FILE ${PYTHON_FILES})
+    file(COPY ${PYTHON_FILE} DESTINATION "${CMAKE_BINARY_DIR}/datatypes")
+endforeach()
+
 
 ##########################################################
 # component proto files
@@ -113,6 +121,8 @@ set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-components-proto ${MRA-components-generated-files})     
 
+# generate Python files from protofiles, copy to build/datatypes directory
+protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python)
 
 # create dummy file for creating libraries with only ohter libraries
 file(TOUCH ${MRA_BINARY_DIR}/dummy.cpp)

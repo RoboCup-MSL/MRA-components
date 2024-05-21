@@ -8,6 +8,7 @@ set(MESSAGE_PROTOS_COMMON
     BallCandidate.proto
     CvMat.proto
     Logging.proto
+    Meta.proto
     Obstacle.proto
     Player.proto
     Point.proto

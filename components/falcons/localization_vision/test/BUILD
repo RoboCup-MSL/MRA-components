@@ -57,19 +57,6 @@ py_binary(
 )
 
 py_binary(
-    name = "print",
-    srcs = [
-        "print.py",
-    ],
-    python_version = "PY3",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//components/falcons/localization_vision/interface:interface_py",
-        ":common",
-    ],
-)
-
-py_binary(
     name = "calc",
     srcs = [
         "calc.py",

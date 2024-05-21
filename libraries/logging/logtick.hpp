@@ -21,7 +21,7 @@ template <typename Ti, typename Tp, typename Ts, typename To, typename Tl>
 class LogTick
 {
 public:
-    LogTick(std::string componentName, std::string componentRelPath, std::string fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Tl *local, int *error_value)
+    LogTick(std::string const &componentName, std::string const &componentRelPath, std::string const &fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Tl *local, int *error_value)
     :
         // store data for inspection later
         _componentName(componentName),

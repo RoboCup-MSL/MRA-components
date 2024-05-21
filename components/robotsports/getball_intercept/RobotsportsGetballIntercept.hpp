@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "RobotsportsGetballIntercept"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "robotsports/getball_intercept"
+#endif
 
 
 #include "abstract_interface.hpp"

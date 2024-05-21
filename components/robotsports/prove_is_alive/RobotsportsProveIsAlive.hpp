@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "RobotsportsProveIsAlive"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "robotsports/prove_is_alive"
+#endif
 
 
 #include "abstract_interface.hpp"

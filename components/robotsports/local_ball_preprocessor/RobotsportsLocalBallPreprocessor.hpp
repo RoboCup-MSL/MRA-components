@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "RobotsportsLocalBallPreprocessor"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "robotsports/local_ball_preprocessor"
+#endif
 
 
 #include "abstract_interface.hpp"

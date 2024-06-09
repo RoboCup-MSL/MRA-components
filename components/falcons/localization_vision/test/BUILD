@@ -11,11 +11,18 @@ pybind_extension(
     ],
 )
 
+py_library(
+    name = "common",
+    srcs = ["common.py"],
+    deps = [
+        "//libraries/logging:logdata",
+    ],
+)
+
 py_binary(
     name = "tune",
     srcs = [
         "tune.py",
-        "common.py",
         "gui.py",
         "gui_opencv.py",
         "gui_config.py",
@@ -27,6 +34,7 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//components/falcons/localization_vision/interface:interface_py_proto",
+        ":common",
     ],
     data = [
         ":pybind_ext.so",
@@ -39,12 +47,31 @@ py_binary(
     name = "plot",
     srcs = [
         "plot.py",
+    ],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//components/falcons/localization_vision/interface:interface_py",
+        ":common",
+    ],
+)
+
+py_binary(
+    name = "calc",
+    srcs = [
+        "calc.py",
         "common.py",
     ],
     python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         "//components/falcons/localization_vision/interface:interface_py",
+        ":common",
+    ],
+    data = [
+        ":pybind_ext.so",
+        "@com_google_protobuf//:protobuf_python",
+        "@extendedlogging//:extendedlogging",
     ],
 )
 

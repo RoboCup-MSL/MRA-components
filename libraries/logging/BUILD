@@ -29,6 +29,15 @@ cc_library(
     ],
 )
 
+py_library(
+    name = "logdata",
+    srcs = ["logdata.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//datatypes:MRA_proto_py", # need Meta.proto
+    ],
+)
+
 # this test has outlived its usefulness, now causing too many problems
 #py_test(
 #    name = "check_logfolder",

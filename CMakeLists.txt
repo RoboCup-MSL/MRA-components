@@ -10,8 +10,8 @@ cmake_policy(SET CMP0077 NEW) # option() command to do nothing when a normal var
 option(MRA_TEST_ENABLED "Build all tests" ON)
 
 # use C++17 standard, or suffer errors re. using std::filesystem
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds")
- # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-nonnull")
+ # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds 
 
 # dependency: ProtoBuf
 # check if ProtoBuf is installed

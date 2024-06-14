@@ -63,7 +63,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Bazel
-      uses: bazelbuild/setup-bazelisk@v4
+      uses: bazelbuild/setup-bazelisk@v2
 
     - name: Set up dependencies
       run: |

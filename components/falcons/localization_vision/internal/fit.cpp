@@ -24,7 +24,7 @@ void fitThreadFunction(FitCore& _fitCore, cv::Mat const &referenceFloor, std::ve
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
     int num_trackers_before = trackers.size();
-    int num_threads = std::min(1, settings.numextrathreads());
+    int num_threads = std::max(1, settings.numextrathreads());
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before, num_threads);
 
     // multithreaded execution (main thread idle)

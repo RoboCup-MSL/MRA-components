@@ -116,7 +116,10 @@ class Configurator():
     def read(self):
         if not os.path.isfile(self.config_filename):
             self.reset()
-        self.config_data = yaml.safe_load(open(self.config_filename))
+        # shave off trailing \0 characters
+        with open(self.config_filename, 'rb') as f:
+            content_stripped = f.read().rstrip(b'\0').decode('utf-8')
+            self.config_data = yaml.safe_load(content_stripped)
 
     def set(self, key, value):
         if self.args.scope:

@@ -173,7 +173,7 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
     int max_size = _params.solver().linepoints().maxcount();
     int dropped = 0;
     if (n > max_size) {
-        dropped = max_size - n;
+        dropped = n - max_size;
         result.resize(max_size);
         n = max_size;
     }

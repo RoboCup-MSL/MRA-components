@@ -7,16 +7,16 @@ import "datatypes/PosVel.proto";
 
 enum ActionType
 {
-    STOP = 0;
-    MOVE = 1;
-    KICK = 2;
-    PASS = 3;
-    SHOOT = 4;
-    LOB = 5;
-    GETBALL = 6;
-    SHIELD = 7; // a.k.a. TURN_AWAY_FROM_OPPONENT
-    KEEPER = 8;
-    INTERCEPT = 9;
+    ACTION_STOP = 0;
+    ACTION_MOVE = 1;
+    ACTION_KICK = 2;
+    ACTION_PASS = 3;
+    ACTION_SHOOT = 4;
+    ACTION_LOB = 5;
+    ACTION_GETBALL = 6;
+    ACTION_SHIELD = 7; // a.k.a. TURN_AWAY_FROM_OPPONENT
+    ACTION_KEEPER = 8;
+    ACTION_INTERCEPT = 9;
 }
 
 message ActionStopParams

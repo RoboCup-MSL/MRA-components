@@ -3,16 +3,92 @@ syntax = "proto3";
 package MRA.FalconsMotionPlanning;
 
 import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
 
-message TimeToBall
+message MotionSetpoint
 {
-    int32 robotId = 1;
-    double duration = 2; // in seconds
+    MRA.Datatypes.PosVel target = 1; // use position.x, y and rz; velocity typically unused
+    int32 motionType = 2; // optional
+    bool obstacleAvoidanceDisabled = 3; // optional, default enabled
+}
+
+enum ShootingPhase
+{
+    SHOOT_PHASE_PREPARE = 0; // moving the height actuator may take a while
+    SHOOT_PHASE_DISCHARGE = 1; // one moment actually, not really a phase
+}
+
+enum ShootingType
+{
+    SHOOT_TYPE_PASS = 0; // soft landing at teammate
+    SHOOT_TYPE_SHOOT = 2; // max power typically
+    SHOOT_TYPE_LOB = 3; // maximize height
+}
+
+message ShootingSetpoint
+{
+    float pos_x = 1; // FCS coordinates
+    float pos_y = 2;
+    float pos_z = 3;
+    ShootingPhase phase = 4;
+    ShootingType type = 5;
+}
+
+message KickerPowerSetpoint
+{
+    float power = 1;
+}
+
+message KickerHeightSetpoint
+{
+    float height = 1;
+}
+
+message KickerDischargeSetpoint
+{
+    bool discharge = 1; // trigger
+}
+
+message KickerSetpoint
+{
+    KickerPowerSetpoint power = 1;
+    KickerHeightSetpoint height = 2;
+    KickerDischargeSetpoint discharge = 3; // trigger
+}
+
+enum KeeperFrameExtensionDirection
+{
+    KEEPER_FRAME_EXTEND_NONE = 0;
+    KEEPER_FRAME_EXTEND_TOP = 1;
+    KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
+    KEEPER_FRAME_EXTEND_RIGHT = 3;
+}
+
+message KeeperFrameSetpoint
+{
+    KeeperFrameExtensionDirection extension = 1;
+}
+
+message BallHandlersSetpoint
+{
+    bool enabled = 1; // engage to grab the ball
+}
+
+message Setpoints
+{
+    // combinations may be used, but not all combinations make sense
+    // for instance: keeperFrame extension in combination with kick/shoot would be strange
+    // also: an error should be triggered when both ShootingSetpoint and KickerSetpoint are used at the same time -- Shooting controls Kicker
+    BallHandlersSetpoint bh = 1;
+    MotionSetpoint move = 2;
+    ShootingSetpoint shoot = 3;
+    KickerSetpoint kick = 4;
+    KeeperFrameSetpoint keeperFrame = 5;
 }
 
 message Output
 {
-    MRA.Datatypes.ActionResult actionresult = 1;
-    //repeated TimeToBall timeToBall = 2; // optional "service"
+    Setpoints setpoints = 1;
+    MRA.Datatypes.ActionResult actionresult = 2;
 }
 

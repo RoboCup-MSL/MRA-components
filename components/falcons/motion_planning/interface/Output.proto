@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package MRA.FalconsMotionPlanning;
+
+import "datatypes/ActionResult.proto";
+
+message TimeToBall
+{
+    int32 robotId = 1;
+    double duration = 2; // in seconds
+}
+
+message Output
+{
+    MRA.Datatypes.ActionResult actionresult = 1;
+    //repeated TimeToBall timeToBall = 2; // optional "service"
+}
+

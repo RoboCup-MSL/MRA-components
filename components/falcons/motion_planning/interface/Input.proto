@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package MRA.FalconsMotionPlanning;
+
+import "datatypes/Point.proto";
+import "datatypes/PosVel.proto";
+
+enum ActionType
+{
+    STOP = 0;
+    MOVE = 1;
+    KICK = 2;
+    PASS = 3;
+    SHOOT = 4;
+    LOB = 5;
+    GETBALL = 6;
+    SHIELD = 7; // a.k.a. TURN_AWAY_FROM_OPPONENT
+    KEEPER = 8;
+    INTERCEPT = 9;
+}
+
+message ActionStopParams
+{
+    bool ballHandlersEnabled = 1;
+}
+
+message ActionMoveParams
+{
+    MRA.Datatypes.PosVel target = 1;
+    int32 motionType = 2; // optional
+    bool ballHandlersEnabled = 3;
+}
+
+message ActionKickParams
+{
+    float power = 1;
+    float height = 2;
+}
+
+message ActionPassParams
+{
+    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
+}
+
+message ActionShootParams
+{
+    MRA.Datatypes.PosVel target = 1; // typically only using pos.x, pos.y and pos.z
+}
+
+message ActionLobShotParams
+{
+    MRA.Datatypes.PosVel target = 1; // typically only using pos.x, pos.y and pos.z
+}
+
+message ActionGetBallParams
+{
+    int32 motionType = 1; // optional
+    float radius = 2; // optional
+}
+
+message ActionShieldParams
+{
+}
+
+message ActionKeeperParams
+{
+}
+
+message ActionInterceptParams
+{
+    float radius = 2; // optional
+}
+
+message ActionParams
+{
+    ActionType type = 1;
+    oneof params
+    {
+        ActionStopParams stop = 2;
+        ActionMoveParams move = 3;
+        ActionKickParams kick = 4;
+        ActionPassParams pass = 5;
+        ActionShootParams shoot = 6;
+        ActionLobShotParams lob = 7;
+        ActionGetBallParams getball = 8;
+        ActionShieldParams shield = 9;
+        ActionKeeperParams keeper = 10;
+        ActionInterceptParams intercept = 11;
+    }
+}
+
+message ForbiddenArea
+{
+    repeated MRA.Datatypes.Point points = 1;
+}
+
+message Input
+{
+    ActionParams action = 1;
+    repeated ForbiddenArea forbiddenAreas = 2;
+}
+

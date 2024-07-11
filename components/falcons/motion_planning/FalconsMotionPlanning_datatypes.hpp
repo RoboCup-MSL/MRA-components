@@ -8,6 +8,7 @@
 #include "components/falcons/motion_planning/interface/Params.pb.h"
 #include "components/falcons/motion_planning/interface/State.pb.h"
 #include "components/falcons/motion_planning/interface/Output.pb.h"
+#include "components/falcons/motion_planning/interface/Local.pb.h"
 
 
 #endif

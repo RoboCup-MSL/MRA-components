@@ -33,7 +33,7 @@ typedef MRA::FalconsMotionPlanning::Input InputType;
 typedef MRA::FalconsMotionPlanning::Params ParamsType;
 typedef MRA::FalconsMotionPlanning::State StateType;
 typedef MRA::FalconsMotionPlanning::Output OutputType;
-typedef google::protobuf::Empty LocalType; // no .proto -> unused
+typedef MRA::FalconsMotionPlanning::Local LocalType;
 
 
 class FalconsMotionPlanning: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>

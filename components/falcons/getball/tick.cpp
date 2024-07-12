@@ -14,6 +14,11 @@ using namespace MRA;
 #include <cmath>
 
 
+// globals
+FalconsGetballFetch::StateType g_fetch_state;
+FalconsGetballIntercept::StateType g_intercept_state;
+
+
 int FalconsGetball::FalconsGetball::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
@@ -37,18 +42,19 @@ int FalconsGetball::FalconsGetball::tick
     {
         // call component: FalconsGetballFetch
         FalconsGetballFetch::InputType subcomponent_input;
+        subcomponent_input.CopyFrom(input); // same type
         FalconsGetballFetch::OutputType subcomponent_output;
-        //fbi.worldstate() = input.worldstate();
+        FalconsGetballFetch::LocalType subcomponent_local;
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
             timestamp,
             subcomponent_input,
             params.fetch(),
-            state,
+            g_fetch_state,
             subcomponent_output,
-            local
+            subcomponent_local
         );
-        //output.set_actionresult(subcomponent_output.actionresult());
-        //output.set_target(subcomponent_output.target());
+        output.set_actionresult(subcomponent_output.actionresult());
+        *output.mutable_target() = subcomponent_output.target();
     }
 /*    else
     {

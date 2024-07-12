@@ -5,6 +5,7 @@ package MRA.FalconsMotionPlanning;
 import "datatypes/Point.proto";
 import "datatypes/PosVel.proto";
 import "datatypes/WorldState.proto";
+import "components/falcons/getball/interface/Input.proto";
 
 enum ActionType
 {
@@ -53,12 +54,6 @@ message ActionLobShotInputs
     MRA.Datatypes.PosVel target = 1; // typically only using pos.x, pos.y and pos.z
 }
 
-message ActionGetBallInputs
-{
-    int32 motionType = 1; // optional
-    float radius = 2; // optional
-}
-
 message ActionShieldInputs
 {
 }
@@ -83,7 +78,7 @@ message ActionInputs
         ActionPassInputs pass = 5;
         ActionShootInputs shoot = 6;
         ActionLobShotInputs lob = 7;
-        ActionGetBallInputs getball = 8;
+        MRA.FalconsGetball.Input getball = 8;
         ActionShieldInputs shield = 9;
         ActionKeeperInputs keeper = 10;
         ActionInterceptInputs intercept = 11;

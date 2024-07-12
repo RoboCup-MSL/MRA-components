@@ -51,12 +51,12 @@ int FalconsMotionPlanning::FalconsMotionPlanning::tick
 
 void checkParams(ParamsType const &params)
 {
-    float tolerance_xy = params.move().tolerance_xy();
+    float tolerance_xy = params.action().move().tolerance_xy();
     if (tolerance_xy <= 0.0)
     {
         throw std::runtime_error("invalid configuration parameter for move.tolerance_xy: should be larger than zero");
     }
-    float tolerance_rz = params.move().tolerance_rz();
+    float tolerance_rz = params.action().move().tolerance_rz();
     if (tolerance_rz <= 0.0)
     {
         throw std::runtime_error("invalid configuration parameter for move.tolerance_rz: should be larger than zero");
@@ -80,8 +80,8 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
         MRA::Geometry::Position target_pos = input.action().move().target().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();
         auto delta_pos = target_pos - current_pos;
-        float tolerance_xy = params.move().tolerance_xy();
-        float tolerance_rz = params.move().tolerance_rz();
+        float tolerance_xy = params.action().move().tolerance_xy();
+        float tolerance_rz = params.action().move().tolerance_rz();
         bool xy_ok = ((abs(delta_pos.x) < tolerance_xy) && (abs(delta_pos.y) < tolerance_xy));
         bool rz_ok = (abs(delta_pos.rz) < tolerance_rz);
         if (xy_ok && rz_ok)

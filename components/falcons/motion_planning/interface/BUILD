@@ -11,7 +11,7 @@ proto_library(
     deps = [
         "@com_google_protobuf//:timestamp_proto",
         "//datatypes:MRA_proto",
-        
+        "//components/falcons/getball/interface:interface_proto",
     ],
 )
 

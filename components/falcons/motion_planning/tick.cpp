@@ -26,6 +26,7 @@ int FalconsMotionPlanning::FalconsMotionPlanning::tick
 )
 {
     int error_value = 0;
+    MRA_LOG_TICK();
 
     // user implementation goes here
 
@@ -73,6 +74,7 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     else if (input.action().has_move())
     {
         *output.mutable_setpoints()->mutable_move()->mutable_target() = input.action().move().target();
+        output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
         // check if arrived
         MRA::Geometry::Position target_pos = input.action().move().target().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();

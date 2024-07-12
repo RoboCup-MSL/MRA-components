@@ -70,6 +70,7 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     {
         output.set_actionresult(MRA::Datatypes::PASSED);
         output.mutable_setpoints()->mutable_move()->set_stop(true);
+        output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().stop().ballhandlersenabled());
     }
     else if (input.action().has_move())
     {

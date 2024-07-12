@@ -4,6 +4,7 @@ package MRA.FalconsMotionPlanning;
 
 import "datatypes/Point.proto";
 import "datatypes/PosVel.proto";
+import "datatypes/WorldState.proto";
 
 enum ActionType
 {
@@ -19,73 +20,73 @@ enum ActionType
     ACTION_INTERCEPT = 9;
 }
 
-message ActionStopParams
+message ActionStopInputs
 {
     bool ballHandlersEnabled = 1;
 }
 
-message ActionMoveParams
+message ActionMoveInputs
 {
     MRA.Datatypes.PosVel target = 1;
     int32 motionType = 2; // optional
     bool ballHandlersEnabled = 3;
 }
 
-message ActionKickParams
+message ActionKickInputs
 {
     float power = 1;
     float height = 2;
 }
 
-message ActionPassParams
+message ActionPassInputs
 {
     MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
 }
 
-message ActionShootParams
+message ActionShootInputs
 {
     MRA.Datatypes.PosVel target = 1; // typically only using pos.x, pos.y and pos.z
 }
 
-message ActionLobShotParams
+message ActionLobShotInputs
 {
     MRA.Datatypes.PosVel target = 1; // typically only using pos.x, pos.y and pos.z
 }
 
-message ActionGetBallParams
+message ActionGetBallInputs
 {
     int32 motionType = 1; // optional
     float radius = 2; // optional
 }
 
-message ActionShieldParams
+message ActionShieldInputs
 {
 }
 
-message ActionKeeperParams
+message ActionKeeperInputs
 {
 }
 
-message ActionInterceptParams
+message ActionInterceptInputs
 {
     float radius = 2; // optional
 }
 
-message ActionParams
+message ActionInputs
 {
     ActionType type = 1;
-    oneof params
+    oneof inputs
     {
-        ActionStopParams stop = 2;
-        ActionMoveParams move = 3;
-        ActionKickParams kick = 4;
-        ActionPassParams pass = 5;
-        ActionShootParams shoot = 6;
-        ActionLobShotParams lob = 7;
-        ActionGetBallParams getball = 8;
-        ActionShieldParams shield = 9;
-        ActionKeeperParams keeper = 10;
-        ActionInterceptParams intercept = 11;
+        ActionStopInputs stop = 2;
+        ActionMoveInputs move = 3;
+        ActionKickInputs kick = 4;
+        ActionPassInputs pass = 5;
+        ActionShootInputs shoot = 6;
+        ActionLobShotInputs lob = 7;
+        ActionGetBallInputs getball = 8;
+        ActionShieldInputs shield = 9;
+        ActionKeeperInputs keeper = 10;
+        ActionInterceptInputs intercept = 11;
     }
 }
 
@@ -96,7 +97,8 @@ message ForbiddenArea
 
 message Input
 {
-    ActionParams action = 1;
-    repeated ForbiddenArea forbiddenAreas = 2;
+    ActionInputs action = 1;
+    MRA.Datatypes.WorldState worldState = 2;
+    repeated ForbiddenArea forbiddenAreas = 3;
 }
 

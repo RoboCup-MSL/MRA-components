@@ -1,1 +1,7 @@
-{}
+{
+    "move": {
+        "tolerance_xy": 0.01,
+        "tolerance_rz": 0.01
+    }
+}
+

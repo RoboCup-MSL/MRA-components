@@ -2,7 +2,14 @@ syntax = "proto3";
 
 package MRA.FalconsMotionPlanning;
 
+message ActionMoveParams
+{
+    float tolerance_xy = 1;
+    float tolerance_rz = 2;
+}
+
 message Params
 {
+    ActionMoveParams move = 1;
 }
 

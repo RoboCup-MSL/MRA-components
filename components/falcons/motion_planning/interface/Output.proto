@@ -8,8 +8,9 @@ import "datatypes/PosVel.proto";
 message MotionSetpoint
 {
     MRA.Datatypes.PosVel target = 1; // use position.x, y and rz; velocity typically unused
-    int32 motionType = 2; // optional
-    bool obstacleAvoidanceDisabled = 3; // optional, default enabled
+    bool stop = 2; // use either this or target
+    int32 motionType = 3; // optional
+    bool obstacleAvoidanceDisabled = 4; // optional, default enabled
 }
 
 enum ShootingPhase

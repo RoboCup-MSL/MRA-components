@@ -74,8 +74,7 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     }
     else if (input.action().has_move())
     {
-        *output.mutable_setpoints()->mutable_move()->mutable_target() = input.action().move().target();
-        output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
+        output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().move().ballhandlersenabled());
         // check if arrived
         MRA::Geometry::Position target_pos = input.action().move().target().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();
@@ -90,6 +89,8 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
         }
         else
         {
+            *output.mutable_setpoints()->mutable_move()->mutable_target() = input.action().move().target();
+            output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
             output.set_actionresult(MRA::Datatypes::RUNNING);
         }
     }

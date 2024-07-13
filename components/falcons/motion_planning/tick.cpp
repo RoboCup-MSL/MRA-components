@@ -74,18 +74,23 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     }
     else if (input.action().has_move())
     {
+        auto action_params = params.action().move();
         output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().move().ballhandlersenabled());
         // check if arrived
         MRA::Geometry::Position target_pos = input.action().move().target().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();
         auto delta_pos = target_pos - current_pos;
-        float tolerance_xy = params.action().move().tolerance_xy();
-        float tolerance_rz = params.action().move().tolerance_rz();
+        float tolerance_xy = action_params.tolerance_xy();
+        float tolerance_rz = action_params.tolerance_rz();
         bool xy_ok = ((abs(delta_pos.x) < tolerance_xy) && (abs(delta_pos.y) < tolerance_xy));
         bool rz_ok = (abs(delta_pos.rz) < tolerance_rz);
         if (xy_ok && rz_ok)
         {
             output.set_actionresult(MRA::Datatypes::PASSED);
+            if (action_params.active_stop())
+            {
+                output.mutable_setpoints()->mutable_move()->set_stop(true);
+            }
         }
         else
         {

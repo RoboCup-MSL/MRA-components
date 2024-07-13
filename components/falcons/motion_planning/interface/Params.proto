@@ -6,8 +6,9 @@ import "components/falcons/getball/interface/Params.proto";
 
 message ActionMoveParams
 {
-    float tolerance_xy = 1;
+    float tolerance_xy = 1; // may be overruled by pathPlanning
     float tolerance_rz = 2;
+    bool active_stop = 3;
 }
 
 message ActionParams

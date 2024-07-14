@@ -72,13 +72,17 @@ void outputToSetpointsGetball(MRA::FalconsGetball::OutputType const &actionOutpu
 int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
 {
     int error_value = 0;
-    if (input.action().has_stop())
+    if (input.action().type() == MRA::Datatypes::ACTION_INVALID)
+    {
+        return 1;
+    }
+    if (input.action().type() == MRA::Datatypes::ACTION_STOP)
     {
         output.set_actionresult(MRA::Datatypes::PASSED);
         output.mutable_setpoints()->mutable_move()->set_stop(true);
         output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().stop().ballhandlersenabled());
     }
-    else if (input.action().has_move())
+    else if (input.action().type() == MRA::Datatypes::ACTION_MOVE)
     {
         auto action_params = params.action().move();
         output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().move().ballhandlersenabled());
@@ -105,7 +109,7 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
             output.set_actionresult(MRA::Datatypes::RUNNING);
         }
     }
-    else if (input.action().has_getball())
+    else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)
     {
         // call component: FalconsGetball
         MRA::FalconsGetball::OutputType subcomponent_output;

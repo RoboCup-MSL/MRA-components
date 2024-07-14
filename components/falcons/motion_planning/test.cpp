@@ -22,7 +22,7 @@ TEST(FalconsMotionPlanningTest, basicTick)
     int error_value = m.tick();
 
     // Assert
-    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(error_value, 1); // return code 1 signals no action specified on input (ACTION_INVALID)
 }
 
 

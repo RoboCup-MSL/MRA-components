@@ -4,15 +4,16 @@ package MRA.Datatypes;
 
 enum ActionType
 {
-    ACTION_STOP = 0;
-    ACTION_MOVE = 1;
-    ACTION_KICK = 2;
-    ACTION_PASS = 3;
-    ACTION_SHOOT = 4;
-    ACTION_LOB = 5;
-    ACTION_GETBALL = 6;
-    ACTION_SHIELD = 7; // a.k.a. TURN_AWAY_FROM_OPPONENT
-    ACTION_KEEPER = 8;
-    ACTION_INTERCEPT = 9;
+    ACTION_INVALID = 0;
+    ACTION_STOP = 1;
+    ACTION_MOVE = 2;
+    ACTION_KICK = 3;
+    ACTION_PASS = 4;
+    ACTION_SHOOT = 5;
+    ACTION_LOB = 6;
+    ACTION_GETBALL = 7;
+    ACTION_SHIELD = 8; // a.k.a. TURN_AWAY_FROM_OPPONENT
+    ACTION_KEEPER = 9;
+    ACTION_INTERCEPT = 10;
 }
 

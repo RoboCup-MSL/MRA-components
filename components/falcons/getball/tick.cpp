@@ -42,7 +42,10 @@ int FalconsGetball::FalconsGetball::tick
     {
         // call component: FalconsGetballFetch
         FalconsGetballFetch::InputType subcomponent_input;
-        subcomponent_input.CopyFrom(input); // same type
+        //subcomponent_input.MergeFrom(input); // same type
+        std::string tmpdata;
+        input.SerializeToString(&tmpdata);
+        subcomponent_input.ParseFromString(tmpdata);
         FalconsGetballFetch::OutputType subcomponent_output;
         FalconsGetballFetch::LocalType subcomponent_local;
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(

@@ -112,12 +112,14 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)
     {
         // call component: FalconsGetball
+        MRA::FalconsGetball::InputType subcomponent_input = input.action().getball();
+        subcomponent_input.mutable_worldstate()->CopyFrom(input.worldstate());
         MRA::FalconsGetball::OutputType subcomponent_output;
         MRA::FalconsGetball::LocalType subcomponent_local;
         MRA::FalconsGetball::StateType subcomponent_state = state.action().getball();
         error_value = MRA::FalconsGetball::FalconsGetball().tick(
             timestamp,
-            input.action().getball(),
+            subcomponent_input,
             params.action().getball(),
             subcomponent_state,
             subcomponent_output,
@@ -127,8 +129,8 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
         {
             // general action data handling
             output.set_actionresult(subcomponent_output.actionresult());
-            state.mutable_action()->mutable_getball()->CopyFrom(subcomponent_state);
-            local.mutable_action()->mutable_getball()->CopyFrom(subcomponent_local);
+            state.mutable_action()->mutable_getball()->MergeFrom(subcomponent_state);
+            local.mutable_action()->mutable_getball()->MergeFrom(subcomponent_local);
             // specific output mapping, let's leave Setpoints local to MotionPlanning component
             outputToSetpointsGetball(subcomponent_output, output.mutable_setpoints());
         }

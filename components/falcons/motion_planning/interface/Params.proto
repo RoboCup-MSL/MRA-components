@@ -14,11 +14,8 @@ message ActionMoveParams
 message ActionParams
 {
     MRA.Datatypes.ActionType type = 1;
-    oneof params
-    {
-        ActionMoveParams move = 3;
-        MRA.FalconsGetball.Params getball = 8;
-    }
+    ActionMoveParams move = 3;
+    MRA.FalconsGetball.Params getball = 8;
 }
 
 message Params

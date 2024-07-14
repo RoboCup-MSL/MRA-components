@@ -75,7 +75,7 @@ void logTickStart(
         // prepare strings for logging with INFO and TRACE levels
         // state and local may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
-            + ",\"timestamp\":" + google::protobuf::util::TimeUtil::ToString(timestamp)
+            + ",\"timestamp\":" + "\"" + google::protobuf::util::TimeUtil::ToString(timestamp) + "\""
             + ",\"input\":" + inputStr
             + ",\"params\":" + paramsStr;
         std::string traceStr = infoStr + ",\"state_in\":" + stateStr;

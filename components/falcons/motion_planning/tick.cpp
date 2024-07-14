@@ -8,6 +8,7 @@ using namespace MRA;
 
 // custom includes, if any
 #include "geometry.hpp"
+#include "FalconsGetball.hpp"
 
 
 using namespace MRA::FalconsMotionPlanning;
@@ -63,6 +64,11 @@ void checkParams(ParamsType const &params)
     }
 }
 
+void outputToSetpointsGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.target();
+}
+
 int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
 {
     int error_value = 0;
@@ -97,6 +103,30 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
             *output.mutable_setpoints()->mutable_move()->mutable_target() = input.action().move().target();
             output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
             output.set_actionresult(MRA::Datatypes::RUNNING);
+        }
+    }
+    else if (input.action().has_getball())
+    {
+        // call component: FalconsGetball
+        MRA::FalconsGetball::OutputType subcomponent_output;
+        MRA::FalconsGetball::LocalType subcomponent_local;
+        MRA::FalconsGetball::StateType subcomponent_state = state.action().getball();
+        error_value = MRA::FalconsGetball::FalconsGetball().tick(
+            timestamp,
+            input.action().getball(),
+            params.action().getball(),
+            subcomponent_state,
+            subcomponent_output,
+            subcomponent_local
+        );
+        if (error_value == 0)
+        {
+            // general action data handling
+            output.set_actionresult(subcomponent_output.actionresult());
+            state.mutable_action()->mutable_getball()->CopyFrom(subcomponent_state);
+            local.mutable_action()->mutable_getball()->CopyFrom(subcomponent_local);
+            // specific output mapping, let's leave Setpoints local to MotionPlanning component
+            outputToSetpointsGetball(subcomponent_output, output.mutable_setpoints());
         }
     }
     // TODO other actions

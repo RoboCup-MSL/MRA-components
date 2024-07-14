@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package MRA.Datatypes;
+
+enum ActionType
+{
+    ACTION_STOP = 0;
+    ACTION_MOVE = 1;
+    ACTION_KICK = 2;
+    ACTION_PASS = 3;
+    ACTION_SHOOT = 4;
+    ACTION_LOB = 5;
+    ACTION_GETBALL = 6;
+    ACTION_SHIELD = 7; // a.k.a. TURN_AWAY_FROM_OPPONENT
+    ACTION_KEEPER = 8;
+    ACTION_INTERCEPT = 9;
+}
+

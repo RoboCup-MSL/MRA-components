@@ -1,8 +1,20 @@
 syntax = "proto3";
 
 package MRA.FalconsMotionPlanning;
+import "datatypes/ActionType.proto";
+import "components/falcons/getball/interface/Local.proto";
+
+message ActionLocal
+{
+    MRA.Datatypes.ActionType type = 1;
+    oneof local
+    {
+        MRA.FalconsGetball.Local getball = 8;
+    }
+}
 
 message Local
 {
+    ActionLocal action = 1;
 }
 

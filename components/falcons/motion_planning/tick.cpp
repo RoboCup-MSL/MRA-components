@@ -13,7 +13,7 @@ using namespace MRA;
 
 using namespace MRA::FalconsMotionPlanning;
 void checkParams(ParamsType const &params);
-int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local);
+int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local);
 
 
 int FalconsMotionPlanning::FalconsMotionPlanning::tick
@@ -34,7 +34,7 @@ int FalconsMotionPlanning::FalconsMotionPlanning::tick
     try
     {
         checkParams(params);
-        error_value = handleAction(timestamp, input, params, state, output, local);
+        error_value = dispatchAction(timestamp, input, params, state, output, local);
     }
     catch (const std::exception& e)
     {
@@ -52,6 +52,7 @@ int FalconsMotionPlanning::FalconsMotionPlanning::tick
 
 void checkParams(ParamsType const &params)
 {
+    // TODO: remove this function when creating FalconsActionMove, param checks shall be done in each nested action component
     float tolerance_xy = params.action().move().tolerance_xy();
     if (tolerance_xy <= 0.0)
     {
@@ -69,7 +70,49 @@ void outputToSetpointsGetball(MRA::FalconsGetball::OutputType const &actionOutpu
     *setpoints->mutable_move()->mutable_target() = actionOutput.target();
 }
 
-int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
+template <typename SubcomponentType, typename OutputFunc>
+int handleAction(
+    const google::protobuf::Timestamp &timestamp,
+    const InputType &input,
+    const ParamsType &params,
+    StateType &state,
+    OutputType &output,
+    LocalType &local,
+    OutputFunc outputFunc
+)
+{
+    // call component
+    typename SubcomponentType::InputType subcomponent_input = input.action().getball(); // TODO make dynamic
+    subcomponent_input.mutable_worldstate()->CopyFrom(input.worldstate());
+    typename SubcomponentType::ParamsType subcomponent_params = params.action().getball(); // TODO make dynamic
+    typename SubcomponentType::StateType subcomponent_state = state.action().getball();  // TODO make dynamic
+    typename SubcomponentType::OutputType subcomponent_output;
+    typename SubcomponentType::LocalType subcomponent_local;
+
+    int error_value = SubcomponentType().tick(
+        timestamp,
+        subcomponent_input,
+        subcomponent_params,
+        subcomponent_state,
+        subcomponent_output,
+        subcomponent_local
+    );
+
+    if (error_value == 0)
+    {
+        // general action data handling
+        output.set_actionresult(subcomponent_output.actionresult());
+        state.mutable_action()->mutable_getball()->MergeFrom(subcomponent_state); // TODO make dynamic
+        local.mutable_action()->mutable_getball()->MergeFrom(subcomponent_local); // TODO make dynamic
+
+        // specific output mapping
+        outputFunc(subcomponent_output, output.mutable_setpoints());
+    }
+
+    return error_value;
+}
+
+int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
 {
     int error_value = 0;
     if (input.action().type() == MRA::Datatypes::ACTION_INVALID)
@@ -84,6 +127,7 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     }
     else if (input.action().type() == MRA::Datatypes::ACTION_MOVE)
     {
+        // TODO: refactor, move to component FalconsActionMove, also the param checks
         auto action_params = params.action().move();
         output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().move().ballhandlersenabled());
         // check if arrived
@@ -111,29 +155,9 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
     }
     else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)
     {
-        // call component: FalconsGetball
-        MRA::FalconsGetball::InputType subcomponent_input = input.action().getball();
-        subcomponent_input.mutable_worldstate()->CopyFrom(input.worldstate());
-        MRA::FalconsGetball::OutputType subcomponent_output;
-        MRA::FalconsGetball::LocalType subcomponent_local;
-        MRA::FalconsGetball::StateType subcomponent_state = state.action().getball();
-        error_value = MRA::FalconsGetball::FalconsGetball().tick(
-            timestamp,
-            subcomponent_input,
-            params.action().getball(),
-            subcomponent_state,
-            subcomponent_output,
-            subcomponent_local
+        error_value = handleAction<MRA::FalconsGetball::FalconsGetball>(
+            timestamp, input, params, state, output, local, outputToSetpointsGetball
         );
-        if (error_value == 0)
-        {
-            // general action data handling
-            output.set_actionresult(subcomponent_output.actionresult());
-            state.mutable_action()->mutable_getball()->MergeFrom(subcomponent_state);
-            local.mutable_action()->mutable_getball()->MergeFrom(subcomponent_local);
-            // specific output mapping, let's leave Setpoints local to MotionPlanning component
-            outputToSetpointsGetball(subcomponent_output, output.mutable_setpoints());
-        }
     }
     // TODO other actions
     // HACK: prevent INVALID causing crashes on client side -- TODO remove

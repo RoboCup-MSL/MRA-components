@@ -134,6 +134,11 @@ int handleAction(google::protobuf::Timestamp timestamp, InputType const &input, 
         }
     }
     // TODO other actions
+    // HACK: prevent INVALID causing crashes on client side -- TODO remove
+    if (output.actionresult() == MRA::Datatypes::INVALID)
+    {
+        output.set_actionresult(MRA::Datatypes::FAILED);
+    }
     return error_value;
 }
 

@@ -68,6 +68,7 @@ void checkParams(ParamsType const &params)
 void outputToSetpointsGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.target();
+    setpoints->mutable_bh()->set_enabled(true);
 }
 
 template <typename SubcomponentType, typename OutputFunc>

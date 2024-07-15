@@ -122,6 +122,11 @@ void logTickEnd(
             + ",\"duration\":" + std::to_string(duration)
             + ",\"output\":" + outputStr;
         std::string traceStr = infoStr + ",\"state_out\":" + stateStr;
+        std::string diagStr = MRA::convert_proto_to_json_str(diag);
+        if (diagStr.size() < 10000)
+        {
+            traceStr += ",\"local\":" + diagStr;
+        }
         logger->log(loc, MRA::Logging::INFO, "end {%s}", infoStr.c_str());
         logger->log(loc, MRA::Logging::TRACE, "< {%s}", traceStr.c_str());
         // tick .bin dump

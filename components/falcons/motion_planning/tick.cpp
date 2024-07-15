@@ -72,7 +72,7 @@ void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actio
     setpoints->mutable_bh()->set_enabled(true);
 }
 
-void outputToSetpointsActionAimedKick(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
+void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
@@ -85,8 +85,27 @@ void outputToSetpointsActionAimedKick(MRA::FalconsActionAimedKick::OutputType co
     {
         setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
         setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_PREPARE);
-        setpoints->mutable_shoot()->set_pos_x(actionOutput.passtarget().x());
-        setpoints->mutable_shoot()->set_pos_y(actionOutput.passtarget().y());
+        setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
+        setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
+    }
+}
+
+void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
+    if (actionOutput.dokick())
+    {
+        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_DISCHARGE);
+    }
+    else // prepare & aiming phase
+    {
+        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_PREPARE);
+        setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
+        setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
+        setpoints->mutable_shoot()->set_pos_z(actionOutput.balltarget().z());
     }
 }
 
@@ -203,7 +222,13 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     else if (input.action().type() == MRA::Datatypes::ACTION_PASS)
     {
         error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
-            timestamp, input, params, state, output, local, outputToSetpointsActionAimedKick, "pass"
+            timestamp, input, params, state, output, local, outputToSetpointsActionPass, "pass"
+        );
+    }
+    else if (input.action().type() == MRA::Datatypes::ACTION_SHOOT)
+    {
+        error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionShoot, "shoot"
         );
     }
     else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)

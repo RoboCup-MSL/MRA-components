@@ -22,8 +22,8 @@ enum ShootingPhase
 enum ShootingType
 {
     SHOOT_TYPE_PASS = 0; // soft landing at teammate
-    SHOOT_TYPE_SHOOT = 2; // max power typically
-    SHOOT_TYPE_LOB = 3; // maximize height
+    SHOOT_TYPE_SHOOT = 1; // max power typically
+    SHOOT_TYPE_LOB = 2; // maximize height
 }
 
 message ShootingSetpoint

@@ -30,7 +30,7 @@ int FalconsActionAimedKick::FalconsActionAimedKick::tick
     if (!ws.robot().hasball())
     {
         // TODO: robustness: use state - it can happen that the robot kicked the ball away, but it takes a tick or more for the ball to actually leave?
-        // in that case, functionally the pass was a success, so we should not produce FAILED
+        // in that case, functionally the shot was a success, so we should not produce FAILED
         output.set_actionresult(MRA::Datatypes::FAILED);
         return 0;
     }
@@ -44,9 +44,9 @@ int FalconsActionAimedKick::FalconsActionAimedKick::tick
 
     // calculate rotation angle
     MRA::Geometry::Position robotPos = ws.robot().position();
-    MRA::Geometry::Position passTargetPos = input.target().position();
-    passTargetPos.faceAwayFrom(robotPos);
-    MRA::Geometry::Position delta = passTargetPos - robotPos;
+    MRA::Geometry::Position ballTargetPos = input.target().position();
+    ballTargetPos.faceAwayFrom(robotPos);
+    MRA::Geometry::Position delta = ballTargetPos - robotPos;
     float remainingRotationAngle = delta.rz;
 
     // TODO: intentional overshoot?
@@ -67,8 +67,8 @@ int FalconsActionAimedKick::FalconsActionAimedKick::tick
     {
         // prepare, aim, running
         *output.mutable_motiontarget()->mutable_position() = ws.robot().position();
-        output.mutable_motiontarget()->mutable_position()->set_rz(passTargetPos.rz);
-        *output.mutable_passtarget() = input.target().position();
+        output.mutable_motiontarget()->mutable_position()->set_rz(ballTargetPos.rz);
+        *output.mutable_balltarget() = input.target().position();
         output.set_actionresult(MRA::Datatypes::RUNNING);
     }
 

@@ -4,7 +4,20 @@
             "active_stop": true,
             "tolerance_xy": 0.01,
             "tolerance_rz": 0.001
+        },
+        "pass": {},
+        "shoot": {},
+        "getball": {
+            "ballSpeedStationaryThreshold": 0.2,
+            "fetch": {
+                "ballSpeedThreshold": 0.35,
+                "ballSpeedScaling": 0.40,
+                "rotationOnlyDistance": 1.0,
+                "rotationOnlyAngle": 35.0
+            },
+            "intercept": {
+                "actionRadius": 4.0
+            }
         }
     }
 }
-

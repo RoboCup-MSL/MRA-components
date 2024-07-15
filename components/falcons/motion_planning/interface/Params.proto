@@ -17,6 +17,7 @@ message ActionParams
     MRA.Datatypes.ActionType type = 1;
     ActionMoveParams move = 3;
     MRA.FalconsActionAimedKick.Params pass = 5;
+    MRA.FalconsActionAimedKick.Params shoot = 6;
     MRA.FalconsGetball.Params getball = 8;
 }
 

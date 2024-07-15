@@ -1,15 +1,15 @@
 # this file was produced by MRA-codegen.py from template_CMakeLists.txt
 # with the intent of allowing user to modify it
 
-add_library(MRA-components-falcons-action-pass
+add_library(MRA-components-falcons-action-aimed-kick
     tick.cpp
 )
-target_include_directories(MRA-components-falcons-action-pass PUBLIC
+target_include_directories(MRA-components-falcons-action-aimed-kick PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-falcons-action-pass MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-falcons-action-aimed-kick MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
@@ -19,7 +19,7 @@ add_executable(
 target_include_directories(falcons_action_aimed_kick_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
 target_link_libraries(
     falcons_action_aimed_kick_test
-    MRA-components-falcons-action-pass
+    MRA-components-falcons-action-aimed-kick
     MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 

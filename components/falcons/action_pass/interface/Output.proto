@@ -4,13 +4,15 @@ package MRA.FalconsActionPass;
 
 import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
+import "datatypes/Pose.proto";
 
 message Output
 {
     MRA.Datatypes.ActionResult actionresult = 1;
-    MRA.Datatypes.PosVel motion_target = 2; // in FCS
-    bool bh_enabled = 3;
-    bool do_kick = 4;
-    //float kick_power = 5; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
+    MRA.Datatypes.PosVel motionTarget = 2; // in FCS
+    MRA.Datatypes.Pose passTarget = 3; // in FCS, only x and y
+    bool bhEnabled = 4;
+    bool doKick = 5;
+    //float kickPower = 6; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
 }
 

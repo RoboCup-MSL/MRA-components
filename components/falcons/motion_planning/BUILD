@@ -27,6 +27,7 @@ cc_library(
         "//base:abstract_interface",
         ":datatypes",
         "//components/falcons/getball:implementation",
+        "//components/falcons/action_pass:implementation",
         "//libraries/logging",
         "//libraries/geometry",
     ],

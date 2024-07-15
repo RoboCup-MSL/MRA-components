@@ -7,6 +7,7 @@ import "datatypes/PosVel.proto";
 import "datatypes/WorldState.proto";
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Input.proto";
+import "components/falcons/action_pass/interface/Input.proto";
 
 message ActionStopInputs
 {
@@ -24,11 +25,6 @@ message ActionKickInputs
 {
     float power = 1;
     float height = 2;
-}
-
-message ActionPassInputs
-{
-    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
 }
 
 message ActionShootInputs
@@ -62,7 +58,7 @@ message ActionInputs
         ActionStopInputs stop = 2;
         ActionMoveInputs move = 3;
         ActionKickInputs kick = 4;
-        ActionPassInputs pass = 5;
+        MRA.FalconsActionPass.Input pass = 5;
         ActionShootInputs shoot = 6;
         ActionLobShotInputs lob = 7;
         MRA.FalconsGetball.Input getball = 8;

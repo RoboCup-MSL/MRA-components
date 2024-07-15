@@ -3,12 +3,14 @@ syntax = "proto3";
 package MRA.FalconsMotionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/State.proto";
+import "components/falcons/action_pass/interface/State.proto";
 
 message ActionState
 {
     MRA.Datatypes.ActionType type = 1;
     oneof state
     {
+        MRA.FalconsActionPass.State pass = 5;
         MRA.FalconsGetball.State getball = 8;
     }
 }

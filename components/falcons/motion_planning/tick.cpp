@@ -9,6 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 #include "FalconsGetball.hpp"
+#include "FalconsActionPass.hpp"
 
 
 using namespace MRA::FalconsMotionPlanning;
@@ -65,10 +66,14 @@ void checkParams(ParamsType const &params)
     }
 }
 
-void outputToSetpointsGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
+void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.target();
     setpoints->mutable_bh()->set_enabled(true);
+}
+
+void outputToSetpointsActionPass(MRA::FalconsActionPass::OutputType const &actionOutput, Setpoints *setpoints)
+{
 }
 
 template <typename SubcomponentType, typename OutputFunc>
@@ -181,10 +186,16 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
             output.set_actionresult(MRA::Datatypes::RUNNING);
         }
     }
+    else if (input.action().type() == MRA::Datatypes::ACTION_PASS)
+    {
+        error_value = handleAction<MRA::FalconsActionPass::FalconsActionPass>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionPass, "pass"
+        );
+    }
     else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)
     {
         error_value = handleAction<MRA::FalconsGetball::FalconsGetball>(
-            timestamp, input, params, state, output, local, outputToSetpointsGetball, "getball"
+            timestamp, input, params, state, output, local, outputToSetpointsActionGetball, "getball"
         );
     }
     // TODO other actions

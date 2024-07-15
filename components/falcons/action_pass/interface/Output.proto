@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPass;
+
+import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
+
+message Output
+{
+    MRA.Datatypes.ActionResult actionresult = 1;
+    MRA.Datatypes.PosVel motion_target = 2; // in FCS
+    bool bh_enabled = 3;
+    bool do_kick = 4;
+    //float kick_power = 5; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
+}
+

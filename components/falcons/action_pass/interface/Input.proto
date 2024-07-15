@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPass;
+
+import "datatypes/WorldState.proto";
+import "datatypes/PosVel.proto";
+
+message Input
+{
+    MRA.Datatypes.WorldState worldstate = 1;
+    MRA.Datatypes.PosVel target = 2; // typically only using pos.x and pos.y
+}

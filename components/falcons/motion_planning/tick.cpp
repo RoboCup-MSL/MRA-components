@@ -9,7 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 #include "FalconsGetball.hpp"
-#include "FalconsActionPass.hpp"
+#include "FalconsActionAimedKick.hpp"
 
 
 using namespace MRA::FalconsMotionPlanning;
@@ -72,7 +72,7 @@ void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actio
     setpoints->mutable_bh()->set_enabled(true);
 }
 
-void outputToSetpointsActionPass(MRA::FalconsActionPass::OutputType const &actionOutput, Setpoints *setpoints)
+void outputToSetpointsActionAimedKick(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
@@ -202,8 +202,8 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     }
     else if (input.action().type() == MRA::Datatypes::ACTION_PASS)
     {
-        error_value = handleAction<MRA::FalconsActionPass::FalconsActionPass>(
-            timestamp, input, params, state, output, local, outputToSetpointsActionPass, "pass"
+        error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionAimedKick, "pass"
         );
     }
     else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)

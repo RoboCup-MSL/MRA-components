@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsActionPass;
+package MRA.FalconsActionAimedKick;
 
 message Params
 {

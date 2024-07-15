@@ -1,17 +1,17 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_FALCONS_ACTION_PASS_HPP
-#define _MRA_FALCONS_ACTION_PASS_HPP
+#ifndef _MRA_FALCONS_ACTION_AIMED_KICK_HPP
+#define _MRA_FALCONS_ACTION_AIMED_KICK_HPP
 
 
 // component name definition goes on top
 // (when logging.hpp is used internally in a component, then component name may resolve to "unknown")
 #ifndef MRA_COMPONENT_NAME
-#define MRA_COMPONENT_NAME "FalconsActionPass"
+#define MRA_COMPONENT_NAME "FalconsActionAimedKick"
 #endif
 #ifndef MRA_COMPONENT_FOLDER
-#define MRA_COMPONENT_FOLDER "falcons/action_pass"
+#define MRA_COMPONENT_FOLDER "falcons/action_aimed_kick"
 #endif
 
 
@@ -21,26 +21,26 @@
 #include "logging.hpp"
 
 // generated protobuf types from interface of this component
-#include "FalconsActionPass_datatypes.hpp"
+#include "FalconsActionAimedKick_datatypes.hpp"
 
 
 
 
-namespace MRA::FalconsActionPass
+namespace MRA::FalconsActionAimedKick
 {
 
-typedef MRA::FalconsActionPass::Input InputType;
-typedef MRA::FalconsActionPass::Params ParamsType;
-typedef MRA::FalconsActionPass::State StateType;
-typedef MRA::FalconsActionPass::Output OutputType;
-typedef MRA::FalconsActionPass::Local LocalType;
+typedef MRA::FalconsActionAimedKick::Input InputType;
+typedef MRA::FalconsActionAimedKick::Params ParamsType;
+typedef MRA::FalconsActionAimedKick::State StateType;
+typedef MRA::FalconsActionAimedKick::Output OutputType;
+typedef MRA::FalconsActionAimedKick::Local LocalType;
 
 
-class FalconsActionPass: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
+class FalconsActionAimedKick: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
 {
 public:
-    FalconsActionPass() {};
-    ~FalconsActionPass() {};
+    FalconsActionAimedKick() {};
+    ~FalconsActionAimedKick() {};
 
     // user implementation
     int tick(
@@ -55,7 +55,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_pass/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_aimed_kick/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity
@@ -99,20 +99,20 @@ public:
         return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, local);
     };
 
-}; // class FalconsActionPass
+}; // class FalconsActionAimedKick
 
 
 // configuration handling
 inline ParamsType defaultParams()
 {
-    return FalconsActionPass().defaultParams();
+    return FalconsActionAimedKick().defaultParams();
 }
 inline ParamsType loadParams(std::string configFile)
 {
     return MRA::LoadDefaultParams<ParamsType>(configFile);
 }
 
-} // namespace MRA::FalconsActionPass
+} // namespace MRA::FalconsActionAimedKick
 
 
 #endif

@@ -3,7 +3,7 @@ syntax = "proto3";
 package MRA.FalconsMotionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Params.proto";
-import "components/falcons/action_pass/interface/Params.proto";
+import "components/falcons/action_aimed_kick/interface/Params.proto";
 
 message ActionMoveParams
 {
@@ -16,7 +16,7 @@ message ActionParams
 {
     MRA.Datatypes.ActionType type = 1;
     ActionMoveParams move = 3;
-    MRA.FalconsActionPass.Params pass = 5;
+    MRA.FalconsActionAimedKick.Params pass = 5;
     MRA.FalconsGetball.Params getball = 8;
 }
 

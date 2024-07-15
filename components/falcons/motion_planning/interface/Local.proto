@@ -3,14 +3,14 @@ syntax = "proto3";
 package MRA.FalconsMotionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Local.proto";
-import "components/falcons/action_pass/interface/Local.proto";
+import "components/falcons/action_aimed_kick/interface/Local.proto";
 
 message ActionLocal
 {
     MRA.Datatypes.ActionType type = 1;
     oneof local
     {
-        MRA.FalconsActionPass.Local pass = 5;
+        MRA.FalconsActionAimedKick.Local pass = 5;
         MRA.FalconsGetball.Local getball = 8;
     }
 }

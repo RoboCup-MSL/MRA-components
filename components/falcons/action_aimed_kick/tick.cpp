@@ -2,7 +2,7 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "FalconsActionPass.hpp"
+#include "FalconsActionAimedKick.hpp"
 
 using namespace MRA;
 
@@ -10,7 +10,7 @@ using namespace MRA;
 #include "geometry.hpp"
 
 
-int FalconsActionPass::FalconsActionPass::tick
+int FalconsActionAimedKick::FalconsActionAimedKick::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto

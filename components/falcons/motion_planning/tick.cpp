@@ -74,6 +74,20 @@ void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actio
 
 void outputToSetpointsActionPass(MRA::FalconsActionPass::OutputType const &actionOutput, Setpoints *setpoints)
 {
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
+    if (actionOutput.dokick())
+    {
+        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_DISCHARGE);
+    }
+    else // prepare & aiming phase
+    {
+        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_PREPARE);
+        setpoints->mutable_shoot()->set_pos_x(actionOutput.passtarget().x());
+        setpoints->mutable_shoot()->set_pos_y(actionOutput.passtarget().y());
+    }
 }
 
 template <typename SubcomponentType, typename OutputFunc>

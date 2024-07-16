@@ -24,13 +24,17 @@ private:
     FalconsActionAimedKick::StateType &_state;
     FalconsActionAimedKick::OutputType &_output;
     FalconsActionAimedKick::LocalType &_local;
+    MRA::Geometry::Position _robotPos;
+    MRA::Geometry::Position _ballCurrentPos;
     MRA::Geometry::Position _ballTargetPos;
     MRA::Geometry::Position _deltaBallTargetToRobot;
     MRA::Geometry::Position _deltaBallTargetToCurrentBall;
+    MRA::Geometry::Position _deltaCurrentBallToRobot;
     float _remainingRotationAngle;
     void precalculate();
     void phasePrepare();
     void phaseDischarge();
+    float calculateAimError();
     void phaseCooldown();
 };
 
@@ -103,15 +107,16 @@ int ActionAimedKick::run()
 void ActionAimedKick::precalculate()
 {
     MRA_TRACE_FUNCTION();
-    MRA::Geometry::Position robotPos = _input.worldstate().robot().position();
+    _robotPos = _input.worldstate().robot().position();
     _ballTargetPos = _input.target().position();
-    MRA::Geometry::Position ballCurrentPos = _input.worldstate().ball().position();
-    _ballTargetPos.faceAwayFrom(robotPos);
-    _deltaBallTargetToRobot = _ballTargetPos - robotPos;
-    _deltaBallTargetToCurrentBall = _ballTargetPos - ballCurrentPos;
+    _ballCurrentPos = _input.worldstate().ball().position();
+    _ballTargetPos.faceAwayFrom(_robotPos);
+    _deltaBallTargetToRobot = _ballTargetPos - _robotPos;
+    _deltaBallTargetToCurrentBall = _ballTargetPos - _ballCurrentPos;
+    _deltaCurrentBallToRobot = _ballCurrentPos - _robotPos;
     _remainingRotationAngle = _deltaBallTargetToRobot.rz;
     // TODO: intentional overshoot?
-    MRA_TRACE_FUNCTION_OUTPUT(_remainingRotationAngle);
+    MRA_TRACE_FUNCTION_OUTPUTS(_remainingRotationAngle);
 }
 
 void ActionAimedKick::phasePrepare()
@@ -153,6 +158,17 @@ void ActionAimedKick::phaseDischarge()
     _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
 }
 
+float ActionAimedKick::calculateAimError()
+{
+    MRA_TRACE_FUNCTION();
+    // we can assume ballTargetDistance < _params.balltargetproximity()
+    float angleAtTimeOfShooting = _ballTargetPos.rz; // FCS angle because of using MRA::Geometry::Position
+    float evaluationAngle = MRA::Geometry::calc_facing_angle_fcs(_robotPos.x, _robotPos.y, _ballCurrentPos.x, _ballCurrentPos.y);
+    float result = MRA::Geometry::wrap_pi(evaluationAngle - angleAtTimeOfShooting);
+    MRA_TRACE_FUNCTION_OUTPUTS(evaluationAngle, result);
+    return result;
+}
+
 void ActionAimedKick::phaseCooldown()
 {
     MRA_TRACE_FUNCTION();
@@ -160,9 +176,9 @@ void ActionAimedKick::phaseCooldown()
     // use a little timeout to make sure this action is not "stuck" for too long
     auto elapsedDuration = _timestamp - _state.dischargetimestamp();
     float elapsedSeconds = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsedDuration);
-    float maxCooldownDuration = _params.maxcooldownduration();
+    float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
     _output.set_actionresult(MRA::Datatypes::RUNNING);
-    if (elapsedSeconds > maxCooldownDuration)
+    if (elapsedSeconds > _params.maxcooldownduration())
     {
         _output.set_actionresult(MRA::Datatypes::FAILED);
     }
@@ -173,9 +189,9 @@ void ActionAimedKick::phaseCooldown()
         float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
         if (ballTargetDistance < _params.balltargetproximity())
         {
-            // TODO: here we could evaluate the aim error
+            _local.set_aimerror(calculateAimError());
             _output.set_actionresult(MRA::Datatypes::PASSED);
         }
     }
-    MRA_TRACE_FUNCTION_OUTPUTS(elapsedSeconds, maxCooldownDuration);
+    MRA_TRACE_FUNCTION_OUTPUTS(elapsedSeconds, ballTargetDistance);
 }

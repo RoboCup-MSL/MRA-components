@@ -69,6 +69,7 @@ int ActionAimedKick::run()
     if (!_input.worldstate().has_ball())
     {
         _output.set_actionresult(MRA::Datatypes::FAILED);
+        _output.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_INVALID);
         return 0;
     }
     // calculate angles and such
@@ -77,6 +78,11 @@ int ActionAimedKick::run()
     _output.set_bhenabled(true);
     // TODO: disable just before shot, for improved accuracy/power?
     // small state machine to go through the phases
+    if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_INVALID)
+    {
+        // first tick: advance to PREPARE
+        _state.set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+    }
     if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_PREPARE)
     {
         phasePrepare();
@@ -145,7 +151,6 @@ void ActionAimedKick::phaseDischarge()
     // not much to do except advancing to next phase
     _output.set_actionresult(MRA::Datatypes::RUNNING);
     _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
-
 }
 
 void ActionAimedKick::phaseCooldown()
@@ -153,9 +158,11 @@ void ActionAimedKick::phaseCooldown()
     MRA_TRACE_FUNCTION();
     // it typically takes a few ticks for the ballhandlers to signal the ball has left
     // use a little timeout to make sure this action is not "stuck" for too long
-    auto elapsedDuration = _state.dischargetimestamp() - _timestamp;
+    auto elapsedDuration = _timestamp - _state.dischargetimestamp();
     float elapsedSeconds = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsedDuration);
-    if (elapsedSeconds > _params.maxcooldownduration())
+    float maxCooldownDuration = _params.maxcooldownduration();
+    _output.set_actionresult(MRA::Datatypes::RUNNING);
+    if (elapsedSeconds > maxCooldownDuration)
     {
         _output.set_actionresult(MRA::Datatypes::FAILED);
     }
@@ -170,8 +177,5 @@ void ActionAimedKick::phaseCooldown()
             _output.set_actionresult(MRA::Datatypes::PASSED);
         }
     }
-    else
-    {
-        _output.set_actionresult(MRA::Datatypes::RUNNING);
-    }
+    MRA_TRACE_FUNCTION_OUTPUTS(elapsedSeconds, maxCooldownDuration);
 }

@@ -5,8 +5,16 @@
             "tolerance_xy": 0.01,
             "tolerance_rz": 0.001
         },
-        "pass": {},
-        "shoot": {},
+        "pass": {
+            "angleAccuracyThreshold": 0.03,
+            "maxCooldownDuration": 3.0,
+            "ballTargetProximity": 1.5
+        },
+        "shoot": {
+            "angleAccuracyThreshold": 0.01,
+            "maxCooldownDuration": 2.0,
+            "ballTargetProximity": 2.0
+        },
         "getball": {
             "ballSpeedStationaryThreshold": 0.2,
             "fetch": {

@@ -79,12 +79,12 @@ void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &
     if (actionOutput.dokick())
     {
         setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_DISCHARGE);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
     }
     else // prepare & aiming phase
     {
         setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_PREPARE);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
         setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
         setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
     }
@@ -97,12 +97,12 @@ void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const 
     if (actionOutput.dokick())
     {
         setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_DISCHARGE);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
     }
     else // prepare & aiming phase
     {
         setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsMotionPlanning::SHOOT_PHASE_PREPARE);
+        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
         setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
         setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
         setpoints->mutable_shoot()->set_pos_z(actionOutput.balltarget().z());

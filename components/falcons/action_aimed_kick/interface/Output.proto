@@ -5,6 +5,7 @@ package MRA.FalconsActionAimedKick;
 import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
 import "datatypes/Pose.proto";
+import "components/falcons/action_aimed_kick/interface/Common.proto";
 
 message Output
 {
@@ -13,5 +14,6 @@ message Output
     MRA.Datatypes.Pose ballTarget = 3; // where the ball needs to go, in FCS - for ACTION_PASS, only x and y is used, for ACTION_SHOOT/LOB also z
     bool bhEnabled = 4;
     bool doKick = 5;
-    //float kickPower = 6; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
+    ShootingPhase phase = 6;
+    //float kickPower = ; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
 }

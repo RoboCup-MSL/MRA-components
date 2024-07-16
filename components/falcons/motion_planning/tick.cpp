@@ -117,14 +117,17 @@ int handleAction(
     const google::protobuf::Descriptor* inputDesc = input.action().GetDescriptor();
     const google::protobuf::Descriptor* paramsDesc = params.action().GetDescriptor();
     const google::protobuf::Descriptor* stateDesc = state.action().GetDescriptor();
+    const google::protobuf::Descriptor* localDesc = local.action().GetDescriptor();
     const google::protobuf::Reflection* inputRef = input.action().GetReflection();
     const google::protobuf::Reflection* paramsRef = params.action().GetReflection();
     const google::protobuf::Reflection* stateRef = state.action().GetReflection();
+    const google::protobuf::Reflection* localRef = local.action().GetReflection();
 
     // find field descriptors for the action
     const google::protobuf::FieldDescriptor* inputField = inputDesc->FindFieldByName(actionName);
     const google::protobuf::FieldDescriptor* paramsField = paramsDesc->FindFieldByName(actionName);
     const google::protobuf::FieldDescriptor* stateField = stateDesc->FindFieldByName(actionName);
+    const google::protobuf::FieldDescriptor* localField = localDesc->FindFieldByName(actionName);
 
     // checks
     if (!inputField)
@@ -138,6 +141,10 @@ int handleAction(
     if (!stateField)
     {
         throw std::runtime_error("invalid action name or incomplete protobuf state interface definition: " + actionName);
+    }
+    if (!localField)
+    {
+        throw std::runtime_error("invalid action name or incomplete protobuf local interface definition: " + actionName);
     }
 
     // setup subcomponent data, access the action field dynamically
@@ -163,6 +170,7 @@ int handleAction(
         // general action data handling
         output.set_actionresult(subcomponent_output.actionresult());
         stateRef->MutableMessage(state.mutable_action(), stateField)->CopyFrom(subcomponent_state);
+        localRef->MutableMessage(local.mutable_action(), localField)->CopyFrom(subcomponent_local);
 
         // specific output mapping
         outputFunc(subcomponent_output, output.mutable_setpoints());
@@ -173,18 +181,22 @@ int handleAction(
 
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
 {
+    // TODO: memorize previousActionType, if different, wipe state
     int error_value = 0;
-    if (input.action().type() == MRA::Datatypes::ACTION_INVALID)
+    MRA::Datatypes::ActionType currentActionType = input.action().type();
+    state.mutable_action()->set_type(currentActionType);
+    local.mutable_action()->set_type(currentActionType);
+    if (currentActionType == MRA::Datatypes::ACTION_INVALID)
     {
         return 1;
     }
-    if (input.action().type() == MRA::Datatypes::ACTION_STOP)
+    if (currentActionType == MRA::Datatypes::ACTION_STOP)
     {
         output.set_actionresult(MRA::Datatypes::PASSED);
         output.mutable_setpoints()->mutable_move()->set_stop(true);
         output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().stop().ballhandlersenabled());
     }
-    else if (input.action().type() == MRA::Datatypes::ACTION_MOVE)
+    else if (currentActionType == MRA::Datatypes::ACTION_MOVE)
     {
         // TODO: refactor, move to component FalconsActionMove, also the param checks
         auto action_params = params.action().move();
@@ -212,19 +224,19 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
             output.set_actionresult(MRA::Datatypes::RUNNING);
         }
     }
-    else if (input.action().type() == MRA::Datatypes::ACTION_PASS)
+    else if (currentActionType == MRA::Datatypes::ACTION_PASS)
     {
         error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
             timestamp, input, params, state, output, local, outputToSetpointsActionPass, "pass"
         );
     }
-    else if (input.action().type() == MRA::Datatypes::ACTION_SHOOT)
+    else if (currentActionType == MRA::Datatypes::ACTION_SHOOT)
     {
         error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
             timestamp, input, params, state, output, local, outputToSetpointsActionShoot, "shoot"
         );
     }
-    else if (input.action().type() == MRA::Datatypes::ACTION_GETBALL)
+    else if (currentActionType == MRA::Datatypes::ACTION_GETBALL)
     {
         error_value = handleAction<MRA::FalconsGetball::FalconsGetball>(
             timestamp, input, params, state, output, local, outputToSetpointsActionGetball, "getball"

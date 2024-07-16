@@ -76,18 +76,10 @@ void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
-    if (actionOutput.dokick())
-    {
-        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
-    }
-    else // prepare & aiming phase
-    {
-        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
-        setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
-        setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
-        setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
-    }
+    setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
+    setpoints->mutable_shoot()->set_phase(actionOutput.phase());
+    setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
+    setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
 }
 
 void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
@@ -170,6 +162,7 @@ int handleAction(
     {
         // general action data handling
         output.set_actionresult(subcomponent_output.actionresult());
+        stateRef->MutableMessage(state.mutable_action(), stateField)->CopyFrom(subcomponent_state);
 
         // specific output mapping
         outputFunc(subcomponent_output, output.mutable_setpoints());

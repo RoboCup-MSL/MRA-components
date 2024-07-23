@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsMotionPlanning;
+package MRA.FalconsActionPlanning;
 
 import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";

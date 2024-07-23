@@ -2,7 +2,7 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "FalconsMotionPlanning.hpp"
+#include "FalconsActionPlanning.hpp"
 
 using namespace MRA;
 
@@ -12,12 +12,12 @@ using namespace MRA;
 #include "FalconsActionAimedKick.hpp"
 
 
-using namespace MRA::FalconsMotionPlanning;
+using namespace MRA::FalconsActionPlanning;
 void checkParams(ParamsType const &params);
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local);
 
 
-int FalconsMotionPlanning::FalconsMotionPlanning::tick
+int FalconsActionPlanning::FalconsActionPlanning::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto
@@ -76,7 +76,7 @@ void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
-    setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_PASS);
+    setpoints->mutable_shoot()->set_type(MRA::FalconsActionPlanning::SHOOT_TYPE_PASS);
     setpoints->mutable_shoot()->set_phase(actionOutput.phase());
     setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
     setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());
@@ -88,12 +88,12 @@ void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const 
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
     if (actionOutput.dokick())
     {
-        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
+        setpoints->mutable_shoot()->set_type(MRA::FalconsActionPlanning::SHOOT_TYPE_SHOOT);
         setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
     }
     else // prepare & aiming phase
     {
-        setpoints->mutable_shoot()->set_type(MRA::FalconsMotionPlanning::SHOOT_TYPE_SHOOT);
+        setpoints->mutable_shoot()->set_type(MRA::FalconsActionPlanning::SHOOT_TYPE_SHOOT);
         setpoints->mutable_shoot()->set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
         setpoints->mutable_shoot()->set_pos_x(actionOutput.balltarget().x());
         setpoints->mutable_shoot()->set_pos_y(actionOutput.balltarget().y());

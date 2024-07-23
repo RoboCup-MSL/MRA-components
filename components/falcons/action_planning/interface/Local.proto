@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsMotionPlanning;
+package MRA.FalconsActionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Local.proto";
 import "components/falcons/action_aimed_kick/interface/Local.proto";

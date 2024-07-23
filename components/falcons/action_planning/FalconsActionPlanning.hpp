@@ -1,17 +1,17 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_FALCONS_MOTION_PLANNING_HPP
-#define _MRA_FALCONS_MOTION_PLANNING_HPP
+#ifndef _MRA_FALCONS_ACTION_PLANNING_HPP
+#define _MRA_FALCONS_ACTION_PLANNING_HPP
 
 
 // component name definition goes on top
 // (when logging.hpp is used internally in a component, then component name may resolve to "unknown")
 #ifndef MRA_COMPONENT_NAME
-#define MRA_COMPONENT_NAME "FalconsMotionPlanning"
+#define MRA_COMPONENT_NAME "FalconsActionPlanning"
 #endif
 #ifndef MRA_COMPONENT_FOLDER
-#define MRA_COMPONENT_FOLDER "falcons/motion_planning"
+#define MRA_COMPONENT_FOLDER "falcons/action_planning"
 #endif
 
 
@@ -21,26 +21,26 @@
 #include "logging.hpp"
 
 // generated protobuf types from interface of this component
-#include "FalconsMotionPlanning_datatypes.hpp"
+#include "FalconsActionPlanning_datatypes.hpp"
 
 
 
 
-namespace MRA::FalconsMotionPlanning
+namespace MRA::FalconsActionPlanning
 {
 
-typedef MRA::FalconsMotionPlanning::Input InputType;
-typedef MRA::FalconsMotionPlanning::Params ParamsType;
-typedef MRA::FalconsMotionPlanning::State StateType;
-typedef MRA::FalconsMotionPlanning::Output OutputType;
-typedef MRA::FalconsMotionPlanning::Local LocalType;
+typedef MRA::FalconsActionPlanning::Input InputType;
+typedef MRA::FalconsActionPlanning::Params ParamsType;
+typedef MRA::FalconsActionPlanning::State StateType;
+typedef MRA::FalconsActionPlanning::Output OutputType;
+typedef MRA::FalconsActionPlanning::Local LocalType;
 
 
-class FalconsMotionPlanning: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
+class FalconsActionPlanning: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
 {
 public:
-    FalconsMotionPlanning() {};
-    ~FalconsMotionPlanning() {};
+    FalconsActionPlanning() {};
+    ~FalconsActionPlanning() {};
 
     // user implementation
     int tick(
@@ -55,7 +55,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/falcons/motion_planning/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_planning/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity
@@ -99,20 +99,20 @@ public:
         return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, local);
     };
 
-}; // class FalconsMotionPlanning
+}; // class FalconsActionPlanning
 
 
 // configuration handling
 inline ParamsType defaultParams()
 {
-    return FalconsMotionPlanning().defaultParams();
+    return FalconsActionPlanning().defaultParams();
 }
 inline ParamsType loadParams(std::string configFile)
 {
     return MRA::LoadDefaultParams<ParamsType>(configFile);
 }
 
-} // namespace MRA::FalconsMotionPlanning
+} // namespace MRA::FalconsActionPlanning
 
 
 #endif

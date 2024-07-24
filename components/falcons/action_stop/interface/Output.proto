@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package MRA.FalconsActionStop;
+
+import "datatypes/ActionResult.proto";
+
+message Output
+{
+    MRA.Datatypes.ActionResult actionresult = 1;
+    bool stopMoving = 2;
+    bool bhEnabled = 3;
+}

@@ -21,10 +21,13 @@ int FalconsActionStop::FalconsActionStop::tick
 )
 {
     int error_value = 0;
+    MRA_LOG_TICK();
 
     // user implementation goes here
 
-
+    output.set_actionresult(MRA::Datatypes::PASSED);
+    output.set_stopmoving(true);
+    output.set_ballhandlersenabled(input.ballhandlersenabled());
 
     return error_value;
 }

@@ -7,5 +7,5 @@ import "datatypes/WorldState.proto";
 message Input
 {
     MRA.Datatypes.WorldState worldstate = 1;
-    bool bhEnabled = 2;
+    bool ballHandlersEnabled = 2;
 }

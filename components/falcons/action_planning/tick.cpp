@@ -9,6 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 #include "FalconsGetball.hpp"
+#include "FalconsActionStop.hpp"
 #include "FalconsActionAimedKick.hpp"
 
 
@@ -51,6 +52,16 @@ int FalconsActionPlanning::FalconsActionPlanning::tick
     return error_value;
 }
 
+// design notes:
+// * each action is implemented in a dedicated subcomponent:
+//   * ACTION_STOP: FalconsActionStop
+//   * ACTION_SHOOT: FalconsActionAimedKick
+//   * etc
+// * a template function "handleAction" is used to interface with each action subcomponent
+//   * making use of specific outputToSetpoints* adapters per action
+// * this makes the function "dispatchAction" short and to the point
+// * parameter checking is delegated to the components
+
 void checkParams(ParamsType const &params)
 {
     // TODO: remove this function when creating FalconsActionMove, param checks shall be done in each nested action component
@@ -64,6 +75,12 @@ void checkParams(ParamsType const &params)
     {
         throw std::runtime_error("invalid configuration parameter for move.tolerance_rz: should be larger than zero");
     }
+}
+
+void outputToSetpointsActionStop(MRA::FalconsActionStop::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    setpoints->mutable_move()->set_stop(actionOutput.stopmoving());
+    setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
 }
 
 void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
@@ -190,12 +207,6 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         return 1;
     }
-    if (currentActionType == MRA::Datatypes::ACTION_STOP)
-    {
-        output.set_actionresult(MRA::Datatypes::PASSED);
-        output.mutable_setpoints()->mutable_move()->set_stop(true);
-        output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().stop().ballhandlersenabled());
-    }
     else if (currentActionType == MRA::Datatypes::ACTION_MOVE)
     {
         // TODO: refactor, move to component FalconsActionMove, also the param checks
@@ -223,6 +234,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
             output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
             output.set_actionresult(MRA::Datatypes::RUNNING);
         }
+    }
+    else if (currentActionType == MRA::Datatypes::ACTION_STOP)
+    {
+        error_value = handleAction<MRA::FalconsActionStop::FalconsActionStop>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionStop, "stop"
+        );
     }
     else if (currentActionType == MRA::Datatypes::ACTION_PASS)
     {

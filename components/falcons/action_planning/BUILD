@@ -29,6 +29,7 @@ cc_library(
         "//components/falcons/getball:implementation",
         "//components/falcons/action_stop:implementation",
         "//components/falcons/action_aimed_kick:implementation",
+        "//components/falcons/action_planning/internal",
         "//libraries/logging",
         "//libraries/geometry",
     ],

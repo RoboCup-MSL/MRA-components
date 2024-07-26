@@ -9,5 +9,6 @@ message Input
 {
     MRA.Datatypes.WorldState worldstate = 1;
     MRA.Datatypes.PosVel motionTarget = 2; // in FCS
-    bool ballHandlersEnabled = 3;
+    int32 motionType = 3; // relay, optionally set to dribble
+    bool ballHandlersEnabled = 4; // relay
 }

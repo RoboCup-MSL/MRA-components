@@ -36,6 +36,7 @@ int FalconsActionMove::FalconsActionMove::tick
         output.set_ballhandlersenabled(input.ballhandlersenabled());
 
         // if with ball, then set motiontype to 1
+        output.set_motiontype(input.motiontype());
         if (input.worldstate().robot().hasball())
         {
             output.set_motiontype(1);

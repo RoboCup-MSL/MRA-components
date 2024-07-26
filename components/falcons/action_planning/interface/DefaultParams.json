@@ -1,9 +1,11 @@
 {
     "action": {
         "move": {
-            "active_stop": true,
-            "tolerance_xy": 0.01,
-            "tolerance_rz": 0.001
+            "activeStop": true,
+            "tolerances": {
+                "xy": 0.01,
+                "rz": 0.001
+            }
         },
         "pass": {
             "angleAccuracyThreshold": 0.03,

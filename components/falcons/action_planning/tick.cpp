@@ -11,6 +11,7 @@ using namespace MRA;
 #include "subcomponent_template.hpp" // internal
 #include "FalconsGetball.hpp"
 #include "FalconsActionStop.hpp"
+#include "FalconsActionMove.hpp"
 #include "FalconsActionAimedKick.hpp"
 
 
@@ -36,7 +37,6 @@ int FalconsActionPlanning::FalconsActionPlanning::tick
 
     try
     {
-        checkParams(params);
         error_value = dispatchAction(timestamp, input, params, state, output, local);
     }
     catch (const std::exception& e)
@@ -63,24 +63,17 @@ int FalconsActionPlanning::FalconsActionPlanning::tick
 // * this makes the function "dispatchAction" short and to the point
 // * parameter checking is delegated to the components
 
-void checkParams(ParamsType const &params)
-{
-    // TODO: remove this function when creating FalconsActionMove, param checks shall be done in each nested action component
-    float tolerance_xy = params.action().move().tolerance_xy();
-    if (tolerance_xy <= 0.0)
-    {
-        throw std::runtime_error("invalid configuration parameter for move.tolerance_xy: should be larger than zero");
-    }
-    float tolerance_rz = params.action().move().tolerance_rz();
-    if (tolerance_rz <= 0.0)
-    {
-        throw std::runtime_error("invalid configuration parameter for move.tolerance_rz: should be larger than zero");
-    }
-}
-
 void outputToSetpointsActionStop(MRA::FalconsActionStop::OutputType const &actionOutput, Setpoints *setpoints)
 {
     setpoints->mutable_move()->set_stop(actionOutput.stopmoving());
+    setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
+}
+
+void outputToSetpointsActionMove(MRA::FalconsActionMove::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    setpoints->mutable_move()->set_stop(actionOutput.stop());
+    setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
     setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
 }
 
@@ -132,31 +125,9 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     }
     else if (currentActionType == MRA::Datatypes::ACTION_MOVE)
     {
-        // TODO: refactor, move to component FalconsActionMove, also the param checks
-        auto action_params = params.action().move();
-        output.mutable_setpoints()->mutable_bh()->set_enabled(input.action().move().ballhandlersenabled());
-        // check if arrived
-        MRA::Geometry::Position target_pos = input.action().move().target().position();
-        MRA::Geometry::Position current_pos = input.worldstate().robot().position();
-        auto delta_pos = target_pos - current_pos;
-        float tolerance_xy = action_params.tolerance_xy();
-        float tolerance_rz = action_params.tolerance_rz();
-        bool xy_ok = ((abs(delta_pos.x) < tolerance_xy) && (abs(delta_pos.y) < tolerance_xy));
-        bool rz_ok = (abs(delta_pos.rz) < tolerance_rz);
-        if (xy_ok && rz_ok)
-        {
-            output.set_actionresult(MRA::Datatypes::PASSED);
-            if (action_params.active_stop())
-            {
-                output.mutable_setpoints()->mutable_move()->set_stop(true);
-            }
-        }
-        else
-        {
-            *output.mutable_setpoints()->mutable_move()->mutable_target() = input.action().move().target();
-            output.mutable_setpoints()->mutable_move()->set_motiontype(input.action().move().motiontype());
-            output.set_actionresult(MRA::Datatypes::RUNNING);
-        }
+        error_value = handleAction<MRA::FalconsActionMove::FalconsActionMove>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionMove, "move"
+        );
     }
     else if (currentActionType == MRA::Datatypes::ACTION_STOP)
     {

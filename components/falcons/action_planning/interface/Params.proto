@@ -4,20 +4,14 @@ package MRA.FalconsActionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Params.proto";
 import "components/falcons/action_stop/interface/Params.proto";
+import "components/falcons/action_move/interface/Params.proto";
 import "components/falcons/action_aimed_kick/interface/Params.proto";
-
-message ActionMoveParams
-{
-    float tolerance_xy = 1; // may be overruled by pathPlanning
-    float tolerance_rz = 2;
-    bool active_stop = 3;
-}
 
 message ActionParams
 {
     MRA.Datatypes.ActionType type = 1;
     MRA.FalconsActionStop.Params stop = 2;
-    ActionMoveParams move = 3;
+    MRA.FalconsActionMove.Params move = 3;
     MRA.FalconsActionAimedKick.Params pass = 5;
     MRA.FalconsActionAimedKick.Params shoot = 6;
     MRA.FalconsGetball.Params getball = 8;

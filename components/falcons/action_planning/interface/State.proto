@@ -4,6 +4,7 @@ package MRA.FalconsActionPlanning;
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/State.proto";
 import "components/falcons/action_stop/interface/State.proto";
+import "components/falcons/action_move/interface/State.proto";
 import "components/falcons/action_aimed_kick/interface/State.proto";
 
 message ActionState
@@ -12,6 +13,7 @@ message ActionState
     oneof state
     {
         MRA.FalconsActionStop.State stop = 2;
+        MRA.FalconsActionMove.State move = 3;
         MRA.FalconsActionAimedKick.State pass = 5;
         MRA.FalconsActionAimedKick.State shoot = 6;
         MRA.FalconsGetball.State getball = 8;

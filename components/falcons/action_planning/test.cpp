@@ -148,12 +148,10 @@ TEST_F(TestActionPlanner, TickTestMoveActionAtTarget)
 
     FalconsActionPlanning::ActionInputs testActionInput;
     testActionInput.set_type(Datatypes::ACTION_MOVE);
-    auto moveInputs = new FalconsActionPlanning::ActionMoveInputs();
-    moveInputs->mutable_target()->mutable_position()->set_x(1.0);
-    moveInputs->mutable_target()->mutable_position()->set_y(1.0);
-    moveInputs->mutable_target()->mutable_position()->set_rz(0.0);
-    moveInputs->set_ballhandlersenabled(true);
-    testActionInput.set_allocated_move(moveInputs);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_x(1.0);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_y(1.0);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_rz(0.0);
+    testActionInput.mutable_move()->set_ballhandlersenabled(true);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -185,12 +183,10 @@ TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
 
     FalconsActionPlanning::ActionInputs testActionInput;
     testActionInput.set_type(Datatypes::ACTION_MOVE);
-    auto moveInputs = new FalconsActionPlanning::ActionMoveInputs();
-    moveInputs->mutable_target()->mutable_position()->set_x(2.0);
-    moveInputs->mutable_target()->mutable_position()->set_y(2.0);
-    moveInputs->mutable_target()->mutable_position()->set_rz(0.5);
-    moveInputs->set_ballhandlersenabled(false);
-    testActionInput.set_allocated_move(moveInputs);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_x(2.0);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_y(2.0);
+    testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_rz(0.5);
+    testActionInput.mutable_move()->set_ballhandlersenabled(false);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -205,6 +201,35 @@ TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5);
     expectedSetpoints.mutable_bh()->set_enabled(false);
+    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestMoveActionDribble)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->mutable_position()->set_x(1.0);
+    testWorldState.mutable_robot()->set_hasball(true);
+
+    FalconsActionPlanning::ActionInputs testActionInput;
+    testActionInput.set_type(Datatypes::ACTION_MOVE);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInput);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->set_motiontype(1);
     Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
 
     // check the outputs

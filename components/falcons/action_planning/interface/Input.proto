@@ -8,14 +8,8 @@ import "datatypes/WorldState.proto";
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/Input.proto";
 import "components/falcons/action_stop/interface/Input.proto";
+import "components/falcons/action_move/interface/Input.proto";
 import "components/falcons/action_aimed_kick/interface/Input.proto";
-
-message ActionMoveInputs
-{
-    MRA.Datatypes.PosVel target = 1;
-    int32 motionType = 2; // optional
-    bool ballHandlersEnabled = 3;
-}
 
 message ActionKickInputs
 {
@@ -47,7 +41,7 @@ message ActionInputs
     oneof inputs
     {
         MRA.FalconsActionStop.Input stop = 2;
-        ActionMoveInputs move = 3;
+        MRA.FalconsActionMove.Input move = 3;
         ActionKickInputs kick = 4;
         MRA.FalconsActionAimedKick.Input pass = 5;
         MRA.FalconsActionAimedKick.Input shoot = 6;

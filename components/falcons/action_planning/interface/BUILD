@@ -13,6 +13,7 @@ proto_library(
         "//datatypes:MRA_proto",
         "//components/falcons/getball/interface:interface_proto",
         "//components/falcons/action_stop/interface:interface_proto",
+        "//components/falcons/action_move/interface:interface_proto",
         "//components/falcons/action_aimed_kick/interface:interface_proto",
     ],
 )

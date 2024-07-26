@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package MRA.FalconsActionMove;
+
+import "datatypes/WorldState.proto";
+import "datatypes/PosVel.proto";
+
+message Input
+{
+    MRA.Datatypes.WorldState worldstate = 1;
+    MRA.Datatypes.PosVel motionTarget = 2; // in FCS
+    // note: settings ballHandlersEnabled and motionType are not modified, to be relayed at action_planning level
+    // alternatively they could be inputs here and outputs accordingly
+}

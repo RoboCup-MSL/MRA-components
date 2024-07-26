@@ -32,6 +32,15 @@ int FalconsActionMove::FalconsActionMove::tick
         // check params
         checkParams(params);
 
+        // copy ballHandlers setpoint
+        output.set_ballhandlersenabled(input.ballhandlersenabled());
+
+        // if with ball, then set motiontype to 1
+        if (input.worldstate().robot().hasball())
+        {
+            output.set_motiontype(1);
+        }
+
         // check if arrived
         MRA::Geometry::Position target_pos = input.motiontarget().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();

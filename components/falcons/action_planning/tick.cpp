@@ -33,6 +33,9 @@ int FalconsActionPlanning::FalconsActionPlanning::tick
     int error_value = 0;
     MRA_LOG_TICK();
 
+    output.Clear();
+    local.Clear();
+
     // user implementation goes here
 
     try
@@ -85,7 +88,10 @@ void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actio
 
 void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
     setpoints->mutable_shoot()->set_type(MRA::FalconsActionPlanning::SHOOT_TYPE_PASS);
     setpoints->mutable_shoot()->set_phase(actionOutput.phase());
@@ -95,7 +101,10 @@ void outputToSetpointsActionPass(MRA::FalconsActionAimedKick::OutputType const &
 
 void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
     if (actionOutput.dokick())
     {

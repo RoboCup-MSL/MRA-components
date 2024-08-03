@@ -13,6 +13,7 @@ using namespace MRA;
 #include "FalconsActionStop.hpp"
 #include "FalconsActionMove.hpp"
 #include "FalconsActionAimedKick.hpp"
+#include "FalconsActionPark.hpp"
 
 
 using namespace MRA::FalconsActionPlanning;
@@ -121,6 +122,13 @@ void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const 
     }
 }
 
+void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    setpoints->mutable_move()->set_stop(actionOutput.stop());
+    setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
+}
+
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)
 {
     // TODO: memorize previousActionType, if different, wipe state
@@ -160,6 +168,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         error_value = handleAction<MRA::FalconsGetball::FalconsGetball>(
             timestamp, input, params, state, output, local, outputToSetpointsActionGetball, "getball"
+        );
+    }
+    else if (currentActionType == MRA::Datatypes::ACTION_PARK)
+    {
+        error_value = handleAction<MRA::FalconsActionPark::FalconsActionPark>(
+            timestamp, input, params, state, output, local, outputToSetpointsActionPark, "park"
         );
     }
     // TODO other actions

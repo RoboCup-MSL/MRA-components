@@ -15,6 +15,7 @@ proto_library(
         "//components/falcons/action_stop/interface:interface_proto",
         "//components/falcons/action_move/interface:interface_proto",
         "//components/falcons/action_aimed_kick/interface:interface_proto",
+        "//components/falcons/action_park/interface:interface_proto",
     ],
 )
 

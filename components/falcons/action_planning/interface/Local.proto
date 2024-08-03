@@ -6,6 +6,7 @@ import "components/falcons/getball/interface/Local.proto";
 import "components/falcons/action_stop/interface/Local.proto";
 import "components/falcons/action_move/interface/Local.proto";
 import "components/falcons/action_aimed_kick/interface/Local.proto";
+import "components/falcons/action_park/interface/Local.proto";
 
 message ActionLocal
 {
@@ -17,6 +18,7 @@ message ActionLocal
         MRA.FalconsActionAimedKick.Local pass = 5;
         MRA.FalconsActionAimedKick.Local shoot = 6;
         MRA.FalconsGetball.Local getball = 8;
+        MRA.FalconsActionPark.Local park = 12;
     }
 }
 

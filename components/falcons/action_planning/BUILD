@@ -30,6 +30,7 @@ cc_library(
         "//components/falcons/action_stop:implementation",
         "//components/falcons/action_move:implementation",
         "//components/falcons/action_aimed_kick:implementation",
+        "//components/falcons/action_park:implementation",
         "//components/falcons/action_planning/internal",
         "//libraries/logging",
         "//libraries/geometry",

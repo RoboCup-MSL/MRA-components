@@ -26,6 +26,7 @@ protected:
     FalconsActionPlanning::State state;
     FalconsActionPlanning::Output output;
     FalconsActionPlanning::Local local;
+    int lastTickResult = 0;
 
     virtual void SetUp()
     {
@@ -38,13 +39,18 @@ protected:
 
     void feedTick()
     {
-        planner.tick(timestamp, input, params, state, output, local);
+        lastTickResult = planner.tick(timestamp, input, params, state, output, local);
         advanceTime(0.10); // Advance time by 0.10 seconds for each tick
     }
 
     void setWorldState(const Datatypes::WorldState &worldState)
     {
         *input.mutable_worldstate() = worldState;
+    }
+
+    void setParams(const FalconsActionPlanning::Params &p)
+    {
+        params.MergeFrom(p);
     }
 
     void setActionInputs(const FalconsActionPlanning::ActionInputs &ActionInputs)
@@ -59,6 +65,7 @@ protected:
 
     Datatypes::ActionResult getLastActionResult()
     {
+        EXPECT_EQ(lastTickResult, 0);
         return output.actionresult();
     }
 
@@ -573,6 +580,120 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
 
     // Check the outputs
     expectedActionResult = Datatypes::FAILED;
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestActionParkSuccess)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(false);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+
+    // set no obstacles in the TechnicalTeamArea
+    // TechnicalTeamArea configuration
+    FalconsActionPlanning::Params params;
+    auto tta = params.mutable_action()->mutable_park()->mutable_tta();
+    tta->mutable_center()->set_x(7.0);
+    tta->mutable_center()->set_y(3.0);
+    tta->mutable_size()->set_x(1.0);
+    tta->mutable_size()->set_y(6.0);
+    setParams(params);
+
+    // set action
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_PARK);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(7.0); // center.x of TTA
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(3.0); // center.y of TTA
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.5 * M_PI); // facing the field
+    expectedSetpoints.mutable_bh()->set_enabled(false);
+
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+
+    // Simulate robot arriving at the target position
+    testWorldState.mutable_robot()->mutable_position()->set_x(7.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(3.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(-0.5 * M_PI);
+
+    setWorldState(testWorldState);
+    feedTick();
+
+    // Expected result after arriving at the position
+    expectedActionResult = MRA::Datatypes::PASSED;
+
+    // check the outputs
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(false);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+
+    // add obstacles in the TechnicalTeamArea
+    auto obstacle1 = testWorldState.add_obstacles();
+    obstacle1->mutable_position()->set_x(7.0);
+    obstacle1->mutable_position()->set_y(3.0);
+
+    auto obstacle2 = testWorldState.add_obstacles();
+    obstacle2->mutable_position()->set_x(7.0);
+    obstacle2->mutable_position()->set_y(2.5);
+
+    // TechnicalTeamArea configuration
+    FalconsActionPlanning::Params params;
+    auto tta = params.mutable_action()->mutable_park()->mutable_tta();
+    tta->mutable_center()->set_x(7.0);
+    tta->mutable_center()->set_y(3.0);
+    tta->mutable_size()->set_x(1.0);
+    tta->mutable_size()->set_y(6.0);
+    setParams(params);
+
+    // set action
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_PARK);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(0.0); // No movement
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.0); // No movement
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.0); // No movement
+    expectedSetpoints.mutable_bh()->set_enabled(false);
+
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::FAILED;
+
+    // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }

@@ -28,6 +28,16 @@
             "intercept": {
                 "actionRadius": 4.0
             }
+        },
+        "park": {
+            "tta": {
+                "size": {
+                    "x": 1.0,
+                    "y": 6.0
+                }
+            },
+            "robotRadius": 0.38,
+            "toleranceX": 0.2
         }
     }
 }

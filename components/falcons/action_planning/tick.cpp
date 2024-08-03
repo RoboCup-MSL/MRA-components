@@ -127,6 +127,7 @@ void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actio
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_move()->set_stop(actionOutput.stop());
     setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
+    setpoints->mutable_bh()->set_enabled(false);
 }
 
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, LocalType &local)

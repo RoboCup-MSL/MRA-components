@@ -37,7 +37,9 @@
                 }
             },
             "robotRadius": 0.38,
-            "toleranceX": 0.2
+            "toleranceX": 0.2,
+            "preTargetXoffset": 2.0,
+            "preTargetDistance": 4.0
         }
     }
 }

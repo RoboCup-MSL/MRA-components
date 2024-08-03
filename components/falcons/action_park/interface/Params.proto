@@ -10,5 +10,7 @@ message Params
     float robotRadius = 2; // about 0.40m max
     float toleranceX = 3;
     float robotClearance = 4;
+    float preTargetXoffset = 5; // waypoint placement into the field
+    float preTargetDistance = 6;
 }
 

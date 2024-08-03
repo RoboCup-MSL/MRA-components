@@ -54,28 +54,46 @@ int FalconsActionPark::FalconsActionPark::tick
     // find relative index compare to teammates
     int rId = getRelativeIndex(input.worldstate());
 
-    // calculate target position
-    Geometry::Point result = calculateResultPos(rId, params);
+    // calculate target positions
+    Geometry::Point targetPos = calculateResultPos(rId, params);
+    Geometry::Point preTargetPos = targetPos;
+    preTargetPos.x += params.pretargetxoffset() * (targetPos.x > 0 ? -1 : 1);
 
-    // check if target is blocked
-    float minDist = calculateMinObjectDistance(result.x, result.y, input.worldstate());
-    bool targetBlocked = minDist < (params.robotradius() + params.robotclearance());
-
-    // set target or determine action failure
-    if (targetBlocked) // TODO: keep trying a bit more?
-    {
-        output.set_actionresult(MRA::Datatypes::FAILED);
-    }
-    else
+    // check if moving to pretarget or target
+    float distanceToTarget = (targetPos - robotPos).size();
+    if (distanceToTarget > params.pretargetdistance())
     {
         // calculate target angle
-        float sign = (result.x > 0) ? -1.0 : 1.0;
+        float sign = (preTargetPos.x > 0) ? 1.0 : -1.0;
         output.mutable_motiontarget()->mutable_position()->set_rz(sign * 0.5 * M_PI);
 
         // set target
-        output.mutable_motiontarget()->mutable_position()->set_x(result.x);
-        output.mutable_motiontarget()->mutable_position()->set_y(result.y);
+        output.mutable_motiontarget()->mutable_position()->set_x(preTargetPos.x);
+        output.mutable_motiontarget()->mutable_position()->set_y(preTargetPos.y);
         output.set_actionresult(MRA::Datatypes::RUNNING);
+    }
+    else
+    {
+        // check if target is blocked
+        float minDist = calculateMinObjectDistance(targetPos.x, targetPos.y, input.worldstate());
+        bool targetBlocked = minDist < (params.robotradius() + params.robotclearance());
+
+        // set target or determine action failure
+        if (targetBlocked) // TODO: keep trying a bit more?
+        {
+            output.set_actionresult(MRA::Datatypes::FAILED);
+        }
+        else
+        {
+            // calculate target angle
+            float sign = (targetPos.x > 0) ? 1.0 : -1.0;
+            output.mutable_motiontarget()->mutable_position()->set_rz(sign * 0.5 * M_PI);
+
+            // set target
+            output.mutable_motiontarget()->mutable_position()->set_x(targetPos.x);
+            output.mutable_motiontarget()->mutable_position()->set_y(targetPos.y);
+            output.set_actionresult(MRA::Datatypes::RUNNING);
+        }
     }
 
     return error_value;

@@ -4,13 +4,11 @@ package MRA.FalconsActionPark;
 
 import "datatypes/Shapes.proto";
 
-message TechnicalTeamArea
-{
-    MRA.Datatypes.Rectangle rect = 1;
-}
-
 message Params
 {
-    TechnicalTeamArea tta = 1;
+    MRA.Datatypes.Rectangle tta = 1;
+    float robotRadius = 2; // about 0.40m max
+    float toleranceX = 3;
+    float robotClearance = 4;
 }
 

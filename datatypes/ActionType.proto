@@ -15,5 +15,6 @@ enum ActionType
     ACTION_SHIELD = 8; // a.k.a. TURN_AWAY_FROM_OPPONENT
     ACTION_KEEPER = 9;
     ACTION_INTERCEPT = 10;
+    ACTION_PARK = 11;
 }
 

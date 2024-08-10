@@ -13,11 +13,10 @@ using namespace MRA::RobotsportsRobotStrategy;
 //---------------------------------------------------------------------------------------------------------------------
 
 static void getFormation013(OutputType &output,
-		                    Input_GameState gamestate,
-							bool team_control_ball,
-							bool ball_passed)
+		                    Input_GameState game_state,
+		                    Input_BallStatus ball_status)
 {
-	switch (gamestate)
+	switch (game_state)
 	{
 	case Input_GameState_FREEKICK: // intentional fall through
 	case Input_GameState_GOALKICK: // intentional fall through
@@ -44,19 +43,34 @@ static void getFormation013(OutputType &output,
 	case Input_GameState_GOAL: // intentional fall through
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 		// different role assignment when ball is passed
-		if (team_control_ball) {
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-		}
-		else if (ball_passed) { // ball is being passed
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		}
-		else {
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-		}
-		output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
-		output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
-		output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
-		break;
+        switch (ball_status)
+        {
+            case Input_BallStatus_OWNED_BY_PLAYER:
+            case Input_BallStatus_OWNED_BY_TEAMMATE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_ASSIST);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                break;
+            case Input_BallStatus_OWNED_BY_TEAM:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_ASSIST);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                break;
+            case Input_BallStatus_FREE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                break;
+            default:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+        }
+        break;
 	case Input_GameState_PARKING: // intentional fall through
 	case Input_GameState_BEGIN_POSITION: // intentional fall through
 	case Input_GameState_KICKOFF_AGAINST: // intentional fall through
@@ -80,12 +94,11 @@ static void getFormation013(OutputType &output,
 
 
 static void getFormation112(OutputType &output,
-        Input_GameState gamestate,
-		bool team_control_ball,
-		bool ball_passed,
+        Input_GameState game_state,
+        Input_BallStatus ball_status,
 		bool no_sweeper_during_setplay)
 {
-	switch (gamestate)
+	switch (game_state)
 	{
 	case Input_GameState_FREEKICK: // intentional fall through
 	case Input_GameState_GOALKICK: // intentional fall through
@@ -127,41 +140,45 @@ static void getFormation112(OutputType &output,
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (team_control_ball || ball_passed) {
-			if (team_control_ball) {
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			}
-			else if (ball_passed) { // ball is being passed
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-			}
-			else {
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			}
-			// create pass possibility if two players are left, only when we control the ball (see issue #218)
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
-		}
-		else {
-			// defending
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		}
-		break;
+        switch (ball_status)
+        {
+            case Input_BallStatus_OWNED_BY_PLAYER:
+            case Input_BallStatus_OWNED_BY_TEAMMATE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                break;
+            case Input_BallStatus_OWNED_BY_TEAM:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                break;
+            case Input_BallStatus_FREE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                break;
+            default:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+        }
+        break;
 	default:
 		;// empty
 	};
 }
 
 static void getFormation211(OutputType &output,
-        Input_GameState gamestate,
-		bool team_control_ball,
-		bool ball_passed,
+        Input_GameState game_state,
+        Input_BallStatus ball_status,
 		bool no_sweeper_during_setplay)
 {
-	switch (gamestate) {
+	switch (game_state) {
 	case Input_GameState_FREEKICK: // intentional fall through
 	case Input_GameState_GOALKICK: // intentional fall through
 	case Input_GameState_THROWIN: // intentional fall through
@@ -202,28 +219,35 @@ static void getFormation211(OutputType &output,
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (team_control_ball || ball_passed) {
-			if (team_control_ball) {
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			}
-			else if (ball_passed) { // ball is being passed
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-			}
-			else {
-				output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			}
-			// create pass possibility if two players are left, only when we control the ball (see issue #218)
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
-		}
-		else {
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-			// create pass possibility if two players are left, only when we control the ball (see issue #218)
-			output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		}
-		output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		break;
+        switch (ball_status)
+        {
+            // create pass possibility if two players are left, only when we control the ball (see issue #218)
+            case Input_BallStatus_OWNED_BY_PLAYER:
+            case Input_BallStatus_OWNED_BY_TEAMMATE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                break;
+            case Input_BallStatus_OWNED_BY_TEAM:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                break;
+            case Input_BallStatus_FREE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                break;
+            default:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_DEFENDER_MAIN);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+        }
+        break;
 	default:
 		;// empty
 	};
@@ -231,11 +255,10 @@ static void getFormation211(OutputType &output,
 
 
 static void getFormation310(OutputType &output,
-        Input_GameState gamestate,
-		bool team_control_ball,
-		bool ball_passed)
+        Input_GameState game_state,
+        Input_BallStatus ball_status)
 {
-switch (gamestate) {
+switch (game_state) {
 	case Input_GameState_FREEKICK: // intentional fall through
 	case Input_GameState_GOALKICK: // intentional fall through
 	case Input_GameState_THROWIN: // intentional fall through
@@ -271,19 +294,22 @@ switch (gamestate) {
 	case Input_GameState_GOAL_AGAINST: // intentional fall through
 	case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
 	case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
-		if (team_control_ball) {
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-		}
-		else if (ball_passed) { // ball is being passed
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		}
-		else {
-			output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
-		}
-		output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
-		break;
+        switch (ball_status)
+        {
+            case Input_BallStatus_OWNED_BY_PLAYER:
+            case Input_BallStatus_OWNED_BY_TEAMMATE:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+                break;
+            case Input_BallStatus_OWNED_BY_TEAM:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+                break;
+            default:
+                output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN);
+        }
+        output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+        output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+        output.add_dynamic_roles(Output_DynamicRole_ATTACKER_GENERIC);
+        break;
 	default:
 		;// empty
 	};
@@ -311,12 +337,12 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
 
     // user implementation goes here
 
-    if (input.gamestate() == Input_GameState_PENALTY_SHOOTOUT_AGAINST) {
+    if (input.game_state() == Input_GameState_PENALTY_SHOOTOUT_AGAINST) {
     	// formation strategy independent formation
     	// all must be defender
 		roleOnlyFormation(output, Output_DynamicRole_DEFENDER_GENERIC);
     }
-    else if (input.gamestate() == Input_GameState_PENALTY_SHOOTOUT) {
+    else if (input.game_state() == Input_GameState_PENALTY_SHOOTOUT) {
     	// formation strategy independent formation
     	output.add_dynamic_roles(Output_DynamicRole_ATTACKER_MAIN );
     	output.add_dynamic_roles(Output_DynamicRole_DEFENDER_GENERIC );
@@ -326,13 +352,13 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
     else {
     	Params_TeamFormation team_formation = params.attack_formation();
 
-    	if ((input.gamestate() == Input_GameState_NORMAL_DEFEND)
-   			|| (input.gamestate() == Input_GameState_KICKOFF_AGAINST)
-			|| (input.gamestate() == Input_GameState_FREEKICK_AGAINST)
-			|| (input.gamestate() == Input_GameState_GOALKICK_AGAINST)
-			|| (input.gamestate() == Input_GameState_CORNER_AGAINST)
-			|| (input.gamestate() == Input_GameState_PENALTY_AGAINST)
-			|| (input.gamestate() == Input_GameState_PENALTY_SHOOTOUT_AGAINST)) {
+    	if ((input.game_state() == Input_GameState_NORMAL_DEFEND)
+   			|| (input.game_state() == Input_GameState_KICKOFF_AGAINST)
+			|| (input.game_state() == Input_GameState_FREEKICK_AGAINST)
+			|| (input.game_state() == Input_GameState_GOALKICK_AGAINST)
+			|| (input.game_state() == Input_GameState_CORNER_AGAINST)
+			|| (input.game_state() == Input_GameState_PENALTY_AGAINST)
+			|| (input.game_state() == Input_GameState_PENALTY_SHOOTOUT_AGAINST)) {
     		team_formation = params.defense_formation();
     	}
 
@@ -375,18 +401,18 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
     		roleOnlyFormation(output, Output_DynamicRole_DEFENDER_GENERIC);
     		break;
     	case Params_TeamFormation_FORMATION_112:
-    		getFormation112(output, input.gamestate(), input.team_control_ball(), input.ball_passed(), params.no_sweeper_during_setplay() );
+    		getFormation112(output, input.game_state(), input.ball_status(), params.no_sweeper_during_setplay() );
     		break;
     	case Params_TeamFormation_FORMATION_211:
-    		getFormation211(output, input.gamestate(), input.team_control_ball(), input.ball_passed(), params.no_sweeper_during_setplay());
+    		getFormation211(output, input.game_state(), input.ball_status(), params.no_sweeper_during_setplay());
     		break;
     	case Params_TeamFormation_FORMATION_013:
-    		getFormation013(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
+    		getFormation013(output, input.game_state(),input.ball_status());
     		break;
     	case Params_TeamFormation_FORMATION_310:
-    		getFormation310(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
+    		getFormation310(output, input.game_state(), input.ball_status());
     	default:
-    		getFormation310(output, input.gamestate(), input.team_control_ball(), input.ball_passed());
+    		getFormation310(output, input.game_state(), input.ball_status());
     	}
     }
     return error_value;

@@ -36,10 +36,17 @@ message Input
 		GOAL = 23;
 		GOAL_AGAINST = 24;
 	}
+	
+	enum BallStatus 
+	{
+        FREE = 0;
+        OWNED_BY_PLAYER = 1;
+        OWNED_BY_TEAMMATE = 2;
+        OWNED_BY_TEAM = 3;
+        OWNED_BY_OPPONENT = 4;
+	}
 
-    GameState gamestate = 1;
-    bool team_control_ball = 2;
-    bool ball_passed = 3;
-    
+    GameState game_state = 1;
+    BallStatus ball_status = 2;
 }
 

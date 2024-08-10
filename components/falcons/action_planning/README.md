@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ActionPlanning` component provides a set of predefined actions that the `ActionChoice` module can select to direct robot behavior in a RoboCup match. It decomposes these high-level actions into basic movement commands, kicker settings, and ball-handling setpoints for processing by the robot's peripheral systems. Each action is evaluated every tick, returning a status: `PASSED`, `FAILED`, or `RUNNING`.
+The `ActionPlanning` component provides a set of predefined actions that the `ActionChoice` component can select to direct robot behavior in a RoboCup match. It decomposes these high-level actions into basic movement commands, kicker settings, and ball-handling setpoints for processing by the robot's peripheral systems. Each action is evaluated every tick, returning a status: `PASSED`, `FAILED`, or `RUNNING`.
 
 ## Scope and Context
 
@@ -32,11 +32,11 @@ The `ActionPlanning` component covers a broad range of soccer-specific actions, 
 graph TD;
     ActionChoice --> ActionPlanning;
     ActionPlanning --> BallHandling;
+    ActionPlanning --> Navigation;
+    ActionPlanning --> KeeperFrame;
     ActionPlanning --> ShootPlanning;
     ShootPlanning --> KickerControl;
     ActionPlanning --> KickerControl;
-    ActionPlanning --> Navigation;
-    ActionPlanning --> KeeperFrame;
 ```
 
 TODO: link to main MRA diagram.
@@ -50,35 +50,35 @@ TODO: link to main MRA diagram.
 ### Action Effects
 
 This table shows the effects an action may have.
-For some actions, ballhandling setpoint is simply relayed from input, these are marked `r`.
-An `i` denotes implicit effect.
+For some actions, the ballhandling setpoint is simply relayed from input, these are marked `r`.
+An `i` at the KickerControl column denotes implicit effect, as ShootPlanning is basically a calculator for kicker setpoints.
 
-| Action   | BallHandling | ShootPlanning | KickerControl | Navigation | KeeperFrame | SubComponent           | Notes              |
-|----------|--------------|---------------|---------------|------------|-------------|------------------------| -------------------|
-| STOP     | r            |               |               | x          |             | [ActionStop](../ActionStop)         | |
-| MOVE     | r            |               |               | x          |             | [ActionMove](../ActionMove)         | may call DRIBBLE |
-| DRIBBLE  | x            |               | x             | x          |             | [ActionDribble](../ActionDribble)   |
-| DASH     | r            |               |               | x          |             | [ActionDash](../ActionDash)         |
-| KICK     | x            |               | x             |            |             | [ActionKick](../ActionKick)         |
-| PASS     | x            | x             | i             | x          |             | [ActionPass](../ActionPass)         |
-| SHOOT    | x            | x             | i             | x          |             | [ActionShoot](../ActionShoot)       |
-| LOB      | x            | x             | i             | x          |             | [ActionLob](../ActionLob)           |
-| GETBALL  | x            |               |               | x          |             | [ActionGetBall](../ActionGetBall)   | may call CATCH |
-| CATCH    |              |               |               | x          |             | [ActionCatch](../ActionCatch)       |
-| SHIELD   | x            |               |               | x          |             | [ActionShield](../ActionShield)     |
-| TACKLE   |              |               |               | x          |             | [ActionTackle](../ActionTackle)     |
-| KEEPER   |              |               |               | x          | x           | [ActionKeeper](../ActionKeeper)     |
-| BUMP     |              |               | x             | x          |             | [ActionBump](../ActionBump)         |
-| PARK     |              |               |               | x          |             | [ActionPark](../ActionPark)         |
-| PREPARE  |              |               |               | x          |             | [ActionPrepare](../ActionPrepare)   |
-| ALIVE    |              |               |               | x          |             | RobotSports [ProveIsAlive](../../RobotSports/ProveIsAlive)   |
+| Action   | BH | Shoot | Kick | Nav | KF | SubComponent                        | Notes              |
+|----------|----|-------|------|-----|----|-------------------------------------|--------------------|
+| STOP     | r  |       |      | x   |    | [action_stop](../action_stop)       |                    |
+| MOVE     | r  |       |      | x   |    | [action_move](../action_move)       |                    |
+| DRIBBLE  | x  |       | x    | x   |    | [TODO](../action_dribble)           |                    |
+| DASH     | r  |       |      | x   |    | [TODO](../action_dash)              |                    |
+| KICK     | x  |       | x    |     |    | [TODO](../action_kick)              |                    |
+| PASS     | x  | x     | i    | x   |    | [action_aimed_kick](../action_aimed_kick) | specific tuning |
+| SHOOT    | x  | x     | i    | x   |    | [action_aimed_kick](../action_aimed_kick) | specific tuning |
+| LOB      | x  | x     | i    | x   |    | [TODO](../action_lob)               |                    |
+| GETBALL  | x  |       |      | x   |    | [TODO](../action_getball)           | may call CATCH     |
+| CATCH    |    |       |      | x   |    | [TODO](../action_catch)             |                    |
+| SHIELD   | x  |       |      | x   |    | [TODO](../action_shield)            |                    |
+| TACKLE   |    |       |      | x   |    | [TODO](../action_tackle)            |                    |
+| KEEPER   |    |       |      | x   | x  | [TODO](../action_keeper)            |                    |
+| BUMP     |    |       |      | x   |    | [TODO](../action_bump)              |                    |
+| PARK     |    |       |      | x   |    | [action_park](../action_park)       |                    |
+| PREPARE  |    |       |      | x   |    | [TODO](../action_prepare)           |                    |
+| ALIVE    |    |       |      | x   |    | RobotSports [prove_is_alive](../../robotsports/prove_is_alive) | |
 
 ## Interface Details
 
 For details on the communication interfaces, refer to the following files:
 
-- **Input Protocol:** [Input.proto](interface/Input.proto)
-- **Output Protocol:** [Output.proto](interface/Output.proto)
+- **Input:** [Input.proto](interface/Input.proto)
+- **Output:** [Output.proto](interface/Output.proto)
 - **Configuration Parameters:** [DefaultParams.json](interface/DefaultParams.json) and [Params.proto](interface/Params.proto)
 
 ## Design Notes
@@ -91,7 +91,7 @@ For details on the communication interfaces, refer to the following files:
 ## Tooling and Extensions
 
 ### Proposed Tools:
-1. **Python Keeper GUI:** Generalize the existing keeper GUI (e.g., from `#JEFF`) to illustrate action implementations based on a general world state and action-specific parameters.
+1. **Python Keeper GUI:** Generalize the existing keeper GUI (from `#JEFF`) to illustrate action implementations based on a general world state and action-specific parameters.
 2. **Post-Match Analysis Tools:**
    - A tracing timeline to review the sequence of actions, their results, and pass/fail statistics using MRA tracing data.
    - A Python tool to plot action `.bin` files, allowing for in-depth post-mortem analysis.

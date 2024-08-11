@@ -11,8 +11,6 @@
 #include <iostream>
 #include "planner_common.hpp"
 #include "MathUtils.h"
-#include <vector>
-
 using namespace MRA;
 
 double grid_eps = 1e-3; // 1 mm
@@ -89,11 +87,23 @@ BallSetplayAgainstHeuristic::BallSetplayAgainstHeuristic(const char * id, double
 }
 
 double BallSetplayAgainstHeuristic::getValue(double x, double y) {
-	double value = 0.0;
+    // minimal distance to ball in own penalty area (RC 13.4) : 75 cm + small margin (10 cm) [issue #110)
+    const double MIN_DIST_TO_BALL_IN_OWN_PENALTY_AREA = 0.75 + 0.1;
+
+    double value = 0.0;
 	if (m_fieldConfig.isInOwnPenaltyArea(x, y)) {
-			value = 0.0;
+	    double dist2Ball = Geometry::Position(x,y).distanceTo(Geometry::Position(m_cx, m_cy));
+	    if (dist2Ball < MIN_DIST_TO_BALL_IN_OWN_PENALTY_AREA) {
+	        // too close too the ball in penalty area
+	        value = 1.0;
+	    }
+	    else {
+	        // more then minimum distance to the ball
+            value = 0.0;
+	    }
 	}
 	else if (((x-m_cx)*(x-m_cx) + (y-m_cy)*(y-m_cy)) < (m_radius*m_radius)) {
+	    // too close too the ball (outside penalty area)
 		value = 1.0;
 	}
 	return value;
@@ -118,7 +128,7 @@ double DistanceToLineHeuristic::getValue(double x, double y) {
 	// Penalty is distance from x,y to the line between x1,y1 and x2,y2
 	double value = 0.0;
 	if (fabs(m_scaling) > 1e-16) {
-		value = getDistanceFromPointToLine(m_x1, m_y1, m_x2, m_y2, x, y) / m_scaling;
+		value = getDistanceFromPointToLineSegment(m_x1, m_y1, m_x2, m_y2, x, y) / m_scaling;
 	}
 	if (m_invert) {
 		value = fabs(value - 1.0);
@@ -159,10 +169,10 @@ double InTriangleHeuristic::getValue(double x, double y)
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in opponent penaltyArea
 InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-		const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig) :
+                                                               const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 						InSquareHeuristic(id, weight, pgid,
-								-(parameters.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY(),
-								+(parameters.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY() - parameters.grid_opponent_goal_clearance_y)
+								-(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY(),
+								+(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY() - plannerOptions.grid_opponent_goal_clearance_y)
 {
 	// empty
 }
@@ -170,10 +180,10 @@ InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, 
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own penaltyArea
 InOwnPenaltyAreaHeuristic::InOwnPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-		const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig) :
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 								InSquareHeuristic(id, weight, pgid,
-										-(parameters.grid_opponent_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + parameters.grid_opponent_goal_clearance_y,
-										+(parameters.grid_opponent_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY())
+										-(plannerOptions.grid_opponent_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_opponent_goal_clearance_y,
+										+(plannerOptions.grid_opponent_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY())
 {
 	// empty
 }
@@ -237,10 +247,10 @@ double AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic::getValue(double x, d
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own goalArea
 InOwnGoalAreaHeuristic::InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig) :
+		const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
 												InSquareHeuristic(id, weight, pgid,
-														-(parameters.grid_own_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + parameters.grid_own_goal_clearance_y,
-														+(parameters.grid_own_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY()) {
+														-(plannerOptions.grid_own_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_own_goal_clearance_y,
+														+(plannerOptions.grid_own_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY()) {
 
 }
 
@@ -335,7 +345,7 @@ double InfluenceOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	// add influence other players. Opponents twice team meat. 1/10 support influence (20x² ?)
 	for (unsigned bar_idx = 0; bar_idx < m_Opponents.size(); bar_idx++) {
-		Geometry::Position bar_pos = m_Opponents[bar_idx].position;
+	    Geometry::Position bar_pos = m_Opponents[bar_idx].position;
 		if (bar_pos.distanceTo(Geometry::Position(x,y)) < m_radius) {
 			value = 1.0;
 		}
@@ -381,11 +391,11 @@ double OnLineBetweenPointsHeuristic::getValue(double x, double y){
 		double distP1toP2 = P1.distanceTo(P2);
 		if ((distPintoP1 >  distP1toP2) || (distPintoP2 >  distP1toP2) ) {
 			// P is not between P1 and P2. use shortest distance to line piece
-			Geometry::Position p(x,y);
+		    Geometry::Position p(x,y);
 			distToLinePiece = std::min(p.distanceTo(P1), p.distanceTo(P2));
 		}
 		else {
-			distToLinePiece = getDistanceFromPointToLine(m_x1, m_y1, m_x2, m_y2, x, y);
+			distToLinePiece = getDistanceFromPointToLineSegment(m_x1, m_y1, m_x2, m_y2, x, y);
 		}
 		if (distToLinePiece > 0) {
 			value =  (5.0 * distToLinePiece) / m_dScaling;
@@ -398,19 +408,21 @@ double OnLineBetweenPointsHeuristic::getValue(double x, double y){
 }
 
 // ----------------------------------------------------------------------------------------
-DesiredYSweeper::DesiredYSweeper(const char *id, double weight, PlannerGridInfoData& pgid,
+DesiredY::DesiredY(const char *id, double weight, PlannerGridInfoData& pgid,
 		double desired_y, const FieldConfig& fieldConfig) :
 						DistanceToLineHeuristic(id, weight, pgid,
-								-fieldConfig.getMaxFullFieldX(), desired_y, fieldConfig.getMaxFullFieldX(), desired_y, fieldConfig.getMaxPossibleFieldDistance())
+								-fieldConfig.getMaxFullFieldX(), desired_y, fieldConfig.getMaxFullFieldX(), desired_y, fabs(desired_y)+fieldConfig.getMaxFieldY())
+                        // scale-factor set to max-y distance within playing field to have good sensibility
 {
 
 }
 
 // ----------------------------------------------------------------------------------------
-DesiredXSweeper::DesiredXSweeper(const char *id, double weight, PlannerGridInfoData& pgid,
+DesiredX::DesiredX(const char *id, double weight, PlannerGridInfoData& pgid,
 		double desired_x, const FieldConfig& fieldConfig) :
 								DistanceToLineHeuristic(id, weight, pgid,
-										desired_x, -fieldConfig.getMaxFullFieldY(), desired_x, fieldConfig.getMaxFullFieldY(), fieldConfig.getMaxPossibleFieldDistance())
+										desired_x, -fieldConfig.getMaxFullFieldY(), desired_x, fieldConfig.getMaxFullFieldY(), fabs(desired_x)+fieldConfig.getMaxFieldX())
+                                // scale-factor set to max-x distance within playing field to have good sensibility
 {
 
 }
@@ -450,7 +462,7 @@ double DistanceToHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 DistanceToPointHeuristic::DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const Geometry::Point& pos, double dScaling, double maxRange, bool inverted) :
+		const Geometry::Position& pos, double dScaling, double maxRange, bool inverted) :
 												GridHeuristic(id, weight, pgid),
 												m_pos(pos),
 												m_dScaling(dScaling),
@@ -459,11 +471,10 @@ DistanceToPointHeuristic::DistanceToPointHeuristic(const char *id, double weight
 {
 
 }
-
 double DistanceToPointHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	if (fabs(m_dScaling) > 1e-16) {
-		value =  m_pos.distanceTo(Geometry::Point(x, y));
+		value =  m_pos.distanceTo(Geometry::Position(x, y));
 		if (value > m_dMaxRange) {
 			value = m_dMaxRange;
 		}
@@ -506,7 +517,7 @@ NotOnLineBetweenBallAndOpponentGoalHeuristic::NotOnLineBetweenBallAndOpponentGoa
 
 // ----------------------------------------------------------------------------------------
 InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-		const MRA::Geometry::Point& ball,
+        const MRA::Geometry::Point& ball,
 		const std::vector<TeamPlannerRobot>& Team,
 		const std::vector<TeamPlannerOpponent>& Opponents,
 		double interceptionChanceStartDistance,
@@ -515,7 +526,7 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
 											GridHeuristic(id, weight, pgid),
 											m_ball(ball),
 											m_Team(Team),
-											m_Opponents(std::vector<Geometry::Position>()),
+											m_Opponents(std::vector<MRA::Geometry::Position>()),
 											m_interceptionChanceStartDistance(interceptionChanceStartDistance),
 											m_interceptionChanceIncreasePerMeter(interceptionChanceIncreasePerMeter),
 											m_interceptionChancePenaltyFactor(interceptionChancePenaltyFactor)
@@ -536,10 +547,10 @@ double InterceptionThreatHeuristic::getValue(double x, double y) {
 	//// Improves standing free by looking at the intercept by enemy thread
 
 	// player with ball
-	Geometry::Point ballPos = m_ball;
+    Geometry::Position ballPos(m_ball.x, m_ball.y);
 
 	// receiving position
-	Geometry::Point receivingPos = Geometry::Point(x, y);
+    Geometry::Position receivingPos = Geometry::Position(x, y);
 
 	return chance_of_intercept(ballPos, receivingPos, m_Opponents,
 			m_interceptionChanceStartDistance, m_interceptionChanceIncreasePerMeter, m_interceptionChancePenaltyFactor);
@@ -583,7 +594,7 @@ double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y)
 	for (unsigned idx = 0; idx < m_Team.size(); idx++) {
 		if (m_Team[idx].previous_result.previous_result_present) {
 			if (m_Team[idx].previous_result.dynamic_role == m_dynamic_role) {
-				Geometry::Position prevPos = Geometry::Position(m_Team[idx].previous_result.end_position.x, m_Team[idx].previous_result.end_position.y);
+			    Geometry::Position prevPos = Geometry::Position(m_Team[idx].previous_result.end_position.x, m_Team[idx].previous_result.end_position.y);
 				// check if previous assigned
 				value += prevPos.distanceTo( Geometry::Position(x,y) ) / m_dScaling;
 			}
@@ -621,7 +632,7 @@ double ShootOnGoalHeuristic::getValue(double x, double y) {
 		// on distance to shoot on goal (no shots on goal if too far away)
 
 		for( unsigned int i = 0; i < m_Opponents.size(); i++){
-			Geometry::Position opponent = m_Opponents[i].position;
+		    Geometry::Position opponent = m_Opponents[i].position;
 			// TODO prefer locations further from any robots
 
 			//	- Filter opponents on keeper. Robot within 1.5 meter from opponent goal
@@ -658,15 +669,15 @@ PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData&
 		const std::vector<TeamPlannerOpponent>& Opponents,
 		const FieldConfig& fieldConfig,
 		const ball_pickup_position_t& ball_pickup_position,
-		const TeamPlannerParameters& parameters) :
+		const TeamPlannerParameters& plannerOptions) :
 										GridHeuristic(id, weight, pgid),
 										m_Team(Team),
-										m_Opponents(std::vector<Geometry::Position>()),
+										m_Opponents(std::vector<MRA::Geometry::Position>()),
 										m_robotRadius(fieldConfig.getRobotRadius()),
 										m_ball_pickup_position(ball_pickup_position),
-										m_interceptionChanceStartDistance(parameters.interceptionChanceStartDistance),
-										m_interceptionChanceIncreasePerMeter(parameters.interceptionChanceIncreasePerMeter),
-										m_interceptionChancePenaltyFactor(parameters.interceptionChancePenaltyFactor),
+										m_interceptionChanceStartDistance(plannerOptions.interceptionChanceStartDistance),
+										m_interceptionChanceIncreasePerMeter(plannerOptions.interceptionChanceIncreasePerMeter),
+										m_interceptionChancePenaltyFactor(plannerOptions.interceptionChancePenaltyFactor),
 										m_numberOfFieldPlayers(0)
 {
 	// calculate number of own fieldplayers
@@ -727,7 +738,7 @@ double PassHeuristic::getValue(double x, double y) {
 // Calculate penalty for the position with respect to the opponents
 StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
 		const Geometry::Position& ballPlayerPos,
-		const Geometry::Position& ball,
+		const MRA::Geometry::Position& ball,
 		const std::vector<TeamPlannerOpponent>& Opponents, const double radius) :
 												GridHeuristic(id, weight, pgid),
 												m_ballPlayerPos(ballPlayerPos),
@@ -735,14 +746,14 @@ StayAwayFromOpponentsHeuristic::StayAwayFromOpponentsHeuristic(const char *id, d
 												m_Opponents(Opponents),
 												m_radius(radius) {
 	// calculate min and max angle. If opponent is this angle then it will be ignored (behind ball player)
-	m_angle_ball_ballplayer_min = Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) - Geometry::deg_to_rad(60));
-	m_angle_ball_ballplayer_max = Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) + Geometry::deg_to_rad(60));
+    m_angle_ball_ballplayer_min = Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) - Geometry::deg_to_rad(60));
+    m_angle_ball_ballplayer_max = Geometry::wrap_pi(m_ball.angle(m_ballPlayerPos) + Geometry::deg_to_rad(60));
 }
 
 double StayAwayFromOpponentsHeuristic::getValue(double x, double y) {
 	double value = 0.0;
 	for (unsigned idx = 0; idx < m_Opponents.size(); idx++) {
-		Geometry::Position opponentPos = m_Opponents[idx].position;
+	    Geometry::Position opponentPos = m_Opponents[idx].position;
 		if (opponentPos.distanceTo(Geometry::Position(x,y)) < m_radius) {
 			double ang = m_ball.angle(opponentPos);
 			bool behind_ballPlayer = (ang > m_angle_ball_ballplayer_min && ang < m_angle_ball_ballplayer_max);

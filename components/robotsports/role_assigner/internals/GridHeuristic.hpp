@@ -265,18 +265,18 @@ public:
 };
 
 // ----------------------------------------------------------------------------------------
-class DesiredYSweeper : public DistanceToLineHeuristic
+class DesiredY : public DistanceToLineHeuristic
 {
 public:
-	DesiredYSweeper(const char *id, double weight, PlannerGridInfoData& pgid,
+	DesiredY(const char *id, double weight, PlannerGridInfoData& pgid,
 			double desired_y, const FieldConfig& fieldConfig);
 };
 
 // ----------------------------------------------------------------------------------------
-class DesiredXSweeper : public DistanceToLineHeuristic
+class DesiredX : public DistanceToLineHeuristic
 {
 public:
-	DesiredXSweeper(const char *id, double weight, PlannerGridInfoData& pgid,
+	DesiredX(const char *id, double weight, PlannerGridInfoData& pgid,
 			double desired_x, const FieldConfig& fieldConfig);
 };
 
@@ -300,7 +300,8 @@ class DistanceToPointHeuristic : public GridHeuristic
 {
 public:
 	DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-			const Geometry::Point& pos, double dScaling, double maxRange, bool inverted);
+			const Geometry::Position& pos, double dScaling, double maxRange, bool inverted);
+
 	virtual ~DistanceToPointHeuristic() {};
 	double getValue(double x, double y);
 private:

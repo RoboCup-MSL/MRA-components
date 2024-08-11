@@ -27,7 +27,7 @@ bool getIntersectionOfTwoLines(double& px, double& py, double x1, double y1, dou
 
 // -----------------------------------------------------------------------------
 // get distance from a given point (Px, Py) to given line AB (Ax,Ay), (Bx, By)
-double getDistanceFromPointToLine(double Ax, double Ay, double Bx, double By, double Px, double Py)
+double getDistanceFromPointToLineSegment(double Ax, double Ay, double Bx, double By, double Px, double Py)
 {
     double AP, AB, AS;
 

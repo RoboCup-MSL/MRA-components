@@ -1,5 +1,6 @@
 
-#include "DynamicRoleAssignment.h"
+#include "DynamicRoleAssignment.hpp"
+
 #include <map>
 using namespace std;
 using namespace MRA;

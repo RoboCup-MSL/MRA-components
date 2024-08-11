@@ -32,8 +32,8 @@ using namespace MRA;
  */
 std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
 		const TeamPlannerData& teamplanner_data,
-        const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
-		double maxSpeed, int nrIterations)
+        const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+		double maxSpeed, int nrIterations,  const FieldConfig& fieldConfig, bool stayInPlayingField)
 {
 	bool logDynamicPlanner = false;
 
@@ -67,7 +67,9 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geome
 
 	std::vector<MRA::Vertex> target_vect;
 	target_vect.push_back(Vertex(intercept_data.intercept_position, 0));
-	visibilityGraph.createGraph(start_pose, start_vel, teamplanner_data, target_vect, targetFunction, avoidBallPath, BallTargetPos);
+	visibilityGraph.createGraph(start_pose, start_vel, teamplanner_data, target_vect, targetFunction, ballIsObstacle, avoidBallPath,
+	                            stayInPlayingField, BallTargetPos);
+
 	std::vector<planner_piece_t> path = visibilityGraph.getShortestPath(teamplanner_data);
 
 	if (logDynamicPlanner) {
@@ -102,7 +104,8 @@ std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geome
 		target_vect.push_back(Vertex(newInterceptPosition, 0));
 		GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(teamplanner_data.fieldConfig); // create new visibility-graph to avoid dynamic memory issues
 		visibilityGraph2.setOptions(teamplanner_data.parameters);
-		visibilityGraph2.createGraph(start_pose, start_vel, teamplanner_data, target_vect, targetFunction, avoidBallPath, BallTargetPos);
+		visibilityGraph2.createGraph(start_pose, start_vel, teamplanner_data, target_vect, targetFunction, ballIsObstacle,
+		                             avoidBallPath, stayInPlayingField, BallTargetPos);
 		path = visibilityGraph2.getShortestPath(teamplanner_data);
 		if (logDynamicPlanner) {
 			MRA_LOG_INFO("New path of length: %d", path.size());

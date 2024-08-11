@@ -14,7 +14,7 @@ extern "C"
 
 // intersection point for two lines L1 = [(x1,y1) (x2,y2)] L2 = [(x3,y3) (x4,y4)]. formula from wikipedia line-intersection
 bool getIntersectionOfTwoLines(double& px, double& py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
-double getDistanceFromPointToLine(double Ax, double Ay, double Bx, double By, double Px, double Py);
+double getDistanceFromPointToLineSegment(double Ax, double Ay, double Bx, double By, double Px, double Py);
 
 // return true if point (x,y) is in triangle defined by the points (x1,y1), (x2,y2), (x3,y3), else return false
 bool inTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double x, double y);

@@ -3,8 +3,6 @@
  *  @brief   class for robot planner
  *  @curator Jürge van Eijck
  */
-#include "GlobalPathPlanner.hpp"
-
 #include <vector>
 #include <cmath>
 #include <string>
@@ -21,6 +19,7 @@
 #include "MathUtils.h"
 #include "SvgUtils.hpp"
 #include "Vertex.hpp"
+#include "logging.hpp"
 
 using namespace std;
 
@@ -128,21 +127,22 @@ void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
 void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
 		const std::vector<MRA::Vertex>& targetPos,
 		planner_target_e targetFunction,
+		bool ballIsObstacle,
 		bool avoidBallPath,
+		bool stayInPlayingField,
 		const MRA::Geometry::Point& rBallTargetPos) {
-
 	// TODO check on dist me to target, if large than max field. stop calculations !!!!!
-	if (m_start != 0) {
-		delete m_start;
-	}
+    if (m_start != 0) {
+        delete m_start;
+    }
 	m_start = new Vertex(start_pose, 0);
 	m_startVelocity = start_vel;
 	m_vertices.push_back(m_start);
 	m_targetFunction = targetFunction;
-	for(std::vector<Vertex>::size_type pos_idx = 0; pos_idx != targetPos.size(); pos_idx++) {
-		Vertex* pTarget = new Vertex(targetPos[pos_idx]);
-		m_target.push_back(pTarget);
-		m_vertices.push_back(pTarget);
+    for(std::vector<Vertex>::size_type pos_idx = 0; pos_idx != targetPos.size(); pos_idx++) {
+        Vertex* pTarget = new Vertex(targetPos[pos_idx]);
+        m_target.push_back(pTarget);
+        m_vertices.push_back(pTarget);
 	}
 
 	m_maxFieldX = m_fieldConfig.getMaxFieldX();
@@ -163,17 +163,19 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
 
 
 	if (m_options.addBarierVertices) {
-		if (m_targetFunction != planner_target_e::GOTO_BALL && teamplanner_data.ballIsObstacle) {
+	                // handle ball as obstacle
+
+		if (ballIsObstacle) {
 			// handle ball as obstacle
-			if (teamplanner_data.ball_present) {
-				addOpponent(teamplanner_data.ball.position, true, teamplanner_data.ball);
-			}
+            if (teamplanner_data.ball.is_valid) {
+                addObstacle(teamplanner_data.ball.position, true, stayInPlayingField);
+            }
 		}
 		for (auto opponent: teamplanner_data.opponents) {
-		    addOpponent(opponent.position, false, teamplanner_data.ball);
+		    addObstacle(opponent.position, false, stayInPlayingField);
 		}
         for (auto teammate: teamplanner_data.team) {
-            addOpponent(teammate.position, false, teamplanner_data.ball); // handle team mates as opponent (drive around them)
+            addObstacle(teammate.position, false, stayInPlayingField);
         }
 	}
 
@@ -181,7 +183,7 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
 	// Add extra vertices
 	//
 	if (m_options.addUniformVertices) {
-		addUniformVertices();
+		addUniformVertices(stayInPlayingField);
 	}
 
 	// Add edges
@@ -314,14 +316,14 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
 			filename.replace(filename.end()-4,filename.end(), buffer);
 		}
 		m_options.svgOutputFileName = filename;
-		save_graph_as_svg(teamplanner_data, path2);
+//		save_graph_as_svg(teamplanner_data, path2);
 		m_options.svgOutputFileName = org_svgOutputFileName; // restore svg name
 	}
 	return path2;
 }
 
-void GlobalPathPlanner::addOpponent(const MRA::Geometry::Position& opponent, bool skipFirstRadius, const TeamPlannerBall& ball) {
-	MRA::Geometry::Position v(opponent);
+void GlobalPathPlanner::addObstacle(const MRA::Geometry::Position& opponent, bool skipFirstRadius, bool stayInPlayingField) {
+    MRA::Geometry::Position v(opponent);
     double x = v.x;
     double y = v.y;
 
@@ -334,7 +336,7 @@ void GlobalPathPlanner::addOpponent(const MRA::Geometry::Position& opponent, boo
                         / m_options.nrVerticesFirstCircle;
                 double xx = x + m_options.firstCircleRadius * cos(angle);
                 double yy = y + m_options.firstCircleRadius * sin(angle);
-                addPoint(MRA::Geometry::Position(xx, yy));
+                addPoint(MRA::Geometry::Position(xx, yy), stayInPlayingField);
             }
         }
 
@@ -343,41 +345,12 @@ void GlobalPathPlanner::addOpponent(const MRA::Geometry::Position& opponent, boo
                     / m_options.nrVerticesSecondCircle;
             double xx = x + m_options.secondCircleRadius * cos(angle);
             double yy = y + m_options.secondCircleRadius * sin(angle);
-            addPoint(MRA::Geometry::Position(xx, yy));
+            addPoint(MRA::Geometry::Position(xx, yy),stayInPlayingField);
         }
     }
     // TODO: prevent a path from going through the goal, or have
     // another process guard such a route?
     m_opponents.push_back(v);
-}
-
-void GlobalPathPlanner::addTeammate(const MRA::Geometry::Position& teamMate) {
-    MRA::Geometry::Position v(teamMate);
-    double x = v.x;
-    double y = v.y;
-
-    // Opponents that are far from any reasonable path from start to
-    // target are not added.
-    if (nearPath(v)) {
-        for (int i = 0; i < m_options.nrVerticesFirstCircle; i++) {
-            double angle = i * 2.0 * M_PI
-                    / m_options.nrVerticesFirstCircle;
-            double xx = x + m_options.firstCircleRadius * cos(angle);
-            double yy = y + m_options.firstCircleRadius * sin(angle);
-            addPoint(MRA::Geometry::Position(xx, yy));
-        }
-
-        for (int i = 0; i < m_options.nrVerticesSecondCircle; i++) {
-            double angle = i * 2.0 * M_PI
-                    / m_options.nrVerticesSecondCircle;
-            double xx = x + m_options.secondCircleRadius * cos(angle);
-            double yy = y + m_options.secondCircleRadius * sin(angle);
-            addPoint(MRA::Geometry::Position(xx, yy));
-        }
-    }
-    // TODO: prevent a path from going through the goal, or have
-    // another process guard such a route?
-    m_teammates.push_back(v);
 }
 
 /**
@@ -408,21 +381,24 @@ bool GlobalPathPlanner::nearPath(const MRA::Geometry::Position& v) {
  * Inserts edges in the graph between vertices. To optimize, edges that are
  * very long are not included.
  */
-void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos, const TeamPlannerBall& ball) {
+void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const TeamPlannerBall& ball) {
 	for (std::vector<Vertex>::size_type i = 0; i < m_vertices.size() - 1; i++) {
-		for (std::vector<Vertex>::size_type j = i + 1; j < m_vertices.size(); j++) {
+        for (std::vector<Vertex>::size_type j = i + 1; j < m_vertices.size(); j++) {
 			Vertex* v1 = m_vertices[i];
 			Vertex* v2 = m_vertices[j];
 			if (v1 == nullptr || v2 == nullptr) {
-//				logAlways("a vertex is 0. (in %s on line: %d)", __FILE__, __LINE__);
+			    MRA_LOG_INFO("a vertex is 0. (in %s on line: %d)", __FILE__, __LINE__);
 				exit(1);
 			}
 			double distance = v1->m_coordinate.distanceTo(v2->m_coordinate);
 
 			// no edge if both are a target
-			if (equalToTarget(v1) && equalToTarget(v2)) {
-				continue;
-			}
+            if (equalToTarget(v1) && equalToTarget(v2)) {
+                continue;
+            }
+
+            auto v1_outside_field = not m_fieldConfig.isInField(v1->m_coordinate, 0.0);
+            auto v2_outside_field = not m_fieldConfig.isInField(v2->m_coordinate, 0.0);
 
 			if (distance < m_options.maximumEdgeLength) {
 				if (avoidBallPath) {
@@ -431,8 +407,8 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
 					double py = 0;
 					bool intersect = lineSegmentIntersection(v1->m_coordinate.x, v1->m_coordinate.y,
 							                                 v2->m_coordinate.x, v2->m_coordinate.y,
-															 ball.position.x, ball.position.y,
-															 rBallTargePos.x, rBallTargePos.y,
+							                                 ball.position.x, ball.position.y,
+															 rBallTargetPos.x, rBallTargetPos.y,
 															 px, py);
 					if (intersect) {
 						// line v1->v2 intersects the passing line (ball - ball targetpos)
@@ -450,6 +426,10 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
 				}
 
 				if (((!equalToTarget(v1)) && (!equalToTarget(v2))) || (m_approachVertices.empty())){
+		            if (v1_outside_field and v2_outside_field) {
+		                continue; // no edge between two vertices which both are outside the playing field
+		            }
+
 					// v1 or v2 is not target OR no approach vertices present
 					v1->m_neighbours.push_back(Edge(v2, totalCost));
 					v2->m_neighbours.push_back(Edge(v1, totalCost));
@@ -555,9 +535,7 @@ double GlobalPathPlanner::ownVelocityPenalty(Vertex* v) {
  */
 double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 	double safetyCost = 0.0;
-	for(std::vector<MRA::Geometry::Position>::size_type bar_idx = 0; bar_idx != m_opponents.size(); bar_idx++) {
-		MRA::Geometry::Position barrier = m_opponents[bar_idx];
-
+	for (auto barrier : m_opponents) {
 		double cost = distanceIntegral(barrier, v1->m_coordinate, v2->m_coordinate);
 		safetyCost += cost;
 	}
@@ -565,8 +543,7 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 	// add barrier for each team mate in own penalty area (keeper and an possible defender).
 	// This to prevent that the player will hit them. Only checking on role "goalie" is not possible
 	// due to dynamic goalie assignment when the normal goalie is absent.
-	for(std::vector<MRA::Geometry::Position>::size_type teammate_idx = 0; teammate_idx != m_teammates.size(); teammate_idx++) {
-		MRA::Geometry::Position teammate_position = m_teammates[teammate_idx];
+	for (auto teammate_position : m_teammates) {
 		if (m_fieldConfig.isInOwnPenaltyArea(teammate_position.x, teammate_position.y)) {
 			double cost = distanceIntegral(teammate_position, v1->m_coordinate, v2->m_coordinate);
 			safetyCost += cost;
@@ -580,7 +557,7 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
  * can go. For performance reasons, only vertices that are near a possible
  * path between start and target are added.
  */
-void GlobalPathPlanner::addUniformVertices() {
+void GlobalPathPlanner::addUniformVertices(bool stayInPlayingField) {
 	double border = 0.25;
 	if (m_targetFunction == planner_target_e::DRIBBLE) {
 		border = -m_fieldConfig.getBallRadius(); // keep balls in the field
@@ -589,9 +566,9 @@ void GlobalPathPlanner::addUniformVertices() {
 	for (double x = -(m_maxFieldX+border); x <= (m_maxFieldX+border); x += m_options.uniform_x_interval) {
 		for (double y = -(m_maxFieldY+border); y <= (m_maxFieldY+border); y += m_options.uniform_y_interval) {
 			if (!m_fieldConfig.isInOwnGoalArea(x,y) && !m_fieldConfig.isInOpponentGoalArea(x,y)) {
-				MRA::Geometry::Position vv = MRA::Geometry::Position(x, y);
+			    MRA::Geometry::Position vv = MRA::Geometry::Position(x, y);
 				if (nearPath(vv)) {
-					addPoint(vv);
+					addPoint(vv, stayInPlayingField);
 				}
 			}
 		}
@@ -621,7 +598,7 @@ void GlobalPathPlanner::addBallApproachVertices() {
 				double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
 				double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
 				if (m_fieldConfig.isInReachableField(x1, y1)) {
-					MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
+				    MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
 					Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
 					m_vertices.push_back(vertex);
 					m_approachVertices.push_back(vertex);
@@ -653,7 +630,7 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
 				double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
 				double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
 				if (m_fieldConfig.isInReachableField(x1, y1)) {
-					MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
+				    MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
 
 					//logger.info("Add point "+ i + " pos: " + point);
 					Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
@@ -675,11 +652,15 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
  *            Coordinates of the vertex to add to the graph
  * @return Vertex created, null if the vertex was not added to the graph
  */
-void GlobalPathPlanner::addPoint( const MRA::Geometry::Position& point) {
+void GlobalPathPlanner::addPoint(const MRA::Geometry::Position& point, bool stayInPlayingField) {
 	//vertices,
 	if (m_fieldConfig.isInReachableField(point.x, point.y) == false) {
 		return; // only point inside the (complete) field should be added
 	}
+	if (stayInPlayingField and m_fieldConfig.isInField(point.x, point.y, 0.0) == false) {
+		return; // only point inside the (playing ) field should be added
+	}
+
 	// See if it is too close to another vertex
 	for (std::vector<Vertex*>::iterator it = m_vertices.begin(); it != m_vertices.end(); ++it) {
 		if (((*it) == 0) || (point.distanceTo((*it)->m_coordinate) < m_options.minimumEdgeLength)) {
@@ -700,25 +681,50 @@ void GlobalPathPlanner::addPoint( const MRA::Geometry::Position& point) {
 	m_vertices.push_back(vertex);
 }
 
-void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path) {
-	std::vector<MRA::Geometry::Position> myTeam = std::vector<MRA::Geometry::Position>();
-	//myTeam.push_back(MRA::Geometry::Position(m_Me));
-	for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-		myTeam.push_back(MRA::Geometry::Position(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0.0, 0.0, 0.0, 0.0)); //TODO add id
-	}
-
-	std::vector<MRA::Geometry::Position> opponents = std::vector<MRA::Geometry::Position>();
-	for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-		opponents.push_back(MRA::Geometry::Position(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0.0, 0.0, 0.0, 0.0)); //TODO add id
-	}
-
-	team_planner_result_t player_paths = team_planner_result_t();
-	PlayerPlannerResult playerResult = PlayerPlannerResult();
-	playerResult.path = path;
-	player_paths.push_back(playerResult);
-	//TODO SvgUtils::plannerdata_to_svg(player_paths, teamplanner_data, player_paths, m_fieldConfig, "red"); // TODO
-	//TODO SvgUtils::plannerdata_to_svg(player_paths, teamplanner_data, player_paths, m_fieldConfig, m_vertices,  "red"); // TODO
-}
+//void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path) {
+//    vector<player_type_e> teamTypes = vector<player_type_e>();
+//	std::vector<MovingObject> myTeam = std::vector<MovingObject>();
+//	vector<long> robotIds = vector<long>();
+//	teamTypes.push_back(player_type_e::FIELD_PLAYER);
+//	robotIds.push_back(1);
+//	myTeam.push_back(MovingObject(m_Me));
+//	for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
+//		myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0, 0, 0, 0, 0, true));
+//	    teamTypes.push_back(player_type_e::FIELD_PLAYER);
+//	    robotIds.push_back(pos_idx+1);
+//	}
+//
+//	std::vector<MovingObject> opponents = std::vector<MovingObject>();
+//	for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
+//		opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0, 0, 0, 0, 0, true));
+//	}
+//
+//	std::vector<PlayerPlannerResult> player_paths;
+//	PlayerPlannerResult playerResult = PlayerPlannerResult();
+//	playerResult.path = path;
+//	player_paths.push_back(playerResult);
+//
+//	game_state_e gamestate = game_state_e::NONE;
+//    int controlBallByPlayerId = -1;
+//    ball_status_t ball_status = ball_status_e::FREE;
+//    std::vector<MRA::Geometry::Position> parking_positions;
+//    previous_used_ball_by_planner_t previous_ball = {};
+//    ball_pickup_position_t ball_pickup_position = {};
+//    bool passIsRequired = false;
+//    long passBallByPlayerId = -1;
+//    pass_data_t pass_data = {};
+//    const std::vector<final_planner_result_t> previous_planner_results;
+//    const std::vector<double> time_in_own_penalty_area;
+//    const std::vector<double> time_in_opponent_penalty_area;
+//    string save_name = m_options.svgOutputFileName;
+//    TeamPlannerData teamplannerData(m_fieldConfig);
+//    teamplannerData.fillData(gamestate, m_Ball, myTeam, opponents, ball_status, controlBallByPlayerId,
+//            teamTypes, robotIds, m_options, parking_positions, previous_ball,previous_planner_results, ball_pickup_position,
+//            passIsRequired, passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
+//    teamplannerData.setVertices(m_vertices);
+//    SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, m_fieldConfig, save_name);
+//
+//}
 
 
 } // namespace

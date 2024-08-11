@@ -61,9 +61,13 @@ public:
 	void setOptions(const TeamPlannerParameters& options);
 
 	/* create graph for the provided input */
-	void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-	        const TeamPlannerData& teamplanner_data, const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction,
-			bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos);
+	void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
+	                 const std::vector<MRA::Vertex>& targetPos,
+	                 planner_target_e targetFunction,
+	                 bool ballIsObstacle,
+	                 bool avoidBallPath,
+	                 bool stayInPlayingField,
+	                 const MRA::Geometry::Point& rBallTargetPos);
 
 	/**
 	 *
@@ -85,25 +89,24 @@ private:
 
 	bool equalToTarget(const Vertex* v);
 
-	void addOpponent(const MRA::Geometry::Position& opponent, bool skipFirstRadius, const TeamPlannerBall& ball);
-	void addTeammate(const MRA::Geometry::Position& teammate);
+	void addObstacle(const MRA::Geometry::Position& opponent, bool skipFirstRadius, bool stayInPlayingField); // TODO rename to moving obstacle
 
 	bool nearPath(const MRA::Geometry::Position& v);
 
-	void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargePos, const TeamPlannerBall& ball);
+	void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const TeamPlannerBall& ball);
 
 	double ballApproachPenalty(Vertex* v);
 	double ownVelocityPenalty(Vertex* v);
 
 	double barrierCosts(Vertex* v1, Vertex* v2);
 
-	void addUniformVertices();
+	void addUniformVertices(bool stayInPlayingField);
 
 	void addBallApproachVertices();
 
 	void addEnemyGoalApproachVertices();
 
-	void addPoint( const MRA::Geometry::Position& point);
+	void addPoint( const MRA::Geometry::Position& point, bool stayInPlayingField);
 
 };
 

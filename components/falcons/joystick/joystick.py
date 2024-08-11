@@ -5,6 +5,7 @@ Joystick Controller.
 
 # python imports
 import argparse
+import os
 import json
 import logging
 
@@ -13,27 +14,20 @@ from joystick_controller import JoystickController
 
 
 def button_text():
-    return """
-Controls (assuming xbox button layout):
-* movement: use left stick to move robot forward or sideways, right stick to rotate
-* toggle ballhandlers with B
-* getball using X, default small action radius, use RB+X to get ball anywhere
-* passing: A passes to nearest teammember, RB+A to home, LB+A to nearest obstacle
-* shooting: Y shoots at goal, RB+Y to home, LB sets lob shot instead of straight shot
-* keeper: select button
-* kick: RT sets the power, optional LT for lob height
-
-Notes:
-* RB is right bumber, RT is right trigger, etc
-* stick movement cancels any running action
-    """
+    return JoystickController.button_text()
 
 
 
 class Configuration:
-    def __init__(self, filename):
-        self.filename = filename
-        self.json_data = json.load(open(filename))
+    def __init__(self, config):
+        if isinstance(config, dict):
+            self.json_data = config
+        elif isinstance(config, str):
+            if not os.path.exists(config):
+                raise FileNotFoundError(f'configuration file "{config}" not found')
+            self.json_data = json.load(open(config))
+        else:
+            raise ValueError('invalid configuration type, expected dict or str')
     def __getattr__(self, name):
         key = name
         if key in self.json_data:
@@ -41,13 +35,22 @@ class Configuration:
         raise AttributeError(f'configuration key "{name}" not found')
 
 
-def parse_args():
+def arg_parser():
     class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
-        pass
+        def __init__(self, prog):
+            # slightly widen first column to avoid ugly line breaks
+            width = 31
+            argparse.ArgumentDefaultsHelpFormatter.__init__(self, prog, max_help_position=width)
+            argparse.RawDescriptionHelpFormatter.__init__(self, prog, max_help_position=width)
     parser = argparse.ArgumentParser(description=__doc__ + button_text(), formatter_class=CustomFormatter)
     parser.add_argument('-i', '--index', help='joystick index to use', type=int, default=0)
+    parser.add_argument('-c', '--config', help='configuration file', default='joystick.json')
     parser.add_argument('-d', '--debug', help='enable debug logging', action='store_true')
-    return parser.parse_args()
+    return parser
+
+
+def parse_args():
+    return arg_parser().parse_args()
 
 
 def main(args):
@@ -55,10 +58,9 @@ def main(args):
     loglevel = (logging.DEBUG if args.debug else logging.INFO)
     logging.basicConfig(level=loglevel, format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     # configuration values
-    config_filename = 'joystick.json'
-    joystick_config = Configuration(config_filename)
+    joystick_config = Configuration(args.config)
     # setup joystick
-    joystick_controller = JoystickController(args.index, joystick_config)
+    joystick_controller = JoystickController('no-robot', joystick_config, args.index)
     joystick_controller.run()
 
 

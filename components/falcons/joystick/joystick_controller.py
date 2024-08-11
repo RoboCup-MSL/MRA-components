@@ -14,6 +14,40 @@ def clip(v, vmax, vmin=0.0):
 
 
 class JoystickController:
+
+    @staticmethod
+    def button_text():
+        return """
+Controls (assuming Xbox button layout):
+* movement:
+    * left stick: move robot forward, backward, left, right
+    * right stick: rotate robot
+* ball handling:
+    * B: toggle ballhandlers on/off
+    * X: getball within a small action radius
+    * LB+X: getball with extended action radius
+    * RB+X: bump towards nearest teammate
+* passing:
+    * A: pass to the nearest teammate
+    * LB+A: pass to the nearest obstacle
+    * RB+A: pass to the home location
+* shooting:
+    * Y: shoot at goal
+    * LB+Y: shoot at the home location
+    * RB+Y: bump towards goal
+* lob/kicker control:
+    * LT: adjust lob height
+    * RT: set shot power, release to shoot
+* special actions:
+    * select: activate keeper mode
+    * LB+home: move the robot to configured home location
+    * home: move the robot to the parking area
+
+Notes:
+* RB is right bumper, RT is right trigger, etc.
+* stick movement cancels any running action
+"""
+
     def __init__(self, robotId, cfg, jsId=0):
         self.robotId = str(robotId)
         self.cfg = cfg
@@ -30,6 +64,7 @@ class JoystickController:
         self.dt = 1.0 / cfg.frequency
         self.rt = -1.0
         self.action = ''
+        self.action_args = {}
 
     def run(self):
         self.controller.run()
@@ -53,61 +88,78 @@ class JoystickController:
         self.vx, self.vy, self.vrz = vx, vy, vrz
         self.kicker_power = 0.0
         self.kicker_height = 0.0
-        action_args = {}
         if controller_state.axis_rt.x > 0:
             self.kicker_power = clip(controller_state.axis_rt.x * self.cfg.kicker_power_scale, self.cfg.kicker_power_max, self.cfg.kicker_power_min)
         if controller_state.axis_lt.x > 0:
             self.kicker_height = clip(controller_state.axis_lt.x * self.cfg.kicker_height_scale, self.cfg.kicker_height_max)
         if self.kicker_power != 0.0:
             self.action = 'kick'
-            action_args = {'power': self.kicker_power, 'height': self.kicker_height}
+            self.action_args = {'power': self.kicker_power, 'height': self.kicker_height}
         elif self.vx != 0.0 or self.vy != 0.0 or self.vrz != 0.0:
             self.action = 'move' # local move
-            action_args = {'velocity': [self.vx, self.vy, self.vrz]}
+            self.action_args = {'velocity': [self.vx, self.vy, self.vrz]}
         elif controller_state.buttons['A'].is_pressed:
-            self.action = 'passToNearestTeammember'
+            self.action = 'pass'
             if controller_state.buttons['RB'].is_pressed:
-                self.action = 'passToHome'
+                self.action_args = {'target': 'home'}
             elif controller_state.buttons['LB'].is_pressed:
-                self.action = 'passToNearestObstacle'
+                self.action_args = {'target': 'nearestObstacle'}
+            else:
+                self.action_args = {'target': 'nearestTeammember'}
         elif controller_state.buttons['X'].is_pressed:
-            self.action = 'getBallCloseBy'
-            if controller_state.buttons['RB'].is_pressed:
-                self.action = 'getBallAnywhere'
-        elif controller_state.buttons['Y'].is_pressed:
-            self.action = 'shootAtGoal'
-            if controller_state.buttons['RB'].is_pressed:
-                self.action = 'shootToHome'
             if controller_state.buttons['LB'].is_pressed:
-                self.action = self.action.replace('shoot', 'lobShot')
+                self.action = 'getball'
+                self.action_args = {'radius': self.cfg.getball_extended_radius}
+            elif controller_state.buttons['RB'].is_pressed:
+                self.action = 'bump'
+                self.action_args = {'target': 'nearestTeammember'}
+            else:
+                self.action = 'getball'
+                self.action_args = {'radius': self.cfg.getball_close_radius}
+        elif controller_state.buttons['Y'].is_pressed:
+            if controller_state.buttons['LB'].is_pressed:
+                self.action = 'shoot'
+                self.action_args = {'target': 'home'}
+            elif controller_state.buttons['RB'].is_pressed:
+                self.action = 'bump'
+                self.action_args = {'target': 'goal'}
+            else:
+                self.action = 'shoot'
+                self.action_args = {'target': 'goal'}
         elif controller_state.buttons['select'].is_pressed:
             self.action = 'keeper'
-        elif controller_state.buttons['RB'].is_pressed:
-            self.action = 'moveHome'
-        else:
-            self.action = 'idle'
+        elif controller_state.buttons['mode'].is_pressed:
+            self.action = 'park'
+            if controller_state.buttons['LB'].is_pressed:
+                self.action = 'move'
+                self.action_args = {'target': 'home'}
+        elif self.vx == 0.0 and self.vy == 0.0 and self.vrz == 0.0 and self.action == 'move':
+            self.action_args = {}
+            self.action = 'stop'
         # send/handle packet
         packet = {
             'robotId': self.robotId,
             'action': self.action,
             'enableBallHandlers': self.enable_bh,
-            'args': action_args
+            'args': self.action_args
         }
         self.packet_handler(packet)
 
     def display_packet(self, packet):
         # only on change
         display_string = (
-            f"bh={'on' if packet['enableBallHandlers'] else 'off':3}, "
-            f"action={packet['action']:20}"
+            f"bh={'on' if packet['enableBallHandlers'] else 'off':3} "
+            f"action={packet['action']:10s}"
         )
         def float_formatter(v):
-            if isinstance(v, list):
+            if isinstance(v, str):
+                return v
+            elif isinstance(v, list):
                 return ['{:6.2f}'.format(x) for x in v]
             return '{:6.2f}'.format(v)
         if len(packet['args']):
             args_dict_formatted = {k: float_formatter(v) for k, v in packet['args'].items()}
-            display_string += f', args={args_dict_formatted}'
+            display_string += f'  args={args_dict_formatted}'
         if display_string != self.prev_display_string:
             logging.info(display_string)
             self.prev_display_string = display_string

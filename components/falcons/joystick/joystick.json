@@ -13,5 +13,6 @@
     "kicker_height_max": 180,
     "kicker_height_scale": 90,
     "shooting_z_height": 0.7,
-    "getball_close_radius": 4.0
+    "getball_close_radius": 4.0,
+    "getball_extended_radius": 15.0
 }

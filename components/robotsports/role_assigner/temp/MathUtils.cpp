@@ -8,39 +8,114 @@
 #include <iostream>
 using namespace std;
 
+// -----------------------------------------------------------------------------
+/* bring any angle to the range 0 .. pi */
+double from0topi(double a)
+{
+    a = fmod(a, M_PI);
+    if (a < 0) {
+    	a += M_PI;
+    }
+    return(a);
+}
+
+// -----------------------------------------------------------------------------
+/* bring any angle to the range 0 .. 2 pi */
+double from0to2pi(double a)
+{
+    a = fmod(a, 2 * M_PI);
+    if (a < 0) {
+    	a += 2*M_PI;
+    }
+    return(a);
+}
+
+// -----------------------------------------------------------------------------
+/* bring any angle to the range -pi .. pi */
+double from_pitopi(double a)
+{
+    a = fmod(a+M_PI, 2 * M_PI);
+    if (a < 0) {
+    	a += 2*M_PI;
+    }
+    return(a - M_PI);
+}
+
+// -----------------------------------------------------------------------------
+// convert from radials to degrees
+double rad2deg(double rad)
+{
+      return (180.0 * rad / (M_PI));
+}
+
+// -----------------------------------------------------------------------------
+// convert from degrees to radial
+double deg2rad(double deg)
+{
+      return (M_PI * deg / 180.0);
+}
+
+// -----------------------------------------------------------------------------
+// get shortest angle between two angle [rad]
+double min_angle(double start_angle, double end_angle)
+{
+	double x1=cos(start_angle);
+	double y1=sin(start_angle);
+	double x2=cos(end_angle);
+	double y2=sin(end_angle);
+
+	double dot_product = x1*x2 + y1*y2;
+	return acos(dot_product);
+}
 
 // -----------------------------------------------------------------------------
 // intersection point for two lines L1 = [(x1,y1) (x2,y2)] L2 = [(x3,y3) (x4,y4)]. formula from wikipedia line-intersection
 bool getIntersectionOfTwoLines(double& px, double& py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-    double divider = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
-    if (divider != 0.0) {
-        px = ( (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4-y3*x4)) / divider;
-        py = ( (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4-y3*x4)) / divider;
-        return true;
-    }
-    else {
-        px = 0; // dummy values
-        py = 0; // dummy values
-        return false;
-    }
+	double divider = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
+	if (divider != 0.0) {
+		px = ( (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4-y3*x4)) / divider;
+		py = ( (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4-y3*x4)) / divider;
+		return true;
+	}
+	else {
+		px = 0; // dummy values
+		py = 0; // dummy values
+		return false;
+	}
 }
 
 // -----------------------------------------------------------------------------
-// get distance from a given point (Px, Py) to given line AB (Ax,Ay), (Bx, By)
+// get distance from a given point (Px, Py) to given line segment AB (Ax,Ay), (Bx, By)
 double getDistanceFromPointToLineSegment(double Ax, double Ay, double Bx, double By, double Px, double Py)
 {
-    double AP, AB, AS;
+    // Calculate the vector along the line
+    double lineX = Bx - Ax;
+    double lineY = By - Ay;
 
-    AP = std::sqrt(std::pow(Ax - Px, 2) + std::pow(Ay - Py, 2));
-    AB = std::sqrt(std::pow(Ax - Bx, 2) + std::pow(Ay - By, 2));
+    // Calculate the vector from the start of the line segment to the point
+    double pointX = Px - Ax;
+    double pointY = Py - Ay;
 
-    if (AB == 0 || AP == 0) {
-        return AP;
+    // Calculate the projection of the point vector onto the line vector
+    double projection = (pointX * lineX + pointY * lineY) / (lineX * lineX + lineY * lineY);
+
+    double closestX, closestY;
+
+    // if projection falls outside the line segment, calculate distance to the closer endpoint
+    if (projection < 0) {
+        closestX = Ax;
+        closestY = Ay;
     }
-
-    AS = std::cos(std::atan((By-Ay)/(Bx-Ax)) - std::atan((Py-Ay)/(Px-Ax)))*AP;
-
-    return std::sqrt(std::pow(Px - (Ax * (1-AS/AB) + AS/AB * Bx), 2) + std::pow(Py - (Ay * (1-AS/AB) + AS/AB * By), 2));
+    else if (projection > 1) {
+        closestX = Bx;
+        closestY = By;
+    }
+    else {
+        closestX = Ax + projection * lineX;
+        closestY = Ay + projection * lineY;
+    }
+    // Calculate the distance between the point and closest point on the line segment.
+    return sqrt(pow(Px - closestX, 2) + pow(Py - closestY, 2));
 }
 
 // -----------------------------------------------------------------------------
@@ -236,41 +311,41 @@ int FindCircleCircleIntersections(
     }
 }
 
-//// -----------------------------------------------------------------------------
-//// Find the tangent points for this circle and external point.
-//// Return true if we find the tangents, false if the point is
-//// inside the circle.
-//bool findTangentsOfPointWithCircle(double cx, double cy, double radius,
-//    double px, double py, double& rT1x, double& rT1y, double& rT2x, double& rT2y)
-//{
-//    // Find the distance squared from the
-//    // external point to the circle's center.
-//    double dx = cx - px;
-//    double dy = cy - py;
-//    double D_squared = dx * dx + dy * dy;
-//    if (D_squared < radius * radius)
-//    {
-//        rT1x = NAN;
-//        rT1y = NAN;
-//        rT2x = NAN;
-//        rT2y = NAN;
-//        return false;
-//    }
-//
-//    // Find the distance from the external point
-//    // to the tangent points.
-//    double L = sqrt(D_squared - radius * radius);
-//
-//    // Find the points of intersection between
-//    // the original circle and the circle with
-//    // center external_point and radius distance
-//    FindCircleCircleIntersections(
-//        cx, cy, radius,
-//        px, py, L,
-//		rT1x, rT1y, rT2x, rT2y);
-//
-//    return true;
-//}
+// -----------------------------------------------------------------------------
+// Find the tangent points for this circle and external point.
+// Return true if we find the tangents, false if the point is
+// inside the circle.
+bool findTangentsOfPointWithCircle(double cx, double cy, double radius,
+    double px, double py, double& rT1x, double& rT1y, double& rT2x, double& rT2y)
+{
+    // Find the distance squared from the
+    // external point to the circle's center.
+    double dx = cx - px;
+    double dy = cy - py;
+    double D_squared = dx * dx + dy * dy;
+    if (D_squared < radius * radius)
+    {
+        rT1x = NAN;
+        rT1y = NAN;
+        rT2x = NAN;
+        rT2y = NAN;
+        return false;
+    }
+
+    // Find the distance from the external point
+    // to the tangent points.
+    double L = sqrt(D_squared - radius * radius);
+
+    // Find the points of intersection between
+    // the original circle and the circle with
+    // center external_point and radius distance
+    FindCircleCircleIntersections(
+        cx, cy, radius,
+        px, py, L,
+		rT1x, rT1y, rT2x, rT2y);
+
+    return true;
+}
 
 
 
@@ -296,4 +371,20 @@ void  intersectPerpendicular(double& intX, double& intY, double p1x, double p1y,
 	double lambda =((p2x - p1x) * (px - p1x) + (p2y - p1y) * (py - p1y)) / ((p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y));
 	intX = p1x + lambda * (p2x - p1x);
 	intY = p1y + lambda * (p2y - p1y);
+}
+
+/*
+ * Calculate leg from RightTriangle for given hypotenusa and otherLeg.
+ *  A^2 + B^2 = C^2  -> return A if C and B are provided
+ */
+double legRightTriangle(double hypotenusa, double otherLeg) {
+
+    double leg_sqr = hypotenusa*hypotenusa - otherLeg*otherLeg;
+    if (leg_sqr > 0) {
+        return sqrt(leg_sqr);
+    }
+    else {
+        // should not occur, safe value is returned.
+        return 0;
+    }
 }

@@ -49,8 +49,14 @@ private:
 
 	static bool calculateSetPlayReceiverConservativePosition(const TeamPlannerData& r_teamplannerData, Geometry::Point& receiverPosition);
 
-	static Geometry::Position calculateManToManDefensePosition(defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
-	        TeamPlannerData& r_teamplannerData, int& r_gridFileNumber, bool setPlayActive);
+	MRA::Geometry::Point determineSetplayRolePosition_2024(int assignment_nr, defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
+	                                                         dynamic_role_e dynamic_role,  TeamPlannerData& r_teamplannerData,
+	                                                         bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
+
+    static MRA::Geometry::Point calculateManToManDefensePosition(
+            defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
+            TeamPlannerData& r_teamplannerData, int& r_gridFileNumber, bool setPlayActive);
+	static Geometry::Point calculateSetPlayerKickerPosition(const Geometry::Point& receiverPosition, const TeamPlannerData& r_teamplannerData);
 };
 
 

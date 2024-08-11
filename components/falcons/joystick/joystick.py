@@ -23,6 +23,8 @@ class Configuration:
         if isinstance(config, dict):
             self.json_data = config
         elif isinstance(config, str):
+            if not config.startswith('/'):
+                config = os.path.join(os.path.dirname(__file__), config)
             if not os.path.exists(config):
                 raise FileNotFoundError(f'configuration file "{config}" not found')
             self.json_data = json.load(open(config))

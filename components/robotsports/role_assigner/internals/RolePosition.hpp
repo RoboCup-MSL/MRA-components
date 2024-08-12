@@ -28,6 +28,10 @@ public:
 
 	static MRA::Geometry::Point closestTo(const MRA::Geometry::Point& reference_point, const std::vector<MRA::Geometry::Point>& positions);
 
+    static MRA::Geometry::Point determineSetplayRolePosition_2024(int assignment_nr, defend_info_t& rDefend_info,
+                                                                  planner_target_e& planner_target, int& r_gridFileNumber,
+                                                                  dynamic_role_e dynamic_role,  TeamPlannerData& r_teamplannerData,
+                                                                  bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
 private:
 	static int FindOpponentClostestToPositionAndNotAssigned(const Geometry::Point& targetPos, const TeamPlannerData& r_teamplannerData);
 
@@ -49,9 +53,6 @@ private:
 
 	static bool calculateSetPlayReceiverConservativePosition(const TeamPlannerData& r_teamplannerData, Geometry::Point& receiverPosition);
 
-	MRA::Geometry::Point determineSetplayRolePosition_2024(int assignment_nr, defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
-	                                                         dynamic_role_e dynamic_role,  TeamPlannerData& r_teamplannerData,
-	                                                         bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
 
     static MRA::Geometry::Point calculateManToManDefensePosition(
             defend_info_t& rDefend_info, dynamic_role_e dynamic_role,

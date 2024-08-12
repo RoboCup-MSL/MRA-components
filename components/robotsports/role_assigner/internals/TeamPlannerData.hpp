@@ -65,7 +65,7 @@ public:
     double confidence;
     bool is_valid;
 
-    std::string toString(bool full_details);
+    std::string toString(bool full_details) const;
 };
 
 // class with state data (data for State.proto)
@@ -136,22 +136,26 @@ public:
     TeamPlannerParameters parameters;
 
     // based on inputs
-    bool teamControlBall;
-    bool playerPassedBall;
+    ball_status_e ball_status;
     bool ballIsObstacle;
     bool searchForBall;
     int playerWhoIsPassing;
     defend_info_t defend_info;
-    bool team_controls_ball; // NEW
     previous_used_ball_by_planner_t previous_ball = {};
 
     // internal administration
     game_state_e original_gamestate;
     std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
     std::vector<TeamPlannerOpponent> opponents = {};
+    std::vector<TeamPlannerOpponent> original_opponents  = {};
+    int nr_players_assigned = 0;
 
     unsigned this_player_idx = 0; // idex of this robot: Team will be sorted on RobotId.
     unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.
+
+    int incrementAndGetRank();
+
+    bool teamControlsBall() const;
 };
 
 } // namespace

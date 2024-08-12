@@ -86,7 +86,7 @@ static bool isDirectory(const string& path)
 
 void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<PlayerPlannerResult>&  comparing_player_paths) {
     bool addInfoBox = true;
-    double boxWidth = addInfoBox ? 5.0 : 0.0;
+    double boxWidth = addInfoBox ? 6.0 : 0.0;
 
     if (save_name.empty()) {
         return;  // No outputfile required
@@ -157,7 +157,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     else {
         controlBallByPlayerRemark = "(controlled by team-member)";
     }
-    fprintf(fp, "\tteam_control_ball = %s\n", boolToString(data.team_controls_ball).c_str());
     fprintf(fp, "\tcontrolball = %s", controlBallByPlayerRemark.c_str());
     if (controlBallByPlayerIdx >= 0) {
         fprintf(fp, " (idx: %d id: %d)", controlBallByPlayerIdx, controlBallById);
@@ -247,7 +246,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\tfield:\n%s\n", fieldConfig.toString().c_str());
     fprintf(fp, "\n");
 
-
     // add xml output
     string decription = "xml from svg-file: " + save_name;
     string new_save_name = save_name;
@@ -256,13 +254,13 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "<tns:Situation xmlns:tns=\"http://www.robotsports.nl\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.robotsports.nl ../StrategyTester.xsd\">\n");
     fprintf(fp, "<tns:Description>%s</tns:Description>\n", decription.c_str());
     fprintf(fp, "<tns:Options svgOutputFileName=\"%s_NEW\"\n", save_name.c_str());
-    fprintf(fp, "	addBallApproachVertices=\"%s\"\n", boolToString(data.parameters.addBallApproachVertices).c_str());
+    fprintf(fp, "   addBallApproachVertices=\"%s\"\n", boolToString(data.parameters.addBallApproachVertices).c_str());
     fprintf(fp, "   addBarierVertices=\"%s\"\n", boolToString(data.parameters.addBarierVertices).c_str());
     fprintf(fp, "   addUniformVertices=\"%s\"\n", boolToString(data.parameters.addBallApproachVertices).c_str());
     fprintf(fp, "   autoAssignGoalie=\"%s\"\n", boolToString(data.parameters.autoAssignGoalie).c_str());
     fprintf(fp, "   ballApproachNumberOfVertices=\"%d\"\n", data.parameters.ballApproachNumberOfVertices);
     fprintf(fp, "   ballApproachVerticesRadius=\"%4.3f\"\n", data.parameters.ballApproachVerticesRadius);
-    fprintf(fp, "   calculateAllPaths=\"true\"\n"); // always calculate all paths.
+    fprintf(fp, "   calculateAllPaths=\"true\"\n"); // always calculate all paths
     fprintf(fp, "   dist_before_penalty_area_for_sweeper=\"%4.3f\"\n", data.parameters.dist_before_penalty_area_for_sweeper);
     fprintf(fp, "   dist_to_goal_to_mark_opponent_as_goalie=\"%4.3f\"\n", data.parameters.dist_to_goal_to_mark_opponent_as_goalie);
     fprintf(fp, "   distToapplyBallApproachVertices=\"%4.3f\"\n", data.parameters.distToapplyBallApproachVertices);
@@ -331,7 +329,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fieldConfig.getBallRadius(), fieldConfig.getFieldMarkingsWidth(), fieldConfig.getParkingAreaWidth(), fieldConfig.getParkingAreaLength(), fieldConfig.getParkingDistanceBetweenPlayers(), fieldConfig.getParkingDistanceToLine(),
         fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
     fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(data.original_gamestate).c_str());
-    if (ball.is_valid) {
+    if (ball.confidence > 0.001) {
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
                 ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
     }
@@ -345,7 +343,13 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         }
 
         string idString = "id=\""+ std::to_string(data.team[idx].robotId) + "\"";
-        string labelString = "label=\""+ std::to_string(data.team[idx].labelId) + "\"";
+
+        // set label for this player: use label if define (> 0), otherwise make label-id same as robot-id.
+        auto label_id = data.team[idx].labelId;
+        if (label_id <= 0) {
+        	label_id = data.team[idx].robotId;
+        }
+        string labelString = "label=\""+ std::to_string(label_id) + "\"";
 
         string controlBallString = "";
         if (controlBallByPlayerIdx  == static_cast<int>(idx))
@@ -376,7 +380,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp, "  <tns:Team %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
                 idString.c_str(), labelString.c_str(),
                 data.team[idx].position.x, data.team[idx].position.y, data.team[idx].position.rz,
-				data.team[idx].velocity.x, data.team[idx].velocity.y, data.team[idx].velocity.rz, goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
+                data.team[idx].velocity.x, data.team[idx].velocity.y, data.team[idx].velocity.rz,
+                goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
 
     }
     for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
@@ -385,7 +390,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp, "  <tns:Opponent %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
                 idString.c_str(), labelString.c_str(),
                 data.opponents[idx].position.x, data.opponents[idx].position.y, data.opponents[idx].position.rz,
-				data.opponents[idx].velocity.x, data.opponents[idx].velocity.y, data.opponents[idx].velocity.rz);
+                data.opponents[idx].velocity.x, data.opponents[idx].velocity.y, data.opponents[idx].velocity.rz);
 
     }
     // write pickup ball info as svg input if possible
@@ -405,11 +410,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         passRequiredString = "passing_required=\"true\"";
     }
 
-    string team_control_ballString = "team_controls_ball=\"false\"";
-    if (data.team_controls_ball) {
-        team_control_ballString = "team_controls_ball=\"true\"";
-    }
-    fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), team_control_ballString.c_str());
+// TODO
+//    string ball_statusString = "ball_status=\"" + ballStatusAsString(data.ball_status) + "\"";
+//    fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), ball_statusString.c_str());
     string pass_data_valid_str = "valid=\"false\"";
     if (data.pass_data.valid)
     {
@@ -424,7 +427,6 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp, "    <tns:ParkingPosition x=\"%4.2f\" y=\"%4.2f\"/>\n", data.parking_positions[idx].x, data.parking_positions[idx].y);
     }
     fprintf(fp, "  </tns:ParkingInfo>\n");
-
     fprintf(fp, "</tns:Situation>\n");
 
     fprintf(fp, "\n-->\n"); // // end svg comment
@@ -441,23 +443,44 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
                 totalFieldWidth, boxWidth, totalFieldLength);
 
         double boxTextOffset = 0.1;
-        double boxLineStart = 2.0;
+        double boxLineStart = 1.0;
         unsigned boxTextSize = 14;
         double boxLineOffset = 0.5;
         double boxLineIndent = 0.2;
         const int LINES_PER_ROBOT = 4;
+
+        auto line_offset = boxLineStart;
+        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
+                            "Game-state: %s</text>\n",
+                            totalFieldWidth+boxTextOffset, line_offset, boxTextSize,
+                            GameStateAsString(data.gamestate).c_str());
+
+        line_offset += boxLineOffset;
+// TODO
+//        std::string ball_status = ballStatusAsString(data.ball_status);
+//        StringUtil::toLower(ball_status);
+//        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
+//                            "Ball status: %s</text>\n",
+//                            totalFieldWidth+boxTextOffset, line_offset, boxTextSize,
+//                            ball_status.c_str());
+
+        line_offset += boxLineOffset;
+        line_offset += boxLineOffset;
+        line_offset += boxLineOffset;
+        line_offset += boxLineOffset;
+        auto robot_block_start = line_offset;
         for (unsigned int idx = 0; idx < player_paths.size(); idx++) {
             auto player_path = player_paths[idx];
             auto rbt = data.team[idx];
 
             fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                     "R%02ld: %s</text>\n",
-                    totalFieldWidth+boxTextOffset, boxLineStart + (idx*LINES_PER_ROBOT) * boxLineOffset, boxTextSize,
+                    totalFieldWidth+boxTextOffset, robot_block_start + (idx*LINES_PER_ROBOT) * boxLineOffset, boxTextSize,
                     rbt.robotId, DynamicRoleAsString(player_path.dynamic_role).c_str());
 
             fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                     "target-pos: %s</text>\n",
-                    totalFieldWidth+boxTextOffset+boxLineIndent, boxLineStart + (idx*LINES_PER_ROBOT+1) * boxLineOffset, boxTextSize,
+                    totalFieldWidth+boxTextOffset+boxLineIndent, robot_block_start + (idx*LINES_PER_ROBOT+1) * boxLineOffset, boxTextSize,
                     player_path.target.toString().c_str()
                     );
 
@@ -467,7 +490,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
             }
             fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                     "role-rank: %d costs: %s</text>\n",
-                    totalFieldWidth+boxTextOffset+boxLineIndent, boxLineStart + (idx*LINES_PER_ROBOT+2) * boxLineOffset, boxTextSize,
+                    totalFieldWidth+boxTextOffset+boxLineIndent, robot_block_start + (idx*LINES_PER_ROBOT+2) * boxLineOffset, boxTextSize,
                     player_path.role_rank, costs_str.c_str());
 
             // empty line(s) added if LINES_PER_ROBOT > written lines

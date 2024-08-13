@@ -42,6 +42,11 @@ public:
 
 	static MRA::Geometry::Position findDefensivePositionDuringPenaltyShootOut(const TeamPlannerData& r_teamplannerData, int gridFileNumber);
 
+	static MRA::Geometry::Position findSetPlayPosition(dynamic_role_e dynamic_role, const TeamPlannerData& r_teamplannerData,
+	                                               const MRA::Geometry::Point& preferred_position, int gridFileNumber,
+	                                               bool strongDesiredX, bool strongDesiredY, bool beAvailableForPass);
+
+
 private:
 	static void writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, const std::string& strSituation, int gridFileNumber);
 

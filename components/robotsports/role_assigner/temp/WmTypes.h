@@ -140,6 +140,18 @@ inline dynamic_role_e StringToDynamicRole(std::string dynamic_role_str) {
     return dynamic_role;
 }
 
+// function checks whether value is one of the given values.
+// function can be use to check against enum values e.g. isOneOf(myFruit, {APPLE, PEAR})
+template <typename T>
+bool isOneOf(T value, std::initializer_list<T> values) {
+    for (auto v : values) {
+        if (value == v) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 } // namespace MRA
 

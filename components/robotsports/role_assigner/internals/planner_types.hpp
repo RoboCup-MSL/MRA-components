@@ -9,6 +9,12 @@
 
 namespace MRA {
 
+typedef enum  {
+    RESERVE,
+    FIELD_PLAYER,
+    GOALIE
+} player_type_e;
+
 
 typedef enum  {
 	GOTO_BALL = 0,
@@ -22,7 +28,8 @@ typedef enum  {
 	SWEEPER = 8,
 	GOALIE_POSITION = 9,
 	GOTO_TARGET_POSITION_SLOW = 10,
-	PRIORITY_BLOCK = 11
+	PRIORITY_BLOCK = 11,
+    GOALKEEPER = 12
 } planner_target_e;
 
 typedef struct planner_piece {
@@ -69,7 +76,8 @@ typedef enum  {
 	dr_PARKING = 11,
 	dr_PENALTY_KICKER = 12,
 	dr_LOB_CALIBRATION = 13,
-	dr_PENALTY_DEFENDER = 14
+	dr_PENALTY_DEFENDER = 14,
+	dr_IS_ALIVE = 15
 } dynamic_role_e;
 
 
@@ -261,6 +269,15 @@ typedef enum {
 	GOAL_AGAINST = 24,
 	GAME_STATE_NR_ITEMS = 25
 } game_state_e;
+
+
+typedef enum {
+    FREE = 0,
+    OWNED_BY_PLAYER = 1,
+    OWNED_BY_TEAMMATE = 2,
+    OWNED_BY_TEAM = 3,
+    OWNED_BY_OPPONENT = 4
+} ball_status_e;
 
 } // end namespace MRA
 

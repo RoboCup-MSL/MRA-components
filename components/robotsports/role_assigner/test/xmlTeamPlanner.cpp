@@ -72,6 +72,44 @@ static std::string TeamPlannerResultToString(const team_planner_result_t& player
     return buffer.str();
 }
 
+game_state_e getOpponentGameState(game_state_e gameState) {
+	game_state_e opponentGameState = gameState;
+	if (opponentGameState == game_state_e::CORNER) {
+		opponentGameState = game_state_e::CORNER_AGAINST;
+	} else if (opponentGameState == game_state_e::CORNER_AGAINST) {
+		opponentGameState = game_state_e::CORNER;
+	} else if (opponentGameState == game_state_e::KICKOFF) {
+		opponentGameState = game_state_e::KICKOFF_AGAINST;
+	} else if (opponentGameState == game_state_e::KICKOFF_AGAINST) {
+		opponentGameState = game_state_e::KICKOFF;
+	} else if (opponentGameState == game_state_e::FREEKICK) {
+		opponentGameState = game_state_e::FREEKICK_AGAINST;
+	} else if (opponentGameState == game_state_e::FREEKICK_AGAINST) {
+		opponentGameState = game_state_e::FREEKICK;
+	} else if (opponentGameState == game_state_e::GOALKICK) {
+		opponentGameState = game_state_e::GOALKICK_AGAINST;
+	} else if (opponentGameState == game_state_e::GOALKICK_AGAINST) {
+		opponentGameState = game_state_e::GOALKICK;
+	} else if (opponentGameState == game_state_e::THROWIN) {
+		opponentGameState = game_state_e::THROWIN_AGAINST;
+	} else if (opponentGameState == game_state_e::THROWIN_AGAINST) {
+		opponentGameState = game_state_e::THROWIN;
+	} else if (opponentGameState == game_state_e::PENALTY) {
+		opponentGameState = game_state_e::PENALTY_AGAINST;
+	} else if (opponentGameState == game_state_e::PENALTY_AGAINST) {
+		opponentGameState = game_state_e::PENALTY;
+	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT) {
+		opponentGameState = game_state_e::PENALTY_SHOOTOUT_AGAINST;
+	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT_AGAINST) {
+		opponentGameState = game_state_e::PENALTY_SHOOTOUT;
+	} else if (opponentGameState == game_state_e::GOAL) {
+		opponentGameState = game_state_e::GOAL_AGAINST;
+	} else if (opponentGameState == game_state_e::GOAL_AGAINST) {
+		opponentGameState = game_state_e::GOAL;
+	}
+	return opponentGameState;
+}
+
 team_formation_e StringToFormation(const string& formation_string) {
 	team_formation_e formation = team_formation_e::FORMATION_013;
 	if (formation_string == "FORMATION_013") {
@@ -151,8 +189,6 @@ void getPlannerOptions(TeamPlannerParameters & options, auto_ptr<robotsports::St
     options.grid_own_goal_clearance_x = c->Options().grid_own_goal_clearance_x();
     options.grid_own_goal_clearance_y = c->Options().grid_own_goal_clearance_y();
     options.nrDynamicPlannerIterations = c->Options().nrDynamicPlannerIterations();
-//TODO    options.attack_formation = StringToFormation(c->AttackFormation());
-//TODO    options.defense_formation = StringToFormation(c->DefenseFormation());
     options.maxPossibleLinearSpeed = c->Options().maxPossibleLinearSpeed();
     options.maxPossibleLinearAcceleration = c->Options().maxPossibleLinearAcceleration();
     options.nr_robots_needed_for_pass_play = c->Options().nr_robots_needed_for_pass_play();
@@ -183,6 +219,7 @@ void getPlannerOptions(TeamPlannerParameters & options, auto_ptr<robotsports::St
     options.saveGridDataToFile = c->Options().saveGridDataToFile();
     options.svgRobotPlanner = c->Options().svgRobotPlanner();
     options.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
+    options.priority_block_min_distance = c->Options().priority_block_min_distance();
     options.priority_block_max_distance = c->Options().priority_block_max_distance();
 }
 
@@ -239,21 +276,50 @@ game_state_e gamestate_string_to_enum(std::string& gs) {
     return gameState;
 }
 
+ball_status_e ball_status_to_enum(const xsd::cxx::tree::optional<robotsports::BallStatusType>& ball_status)
+{
+    if (!ball_status) {
+        return ball_status_e::FREE;
+    }
+    switch (ball_status.get()) {
+        case BallStatusType::value::FREE:              return ball_status_e::FREE;
+        case BallStatusType::value::OWNED_BY_PLAYER:   return ball_status_e::OWNED_BY_PLAYER;
+        case BallStatusType::value::OWNED_BY_TEAMMATE: return ball_status_e::OWNED_BY_TEAMMATE;
+        case BallStatusType::value::OWNED_BY_TEAM:     return ball_status_e::OWNED_BY_TEAM;
+        case BallStatusType::value::OWNED_BY_OPPONENT: return ball_status_e::OWNED_BY_OPPONENT;
+        default:
+            cerr << "Unknown ball_status in xml file: " << ball_status.get() << endl;
+            exit(-1);
+    }
+    return ball_status_e::FREE;
+}
+
 void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyType>& c)
 {
     if (c->Field() != 0) {
         // If field info is present then overwrite the defaults with values from the xml file
-    	fieldConfig = FillDefaultFieldConfig();
-    	// TODO used setting functions
-
-    	fieldConfig.setConfig(c->Field()->field_length(), c->Field()->field_width(), c->Field()->field_margin(), c->Field()->goal_width(), c->Field()->goal_length(),
-    			c->Field()->center_circle_diameter(),
-				c->Field()->goal_area_width(), c->Field()->goal_area_length(),
-				c->Field()->penalty_area_present(), c->Field()->penalty_area_width(), c->Field()->penalty_area_length(),
-				c->Field()->parking_area_width(), c->Field()->parking_area_length(),
-				c->Field()->parking_distance_between_robots(), c->Field()->parking_distance_to_line(),
-				c->Field()->robot_size(), c->Field()->ball_radius(), c->Field()->field_markings_width(),
-				c->Field()->corner_circle_diameter(), c->Field()->penalty_spot_to_backline());
+        FieldConfig fc = FillDefaultFieldConfig();
+        fc.setConfig(c->Field()->field_length(),
+                     c->Field()->field_width(),
+                     c->Field()->field_margin(),
+                     c->Field()->goal_width(),
+                     c->Field()->goal_length(),
+                     c->Field()->center_circle_diameter(),
+                    c->Field()->goal_area_width(),
+                    c->Field()->goal_area_length(),
+                    c->Field()->penalty_area_present(),
+                    c->Field()->penalty_area_width(),
+                    c->Field()->penalty_area_length(),
+                    c->Field()->parking_area_width(),
+                    c->Field()->parking_area_length(),
+                    c->Field()->parking_distance_between_robots(),
+                    c->Field()->parking_distance_to_line(),
+                    c->Field()->robot_size(),
+                    c->Field()->ball_radius(),
+                    c->Field()->field_markings_width(),
+                    c->Field()->corner_circle_diameter(),
+                    c->Field()->penalty_spot_to_backline());
+        fieldConfig = fc;
     }
 }
 
@@ -349,6 +415,7 @@ void fillOpponents(std::vector<TeamPlannerOpponent>& Opponents, auto_ptr<robotsp
 void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
 		const Geometry::Position& ball_position,
 		const Geometry::Position& ball_velocity,
+		ball_status_e ball_status,
         const std::vector<Geometry::Position>& myTeam,
         const std::vector<Geometry::Position>& myTeam_vel,
 		const std::vector<int>& myTeam_labels,
@@ -406,6 +473,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.gamestate = gamestate;
     tdp.ball.position = ball_position;
     tdp.ball.velocity = ball_velocity;
+    tdp.ball_status = ball_status;
     tdp.team = Team;
     tdp.opponents = Opponents;
     tdp.parameters = options;
@@ -413,7 +481,6 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.ball_pickup_position = ball_pickup_position;
     tdp.passIsRequired = passIsRequired;
     tdp.pass_data = pass_data;
-    tdp.team_controls_ball = team_controls_ball;
 };
 
 
@@ -462,6 +529,7 @@ void xmlplanner(string input_filename) {
 	bool ball_is_valid = false;
 	pass_data_t pass_data = {.target_id=-1};
     previous_used_ball_by_planner_t previous_ball = {};
+    ball_status_e ball_status = ball_status_e::FREE;
 	try {
 		auto_ptr<robotsports::StrategyType> c(robotsports::Situation(filename));
 		description = c->Description();
@@ -530,8 +598,16 @@ void xmlplanner(string input_filename) {
 			pickup_pos_set = true;
 		}
 		if (c->SituationInfo()) {
-			passIsRequired = c->SituationInfo()->passing_required();
-			team_controls_ball = c->SituationInfo()->team_controls_ball();
+		    if (not c->SituationInfo()->passing_required()) {
+	            cout << "SituationInfo must have attribute \"passing_required\"" << endl;
+	            exit(1);
+		    }
+			passIsRequired = c->SituationInfo()->passing_required().get();
+			if (not c->SituationInfo()->team_controls_ball()) {
+                cout << "SituationInfo must have attribute \"team_controls_ball\"" << endl;
+                exit(1);
+			}
+			ball_status = ball_status_to_enum(c->SituationInfo()->ball_status());
 			if (c->SituationInfo()->PassData() != 0) {
 				pass_data.ts = c->SituationInfo()->PassData()->ts();
 				pass_data.origin_pos.x = c->SituationInfo()->PassData()->origin_x();
@@ -617,6 +693,7 @@ void xmlplanner(string input_filename) {
 	fillTeamPlannerData(teamplannerData, gameState,
 			ball,
 			ball_vel,
+			ball_status,
 			myTeam,
 			myTeam_vel,
 			myTeam_labels,
@@ -629,7 +706,6 @@ void xmlplanner(string input_filename) {
 
 	TeamPlay teamplay = TeamPlay();
 	player_paths = teamplay.assign(teamplannerData);
-
 
 	RunData run_data (teamplannerData, player_paths);
 	run_results.push_back(run_data);

@@ -22,6 +22,7 @@ add_library(MRA-components-robotsports-role-assigner
     internals/TeamPlannerData.cpp
     internals/TeamPlannerExport.cpp
     internals/TeamPlannerParameters.cpp
+    internals/TeamPlannerRobot.cpp
     internals/TeamPlay.cpp
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp

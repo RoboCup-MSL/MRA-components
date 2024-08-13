@@ -14,6 +14,20 @@
 using namespace std;
 using namespace MRA;
 
+std::string TeamPlannerBall::toString(bool print_complete) const {
+    std::stringstream buffer;
+    buffer << std::fixed << std::setprecision(2)
+            << " x: " << this->position.x
+            << " y: " << this->position.y;
+    if (print_complete) {
+        buffer << std::fixed << std::setprecision(2)
+               << " vx: " << this->velocity.x
+               << " vy: " << this->velocity.y
+               << " confidence: " << this->confidence
+               << " valid: " << (int) this->is_valid;
+    }
+    return buffer.str();
+}
 
 //std::string TeamPlannerData::toString(const std::vector<PlayerPlannerResult>& player_paths)
 //{

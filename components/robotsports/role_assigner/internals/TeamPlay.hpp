@@ -12,6 +12,7 @@
 #include "WmTypes.h"
 #include "FieldConfig.h"
 #include "TeamPlannerData.hpp"
+#include "TeamPlannerRobot.hpp"
 #include "TeamPlannerOpponent.hpp"
 
 

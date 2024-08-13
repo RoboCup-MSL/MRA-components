@@ -3,40 +3,55 @@
  *  @brief   main file for testing the xml planner
  *  @curator Jürge van Eijck
  */
-#include <iostream>
-#include <signal.h>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
-#include <cstdio>
-#include <cmath>
-#include <boost/filesystem.hpp>
-#include "SvgUtils.hpp"
-#include "FieldConfig.h"
+//#include <iostream>
+//#include <signal.h>
+//#include <fstream>
+//#include <string>
+//#include <vector>
+//#include <string>
+//#include <sstream>
+//#include <iostream>
+//#include <algorithm>
+//#include <cstdio>
+//#include <cmath>
+//#include <boost/filesystem.hpp>
+//#include "SvgUtils.hpp"
+//#include "Field.h"
 //#include "MovingObject.h"
 //#include "SegmentationHandler.h"
 //#include "INIReader.h"
+//
+//using namespace std;
+//using namespace boost::filesystem;
+//using namespace MRA;
 
-using namespace std;
-using namespace boost::filesystem;
-using namespace MRA;
-
-
-//void read_svg_comment_section(string svgFileName, vector<string>& comment_lines)
+//class playerSVGresult {
+//public:
+//    int robotId;
+//    std::string role;
+//    double target_x;
+//    double target_y;
+//    int role_rank;
+//};
+//
+//
+//void read_svg_comment_section_and_text_lines(string svgFileName, vector<string>& comment_lines, vector<playerSVGresult>& player_results)
 //{
 //	string STRING;
 //	std::ifstream infile;
 //	infile.open(svgFileName.c_str());
 //	string start_comment_section = "<!--";
 //	string end_comment_section = "-->";
+//    string end_text_line = "</text>";
 //	bool in_comment_section = false;
+//	bool result_section = false;
+//	int result_idx = 0;
+//	string result_str = "";
+//	int line_nr = 0;
 //	while(!infile.eof()) // To get you all the lines.
 //	{
-//		getline(infile,STRING); // Saves the line in STRING.
+//	    line_nr++;
+//	    getline(infile,STRING); // Saves the line in STRING.
 //		std::size_t found = STRING.find(start_comment_section);
 //		if (found != std::string::npos) {
 //			in_comment_section = true;
@@ -48,12 +63,56 @@ using namespace MRA;
 //		if (found != std::string::npos) {
 //			in_comment_section = false;
 //		}
+//        found = STRING.find(end_text_line);
+//        if (found != std::string::npos) {
+//            // </text> in line
+//
+//            // get text of <text>-section
+//            std::string text_str = STRING.substr(0, found);
+//            found = text_str.find(">");
+//            text_str = text_str.substr(found+1, text_str.length());
+//
+//            // check if text is start of result (line starts with "R0")
+//            // when result start is found, next two lines contain the target and role-rank
+//            found = text_str.find("R0");
+//            if (found != std::string::npos) {
+//                result_str = text_str;
+//                result_section = true;
+//                result_idx = 1;
+//            }
+//            else if (result_section and result_idx < 3) {
+//                result_str += " " + text_str;
+//                result_idx++;
+//                if (result_idx == 3) {
+//                    result_section = false;
+//                    // example result_str : "R01: GOALKEEPER target-pos: x: 0.00 y: -8.50 role-rank: 1 costs: 4.221385"
+//                    int robotId;
+//                    char role_str[80];
+//                    double x, y;
+//                    int rank;
+//                    playerSVGresult result;
+//                    sscanf(result_str.c_str(), "R%d: %s target-pos: x: %lf y: %lf role-rank:%d",
+//                           &robotId, role_str, &x, &y, &rank);
+//                    result.robotId = robotId;
+//                    result.role = role_str;
+//                    result.target_x = x;
+//                    result.target_y = y;
+//                    result.role_rank = rank;
+//                    player_results.push_back(result);
+//                }
+//            }
+//        }
+//        else {
+//            if (result_section) {
+//                result_section = false;
+//            }
+//        }
 //	}
 //	infile.close();
 //}
 //
 ////  globalBall:  x: 3.50 y: -2.25 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1
-//TeamPlannerBall get_ball_line(const vector<string>& comment_lines) {
+//MovingObject get_ball_line(const vector<string>& comment_lines) {
 //	string ball_string = "globalBall:";
 //	double x = 0;
 //	double y = 0;
@@ -204,17 +263,40 @@ using namespace MRA;
 //
 //	int result = 0; // OK
 //	vector<string> output_comment_lines = vector<string>();
-//	read_svg_comment_section(output_dir + "/" + filename, output_comment_lines);
-//	vector<string> regression_comment_lines = vector<string>();
-//	read_svg_comment_section(regression_dir + "/" + filename, regression_comment_lines);
+//    vector<playerSVGresult> output_svg_results = {};
+//	read_svg_comment_section_and_text_lines(output_dir + "/" + filename, output_comment_lines, output_svg_results);
 //
-//	cout << "filename: " << filename << endl;
+//	vector<string> regression_comment_lines = vector<string>();
+//    vector<playerSVGresult> regression_svg_results = {};
+//	read_svg_comment_section_and_text_lines(regression_dir + "/" + filename, regression_comment_lines, regression_svg_results);
+//
 //	vector<player_type_e> teamTypes = vector<player_type_e>();
 //	vector<long> robotIds = vector<long>();
 //	vector<MovingObject>  myTeam = vector<MovingObject>();
 //	vector<MovingObject>  opponents = vector<MovingObject>();
 //	team_planner_result_t player_paths = team_planner_result_t();
 //	team_planner_result_t comparing_player_paths = team_planner_result_t();
+//
+//	if (output_svg_results.size() != regression_svg_results.size()) {
+//	    // different number of results
+//	    result = 1; // FAILED
+//	}
+//	else {
+//	    for (auto idx = 0u; idx < output_svg_results.size(); idx++) {
+//	        if (
+//	            (output_svg_results[idx].robotId != regression_svg_results[idx].robotId) or
+//	            (output_svg_results[idx].role.compare(regression_svg_results[idx].role) != 0) or
+//	            (output_svg_results[idx].role_rank != regression_svg_results[idx].role_rank) or
+//                (fabs(output_svg_results[idx].target_x - regression_svg_results[idx].target_x) > 1e-3) or
+//                (fabs(output_svg_results[idx].target_y - regression_svg_results[idx].target_y) > 1e-3)
+//	        )
+//	        {
+//	            result = 1; // FAILED
+//	        }
+//	    }
+//
+//
+//	}
 //
 //	for (int i = 0; i < 6; i++) {
 //		vector<string> output_player_lines = vector<string>();
@@ -264,15 +346,13 @@ using namespace MRA;
 //				}
 //				else {
 //					// not equal in length (regression !)
-//					cerr << "REGRESSION: NOT EQUAL path for player: " << i << " (zero-based) in file: " << filename << endl;
-//					result = 1; // FAILED
+//					//cerr << "REGRESSION: NOT EQUAL path for player: " << i << " (zero-based) in file: " << filename << endl;
 //				}
 //			}
 //		}
 //		else {
 //			// not equal in length (regression !)
-//			cerr << "REGRESSION: DIFFERENT lengths of path for player: " << i << " (zero-based) in file: " << filename << endl;
-//			result = 1; // FAILED
+//			//cerr << "REGRESSION: DIFFERENT lengths of path for player: " << i << " (zero-based) in file: " << filename << endl;
 //		}
 //		player_type_e opponentType = player_type_e::RESERVE;
 //		MovingObject opponent_player = get_players(false, i, output_comment_lines, opponentType);
@@ -290,32 +370,33 @@ using namespace MRA;
 //	        player_paths.push_back(orgPlayerResult);
 //		}
 //	}
-//	if (result != 0) {
-//		game_state_e gamestate = game_state_e::NONE;
-//		long controlBallByPlayerId = -1;
-//		bool team_controls_ball = false;
-//		std::vector<Vector2D> parking_positions = {};
-//		previous_used_ball_by_planner_t previous_ball = {};
-//		ball_pickup_position_t ball_pickup_position = {};
-//		bool passIsRequired = false;
-//		long passBallByPlayerId = -1;
-//		pass_data_t pass_data = {};
-//		const std::vector<final_planner_result_t> previous_planner_results = {};
-//		const std::vector<double> time_in_own_penalty_area = {};
-//		const std::vector<double> time_in_opponent_penalty_area = {};
-//		MovingObject ball = get_ball_line(output_comment_lines);
-//		cerr << "DIFF BALL : " << ball.toString() << endl << flush;
-//		PlannerOptions options = PlannerOptions();
-//		string save_name = "diff_" + filename;
-//
-//        TeamPlannerData teamplannerData(fieldConfig);
-//        teamplannerData.fillData(gamestate, ball, myTeam, opponents,
-//                team_controls_ball, controlBallByPlayerId, teamTypes, robotIds, options,
-//                parking_positions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
-//                passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
-//
-//	    SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, save_name, comparing_player_paths);
-//	}
+////	bool create_diff_svg = false;
+////	if (create_diff_svg and result != 0) {
+////		game_state_e gamestate = game_state_e::NONE;
+////		long controlBallByPlayerId = -1;
+////		ball_status_t ball_status = ball_status_e::FREE;
+////		std::vector<Vector2D> parking_positions = {};
+////		previous_used_ball_by_planner_t previous_ball = {};
+////		ball_pickup_position_t ball_pickup_position = {};
+////		bool passIsRequired = false;
+////		long passBallByPlayerId = -1;
+////		pass_data_t pass_data = {};
+////		const std::vector<final_planner_result_t> previous_planner_results = {};
+////		const std::vector<double> time_in_own_penalty_area = {};
+////		const std::vector<double> time_in_opponent_penalty_area = {};
+////		MovingObject ball = get_ball_line(output_comment_lines);
+////		cerr << "DIFF BALL : " << ball.toString() << endl << flush;
+////		PlannerOptions options = PlannerOptions();
+////		string save_name = "diff_" + filename;
+////
+////        TeamPlannerData teamplannerData(fieldConfig);
+////        teamplannerData.fillData(gamestate, ball, myTeam, opponents, ball_status,
+////                controlBallByPlayerId, teamTypes, robotIds, options,
+////                parking_positions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
+////                passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
+////
+////	    SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, save_name, comparing_player_paths);
+////	}
 //
 //	// valid if no collisions or area faults are planned.
 //	if (true)
@@ -341,7 +422,7 @@ using namespace MRA;
 //
 //			planner_piece_t	 last_piece = (comparing_player_paths[p_idx]).path[(comparing_player_paths[p_idx]).path.size()-1];
 //			Vector2D end_position_current_player = Vector2D(last_piece.x, last_piece.y);
-//			cerr << "end position  robot[" << p_idx << "] = " << end_position_current_player.toString() << endl;
+//			// cerr << "end position  robot[" << p_idx << "] = " << end_position_current_player.toString() << endl;
 //
 //		//	QRectF(mX(-0.5*m_fieldConfig.getGoalAreaWidth()), mY(m_dYMin+m_fieldConfig.GOAL_AREA_LENGTH), mW(m_fieldConfig.getGoalAreaWidth()), mH(m_fieldConfig.GOAL_AREA_LENGTH)),0, m_pScene);
 //
@@ -397,7 +478,7 @@ using namespace MRA;
 //		    string save_name = filename;
 //		    game_state_e gamestate = game_state_e::NONE;
 //		    int controlBallByPlayerId = -1;
-//		    bool team_controls_ball = false;
+//		    ball_status_t ball_status = ball_status_e::FREE;
 //		    MovingObject ball = get_ball_line(output_comment_lines);
 //		    PlannerOptions options = PlannerOptions();
 //		    std::vector<Vector2D> parking_positions = {};
@@ -411,8 +492,8 @@ using namespace MRA;
 //		    const std::vector<double> time_in_opponent_penalty_area = {};
 //
 //		    TeamPlannerData teamplannerData(fieldConfig);
-//		    teamplannerData.fillData(gamestate, ball, myTeam, opponents,
-//		            team_controls_ball, controlBallByPlayerId, teamTypes, robotIds, options,
+//		    teamplannerData.fillData(gamestate, ball, myTeam, opponents, ball_status,
+//		            controlBallByPlayerId, teamTypes, robotIds, options,
 //		            parking_positions, previous_ball, previous_planner_results, ball_pickup_position, passIsRequired,
 //		            passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 //
@@ -442,14 +523,18 @@ using namespace MRA;
 //	return result;
 //}
 //
+
 int main(int argc, char *argv[]) {
-//	//	if (argc < 2) {
-//	//		cerr << "use program: " << argv[0] << " <filename.xml> " << endl;
-//	//		return -1;
-//	//	}
+	//	if (argc < 2) {
+	//		cerr << "use program: " << argv[0] << " <filename.xml> " << endl;
+	//		return -1;
+	//	}
 //	(void)signal(SIGSEGV, SegmentationHandler);   // install our handler
 //	try {
-//	    INIReader reader("planner_regression_checker.ini");
+//        path compare_new ("./compare_new");
+//        path compare_old ("./compare_old");
+//
+//        INIReader reader("planner_regression_checker.ini");
 //	    string all_known_area_faults = reader.Get("Known Areafaults", "files", ""); // read known area issue files from ini-file (multiline input)
 //	    // convert string to vector of strings (filenames)
 //	    istringstream iss(all_known_area_faults);
@@ -516,14 +601,14 @@ int main(int argc, char *argv[]) {
 //				}
 //				if (cmp_result == 0) {
 //					nr_ok++;
-//					cerr << "OK no difference found." << endl;
+//					// cerr << "OK no difference found." << endl;
 //				}
 //				else {
 //					// files are not equal
+//                    cerr << "difference found in: " << reg_file  << endl;
+//
 //					// copy files to compare directories
 //					namespace fs = boost::filesystem;
-//					path compare_new ("./compare_new");
-//					path compare_old ("./compare_old");
 //					if (!fs::is_directory(compare_new)) {
 //						fs::create_directories(compare_new);
 //					}
@@ -565,13 +650,13 @@ int main(int argc, char *argv[]) {
 // 		cout << "#AREA_FAULTS = " << nr_area_faults_found << endl;
 // 		cout << "#UNREACHABLE AREA = " << nr_unreachable_area << endl;
 // 		cout << "#INFINITE COSTS = " << nr_infinite_costs << endl;
-//             cout << endl;
-//             cout << endl;
-//             if (nr_failed > 0) {
-//                cout << "Failed files can be compared:" << endl;
-//                cout << "   reference-files in directory: " << compare_old << endl;
-//                cout << "   new-files  in directory     : " << compare_new << endl;
-//             } 
+//        cout << endl;
+//        cout << endl;
+//        if (nr_failed > 0) {
+//            cout << "Failed files can be compared:" << endl;
+//            cout << "   reference-files in directory: " << compare_old << endl;
+//            cout << "   new-files  in directory     : " << compare_new << endl;
+//        }
 //
 //	}
 //	catch (std::exception & e)

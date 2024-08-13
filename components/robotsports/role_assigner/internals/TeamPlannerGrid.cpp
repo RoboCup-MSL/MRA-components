@@ -11,20 +11,21 @@
 #include <sstream>
 #include <cmath>
 #include <list>
+#include <iomanip>
 #include "TeamPlannerGrid.hpp"
 #include "FieldConfig.h"
 #include "PlannerGridInfoData.hpp"
 #include "GridHeuristic.hpp"
 #include "MathUtils.h"
-#include "TeamPlay.hpp"
 #include "logging.hpp"
+#include "TeamPlay.hpp"
 
 using namespace std;
 
 namespace MRA {
 
 
-MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber) {
+Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber) {
 	const double infield_margin = 0.25;   // distance to stay from side of field
 	const unsigned nr_positions_first_circle = 8;
 	const double dist_first_circle = 1.0;
@@ -34,13 +35,13 @@ MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlann
 	double xc = r_teamplannerData.ball_pickup_position.x;
 	double yc = r_teamplannerData.ball_pickup_position.y;
 
-	MRA::Geometry::Position bestPosition = MRA::Geometry::Position(xc, yc);  // default : set best to pickup position
+	Geometry::Position bestPosition = Geometry::Position(xc, yc);  // default : set best to pickup position
 
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
-	allowedTargetPositions.push_back(MRA::Geometry::Position(xc, yc));
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
+	allowedTargetPositions.push_back(Geometry::Position(xc, yc));
 	// create possible target positions:
 
-	MRA::Geometry::Position ballPlayerPos = bestPosition; // set default to pickup position
+	Geometry::Position ballPlayerPos = bestPosition; // set default to pickup position
 	bool ballPlayerFound = false;
 	// add current position for ball-player
 	for (unsigned r_idx = 0; r_idx < r_teamplannerData.team.size(); r_idx++) {
@@ -56,7 +57,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlann
 		double xx = xc + dist_first_circle * cos(angle);
 		double yy = yc + dist_first_circle * sin(angle);
 		if (r_teamplannerData.fieldConfig.isInField(xx,yy,infield_margin)) {
-			allowedTargetPositions.push_back(MRA::Geometry::Position(xx, yy));
+			allowedTargetPositions.push_back(Geometry::Position(xx, yy));
 		}
 
 	}
@@ -65,7 +66,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlann
 		double xx = xc + dist_second_circle * cos(angle);
 		double yy = yc + dist_second_circle * sin(angle);
 		if (r_teamplannerData.fieldConfig.isInField(xx,yy,infield_margin)) {
-			allowedTargetPositions.push_back(MRA::Geometry::Position(xx, yy));
+			allowedTargetPositions.push_back(Geometry::Position(xx, yy));
 		}
 	}
 
@@ -76,7 +77,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findBallPlayerPosition(const TeamPlann
 	//  - 1 circle is better than 2nd circle
 	//
 
-	MRA::Geometry::Position bestPosForGoal = MRA::Geometry::Position(0, (r_teamplannerData.fieldConfig.getMaxFieldY())-2.0); // 2 meters before goal
+	Geometry::Position bestPosForGoal = Geometry::Position(0, (r_teamplannerData.fieldConfig.getMaxFieldY())-2.0); // 2 meters before goal
 	PlannerGridInfoData pgid = PlannerGridInfoData();
 	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
 	if (false) {
@@ -143,7 +144,9 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
 		heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 2000.0, pgid, r_teamplannerData.team, 1.5));
 
 		// Prefer position close too the ball
-		heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid, r_ballPositionToUse, 8.0, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), false));
+		heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid,
+		                                                  Geometry::Position(r_ballPositionToUse.x, r_ballPositionToUse.y), 8.0, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), false));
+
 	}
 	if (r_teamplannerData.gamestate == game_state_e::PENALTY) {
 		// Not allow to be in opponent penalty area (RoboCup rules)
@@ -156,10 +159,10 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the position
  */
-MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const TeamPlannerData& r_teamplannerData, int gridFileNumber, bool setPlayActive)
+Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_e dynamic_role, const Geometry::Point& oppentToDefend, const TeamPlannerData& r_teamplannerData, int gridFileNumber, bool setPlayActive)
 {
 	// define grid of 50 cm, only in field not outside the border
-	MRA::Geometry::Position ballPos = r_teamplannerData.ball.position;
+	Geometry::Position ballPos = r_teamplannerData.ball.position;
 	double x_pos_ball = ballPos.x;
 	double y_pos_ball = ballPos.y;
 
@@ -192,7 +195,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_
 	heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponents", 800, pgid, r_teamplannerData.opponents, 1.0));
 
 	// Play close to the opponent to defend but not on exactly on top of it
-	heuristics.push_back(new DistanceToPointHeuristic("Opponent to defend", 200, pgid, MRA::Geometry::Position(preferred_x, preferred_y), 8.0, 8.0, false));
+	heuristics.push_back(new DistanceToPointHeuristic("Opponent to defend", 200, pgid, Geometry::Position(preferred_x, preferred_y), 8.0, 8.0, false));
 
 	// Do not position close to team-mate path position, avoid double defense if other opponents are available
 	heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 1000, pgid, r_teamplannerData.team, 0.7));
@@ -223,8 +226,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_
 	double ball_radius = r_teamplannerData.parameters.grid_close_to_ball_normal_radius;
 
 	//stay out of 3 meter zone around ball in case of e.g. free-kick_against; to avoid touching the ball
-	if ((r_teamplannerData.gamestate == game_state_e::FREEKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK) || (r_teamplannerData.gamestate == game_state_e::FREEKICK) ||
-		(r_teamplannerData.gamestate == game_state_e::CORNER_AGAINST)   || (r_teamplannerData.gamestate == game_state_e::THROWIN_AGAINST) )
+	if (isOneOf(r_teamplannerData.gamestate, {FREEKICK_AGAINST, GOALKICK_AGAINST, GOALKICK, FREEKICK, CORNER_AGAINST, THROWIN_AGAINST}))
 	{
 		ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_penalty; // default
 		ball_radius = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_radius;
@@ -249,7 +251,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_
 	// apply penalty heuristics if needed
 	handle_penalty_heuristics(r_teamplannerData, r_teamplannerData.ball.position, heuristics, pgid);
 
-	if (r_teamplannerData.team_controls_ball) {
+	if (r_teamplannerData.teamControlsBall()) {
 		// avoid defender being to close to the ball: add penalty for being close to the ball
 		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", 5000, pgid, x_pos_ball, y_pos_ball, 2.0 /* [m] */));
 	}
@@ -265,18 +267,18 @@ MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_
 	double min_y = preferred_y - (y_steps * grid_size);
 	double max_y = preferred_y + (y_steps * grid_size);
 
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 
 	// create x,y grid for calculation. with prefered x , y in center of grid !!
 	for (double x = min_x; x <= (max_x + 0.01); x += grid_size) {
 		for (double y = min_y; y <= (max_y + 0.01); y += grid_size) {
 			if (r_teamplannerData.fieldConfig.isInField(x, y, 0))
 			{ // only position where player is inside the field
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
-	MRA::Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+	Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_teamplannerData.ball.position, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -289,7 +291,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
+Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
 {
 
 	 /* Position sweeper, in order of priority (weighing):
@@ -344,7 +346,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlanne
 	heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 50.0, pgid, r_teamplannerData.team, 2.5));
 
     // Defend on -4.5 M line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
-	heuristics.push_back(new DesiredYSweeper("DesiredYDefender", 20.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldY()*0.5, r_teamplannerData.fieldConfig));
+	heuristics.push_back(new DesiredY("DesiredYDefender", 20.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldY()*0.5, r_teamplannerData.fieldConfig));
 
 	// Stay away out of corners of the field, not the best defensive position
 	heuristics.push_back(new InfluenceCornerHeuristic("InfluenceCorner", 10.0, pgid, r_teamplannerData.fieldConfig));
@@ -380,8 +382,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlanne
 	// todo below if-then needs to replaced by structured case
 
 	//stay out of 3 meter zone around ball in case of e.g. free-kick_against; to avoid touching the ball
-	if ((r_teamplannerData.gamestate == game_state_e::FREEKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK) || (r_teamplannerData.gamestate == game_state_e::FREEKICK) ||
-		(r_teamplannerData.gamestate == game_state_e::CORNER_AGAINST)   || (r_teamplannerData.gamestate == game_state_e::THROWIN_AGAINST) ) {
+	if (isOneOf(r_teamplannerData.gamestate, {FREEKICK_AGAINST, GOALKICK_AGAINST, GOALKICK, FREEKICK, CORNER_AGAINST, THROWIN_AGAINST})) {
 		ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_penalty; // default
 		ball_radius = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_radius;
 		heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius));
@@ -390,7 +391,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlanne
 	// apply penalty heuristics if needed
 	handle_penalty_heuristics(r_teamplannerData, r_teamplannerData.ball.position, heuristics, pgid);
 
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
@@ -398,11 +399,11 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlanne
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
-	MRA::Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+	Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_teamplannerData.ball.position, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -414,7 +415,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlanne
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-MRA::Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
+Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
 {
 	double field_direction = -1.0;
 	if (r_teamplannerData.gamestate == PENALTY_SHOOTOUT_AGAINST) {
@@ -452,7 +453,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShoo
 	heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 200.0, pgid, r_teamplannerData.team, 1.0));
 
     // stay on  1 meter from center line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
-	heuristics.push_back(new DesiredYSweeper("DesiredYDefender", 200.0, pgid, field_direction * 1.0, r_teamplannerData.fieldConfig));
+	heuristics.push_back(new DesiredY("DesiredYDefender", 200.0, pgid, field_direction * 1.0, r_teamplannerData.fieldConfig));
 
 	heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 100.0, pgid, r_teamplannerData.fieldConfig, 0.0));
 
@@ -464,7 +465,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShoo
 	//stay out of 3 meter zone around center of the field
 	heuristics.push_back(new InfluenceBallHeuristic("Influence Center Circle", 1000.0, pgid, 0, 0, r_teamplannerData.fieldConfig.getCenterCirleDiameter() + 0.5));
 
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
@@ -472,11 +473,11 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShoo
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
-	MRA::Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+	Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_teamplannerData.ball.position, "DefensivePosition", gridFileNumber);
 
 	return bestPosition;
@@ -490,7 +491,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShoo
  * It normally positioned behind defenders to tackle any attacker bypassing defensive line
  */
 
-MRA::Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
+Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
 {
     /* Position sweeper, in order of priority (weighing):
      *   + on line between ball and own goal
@@ -538,20 +539,20 @@ MRA::Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerD
 	double besidePenaltyAreaX = r_teamplannerData.fieldConfig.getPenaltyAreaWidth()*0.5 + r_teamplannerData.fieldConfig.getRobotRadius();
 	double topOwnGoalAreaY = -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getGoalAreaLength() + r_teamplannerData.fieldConfig.getRobotRadius();
 	if (y_pos_ball >= 0) {
-		heuristics.push_back(new DesiredYSweeper("DesiredYSweeper", 20.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldY()*0.5, r_teamplannerData.fieldConfig));
+		heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldY()*0.5, r_teamplannerData.fieldConfig));
 	}
 	else if (y_pos_ball >= topOwnPenaltyAreaY) {
-		heuristics.push_back(new DesiredYSweeper("DesiredYSweeper", 20.0, pgid, topOwnPenaltyAreaY, r_teamplannerData.fieldConfig));
+		heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnPenaltyAreaY, r_teamplannerData.fieldConfig));
 	}
 	else if (x_pos_ball >= besidePenaltyAreaX) {
-		heuristics.push_back(new DesiredXSweeper("DesiredXSweeper", 20.0, pgid, besidePenaltyAreaX, r_teamplannerData.fieldConfig));
+		heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, besidePenaltyAreaX, r_teamplannerData.fieldConfig));
 	}
 	else if (x_pos_ball <= -besidePenaltyAreaX) {
-		heuristics.push_back(new DesiredXSweeper("DesiredXSweeper", 20.0, pgid, -besidePenaltyAreaX, r_teamplannerData.fieldConfig));
+		heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, -besidePenaltyAreaX, r_teamplannerData.fieldConfig));
 	}
 	else {
 		// ball in penalty area, put sweeper just above goal area
-		heuristics.push_back(new DesiredYSweeper("DesiredYSweeper", 20.0, pgid, topOwnGoalAreaY, r_teamplannerData.fieldConfig));
+		heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnGoalAreaY, r_teamplannerData.fieldConfig));
 
 	}
     // Do not position on top off team-mate
@@ -581,8 +582,7 @@ MRA::Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerD
 	// todo below if-then needs to replaced by structured case
 
 	//stay out of 3 meter zone around ball in case of e.g. free-kick_against; to avoid touching the ball
-	if ((r_teamplannerData.gamestate == game_state_e::FREEKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK) || (r_teamplannerData.gamestate == game_state_e::FREEKICK) ||
-		(r_teamplannerData.gamestate == game_state_e::CORNER_AGAINST)   || (r_teamplannerData.gamestate == game_state_e::THROWIN_AGAINST) ) {
+	if (isOneOf(r_teamplannerData.gamestate, {FREEKICK_AGAINST, GOALKICK_AGAINST, GOALKICK, FREEKICK, CORNER_AGAINST, THROWIN_AGAINST}) ) {
 		ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_penalty; // default
 		ball_radius = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_radius;
 		heuristics.push_back(new BallSetplayAgainstHeuristic("InfluenceBall", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius, r_teamplannerData.fieldConfig));
@@ -591,23 +591,23 @@ MRA::Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerD
 	// apply penalty heuristics if needed
 	handle_penalty_heuristics(r_teamplannerData, r_teamplannerData.ball.position, heuristics, pgid);
 
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 	// create x,y grid for calculation. make 0,0 center of grid !!
 	for (int x_idx  = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx  = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
-	MRA::Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+	Geometry::Position bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_teamplannerData.ball.position, "Sweeper", gridFileNumber);
 	return bestPosition;
 }
 
-MRA::Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<MRA::Geometry::Position>& allowedTargetPositions,
+Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<Geometry::Position>& allowedTargetPositions,
 		vector<GridHeuristic*> heuristics, const TeamPlannerParameters& parameters, PlannerGridInfoData& pgid) {
 
 	double lowest_value = std::numeric_limits<double>::infinity();
@@ -617,7 +617,7 @@ MRA::Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<MR
 	vector<griddata_t> gridData = vector<griddata_t>();
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	for (std::list<MRA::Geometry::Position>::const_iterator pos_it=allowedTargetPositions.begin(); pos_it != allowedTargetPositions.end(); ++pos_it) {
+	for (std::list<Geometry::Position>::const_iterator pos_it=allowedTargetPositions.begin(); pos_it != allowedTargetPositions.end(); ++pos_it) {
 		double tot_value = 0;
 		double x = pos_it->x;
 		double y = pos_it->y;
@@ -648,10 +648,10 @@ MRA::Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<MR
 	}
 
 	// clear memory: release the pointers
-	for (auto it = heuristics.begin(); it != heuristics.end(); ++it) {
+	for (auto it = heuristics.begin(); it != heuristics.end(); it++) {
 		delete (*it);
 	}
-	return MRA::Geometry::Position(lowest_x, lowest_y);
+	return Geometry::Position(lowest_x, lowest_y);
 }
 
 //---------------------------------------------------------------------
@@ -659,7 +659,7 @@ MRA::Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<MR
  * Method to find to most attractive position for interceptor role during restart
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  */
-MRA::Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
+Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(const TeamPlannerData& r_teamplannerData, int gridFileNumber)
 {
     /* Position intercepter during restart, in order of priority (weighing):
      *   + During restart player of defending team cannot stay in circle with radius of 3 M around the ball until ball is in play
@@ -687,9 +687,8 @@ MRA::Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(c
 
 	double ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_normal_penalty; // default
 	double ball_radius = r_teamplannerData.parameters.grid_close_to_ball_normal_radius;
-	//double ball_ax_sqr = calc_a_penalty_factor(2.0, ball_c); // default 2 meter  // TODO via options
-	if ((r_teamplannerData.gamestate == game_state_e::FREEKICK_AGAINST) || (r_teamplannerData.gamestate == game_state_e::GOALKICK_AGAINST) ||
-		(r_teamplannerData.gamestate == game_state_e::CORNER_AGAINST)   || (r_teamplannerData.gamestate == game_state_e::THROWIN_AGAINST) ) {
+	//double ball_ax_sqr = calc_a_penalty_factor(2.0, ball_c); // default 2 meter  // TODO via parameters
+	if (isOneOf(r_teamplannerData.gamestate, {FREEKICK_AGAINST, GOALKICK_AGAINST, CORNER_AGAINST, THROWIN_AGAINST}) ) {
 		// hotfix! TODO: check this (penalty_penalty and penalty radius)
 		ball_penalty = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_penalty; // default
 		ball_radius = r_teamplannerData.parameters.grid_close_to_ball_restart_penalty_radius;
@@ -753,17 +752,17 @@ MRA::Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(c
 	heuristics.push_back(new AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic("Already player assigned to opponent penalty area", 100000, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 	for (int x_idx = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
-	MRA::Geometry::Position pos = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+	Geometry::Position pos = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
 	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_teamplannerData.ball.position, "InterceptorRestart", gridFileNumber);
 	return pos;
 }
@@ -774,23 +773,24 @@ MRA::Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(c
  * A grid is created, for all points on the grid a heuristic (attractiveness) is calculated.
  * Most attractive position will be the offensive position
  */
-bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, int gridFileNumber, bool position_close_to_ball)
+bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPositionToUse, int gridFileNumber, bool position_close_to_ball)
 {
     /* Position attack support, in order of priority (weighing):
      *
-     *   + Do not block goal shot on opponent goal
-     *   + Not too close to the ball
-     *   + Not too close to opponents
-     *   + stay in front of the ball on own half
-     *   + if we control the ball make yourself available to receive a pass
-     *   + Halfway on opponent half, good lobshot distance (also to have eyes on opponent half for ball detection)
-     *   + not behind opponent (from ball position)
-     *   + if ball on own half, stay on same side (left/right) as ball for better passing
-     *   + Do not position close to team-mate (planned before attack support, higher priority), e.g. goalkeeper, interceptor
-     *   + Do not position close to other attack_supporter(s)
-     *   + Stability factor: do some minor preference to current location to avoid constant ¨flipping" between 2 almost equal positions
-     *   + Do not plan outside playing field or in goal areas (inner box of penalty area)
-     *   + Do not plan in own penalty area if already somebody assigned
+     *   + 100 Do not block goal shot on opponent goal
+     *   + 80  Not too close to the ball
+     *   + 50  Not too close to opponents
+     *   + 100 previous assigned position
+     *   + 50 stay in front of the ball on own half
+     *   + 40/80 if we control the ball make yourself available to receive a pass
+     *   + 30  Halfway on opponent half, good lobshot distance (also to have eyes on opponent half for ball detection)
+     *   + 20  not behind opponent (from ball position)
+     *   + 15  if ball on own half, stay on same side (left/right) as ball for better passing
+     *   + 10  Do not position close to team-mate (planned before attack support, higher priority), e.g. goalkeeper, interceptor
+     *   + 10  Do not position close to other attack_supporter(s)
+     *   + 8   Stability factor: do some minor preference to current location to avoid constant ¨flipping" between 2 almost equal positions
+     *   + 1000 Do not plan outside playing field or in goal areas (inner box of penalty area)
+     *   + 1000 Do not plan in own penalty area if already somebody assigned
 	 */
 
 	// define grid of 50 cm, only in field not outside the border
@@ -800,15 +800,23 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	int x_grid_points = 1 + 2 * x_grid_half;
 	int y_grid_points = 1 + 2 * y_grid_half;
 
-	double x_pos_ball = r_balPositionToUse.x;
-	double y_pos_ball = r_balPositionToUse.y;
+	double x_pos_ball = r_ballPositionToUse.x;
+	double y_pos_ball = r_ballPositionToUse.y;
+
+	PlannerGridInfoData pgid = PlannerGridInfoData();
+	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
+
+	// Determine if this is the first attack supporter or not (second/third/etc)
+	bool first_attack_supporter = true;
+	for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
+		if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
+			first_attack_supporter= false;
+		}
+    };
 
 	/*
 	 * Attack support position heuristics in open-play (offensive and defensive)
 	 */
-
-	PlannerGridInfoData pgid = PlannerGridInfoData();
-	vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
 
 	if (r_teamplannerData.gamestate != game_state_e::PENALTY && r_teamplannerData.gamestate != game_state_e::PENALTY_AGAINST) {
 		// Do not block goal shot on opponent goal
@@ -820,7 +828,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	}
 
 	// apply penalty heuristics if needed
-	handle_penalty_heuristics(r_teamplannerData, r_balPositionToUse, heuristics, pgid);
+	handle_penalty_heuristics(r_teamplannerData, r_ballPositionToUse, heuristics, pgid);
 
 
 	// Avoid difficult collaboration, do not position close to opponents
@@ -836,27 +844,30 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 		heuristics.push_back(new InSquareHeuristic("Play on opponent half", 50.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldX(), 1, r_teamplannerData.fieldConfig.getMaxFieldX(), -r_teamplannerData.fieldConfig.getMaxFieldY()) );
 	}
 
-	// if we control the ball make yourself available to receive a pass
-	if (r_teamplannerData.team_controls_ball) {
-		heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+	// if we control the ball make yourself available to receive a pass, especially for the first attack supporter
+	if (r_teamplannerData.teamControlsBall()) {
+		if (first_attack_supporter) {
+			heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 80.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+		}
+		else {
+			heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+		}
 	}
 
 	if (r_teamplannerData.gamestate != game_state_e::PENALTY && r_teamplannerData.gamestate != game_state_e::PENALTY_AGAINST) {
 		//  position attack_support approx halfway on opponent half
 		if (r_teamplannerData.gamestate != game_state_e::KICKOFF && r_teamplannerData.gamestate != game_state_e::KICKOFF_AGAINST) {
 			// normally try to position on opponent half on a nice position to lob at the goal
-			heuristics.push_back(new DesiredYSweeper("DesiredYAttackSupport", 30.0, pgid, (r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-1, r_teamplannerData.fieldConfig));
+			heuristics.push_back(new DesiredY("DesiredYAttackSupport", 30.0, pgid, (r_teamplannerData.fieldConfig.getMaxFieldY()*0.5)-1, r_teamplannerData.fieldConfig));
 		}
 		else {
 			// in case of kick-off place robot at our own half
-			heuristics.push_back(new DesiredYSweeper("DesiredYAttacksupport", 30.0, pgid, -1, r_teamplannerData.fieldConfig));
+			heuristics.push_back(new DesiredY("DesiredYAttacksupport", 30.0, pgid, -1, r_teamplannerData.fieldConfig));
 		}
 
 		// Avoid difficult collaboration, not behind opponent (from ball position)
-		heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_balPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
-		        r_teamplannerData.parameters.interceptionChanceStartDistance,
-				r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
-				r_teamplannerData.parameters.interceptionChancePenaltyFactor));
+		heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_ballPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
+		        r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter, r_teamplannerData.parameters.interceptionChancePenaltyFactor));
 	}
 
 
@@ -883,8 +894,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 			AttackSupportTeam.push_back(r_teamplannerData.team[idx]);
 		}
 	}
-	heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 10.0, pgid, AttackSupportTeam, 4.0));
-
+	heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, AttackSupportTeam, 4.0));
 
 
 	// Do not plan in opponent penalty area
@@ -911,30 +921,28 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 	 */
 
 	// create x,y grid for calculation. make 0,0 center of grid !!
-	std::list<MRA::Geometry::Position> allowedTargetPositions = list<MRA::Geometry::Position>();
+	std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 	for (int x_idx = 0; x_idx < x_grid_points; x_idx++) {
 		for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
 			double x = (x_idx * grid_size) - (x_grid_half * grid_size);
 			double y = (y_idx * grid_size) - (y_grid_half * grid_size);
 			if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
-				allowedTargetPositions.push_back(MRA::Geometry::Position(x, y));
+				allowedTargetPositions.push_back(Geometry::Position(x, y));
 			}
 		}
 	}
 
 
 	bestPosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
-	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_balPositionToUse, "FindOffensive", gridFileNumber);
+	TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, r_ballPositionToUse, "FindOffensive", gridFileNumber);
 
-	bool prepare_phase = (r_teamplannerData.gamestate == game_state_e::CORNER) || (r_teamplannerData.gamestate == game_state_e::GOALKICK) ||
-			             (r_teamplannerData.gamestate == game_state_e::FREEKICK || (r_teamplannerData.gamestate == game_state_e::THROWIN));
+	bool prepare_phase = isOneOf(r_teamplannerData.gamestate, {game_state_e::CORNER, game_state_e::GOALKICK, game_state_e::FREEKICK, game_state_e::THROWIN});
 	if (r_teamplannerData.parameters.wait_on_non_optimal_position_during_prepare_phase && prepare_phase) {
 		// find non optimal position to wait during prepare phase
-
 		const unsigned nr_wait_positions = 8;   // check for 8 positions 1.5 meter around best position
 		const double radius_non_opt_wait = 2.0;
 		const double infield_margin = 0.25;   // distance to stay from side of field
-		InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_balPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
+		InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_ballPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
 		        r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
 		        r_teamplannerData.parameters.interceptionChancePenaltyFactor);
 
@@ -965,7 +973,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(MRA::Geometry::Point& bestPosit
 
 // ----------------------------------------------------------
 // Save provided data to file
-void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, const std::string& strSituation, int gridFileNumber) {
+void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_ballPositionToUse, const std::string& strSituation, int gridFileNumber) {
 
 	if (r_teamplannerData.parameters.saveGridDataToFile) {
 		string gridFileName = "";
@@ -975,7 +983,7 @@ void TeamPlanner_Grid::writeGridDataToFile(PlannerGridInfoData& pgid, const Team
 		for (auto it = r_teamplannerData.opponents.begin(); it != r_teamplannerData.opponents.end(); ++it) {
 			pgid.gameData.opponents.push_back(it->position);
 		}
-		pgid.gameData.ball = r_balPositionToUse;
+		pgid.gameData.ball = r_ballPositionToUse;
 		if (!r_teamplannerData.parameters.svgOutputFileName.empty()) {
 			// svg filename provided
 			std::stringstream stream("");
@@ -1015,6 +1023,179 @@ double TeamPlanner_Grid::calc_a_penalty_factor(double radius, double c) {
 	return a;
 }
 
+
+Geometry::Position TeamPlanner_Grid::findSetPlayPosition(dynamic_role_e dynamic_role, const TeamPlannerData& r_teamplannerData,
+                                               const Geometry::Point& preferred_position, int gridFileNumber,
+                                               bool strongDesiredX, bool strongDesiredY, bool beAvailableForPass)
+{
+/* Position attack support, in order of priority (weighing):
+     *
+     *   + 80  Not too close to the ball
+     *   + 50  Not too close to opponents
+     *   + 100  previous assigned position
+     *   + 50 stay in front of the ball on own half
+     *   + 90/120 desired-Y line
+     *   + 90/120 desired-X line
+     *   + 40/80 if we control the ball make yourself available to receive a pass
+     *   + 30  Halfway on opponent half, good lobshot distance (also to have eyes on opponent half for ball detection)
+     *   + 20  not behind opponent (from ball position)
+     *   + 50  Do not position close to attack supporters path position
+     *   + 10  Do not position close to team-mate (planned before attack support, higher priority), e.g. goalkeeper, interceptor
+     *   + 8   Stability factor: do some minor preference to current location to avoid constant ¨flipping" between 2 almost equal positions
+     *   + 1000 Do not plan outside playing field or in goal areas (inner box of penalty area)
+     *   + 1000 Do not plan in own penalty area if already somebody assigned
+     */
+
+    const double WEIGHT_INFLUENCE_BALL = 80.0; // Not too close to the ball
+    const double WEIGHT_INFLUENCE_OPPONENTS = 50.0; // Not too close to opponents
+    const double WEIGHT_PREVIOUS_ASSIGN_POSITION = 100.0; // previous assigned position
+    const double WEIGHT_PLAY_ON_OWN_HALF = 50.0; // stay in front of the ball on own half
+    const double WEIGHT_PLAY_ON_OPPONENT_HALF = 50.0; // stay at opponent half
+    const double WEIGHT_DESIRED_LINE = 90.0;  // desired to be on the line
+    const double WEIGHT_STRONG_DESIRED_LINE = 120.0; // strong desired to be on the line
+    const double WEIGHT_INTERCEPTION_THREAT = 20.0; // not behind opponent (from ball position)
+    const double WEIGHT_COLLIDE_TEAM_MATE = 10.0; // Do not position close to team-mate
+    const double WEIGHT_INFLUENCE_CURRENT_POSITION = 8.0; // Stability factor - influence current position
+    const double WEIGHT_NOT_AREA = 1000.0;
+
+
+
+    // define grid of 50 cm, only in field not outside the border
+    double grid_size = r_teamplannerData.parameters.grid_size; //[m]
+    double x_grid_half = floor(r_teamplannerData.fieldConfig.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_teamplannerData.fieldConfig.getMaxFieldY()/grid_size);
+    int x_grid_points = 1 + 2 * x_grid_half;
+    int y_grid_points = 1 + 2 * y_grid_half;
+
+    double x_pos_ball = r_teamplannerData.ball.position.x;
+    double y_pos_ball = r_teamplannerData.ball.position.y;
+
+    PlannerGridInfoData pgid = PlannerGridInfoData();
+    vector<GridHeuristic *> heuristics = {};
+
+    // Avoid difficult collaboration, not to close to the ball
+    heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", WEIGHT_INFLUENCE_BALL, pgid, x_pos_ball, y_pos_ball, 4));
+
+    // Avoid difficult collaboration, do not position close to opponents
+    heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", WEIGHT_INFLUENCE_OPPONENTS, pgid, r_teamplannerData.opponents, 2.0));
+
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", WEIGHT_PREVIOUS_ASSIGN_POSITION, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_ATTACKSUPPORTER));
+
+    // stay in front of the ball on own half, so play forward on own half
+    if (y_pos_ball < 0) {
+        heuristics.push_back(new InSquareHeuristic("Play forward on own half", WEIGHT_PLAY_ON_OWN_HALF, pgid, -r_teamplannerData.fieldConfig.getMaxFieldX(), y_pos_ball+1, r_teamplannerData.fieldConfig.getMaxFieldX(), -r_teamplannerData.fieldConfig.getMaxFieldY()) );
+    }
+    else {
+        heuristics.push_back(new InSquareHeuristic("Play on opponent half", WEIGHT_PLAY_ON_OPPONENT_HALF, pgid, -r_teamplannerData.fieldConfig.getMaxFieldX(), 1, r_teamplannerData.fieldConfig.getMaxFieldX(), -r_teamplannerData.fieldConfig.getMaxFieldY()) );
+    }
+
+    // y position of desired position
+    double ydesired_weight = strongDesiredY ? WEIGHT_STRONG_DESIRED_LINE : WEIGHT_DESIRED_LINE;
+    heuristics.push_back(new DesiredY("Desired-Y", ydesired_weight, pgid, preferred_position.y, r_teamplannerData.fieldConfig));
+
+    // x position of desired position
+    double xdesired_weight = strongDesiredX ? WEIGHT_STRONG_DESIRED_LINE : WEIGHT_DESIRED_LINE;
+    heuristics.push_back(new DesiredX("Desired-X", xdesired_weight, pgid, preferred_position.x, r_teamplannerData.fieldConfig));
+
+    if (beAvailableForPass) {
+        // Avoid difficult collaboration, not behind opponent (from ball position)
+        const std::vector<TeamPlannerRobot> emptyTeam = {}; // dont take assigned attacksupporters into account
+        heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", WEIGHT_INTERCEPTION_THREAT, pgid,
+                                                             Geometry::Point(r_teamplannerData.ball.position.x, r_teamplannerData.ball.position.y),
+                                                             emptyTeam, r_teamplannerData.opponents,
+                                                             r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter, r_teamplannerData.parameters.interceptionChancePenaltyFactor));
+    }
+
+    // Do not position close to attack supporters path position
+    std::vector<TeamPlannerRobot> AttackSupportTeam = vector<TeamPlannerRobot>();
+    for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
+        if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
+            AttackSupportTeam.push_back(r_teamplannerData.team[idx]);
+        }
+    }
+    heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, AttackSupportTeam, 4.0));
+
+
+    // Do not position close to team-mate path position
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", WEIGHT_COLLIDE_TEAM_MATE, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getRobotSize()*2));
+
+
+    // Do not plan in opponent penalty area
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+
+    // Do not plan in own goal area
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+
+    // Do not plan in own penalty area if already somebody assigned
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", WEIGHT_NOT_AREA, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+
+    // Not outside the playing field
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", WEIGHT_NOT_AREA, pgid, r_teamplannerData.fieldConfig, r_teamplannerData.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
+
+    // Stability heuristic
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", WEIGHT_INFLUENCE_CURRENT_POSITION, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+
+
+    /*
+     * Additional attack support position heuristics in set-play (various)
+     * Normal sweeper can be deployed during a set-play with some additional positioning restrictions below
+     * Heuristic function itself checks on correct game-state to identify set-play
+     */
+
+    // create x,y grid for calculation. make 0,0 center of grid !!
+    std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
+    for (int x_idx = 0; x_idx < x_grid_points; x_idx++) {
+        for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
+            double x = (x_idx * grid_size) - (x_grid_half * grid_size);
+            double y = (y_idx * grid_size) - (y_grid_half * grid_size);
+            if (y > -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+                allowedTargetPositions.push_back(Geometry::Position(x, y));
+            }
+        }
+    }
+
+
+    auto rolePosition = calculateGridValues(allowedTargetPositions, heuristics, r_teamplannerData.parameters, pgid);
+
+    TeamPlanner_Grid::writeGridDataToFile(pgid, r_teamplannerData, Geometry::Point(r_teamplannerData.ball.position), "SetPlay", gridFileNumber);
+
+    bool prepare_phase = isOneOf(r_teamplannerData.gamestate, {game_state_e::CORNER, game_state_e::GOALKICK, game_state_e::FREEKICK, game_state_e::THROWIN});
+    if (r_teamplannerData.parameters.wait_on_non_optimal_position_during_prepare_phase && prepare_phase) {
+        // find non optimal position to wait during prepare phase
+
+        const unsigned nr_wait_positions = 8;   // check for 8 positions 1.5 meter around best position
+        const double radius_non_opt_wait = 2.0;
+        const double infield_margin = 0.25;   // distance to stay from side of field
+        InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid,
+                Geometry::Point(r_teamplannerData.ball.position.x, r_teamplannerData.ball.position.y),
+                r_teamplannerData.team, r_teamplannerData.opponents,
+                r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
+                r_teamplannerData.parameters.interceptionChancePenaltyFactor);
+
+        double bestX = rolePosition.x;
+        double bestY = rolePosition.y;
+        double lowestValue = std::numeric_limits<double>::infinity();
+        // for all positions to check
+        for (unsigned i = 0; i < nr_wait_positions; i++) {
+            double angle = i * 2.0 * M_PI / static_cast<double>(nr_wait_positions);
+            double xx = rolePosition.x + radius_non_opt_wait * cos(angle);
+            double yy = rolePosition.y + radius_non_opt_wait * sin(angle);
+            if (r_teamplannerData.fieldConfig.isInField(xx,yy, infield_margin)) {
+                // only check positions in the field
+                double val = InterceptionThreat.getValue(xx, yy);
+                 if (val < lowestValue) {
+                     // value is worse than before, to it a good candidate to wait
+                     bestX = xx;
+                     bestY = yy;
+                 }
+            }
+        }
+        rolePosition.x = bestX;
+        rolePosition.y = bestY;
+    }
+
+    return rolePosition;
+}
 
 } /* namespace trs */
 

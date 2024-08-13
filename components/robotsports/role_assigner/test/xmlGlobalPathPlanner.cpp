@@ -15,9 +15,9 @@
 #include "MovingObject.h"
 #include "GlobalPathPlanner.h"
 #include "Field.h"
-#include "SvgUtils.hpp"
+#include "SvgUtils.h"
 
-using namespace MRA;
+using namespace trs;
 using namespace std;
 using namespace robotsports;
 
@@ -164,7 +164,8 @@ void xmlGlobalPathPlanner(char * input_filename) {
 	bool ballIsObstacle = false;
 	bool avoidBallPath = false; // Set to false, this will not be tested here
 	Vector2D BallTargePos;
-	globalPathPlanner.createGraph(me, ball, teammates, opponents, targets, plannerObjective, ballIsObstacle, avoidBallPath, BallTargePos);
+	bool stayInPlayingField = false;
+	globalPathPlanner.createGraph(me, ball, teammates, opponents, targets, plannerObjective, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargePos);
 	std::vector<planner_piece_t> robotPath = globalPathPlanner.getShortestPath();
 	for (unsigned idx = 0; idx < robotPath.size(); idx++) {
 		planner_piece_t p = robotPath[idx];

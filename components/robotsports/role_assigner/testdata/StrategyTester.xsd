@@ -62,8 +62,9 @@
         <sequence>
             <element name="PassData" type="tns:PassDataType" maxOccurs="1" minOccurs="0">  <annotation> <documentation>situation info, team related.</documentation> </annotation> </element>
         </sequence>    
-        <attribute name="team_controls_ball" type="boolean"> <annotation> <documentation>situation info, team_controls_ball</documentation>  </annotation> </attribute >
+        <attribute name="team_controls_ball" type="boolean"> <annotation> <documentation>OBSOLETE: situation info, team_controls_ball</documentation>  </annotation> </attribute >
         <attribute name="passing_required" type="boolean"> <annotation> <documentation>indicator that passing is required to able to score a valid goal</documentation> </annotation> </attribute>
+        <attribute name="ball_status" type="tns:BallStatusType"> <annotation> <documentation>ball occupation status</documentation> </annotation> </attribute>
     </complexType>
     <complexType name="PassDataType">  <annotation>  <documentation>pass information</documentation>   </annotation>
         <attribute name="origin_x" type="double" default="0.0"> <annotation> <documentation>pass from position x</documentation>    </annotation>  </attribute>
@@ -87,7 +88,7 @@
         <attribute name="dist_before_penalty_area_for_sweeper" type="double" default="0.75"> <annotation> <documentation>Minimal distance to penalty area for the sweeper.</documentation> </annotation> </attribute>
         <attribute name="dist_to_goal_to_mark_opponent_as_goalie" type="double" default="1.5"> <annotation> <documentation>max distance to opponent goal to mark an opponent as goalie.</documentation> </annotation> </attribute>
         <attribute name="distToapplyBallApproachVertices" type="double" default="1.00"> <annotation> <documentation>The distance from the border of the field, when approach vertices must be applied.</documentation> </annotation> </attribute>
-        <attribute name="firstCircleRadius" type="double" default="1"> <annotation> <documentation>Radius of the first circle of vertices around the object.</documentation> </annotation> </attribute>
+        <attribute name="firstCircleRadius" type="double" default="1.3"> <annotation> <documentation>Radius of the first circle of vertices around the object.</documentation> </annotation> </attribute>
         <attribute name="grid_close_to_ball_normal_penalty" type="double" default="17000"> <annotation> <documentation>penalty in grid for being to close to the ball within the normal radius.</documentation> </annotation> </attribute>
         <attribute name="grid_close_to_ball_normal_radius" type="double" default="3.1"> <annotation> <documentation>radius to apply penalty in grid for being to close to the ball during normal situation.</documentation> </annotation> </attribute>
         <attribute name="grid_close_to_ball_restart_dropball_penalty" type="double" default="17000"> <annotation> <documentation>penalty in grid for being to close to the ball within the dropball radius</documentation> </annotation> </attribute>
@@ -124,7 +125,8 @@
         <attribute name="preferredSetplayKicker" type="integer" default="0"> <annotation> <documentation>preferred player for rol setplay kicker</documentation> </annotation> </attribute>
         <attribute name="preferredSetplayReceiver" type="integer" default="0"> <annotation> <documentation>preferred player for rol setplay receiver</documentation> </annotation> </attribute>
         <attribute name="previous_role_bonus_end_pos_radius" type="double" default="1.0"> <annotation> <documentation>radius to apply previous position bonus value</documentation> </annotation> </attribute>
-        <attribute name="priority_block_max_distance" type="double" default="1.5"> <annotation> <documentation>distance for priority blocker to opponent</documentation> </annotation> </attribute>
+        <attribute name="priority_block_min_distance" type="double" default="0.5"> <annotation> <documentation>min distance for priority blocker to opponent</documentation> </annotation> </attribute>
+        <attribute name="priority_block_max_distance" type="double" default="1.5"> <annotation> <documentation>max distance for priority blocker to opponent</documentation> </annotation> </attribute>
         <attribute name="safetyFactor" type="double" default="1.00"> <annotation> <documentation>Factor for obstacle cost.</documentation> </annotation> </attribute>
         <attribute name="secondCircleRadius" type="double" default="1.60"> <annotation> <documentation>Radius of the second circle of vertices around the object.</documentation> </annotation> </attribute>
         <attribute name="setplay_against_dist_to_opponent" type="double" default="1.5"> <annotation> <documentation>preferred distance to keep to opponent during setplay against.</documentation> </annotation> </attribute>
@@ -141,7 +143,7 @@
         <attribute name="svgRobotPlanner" type="boolean" default="false"> <annotation> <documentation>if true, robot planner writes output to svg with the filename of svgOutFileName.</documentation> </annotation> </attribute>
         <attribute name="uniform_x_interval" type="double" default="2.0"> <annotation> <documentation>spacing in x between vertices when applying uniform grid.</documentation> </annotation> </attribute>
         <attribute name="uniform_y_interval" type="double" default="2.0"> <annotation> <documentation>spacing in y between vertices when applying uniform grid.</documentation> </annotation> </attribute>
-        <attribute name="use_pass_to_position_for_attack_support" type="boolean" default="true"> <annotation> <documentation>use pass to position to determin the attack support location (or move to current ball position).</documentation> </annotation> </attribute>
+        <attribute name="use_pass_to_position_for_attack_support" type="boolean" default="true"> <annotation> <documentation>use pass to position to determine the attack support location (or move to current ball position).</documentation> </annotation> </attribute>
         <attribute name="wait_on_non_optimal_position_during_prepare_phase" type="boolean" default="false"> <annotation> <documentation>must attackers wait on non optimal position during prepare phase (and move to best position when game starts)</documentation> </annotation> </attribute>
     </complexType>
     <complexType name="FieldType"> <annotation>    <documentation>Field data</documentation> </annotation>
@@ -240,6 +242,18 @@
             <enumeration value="PARKING"/>
             <enumeration value="PENALTY_KICKER"/>
             <enumeration value="PENALTY_DEFENDER"/>
+         </restriction>
+    </simpleType>
+    <simpleType name="BallStatusType">
+        <annotation>
+            <documentation/>
+        </annotation>
+        <restriction base="string">
+            <enumeration value="FREE"/>
+            <enumeration value="OWNED_BY_PLAYER"/>
+            <enumeration value="OWNED_BY_TEAMMATE"/>
+            <enumeration value="OWNED_BY_TEAM"/>
+            <enumeration value="OWNED_BY_OPPONENT"/>
          </restriction>
     </simpleType>
     <complexType name="ParkingInfoType"> <annotation> <documentation>parking info</documentation> </annotation>

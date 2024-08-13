@@ -1,6 +1,9 @@
 {
     "frequency": 30.0,
     "axis_threshold": 0.2,
+    "home_x": 0.0,
+    "home_y": 0.0,
+    "home_rz": 0.0,
     "motion_xy_max_speed": 1.2,
     "motion_xy_acceleration": 2.0,
     "motion_xy_deadzone": 0.3,

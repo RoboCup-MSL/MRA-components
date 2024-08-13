@@ -73,7 +73,7 @@ Notes:
         self.enable_bh = not self.enable_bh
 
     def process_state(self, controller_state):
-        logging.debug(controller_state)
+        logging.debug('controller_state: ' + str(controller_state))
         def calc(current_setpoint, axis_input, speed_limit, acc_limit, deadzone):
             if abs(axis_input) < deadzone:
                 return 0.0
@@ -96,7 +96,7 @@ Notes:
             self.action = 'kick'
             self.action_args = {'power': self.kicker_power, 'height': self.kicker_height}
         elif self.vx != 0.0 or self.vy != 0.0 or self.vrz != 0.0:
-            self.action = 'move' # local move
+            self.action = 'move' # TODO 'dash' # local move
             self.action_args = {'velocity': [self.vx, self.vy, self.vrz]}
         elif controller_state.buttons['A'].is_pressed:
             self.action = 'pass'

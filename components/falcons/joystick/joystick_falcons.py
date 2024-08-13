@@ -12,7 +12,9 @@ It needs to be called via bazel run, so that the pybind module can be found.
 
 # python imports
 import os
+import json
 import logging
+from google.protobuf import json_format
 
 # local imports
 from components.falcons.joystick import joystick
@@ -33,6 +35,12 @@ def parse_args():
 # -> park, quite a narrow use case which increases complexity significantly
 
 
+def set_test_worldstate(worldstate):
+    # TODO: worldstate is a protobuf message, merge from json string
+    test_json_string = '{"time":"2024-08-11T15:36:09.094Z","robot":{"id":2,"active":true,"position":{"x":-2,"y":-2,"rz":0},"velocity":{}},"ball":{"position":{},"velocity":{}},"teammates":[{"id":1,"active":true,"position":{"x":-4,"y":-2,"rz":0},"velocity":{}}]}'
+    json_format.ParseDict(json.loads(test_json_string), worldstate)
+
+
 def main(args):
     # configure logging with timestamps (milliseconds)
     loglevel = (logging.DEBUG if args.debug else logging.INFO)
@@ -50,8 +58,12 @@ def main(args):
     # setup joystick
     joystick_controller = joystick.JoystickController(robotId, joystick_config, args.index)
     robot_interface = falcons_interface.RobotInterface(robotId)
+    robot_interface.homePos[0] = joystick_config.home_x
+    robot_interface.homePos[1] = joystick_config.home_y
+    robot_interface.homePos[2] = joystick_config.home_rz
     if args.testmode:
-        robot_interface.handle_setpoints = print
+        robot_interface.handle_setpoints = lambda x: logging.debug('setpoints: ' + str(json_format.MessageToJson(x, indent=None)))
+        robot_interface.update_worldstate = set_test_worldstate
     joystick_controller.packet_handler = robot_interface.handle_packet
     joystick_controller.run()
 

@@ -46,6 +46,7 @@ def arg_parser():
             argparse.RawDescriptionHelpFormatter.__init__(self, prog, max_help_position=width)
     parser = argparse.ArgumentParser(description=__doc__ + button_text(), formatter_class=CustomFormatter)
     parser.add_argument('-i', '--index', help='joystick index to use', type=int, default=0)
+    parser.add_argument('-k', '--keyboard', help='use keyboard instead of joystick', action='store_true')
     parser.add_argument('-c', '--config', help='configuration file', default='joystick.json')
     parser.add_argument('-d', '--debug', help='enable debug logging', action='store_true')
     return parser
@@ -62,7 +63,7 @@ def main(args):
     # configuration values
     joystick_config = Configuration(args.config)
     # setup joystick
-    joystick_controller = JoystickController('no-robot', joystick_config, args.index)
+    joystick_controller = JoystickController('no-robot', joystick_config, args.index, args.keyboard)
     joystick_controller.run()
 
 

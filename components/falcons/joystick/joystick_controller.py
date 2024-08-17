@@ -6,6 +6,7 @@ import logging
 
 # local imports
 from joystick_pygame import JoystickPygame
+from keyboard import KeyboardControl
 
 
 
@@ -48,14 +49,17 @@ Notes:
 * stick movement cancels any running action
 """
 
-    def __init__(self, robotId, cfg, jsId=0):
+    def __init__(self, robotId, cfg, jsId=0, keyboard=False):
         self.robotId = str(robotId)
         self.cfg = cfg
         self.prev_display_string = None
         self.packet_handler = self.display_packet
         self.enable_bh = False
         self.toggle_bh()
-        self.controller = JoystickPygame(cfg.frequency, cfg.axis_threshold, jsId)
+        if keyboard:
+            self.controller = KeyboardControl(cfg.frequency)
+        else:
+            self.controller = JoystickPygame(cfg.frequency, cfg.axis_threshold, jsId)
         self.controller.buttons['B'].when_pressed = self.toggle_bh
         self.controller.callback = self.process_state
         self.vx = 0.0

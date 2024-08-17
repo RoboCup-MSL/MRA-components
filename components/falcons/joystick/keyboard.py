@@ -26,22 +26,8 @@ class Axis2:
         self.when_moved = lambda: None
 
 class KeyboardControl:
-    def __init__(self, frequency=30.0):
-        self.frequency = frequency
-        self.callback = lambda s: None
-        self.init_elements()
-        logging.info('using keyboard, type h for help')
 
-    def __str__(self):
-        s = f"A={int(self.buttons['A'].is_pressed)} B={int(self.buttons['B'].is_pressed)} X={int(self.buttons['X'].is_pressed)} Y={int(self.buttons['Y'].is_pressed)}"
-        s += f" LB={int(self.buttons['LB'].is_pressed)} RB={int(self.buttons['RB'].is_pressed)} LS={int(self.buttons['LS'].is_pressed)} RS={int(self.buttons['RS'].is_pressed)}"
-        s += f" sel={int(self.buttons['select'].is_pressed)} st={int(self.buttons['start'].is_pressed)} m={int(self.buttons['mode'].is_pressed)}"
-        s += f" LT={self.axis_lt.x:.3f} RT={self.axis_rt.x:.3f}"
-        s += f" LS=({self.axis_ls.x:.3f},{self.axis_ls.y:.3f}) RS=({self.axis_rs.x:.3f},{self.axis_rs.y:.3f})"
-        return s
-
-    def print_help(self):
-        help_text = """Keyboard controls:
+    HELP_TEXT = """Keyboard controls:
 * movement:
     * numpad 2,4,6,8 to move the robot forward, backward, left, right
     * numpad 7,9 rotate robot
@@ -60,13 +46,29 @@ class KeyboardControl:
     * RS+S: bump towards goal
 * special actions:
     * K: activate keeper mode
-    * LS+H: move the robot to configured home location
-    * H: move the robot to the parking area
+    * LS+E: move the robot to configured home location
+    * E: move the robot to the parking area
 
 Notes:
 * RS is right-shift, LS is left-shift
 """
-        print(help_text)
+
+    def __init__(self, frequency=30.0):
+        self.frequency = frequency
+        self.callback = lambda s: None
+        self.init_elements()
+        logging.info('using keyboard, type h for help')
+
+    def __str__(self):
+        s = f"A={int(self.buttons['A'].is_pressed)} B={int(self.buttons['B'].is_pressed)} X={int(self.buttons['X'].is_pressed)} Y={int(self.buttons['Y'].is_pressed)}"
+        s += f" LB={int(self.buttons['LB'].is_pressed)} RB={int(self.buttons['RB'].is_pressed)} LS={int(self.buttons['LS'].is_pressed)} RS={int(self.buttons['RS'].is_pressed)}"
+        s += f" sel={int(self.buttons['select'].is_pressed)} st={int(self.buttons['start'].is_pressed)} m={int(self.buttons['mode'].is_pressed)}"
+        s += f" LT={self.axis_lt.x:.3f} RT={self.axis_rt.x:.3f}"
+        s += f" LS=({self.axis_ls.x:.3f},{self.axis_ls.y:.3f}) RS=({self.axis_rs.x:.3f},{self.axis_rs.y:.3f})"
+        return s
+
+    def print_help(self):
+        print(self.HELP_TEXT)
 
     def init_elements(self):
         self.buttons = {name: Button() for name in ('A', 'B', 'X', 'Y', 'LB', 'RB', 'LS', 'RS', 'select', 'start', 'mode')}
@@ -77,13 +79,13 @@ Notes:
 
     def run(self):
         key_to_button = {
-            'g': 'A',          # G maps to A
-            'b': 'B',          # B remains B
-            'p': 'X',          # P maps to X
-            's': 'Y',          # S maps to Y
+            'p': 'A',          # P maps to A (pass)
+            'b': 'B',          # B remains B (toggle ballhandlers)
+            'g': 'X',          # G maps to X (getball)
+            's': 'Y',          # S maps to Y (shoot)
             '\x1b[D': 'LB',    # left-shift maps to LB
             '\x1b[C': 'RB',    # right-shift maps to RB
-            'h': 'select',     # H maps to select
+            'e': 'select',     # E maps to select (end/park)
             'k': 'mode',       # K maps to mode (for keeper)
         }
 
@@ -97,6 +99,8 @@ Notes:
 
                 if key == '\x03':  # Ctrl+C to quit
                     done = True
+                if key == 'h':  # H for help text
+                    self.print_help()
                 elif key in key_to_button:
                     button_name = key_to_button[key]
                     button = self.buttons[button_name]

@@ -5,8 +5,7 @@
 import logging
 
 # local imports
-from joystick_pygame import JoystickPygame
-from keyboard import KeyboardControl
+from joystick_core import JoystickPygame, Keyboard
 
 
 
@@ -48,7 +47,10 @@ Notes:
 * RB is right bumper, RT is right trigger, etc.
 * stick movement cancels any running action
 """
-
+# idea: getball in front of robot
+# idea: set home location
+# idea: dpad for reproducable kicker setpoint intervals
+# make sure to not allow hard kick without ball
     def __init__(self, robotId, cfg, jsId=0, keyboard=False):
         self.robotId = str(robotId)
         self.cfg = cfg
@@ -57,10 +59,10 @@ Notes:
         self.enable_bh = False
         self.toggle_bh()
         if keyboard:
-            self.controller = KeyboardControl(cfg.frequency)
+            self.controller = Keyboard(cfg.frequency)
         else:
             self.controller = JoystickPygame(cfg.frequency, cfg.axis_threshold, jsId)
-        self.controller.buttons['B'].when_pressed = self.toggle_bh
+        self.controller.buttons['B'].on_press = self.toggle_bh
         self.controller.callback = self.process_state
         self.vx = 0.0
         self.vy = 0.0

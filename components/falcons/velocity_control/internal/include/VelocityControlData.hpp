@@ -25,7 +25,7 @@ struct VelocityControlData
     MRA_InputType      input;
     MRA_ParamsType     config;
     MRA_StateType      state;
-    MRA_LocalType      diag;
+    MRA_DiagnosticsType diagnostics;
     MRA_OutputType     output;
 
     // while running the sequence of algorithms, this flag may be raised

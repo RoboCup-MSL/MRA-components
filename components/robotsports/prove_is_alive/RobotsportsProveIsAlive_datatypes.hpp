@@ -8,7 +8,7 @@
 #include "components/robotsports/prove_is_alive/interface/Params.pb.h"
 #include "components/robotsports/prove_is_alive/interface/State.pb.h"
 #include "components/robotsports/prove_is_alive/interface/Output.pb.h"
-#include "components/robotsports/prove_is_alive/interface/Local.pb.h"
+#include "components/robotsports/prove_is_alive/interface/Diagnostics.pb.h"
 
 
 #endif

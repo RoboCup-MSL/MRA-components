@@ -11,7 +11,7 @@ enum ControlModeEnum
     VEL_ONLY = 3; // velocity setpoint, ignoring the robot position. used to stop the robot: VEL_ONLY with vel(0,0,0).
 }
 
-message Local
+message Diagnostics
 {
     ControlModeEnum controlMode = 1;
     int32 numAlgorithmsExecuted = 2;

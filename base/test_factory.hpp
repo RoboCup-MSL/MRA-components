@@ -75,7 +75,7 @@ typename Tc::OutputType run_testvector(std::string tv_filename, double tolerance
     auto input = typename Tc::InputType();
     auto params = typename Tc::ParamsType();
     auto state = typename Tc::StateType();
-    auto local = typename Tc::LocalType();
+    auto diagnostics = typename Tc::DiagnosticsType();
     auto expected_output = typename Tc::OutputType();
     auto actual_output = typename Tc::OutputType();
 
@@ -92,7 +92,7 @@ typename Tc::OutputType run_testvector(std::string tv_filename, double tolerance
     convert_json_to_proto(j, "Output", expected_output);
 
     // Act - tick
-    int error_value = m.tick(input, params, state, actual_output, local);
+    int error_value = m.tick(input, params, state, actual_output, diagnostics);
 
     // Assert
     EXPECT_EQ(error_value, 0);

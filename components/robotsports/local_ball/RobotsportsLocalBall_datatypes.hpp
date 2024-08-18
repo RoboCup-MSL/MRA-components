@@ -8,7 +8,7 @@
 #include "components/robotsports/local_ball/interface/Params.pb.h"
 #include "components/robotsports/local_ball/interface/State.pb.h"
 #include "components/robotsports/local_ball/interface/Output.pb.h"
-#include "components/robotsports/local_ball/interface/Local.pb.h"
+#include "components/robotsports/local_ball/interface/Diagnostics.pb.h"
 
 
 #endif

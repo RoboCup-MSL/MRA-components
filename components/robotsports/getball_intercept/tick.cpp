@@ -127,7 +127,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
     std::cout << __FILE__ << " output: " << convert_proto_to_json_str(output) << std::endl;
     std::cerr << __FILE__ << " output: " << convert_proto_to_json_str(output) << std::endl;
     std::cout << __FILE__ << " state: " << convert_proto_to_json_str(state) << std::endl;
-    std::cout << __FILE__ << " local: " << convert_proto_to_json_str(local) << std::endl;
+    std::cout << __FILE__ << " diagnostics: " << convert_proto_to_json_str(diagnostics) << std::endl;
     std::cout << __FILE__ << " error: " << error_value << std::endl;
 #endif // DEBUG
     return error_value;

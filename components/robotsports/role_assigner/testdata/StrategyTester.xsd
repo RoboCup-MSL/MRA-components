@@ -62,7 +62,6 @@
         <sequence>
             <element name="PassData" type="tns:PassDataType" maxOccurs="1" minOccurs="0">  <annotation> <documentation>situation info, team related.</documentation> </annotation> </element>
         </sequence>    
-        <attribute name="team_controls_ball" type="boolean"> <annotation> <documentation>OBSOLETE: situation info, team_controls_ball</documentation>  </annotation> </attribute >
         <attribute name="passing_required" type="boolean"> <annotation> <documentation>indicator that passing is required to able to score a valid goal</documentation> </annotation> </attribute>
         <attribute name="ball_status" type="tns:BallStatusType"> <annotation> <documentation>ball occupation status</documentation> </annotation> </attribute>
     </complexType>

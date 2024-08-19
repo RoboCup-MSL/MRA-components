@@ -184,7 +184,7 @@ RobotsportsLocalObstacleTracking::Output execute_obstacle_traject_test(ObstacleT
     auto m = RobotsportsLocalObstacleTracking::RobotsportsLocalObstacleTracking();
     auto output = RobotsportsLocalObstacleTracking::Output();
     auto state = RobotsportsLocalObstacleTracking::State();
-    auto local = RobotsportsLocalObstacleTracking::Local();
+    auto diagnostics = RobotsportsLocalObstacleTracking::Diagnostics();
     auto params = m.defaultParams();
     int n_samples = traject_generator.generate(distance);
     int error_value = 0;
@@ -212,9 +212,9 @@ RobotsportsLocalObstacleTracking::Output execute_obstacle_traject_test(ObstacleT
 
                     input.mutable_obstacle_candidates()->Add()->CopyFrom(candidate);
                 }
-                error_value = m.tick(timestamp, input, params, state, output, local);
+                error_value = m.tick(timestamp, input, params, state, output, diagnostics);
                 MRA_LOG_DEBUG("sample: %d output: %s", sample, MRA::convert_proto_to_json_str(output).c_str());
-                MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
+                MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(diagnostics).c_str());
                 MRA_LOG_DEBUG("state: %s", MRA::convert_proto_to_json_str(state).c_str());
                 // Asserts for turn from middle to left position
                 EXPECT_EQ(error_value, 0);

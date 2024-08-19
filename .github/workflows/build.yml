@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Bazel
       uses: bazelbuild/setup-bazelisk@v2
@@ -39,7 +39,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Bazel
       uses: bazelbuild/setup-bazelisk@v2
@@ -61,12 +61,37 @@ jobs:
 
       # TODO: configure a cache?
 
+  build_bazel_Ubuntu_24_04:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Bazel
+      uses: bazelbuild/setup-bazelisk@v2
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+        sudo apt-get install -y libopencv-dev
+
+    - name: Run code generator
+      run: ./MRA-codegen.py -e
+
+    - name: Build and test with Bazel
+      run: ./MRA-build.py -t
+
+#      # TODO: configure a cache?
+
+
   build_cmake_Ubuntu_20_04:
     runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up CMake
       run: |
@@ -93,7 +118,29 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+
+    - name: Set up CMake
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+
+    - name: Create build folder
+      run: mkdir build
+
+    - name: Build and test with Cmake
+      run: ./MRA-build.py -t --cmake
+
+  build_cmake_Ubuntu_24_04:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up CMake
       run: |

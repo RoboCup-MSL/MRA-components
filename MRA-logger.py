@@ -144,13 +144,20 @@ class Configurator():
     def run(self):
         mode = self.args.mode
         self.read()
-        self.set('dumpTicks', ['ON_ERROR', 'ALWAYS'][self.args.tickbins])
-        self.set('level', self.level)
+        # read-like operations
         if mode == 'show':
             self.display()
+            return
+        elif mode == 'list':
+            self.list()
+            return
         elif mode == 'json':
             self.command(f'cat {self.config_filename}')
-        elif mode == 'reset':
+            return
+        # write-like operations
+        self.set('dumpTicks', ['ON_ERROR', 'ALWAYS'][self.args.tickbins])
+        self.set('level', self.level)
+        if mode == 'reset':
             self.reset()
         elif mode == 'enable':
             self.set('enabled', True)
@@ -160,8 +167,6 @@ class Configurator():
             self.write()
         elif mode == 'wipe':
             self.wipe()
-        elif mode == 'list':
-            self.list()
 
 
 def main(args) -> None:

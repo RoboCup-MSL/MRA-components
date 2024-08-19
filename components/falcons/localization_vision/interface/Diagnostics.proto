@@ -4,9 +4,11 @@ package MRA.FalconsLocalizationVision;
 
 import "datatypes/CvMat.proto";
 
-message Local
+message Diagnostics
 {
     // optional debug Mat, for plotting, only set when params.debug is enabled
     MRA.Datatypes.CvMatProto floor = 1;
+
+    repeated int32 numberOfTries = 2; // per tracker (in state)
 }
 

@@ -38,11 +38,13 @@ void logTickStart(
 // tick logging: write logging/data at end of tick
 void logTickEnd(
     std::string const &componentName,
+    std::string const &componentRelPath,
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
     std::ostringstream &bindata,
     int counter,
+    google::protobuf::Timestamp const &timestamp,
     double duration,
     int error_value,
     google::protobuf::Message const &state,

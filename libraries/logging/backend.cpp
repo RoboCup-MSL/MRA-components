@@ -3,6 +3,7 @@
 #include "json_convert.hpp"
 #include "spdlogformatter.hpp" // our customizations
 #include "logdebug.hpp"
+#include "datatypes/Meta.pb.h"
 #include <memory>
 #include <unistd.h>
 #include "spdlog/spdlog.h"  // spdlog API: https://github.com/gabime/spdlog
@@ -37,7 +38,7 @@ std::string logTickBinFile(
 
 // dump protobuf data to ostringstream file
 template <typename T>
-void dumpPbToSs(T const &pbObject, std::ostringstream &ss)
+int dumpPbToSs(T const &pbObject, std::ostringstream &ss)
 {
     // serialize the protobuf object to a string
     std::ostringstream oss;
@@ -47,6 +48,7 @@ void dumpPbToSs(T const &pbObject, std::ostringstream &ss)
     int byteCount = static_cast<int>(serializedData.size());
     ss.write(reinterpret_cast<const char*>(&byteCount), sizeof(int));
     ss.write(serializedData.c_str(), byteCount);
+    return byteCount;
 }
 
 // tick logging: write logging/data at start of tick
@@ -71,7 +73,7 @@ void logTickStart(
         std::string stateStr = MRA::convert_proto_to_json_str(state);
         MRA::Logging::backend::source_loc loc{fileName.c_str(), componentName.c_str(), lineNumber, "tick"};
         // prepare strings for logging with INFO and TRACE levels
-        // state and local may grow large -> these go to tracing, not info
+        // state and diagnostics may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
             + ",\"timestamp\":" + google::protobuf::util::TimeUtil::ToString(timestamp)
             + ",\"input\":" + inputStr
@@ -93,11 +95,13 @@ void logTickStart(
 // tick logging: write logging/data at end of tick
 void logTickEnd(
     std::string const &componentName,
+    std::string const &componentRelPath,
     std::string const &fileName,
     int lineNumber,
     MRA::Datatypes::LogSpec const &cfg,
     std::ostringstream &bindata,
     int counter,
+    google::protobuf::Timestamp const &timestamp,
     double duration,
     int error_value,
     google::protobuf::Message const &state,
@@ -112,7 +116,7 @@ void logTickEnd(
         std::string outputStr = MRA::convert_proto_to_json_str(output);
         MRA::Logging::backend::source_loc loc{fileName.c_str(), componentName.c_str(), lineNumber, "tick"};
         // prepare strings for logging with INFO and TRACE levels
-        // state and local may grow large -> these go to tracing, not info
+        // state and diagnostics may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
             + ",\"error_value\":" + std::to_string(error_value)
             + ",\"duration\":" + std::to_string(duration)
@@ -124,13 +128,22 @@ void logTickEnd(
         bool do_tickdump = (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ALWAYS) or (cfg.dumpticks() == MRA::Datatypes::TickDumpMode::ON_ERROR and error_value != 0);
         if (do_tickdump)
         {
+            MRA::Datatypes::Meta meta;
+            meta.set_component(componentName);
+            meta.set_subfolder(componentRelPath);
+            meta.set_counter(counter);
+            *meta.mutable_timestamp() = timestamp;
+            meta.set_duration(duration);
+            meta.set_return_code(error_value);
             dumpPbToSs(output, bindata);
             dumpPbToSs(diag, bindata);
             dumpPbToSs(state, bindata);
             std::string filename = logTickBinFile(cfg, componentName, counter);
             if (filename.size()) {
                 std::ofstream binfile(filename, std::ios::binary);
-                const std::string& data = bindata.str();
+                std::ostringstream bindata_header;
+                dumpPbToSs(meta, bindata_header); // meta goes first! so for instance python tooling can figure out which protobuf types to use beyond
+                const std::string& data = bindata_header.str() + bindata.str();
                 logger->log(loc, MRA::Logging::DEBUG, "dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
                 LOGDEBUG("dumping binary data (%d bytes) to file: %s", data.size(), filename.c_str());
                 binfile.write(data.data(), data.size());

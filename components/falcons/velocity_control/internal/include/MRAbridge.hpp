@@ -12,13 +12,13 @@ typedef MRA::Geometry::Pose pose;
 #include "components/falcons/velocity_control/interface/Params.pb.h"
 #include "components/falcons/velocity_control/interface/Output.pb.h"
 #include "components/falcons/velocity_control/interface/State.pb.h"
-#include "components/falcons/velocity_control/interface/Local.pb.h"
+#include "components/falcons/velocity_control/interface/Diagnostics.pb.h"
 typedef google::protobuf::Timestamp MRA_timestamp;
 typedef MRA::FalconsVelocityControl::Input  MRA_InputType;
 typedef MRA::FalconsVelocityControl::Params MRA_ParamsType;
 typedef MRA::FalconsVelocityControl::State  MRA_StateType;
 typedef MRA::FalconsVelocityControl::Output MRA_OutputType;
-typedef MRA::FalconsVelocityControl::Local  MRA_LocalType;
+typedef MRA::FalconsVelocityControl::Diagnostics  MRA_DiagnosticsType;
 
 // map configuration types
 typedef MRA::FalconsVelocityControl::SpgConfig SpgConfig;

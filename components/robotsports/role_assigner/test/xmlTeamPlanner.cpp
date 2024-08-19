@@ -603,10 +603,6 @@ void xmlplanner(string input_filename) {
 	            exit(1);
 		    }
 			passIsRequired = c->SituationInfo()->passing_required().get();
-			if (not c->SituationInfo()->team_controls_ball()) {
-                cout << "SituationInfo must have attribute \"team_controls_ball\"" << endl;
-                exit(1);
-			}
 			ball_status = ball_status_to_enum(c->SituationInfo()->ball_status());
 			if (c->SituationInfo()->PassData() != 0) {
 				pass_data.ts = c->SituationInfo()->PassData()->ts();

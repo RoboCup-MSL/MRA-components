@@ -52,7 +52,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType                  &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
 #ifdef DEBUG
@@ -127,7 +127,7 @@ int RobotsportsGetballIntercept::RobotsportsGetballIntercept::tick
     std::cout << __FILE__ << " output: " << convert_proto_to_json_str(output) << std::endl;
     std::cerr << __FILE__ << " output: " << convert_proto_to_json_str(output) << std::endl;
     std::cout << __FILE__ << " state: " << convert_proto_to_json_str(state) << std::endl;
-    std::cout << __FILE__ << " local: " << convert_proto_to_json_str(local) << std::endl;
+    std::cout << __FILE__ << " diagnostics: " << convert_proto_to_json_str(diagnostics) << std::endl;
     std::cout << __FILE__ << " error: " << error_value << std::endl;
 #endif // DEBUG
     return error_value;

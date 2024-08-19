@@ -10,6 +10,9 @@
 #ifndef MRA_COMPONENT_NAME
 #define MRA_COMPONENT_NAME "COMPONENT_CPP_NAME_CAMELCASE"
 #endif
+#ifndef MRA_COMPONENT_FOLDER
+#define MRA_COMPONENT_FOLDER "COMPONENT_REL_PATH"
+#endif
 
 
 #include "abstract_interface.hpp"
@@ -28,7 +31,7 @@ namespace MRA::COMPONENT_CPP_NAME_CAMELCASE
 
 PROTOBUF_HPP_TYPE_TYPEDEFS
 
-class COMPONENT_CPP_NAME_CAMELCASE: public MRAInterface<InputType, ParamsType, StateType, OutputType, LocalType>
+class COMPONENT_CPP_NAME_CAMELCASE: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>
 {
 public:
     COMPONENT_CPP_NAME_CAMELCASE() {};
@@ -41,7 +44,7 @@ public:
         ParamsType const           &params,      // configuration parameters, type generated from Params.proto
         StateType                  &state,       // state data, type generated from State.proto
         OutputType                 &output,      // output data, type generated from Output.proto
-        LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+        DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
     );
 
     // make default configuration easily accessible
@@ -55,8 +58,8 @@ public:
     {
         StateType s;
         OutputType o;
-        LocalType l;
-        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), InputType(), defaultParams(), s, o, l);
+        DiagnosticsType d;
+        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), InputType(), defaultParams(), s, o, d);
     };
 
     int tick(
@@ -65,8 +68,8 @@ public:
     )
     {
         StateType s;
-        LocalType l;
-        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, defaultParams(), s, output, l);
+        DiagnosticsType d;
+        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, defaultParams(), s, output, d);
     };
 
     int tick(
@@ -76,8 +79,8 @@ public:
     )
     {
         StateType s;
-        LocalType l;
-        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, s, output, l);
+        DiagnosticsType d;
+        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, s, output, d);
     };
 
     int tick(
@@ -85,10 +88,10 @@ public:
         ParamsType const &params,
         StateType        &state,
         OutputType       &output,
-        LocalType        &local
+        DiagnosticsType  &diagnostics
     )
     {
-        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, local);
+        return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, diagnostics);
     };
 
 }; // class COMPONENT_CPP_NAME_CAMELCASE

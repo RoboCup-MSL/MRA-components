@@ -5,7 +5,7 @@
 #include "backend.hpp"
 
 
-#define MRA_LOG_TICK() MRA::Logging::LogTick scoped(MRA_COMPONENT_NAME, __FILE__, __LINE__, timestamp, input, params, &state, &output, &local, &error_value)
+#define MRA_LOG_TICK() MRA::Logging::LogTick scoped(MRA_COMPONENT_NAME, MRA_COMPONENT_FOLDER, __FILE__, __LINE__, timestamp, input, params, &state, &output, &diagnostics, &error_value)
 
 // MRA_COMPONENT_NAME may be undefined, when using macros in internal implementation -> provide fallback
 #ifndef MRA_COMPONENT_NAME

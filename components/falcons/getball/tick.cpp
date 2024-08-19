@@ -21,7 +21,7 @@ int FalconsGetball::FalconsGetball::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
@@ -45,7 +45,7 @@ int FalconsGetball::FalconsGetball::tick
             params.fetch(),
             state,
             subcomponent_output,
-            local
+            diagnostics
         );
         //output.set_actionresult(subcomponent_output.actionresult());
         //output.set_target(subcomponent_output.target());

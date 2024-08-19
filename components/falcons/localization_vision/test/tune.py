@@ -29,7 +29,6 @@ threading.current_thread().name = "main-gui" # instead of default MainThread
 import common
 import gui
 import parameters
-from components.falcons.localization_vision.test import pybind_ext
 
 
 # logging format when not using --debug advanced logging/tracing
@@ -175,7 +174,6 @@ class TuningTool():
             self.add_overlay(info_lines)
 
     def tick_call(self):
-        t = self.data.t
         # feed previous guess
         if len(self.data.output.candidates):
             c = self.data.output.candidates[0]
@@ -183,17 +181,8 @@ class TuningTool():
             self.data.input.guess.y = c.pose.y
             self.data.input.guess.rz = c.pose.rz
         # call tick
-        return_tuple = pybind_ext.tick(
-            #t,
-            self.data.input,
-            self.data.params,
-            self.data.state)
-        return_code = return_tuple[0]
+        return_code = common.tick_call(self.data, check=False)
         self.info['return code'] = 'return code: {:d}'.format(return_code)
-        self.data.state = return_tuple[1]
-        self.data.output = return_tuple[2]
-        self.data.local = return_tuple[3] # local is a synonym for diagnostics. If too confusing, then lets bulk-rename? (Naming came from FMI standard.)
-        #logging.info('output = ' + str(self.data.output))
         # convert CvMatProto object to opencv object
         c = self.data.local.floor
         if c.width * c.height:
@@ -206,10 +195,7 @@ class TuningTool():
         # Determine text lines to show
         if len(self.elapsed_stats):
             self.info['mean tick'] = 'mean tick: {:.1f}ms (n={:d})'.format(1e3 * np.mean(self.elapsed_stats), len(self.elapsed_stats))
-        self.info['best candidate'] = 'N/A'
-        if len(self.data.output.candidates):
-            c = self.data.output.candidates[0]
-            self.info['best candidate'] = 'best candidate: x={:7.3f} y={:7.3f} rz={:7.3f} conf={:5.3f}'.format(c.pose.x, c.pose.y, c.pose.rz, c.confidence)
+        self.info['best candidate'] = 'best candidate: ' + common.tick_info(self.data)
         # Make array of lines (using OrderedDict and layout specification preference from INFO_LINES)
         # Replace missing data with empty strings, to keep consistent line layout/spacing
         info_lines = self.info.values()

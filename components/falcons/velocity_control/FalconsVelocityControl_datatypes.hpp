@@ -8,7 +8,7 @@
 #include "components/falcons/velocity_control/interface/Params.pb.h"
 #include "components/falcons/velocity_control/interface/State.pb.h"
 #include "components/falcons/velocity_control/interface/Output.pb.h"
-#include "components/falcons/velocity_control/interface/Local.pb.h"
+#include "components/falcons/velocity_control/interface/Diagnostics.pb.h"
 
 
 #endif

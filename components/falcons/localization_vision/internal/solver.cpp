@@ -122,7 +122,7 @@ cv::Mat Solver::createReferenceFloorMat(bool withBlur) const
 
 void Solver::reinitialize()
 {
-    MRA_TRACE_FUNCTION();
+    MRA_TRACE_FUNCTION_INPUT(_reinit);
     // first check the flag
     if (!_reinit) return;
 
@@ -132,21 +132,29 @@ void Solver::reinitialize()
     std::string stateParamsStr, paramsStr;
     _state.params().SerializeToString(&stateParamsStr);
     _params.SerializeToString(&paramsStr);
-    bool cache_hit = (stateParamsStr == paramsStr) && _state.has_referencefloor();
+    bool state_equal = (stateParamsStr == paramsStr);
+    if (!state_equal) {
+        MRA_LOG_DEBUG("stateParamsStr %3d %s", (int)stateParamsStr.size(), convert_proto_to_json_str(_state.params()).c_str());
+        MRA_LOG_DEBUG("     paramsStr %3d %s", (int)paramsStr.size(), convert_proto_to_json_str(_params).c_str());
+    }
+    bool state_floor = _state.has_referencefloor();
+    bool cache_hit = state_equal && state_floor;
     if (cache_hit)
     {
         MRA::OpenCVUtils::deserializeCvMat(_state.referencefloor(), _referenceFloorMat);
-        return;
     }
+    else
+    {
+        MRA_LOG_DEBUG("cache miss, creating reference floor");
 
-    MRA_LOG_DEBUG("cache miss, creating reference floor");
+        // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
+        _referenceFloorMat = createReferenceFloorMat(true);
+        MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
 
-    // calculate reference floor and store in state as protobuf CvMatProto object for next iteration (via state)
-    _referenceFloorMat = createReferenceFloorMat(true);
-    MRA::OpenCVUtils::serializeCvMat(_referenceFloorMat, *_state.mutable_referencefloor());
-
-    // store params into state
-    _state.mutable_params()->CopyFrom(_params);
+        // store params into state
+        _state.mutable_params()->CopyFrom(_params);
+    }
+    MRA_TRACE_FUNCTION_OUTPUTS(cache_hit, state_equal, state_floor);
 }
 
 std::vector<cv::Point2f> Solver::createLinePoints() const
@@ -304,12 +312,16 @@ void Solver::cleanupDuplicateTrackers()
 
 void Solver::setOutputsAndState()
 {
+    MRA_TRACE_FUNCTION();
     // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
+    // also, the number of iterations per tracker is stored in diagnostics output
     _state.mutable_trackers()->Clear();
+    _diagnostics.mutable_numberoftries()->Clear();
     for (auto const &tr: _trackers)
     {
         TrackerState ts = tr;
         *_state.add_trackers() = ts;
+        _diagnostics.add_numberoftries(tr.fitPath.size());
     }
 
     // only the best trackers are set in output
@@ -318,10 +330,22 @@ void Solver::setOutputsAndState()
         if (tr.fitValid)
         {
             Candidate c;
-            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)tr.fitResult);
+            MRA::Geometry::Position pc(tr.fitResult); // wrap the rz angle, as the solver is not confining itself to (-pi,pi)
+            c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)pc);
             c.set_confidence(tr.confidence());
             *_output.add_candidates() = c;
         }
+    }
+
+    // manual mode?
+    if (_params.solver().manual().enabled())
+    {
+        Candidate c;
+        MRA::Geometry::Position pc(_fitResult.pose);
+        c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)pc);
+        c.set_confidence(1.0 - _fitResult.score);
+        *_output.add_candidates() = c;
+        _diagnostics.add_numberoftries(_fitResult.path.size());
     }
 
     // update tick counter for next tick (this should be called at the end of the tick)
@@ -364,7 +388,7 @@ cv::Mat Solver::createDiagnosticsMat() const
     }
 
     // add fit path
-    MRA_LOG_DEBUG("number of points in fit path: %d", (int)_fitResult.path.size());
+    MRA_LOG_DEBUG("number of iterations (fit path): %d", (int)_fitResult.path.size());
     std::vector<cv::Point2f> pathPoints;
     std::transform(_fitResult.path.begin(), _fitResult.path.end(), std::back_inserter(pathPoints),
                    [](const MRA::Geometry::Pose& obj) { return cv::Point2f(obj.x, obj.y); });
@@ -394,23 +418,36 @@ cv::Mat Solver::createDiagnosticsMat() const
 void Solver::dumpDiagnosticsMat()
 {
     MRA_TRACE_FUNCTION();
-    MRA::OpenCVUtils::serializeCvMat(createDiagnosticsMat(), *_diag.mutable_floor());
+    MRA::OpenCVUtils::serializeCvMat(createDiagnosticsMat(), *_diagnostics.mutable_floor());
 }
 
 void Solver::manualMode()
 {
-    MRA_TRACE_FUNCTION();
+    bool converge = _params.solver().manual().converge();
+    MRA_TRACE_FUNCTION_INPUT(converge);
     float ppm = _params.solver().pixelspermeter();
-    // run the core calc() function
-    FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
-    double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
-    double score = fit.calc(pose);
-    // copy pose into _fitResult so local.floor will be properly created
-    _fitResult.pose.x = pose[0];
-    _fitResult.pose.y = pose[1];
-    _fitResult.pose.rz = pose[2];
-    _fitResult.path = fit.getPath();
-    _fitResult.score = score;
+    if (converge)
+    {
+        FalconsLocalizationVision::FitCore fit;
+        fit.configure(_params.solver());
+        _fitResult = fit.run(_referenceFloorMat, _linePoints, _params.solver().manual().pose(), _params.solver().actionradius());
+    }
+    else
+    {
+        // run the core calc() function
+        FalconsLocalizationVision::FitFunction fit(_referenceFloorMat, _linePoints, ppm, _params.solver().linepoints().penaltyoutsidefield());
+        double pose[3] = {_params.solver().manual().pose().x(), _params.solver().manual().pose().y(), _params.solver().manual().pose().rz()};
+        double score = fit.calc(pose);
+        // copy pose into _fitResult so local.floor will be properly created
+        _fitResult.pose.x = pose[0];
+        _fitResult.pose.y = pose[1];
+        _fitResult.pose.rz = pose[2];
+        _fitResult.path = fit.getPath();
+        _fitResult.score = score;
+    }
+    auto pose = _fitResult.pose;
+    auto score = _fitResult.score;
+    MRA_TRACE_FUNCTION_OUTPUTS(pose.x, pose.y, pose.rz, score);
 }
 
 int Solver::run()
@@ -474,9 +511,9 @@ Output const &Solver::getOutput() const
     return _output;
 }
 
-Local const &Solver::getDiagnostics() const
+Diagnostics const &Solver::getDiagnostics() const
 {
-    return _diag;
+    return _diagnostics;
 }
 
 State const &Solver::getState() const

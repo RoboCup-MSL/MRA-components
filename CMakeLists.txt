@@ -6,8 +6,11 @@ cmake_minimum_required(VERSION 3.5.1)
 
 project(MRA LANGUAGES CXX)
 
+cmake_policy(SET CMP0077 NEW) # option() command to do nothing when a normal variable of the given name already exists
+option(MRA_TEST_ENABLED "Build all tests" ON)
+
 # use C++17 standard, or suffer errors re. using std::filesystem
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-error=nonnull-compare -Wno-deprecated-declarations")
  # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds -Wno-deprecated-declarations
 
 # dependency: ProtoBuf
@@ -15,7 +18,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-arr
 # install on Ubuntu: sudo apt-get install protobuf-compiler
 find_package(Protobuf)
 if(NOT PROTOBUF_FOUND)
-message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
+  message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
@@ -23,10 +26,12 @@ find_library(PROTOBUF_LIBRARY protobuf)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-# dependency gtest 
-find_package(GTest)
-if(NOT GTEST_FOUND)
-message(FATAL_ERROR "GTest could not be find by cmake. Install Gtest (e.g. sudo apt-get install libgtest-dev)")
+if (MRA_TEST_ENABLED)
+  # dependency gtest
+  find_package(GTest)
+  if(NOT GTEST_FOUND)
+    message(FATAL_ERROR "GTest could not be find by cmake. Install Gtest (e.g. sudo apt-get install libgtest-dev)")
+  endif()
 endif()
 
 # dependency: json
@@ -37,8 +42,10 @@ FetchContent_MakeAvailable(json)
 ##########################################################
 # testing
 ##########################################################
-enable_testing()
-include(CTest)
+if (MRA_TEST_ENABLED)
+ enable_testing()
+ include(CTest)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -59,6 +66,7 @@ set(MESSAGE_PROTOS_COMMON
     datatypes/Ball.proto
     datatypes/CvMat.proto
     datatypes/Logging.proto
+    datatypes/Meta.proto
     datatypes/Obstacle.proto
     datatypes/Player.proto
     datatypes/Point.proto
@@ -83,6 +91,13 @@ set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-datatypes PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-datatypes ${MRA-datatypes_generated_files})     
 
+# generate Python files from protofiles, copy to build/datatypes directory
+protobuf_generate(TARGET MRA-datatypes-proto PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE python OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/datatypes)
+file(GLOB PYTHON_FILES "${CMAKE_CURRENT_BINARY_DIR}/datatypes/*.py")
+foreach(PYTHON_FILE ${PYTHON_FILES})
+    file(COPY ${PYTHON_FILE} DESTINATION "${CMAKE_BINARY_DIR}/datatypes")
+endforeach()
+
 
 ##########################################################
 # component proto files
@@ -106,6 +121,8 @@ set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-components-proto ${MRA-components-generated-files})     
 
+# generate Python files from protofiles, copy to build/datatypes directory
+protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python)
 
 # create dummy file for creating libraries with only ohter libraries
 file(TOUCH ${MRA_BINARY_DIR}/dummy.cpp)

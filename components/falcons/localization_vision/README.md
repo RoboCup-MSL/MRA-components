@@ -47,7 +47,7 @@ Use current location with latest odometry as best guess, to minimize the time ne
 
 Includes a little python tool to plot field (serialized `CvMatProto`): `plot.py`.
 
-# Demo
+# Demo, test utilities
 
 ## plot.py
 
@@ -64,4 +64,24 @@ Run tuning tool (sliders are automatically derived from `Params.proto`):
 `bazel run //components/falcons/localization_vision/test:tune /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_0.bin`
 
 ![tuningtool](test/demo3.png)
+
+## calc.py
+
+Single calculation on data from .bin file.
+
+Modes:
+* calc (default): a single calc function call, via manual mode.
+* converge: the simplex algorithm (single-tracker) is run to converge on a local optimum, repeatedly calling calc.
+* tick: a full tick is done, which typically also includes running multiple trackers multi-threaded, some randomized.
+
+```
+bazel run //components/falcons/localization_vision/test:calc /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_4.bin -- -m calc
+tick result: {"pose":{"x":0.000000,"y":0.000000,"rz":0.000000},"confidence":0.067908,"numberOfTries":1}
+
+bazel run //components/falcons/localization_vision/test:calc /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_4.bin -- -m converge
+tick result: {"pose":{"x":0.087412,"y":0.037694,"rz":0.700058},"confidence":0.173984,"numberOfTries":89}
+
+bazel run //components/falcons/localization_vision/test:calc /tmp/testsuite_mra_logging/tickbins/tick_FalconsLocalizationVision_4.bin -- -m tick
+tick result: {"pose":{"x":0.596494,"y":3.003787,"rz":1.737481},"confidence":0.754101,"numberOfTries":89}
+```
 

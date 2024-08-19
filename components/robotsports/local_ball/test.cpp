@@ -186,7 +186,7 @@ RobotsportsLocalBall::Output execute_ball_traject_test(BallTrajectGenerator traj
     auto m = RobotsportsLocalBall::RobotsportsLocalBall();
     auto output = RobotsportsLocalBall::Output();
     auto state = RobotsportsLocalBall::State();
-    auto local = RobotsportsLocalBall::Local();
+    auto diagnostics = RobotsportsLocalBall::Diagnostics();
     auto params = m.defaultParams();
     int n_samples = traject_generator.generate(distance);
     int error_value = 0;
@@ -234,8 +234,8 @@ RobotsportsLocalBall::Output execute_ball_traject_test(BallTrajectGenerator traj
                     input.mutable_frontcamera_balls()->Add()->CopyFrom(candidate);
                 }
 
-                error_value = m.tick(timestamp, input, params, state, output, local);
-                MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(local).c_str());
+                error_value = m.tick(timestamp, input, params, state, output, diagnostics);
+                MRA_LOG_DEBUG("diagnostics: %s", MRA::convert_proto_to_json_str(diagnostics).c_str());
                 MRA_LOG_DEBUG("state: %s", MRA::convert_proto_to_json_str(state).c_str());
                 // Asserts for turn from middle to left position
                 EXPECT_EQ(error_value, 0);

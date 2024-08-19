@@ -19,7 +19,7 @@ int FalconsLocalizationVision::FalconsLocalizationVision::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
@@ -41,7 +41,7 @@ int FalconsLocalizationVision::FalconsLocalizationVision::tick
 
         // store output
         output.CopyFrom(solver.getOutput());
-        local.CopyFrom(solver.getDiagnostics());
+        diagnostics.CopyFrom(solver.getDiagnostics());
         state.CopyFrom(solver.getState());
     }
     catch (const std::exception& e)

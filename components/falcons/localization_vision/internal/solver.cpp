@@ -316,12 +316,12 @@ void Solver::setOutputsAndState()
     // all trackers (that have survived cleanupBadTrackers) are stored into state, so they can be refined next tick
     // also, the number of iterations per tracker is stored in diagnostics output
     _state.mutable_trackers()->Clear();
-    _diag.mutable_numberoftries()->Clear();
+    _diagnostics.mutable_numberoftries()->Clear();
     for (auto const &tr: _trackers)
     {
         TrackerState ts = tr;
         *_state.add_trackers() = ts;
-        _diag.add_numberoftries(tr.fitPath.size());
+        _diagnostics.add_numberoftries(tr.fitPath.size());
     }
 
     // only the best trackers are set in output
@@ -345,7 +345,7 @@ void Solver::setOutputsAndState()
         c.mutable_pose()->CopyFrom((MRA::Datatypes::Pose)pc);
         c.set_confidence(1.0 - _fitResult.score);
         *_output.add_candidates() = c;
-        _diag.add_numberoftries(_fitResult.path.size());
+        _diagnostics.add_numberoftries(_fitResult.path.size());
     }
 
     // update tick counter for next tick (this should be called at the end of the tick)
@@ -418,7 +418,7 @@ cv::Mat Solver::createDiagnosticsMat() const
 void Solver::dumpDiagnosticsMat()
 {
     MRA_TRACE_FUNCTION();
-    MRA::OpenCVUtils::serializeCvMat(createDiagnosticsMat(), *_diag.mutable_floor());
+    MRA::OpenCVUtils::serializeCvMat(createDiagnosticsMat(), *_diagnostics.mutable_floor());
 }
 
 void Solver::manualMode()
@@ -511,9 +511,9 @@ Output const &Solver::getOutput() const
     return _output;
 }
 
-Local const &Solver::getDiagnostics() const
+Diagnostics const &Solver::getDiagnostics() const
 {
-    return _diag;
+    return _diagnostics;
 }
 
 State const &Solver::getState() const

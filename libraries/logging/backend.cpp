@@ -73,7 +73,7 @@ void logTickStart(
         std::string stateStr = MRA::convert_proto_to_json_str(state);
         MRA::Logging::backend::source_loc loc{fileName.c_str(), componentName.c_str(), lineNumber, "tick"};
         // prepare strings for logging with INFO and TRACE levels
-        // state and local may grow large -> these go to tracing, not info
+        // state and diagnostics may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
             + ",\"timestamp\":" + google::protobuf::util::TimeUtil::ToString(timestamp)
             + ",\"input\":" + inputStr
@@ -116,7 +116,7 @@ void logTickEnd(
         std::string outputStr = MRA::convert_proto_to_json_str(output);
         MRA::Logging::backend::source_loc loc{fileName.c_str(), componentName.c_str(), lineNumber, "tick"};
         // prepare strings for logging with INFO and TRACE levels
-        // state and local may grow large -> these go to tracing, not info
+        // state and diagnostics may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
             + ",\"error_value\":" + std::to_string(error_value)
             + ",\"duration\":" + std::to_string(duration)

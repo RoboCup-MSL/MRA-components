@@ -19,6 +19,8 @@
 
 #include "xmlTeamPlanner.h"
 //#include "TeamPlannerThread.h"
+#include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
+
 
 #include "StrategyTester_generated.h" // generated
 //#include "MovingObject.h"
@@ -49,6 +51,75 @@ public:
 #include <sstream>
 #include <vector>
 
+std::vector<dynamic_role_e> getListWithRoles() {
+
+    auto robot_strategy = RobotsportsRobotStrategy::RobotsportsRobotStrategy();
+    auto robot_strategy_input = RobotsportsRobotStrategy::Input();
+    auto robot_strategy_output = RobotsportsRobotStrategy::Output();
+    auto robot_strategy_params = robot_strategy.defaultParams();
+
+
+
+//    message Input
+//    {
+//        enum GameState
+//        {
+//            NONE = 0;
+//            NORMAL = 1;
+//            NORMAL_ATTACK = 2;
+//            NORMAL_DEFEND = 3;
+//            PARKING = 4;
+//            BEGIN_POSITION = 5;
+//            KICKOFF = 6;
+//            KICKOFF_AGAINST = 7;
+//            FREEKICK = 8;
+//            FREEKICK_AGAINST = 9;
+//            GOALKICK = 10;
+//            GOALKICK_AGAINST = 11;
+//            THROWIN = 12;
+//            THROWIN_AGAINST = 13;
+//            CORNER = 14;
+//            CORNER_AGAINST = 15;
+//            PENALTY = 16;
+//            PENALTY_AGAINST = 17;
+//            PENALTY_SHOOTOUT = 18;
+//            PENALTY_SHOOTOUT_AGAINST = 19;
+//            DROPPED_BALL = 20;
+//            YELLOW_CARD_AGAINST = 21;
+//            RED_CARD_AGAINST = 22;
+//            GOAL = 23;
+//            GOAL_AGAINST = 24;
+//        }
+//
+//        enum BallStatus
+//        {
+//            FREE = 0;
+//            OWNED_BY_PLAYER = 1;
+//            OWNED_BY_TEAMMATE = 2;
+//            OWNED_BY_TEAM = 3;
+//            OWNED_BY_OPPONENT = 4;
+//        }
+//
+//        GameState game_state = 1;
+//        BallStatus ball_status = 2;
+
+    auto error_value = robot_strategy.tick(robot_strategy_input, robot_strategy_params, robot_strategy_output);
+    if (error_value != 0) {
+        cout << "robot_strategy failed" << endl;
+        exit(1);
+    }
+
+    std::vector<dynamic_role_e> roles_to_assign = {};
+    roles_to_assign.push_back(dr_SETPLAY_RECEIVER);
+    roles_to_assign.push_back(dr_SETPLAY_KICKER);
+    roles_to_assign.push_back(dr_DEFENDER);
+    roles_to_assign.push_back(dr_ATTACKSUPPORTER);
+
+
+    return roles_to_assign;
+}
+
+
 
 static std::string TeamPlannerResultToString(const team_planner_result_t& player_paths, const std::vector<TeamPlannerRobot>& team) {
     std::stringstream buffer;
@@ -70,44 +141,6 @@ static std::string TeamPlannerResultToString(const team_planner_result_t& player
 
     }
     return buffer.str();
-}
-
-game_state_e getOpponentGameState(game_state_e gameState) {
-	game_state_e opponentGameState = gameState;
-	if (opponentGameState == game_state_e::CORNER) {
-		opponentGameState = game_state_e::CORNER_AGAINST;
-	} else if (opponentGameState == game_state_e::CORNER_AGAINST) {
-		opponentGameState = game_state_e::CORNER;
-	} else if (opponentGameState == game_state_e::KICKOFF) {
-		opponentGameState = game_state_e::KICKOFF_AGAINST;
-	} else if (opponentGameState == game_state_e::KICKOFF_AGAINST) {
-		opponentGameState = game_state_e::KICKOFF;
-	} else if (opponentGameState == game_state_e::FREEKICK) {
-		opponentGameState = game_state_e::FREEKICK_AGAINST;
-	} else if (opponentGameState == game_state_e::FREEKICK_AGAINST) {
-		opponentGameState = game_state_e::FREEKICK;
-	} else if (opponentGameState == game_state_e::GOALKICK) {
-		opponentGameState = game_state_e::GOALKICK_AGAINST;
-	} else if (opponentGameState == game_state_e::GOALKICK_AGAINST) {
-		opponentGameState = game_state_e::GOALKICK;
-	} else if (opponentGameState == game_state_e::THROWIN) {
-		opponentGameState = game_state_e::THROWIN_AGAINST;
-	} else if (opponentGameState == game_state_e::THROWIN_AGAINST) {
-		opponentGameState = game_state_e::THROWIN;
-	} else if (opponentGameState == game_state_e::PENALTY) {
-		opponentGameState = game_state_e::PENALTY_AGAINST;
-	} else if (opponentGameState == game_state_e::PENALTY_AGAINST) {
-		opponentGameState = game_state_e::PENALTY;
-	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT) {
-		opponentGameState = game_state_e::PENALTY_SHOOTOUT_AGAINST;
-	} else if (opponentGameState == game_state_e::PENALTY_SHOOTOUT_AGAINST) {
-		opponentGameState = game_state_e::PENALTY_SHOOTOUT;
-	} else if (opponentGameState == game_state_e::GOAL) {
-		opponentGameState = game_state_e::GOAL_AGAINST;
-	} else if (opponentGameState == game_state_e::GOAL_AGAINST) {
-		opponentGameState = game_state_e::GOAL;
-	}
-	return opponentGameState;
 }
 
 team_formation_e StringToFormation(const string& formation_string) {
@@ -700,11 +733,9 @@ void xmlplanner(string input_filename) {
 			teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
 			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 
+
 	// TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
-	teamplannerData.teamFormation.push_back(dr_SETPLAY_RECEIVER);
-    teamplannerData.teamFormation.push_back(dr_SETPLAY_KICKER);
-    teamplannerData.teamFormation.push_back(dr_DEFENDER);
-    teamplannerData.teamFormation.push_back(dr_ATTACKSUPPORTER);
+	teamplannerData.teamFormation = getListWithRoles();
 
 
 	TeamPlay teamplay = TeamPlay();

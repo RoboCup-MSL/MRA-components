@@ -133,18 +133,13 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
 	teamplannerData.searchForBall = searchForBallBehaviorNeeded(teamplannerData);
 //	MRA::Geometry::Point ballPos = teamplannerData.ball;
 
-	bool useSetPlay2024 = SETPLAY_2024
-	                and not teamplannerData.searchForBall
-	                and isOneOf(teamplannerData.gamestate, {FREEKICK, GOALKICK, CORNER, THROWIN});
-
-
 	if (teamplannerData.gamestate == game_state_e::BEGIN_POSITION) {
         assignBeginPositions (teamplannerData);
     }
     else if (teamplannerData.gamestate == game_state_e::PARKING) {
         assignParkingPositions (teamplannerData);
     }
-    else if (useSetPlay2024) {
+    else if (isOneOf(teamplannerData.gamestate, {FREEKICK, GOALKICK, CORNER, THROWIN})) {
         int assignment_nr = 0;
         for (unsigned dr_idx = 0; dr_idx < teamplannerData.teamFormation.size() and dr_idx < teamplannerData.team.size(); dr_idx++) {
 

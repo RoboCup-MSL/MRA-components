@@ -60,10 +60,10 @@ add_custom_command(OUTPUT ${STRATEGY_TESTER_CPP}
 )
 
 target_include_directories(xml_test PUBLIC
+    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
-    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/interface
     ${CMAKE_CURRENT_SOURCE_DIR}/internals
@@ -80,7 +80,6 @@ target_link_libraries(xml_test
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_THREAD_LIBRARY}
     xerces-c
-    MRA-components-robotsports-robot-strategy
     MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock    
   )
   
@@ -95,6 +94,7 @@ add_executable(planner_regression_checker
   )
 
 target_include_directories(planner_regression_checker PUBLIC
+    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
@@ -175,6 +175,7 @@ add_executable(
     ${STRATEGY_TESTER_CPP}
 )
 target_include_directories(robotsports_role_assigner_test  PRIVATE 
+    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base

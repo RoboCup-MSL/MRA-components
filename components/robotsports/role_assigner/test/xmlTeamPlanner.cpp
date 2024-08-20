@@ -700,6 +700,13 @@ void xmlplanner(string input_filename) {
 			teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
 			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 
+	// TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
+	teamplannerData.teamFormation.push_back(dr_SETPLAY_RECEIVER);
+    teamplannerData.teamFormation.push_back(dr_SETPLAY_KICKER);
+    teamplannerData.teamFormation.push_back(dr_DEFENDER);
+    teamplannerData.teamFormation.push_back(dr_ATTACKSUPPORTER);
+
+
 	TeamPlay teamplay = TeamPlay();
 	player_paths = teamplay.assign(teamplannerData);
 

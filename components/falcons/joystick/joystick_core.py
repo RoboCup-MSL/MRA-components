@@ -130,40 +130,85 @@ class Keyboard(JoystickCore):
     def __init__(self, frequency=30.0):
         super().__init__(frequency)
         # use pynput to detect key presses
-        self.key_to_button = {
-            pynput.keyboard.KeyCode.from_char('p'): 'A',
-            pynput.keyboard.KeyCode.from_char('b'): 'B',
-            pynput.keyboard.KeyCode.from_char('g'): 'X',
-            pynput.keyboard.KeyCode.from_char('s'): 'Y',
-            pynput.keyboard.Key.shift: 'LB',
-            pynput.keyboard.Key.shift_r: 'RB',
-            pynput.keyboard.KeyCode.from_char('e'): 'select',
-            pynput.keyboard.KeyCode.from_char('k'): 'mode',
-            pynput.keyboard.Key.down: 'LS_down',
-            pynput.keyboard.Key.up: 'LS_up',
-            pynput.keyboard.Key.left: 'LS_left',
-            pynput.keyboard.Key.right: 'LS_right',
-            pynput.keyboard.KeyCode.from_char('7'): 'RS_left',
-            pynput.keyboard.KeyCode.from_char('9'): 'RS_right'
+        self.key_handlers = {
+            pynput.keyboard.KeyCode.from_char('p'): (lambda f: self.handle_button('A', f)),
+            pynput.keyboard.KeyCode.from_char('b'): (lambda f: self.handle_button('B', f)),
+            pynput.keyboard.KeyCode.from_char('g'): (lambda f: self.handle_button('X', f)),
+            pynput.keyboard.KeyCode.from_char('s'): (lambda f: self.handle_button('Y', f)),
+            pynput.keyboard.Key.shift: (lambda f: self.handle_button('LB', f)),
+            pynput.keyboard.Key.shift_r: (lambda f: self.handle_button('RB', f)),
+            pynput.keyboard.KeyCode.from_char('e'): (lambda f: self.handle_button('select', f)),
+            pynput.keyboard.KeyCode.from_char('k'): (lambda f: self.handle_button('mode', f)),
+            pynput.keyboard.Key.down: (lambda f: self.handle_axis('LS', 'y', f * -1.0)),
+            pynput.keyboard.Key.up: (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
+            pynput.keyboard.Key.left: (lambda f: self.handle_axis('LS', 'x', f * -1.0)),
+            pynput.keyboard.Key.right: (lambda f: self.handle_axis('LS', 'x', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('7'): (lambda f: self.handle_axis('RS', 'x', f * -1.0)),
+            pynput.keyboard.KeyCode.from_char('9'): (lambda f: self.handle_axis('RS', 'x', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('h'): self.print_help_text,
+            pynput.keyboard.KeyCode.from_char('q'): self.set_stop_flag,
         }
-        self.key_state = {}
+        self.stop_flag = False
 
     def ignore_key(self, key):
-        used_keys = self.key_to_button.keys()
+        used_keys = list(self.key_handlers.keys())
         if key in used_keys:
             return False
         return True
 
-    def on_event(self, key, target_function):
-        if self.ignore_key(key):
-            logging.debug('ignore key {}: {}'.format(target_function, key))
-            return
-        logging.debug('handle key {}: {}'.format(target_function, key))
-        button = self.key_to_button.get(key)
-        if button:
-            getattr(self.buttons[button], target_function)()
+    def handle_button(self, button, is_pressed):
+        if is_pressed:
+            self.buttons[button].on_press()
         else:
-            logging.error('key not found: {}'.format(key))
+            self.buttons[button].on_release()
+
+    def handle_axis(self, axis, direction, value):
+        setattr(getattr(self, f'axis_{axis.lower()}'), direction, value)
+
+    def print_help_text(self, is_pressed):
+        if is_pressed:
+            print("""Controls:
+* movement:
+    * arrow keys: move robot forward, backward, left, right
+    * numpad 7,9 keys: rotate robot
+* ball handling:
+    * b: toggle ballhandlers on/off
+    * g: getball within a small action radius
+    * left-shift+g: getball with extended action radius
+    * right-shift+g: bump towards nearest teammate
+* passing:
+    * p: pass to the nearest teammate
+    * left-shift+p: pass to the nearest obstacle
+    * right-shift+p: pass to the home location
+* shooting:
+    * s: shoot at goal
+    * left-shift+s: shoot at the home location
+    * right-shift+s: bump towards goal
+* lob/kicker control:
+    * not mapped
+* special actions:
+    * e: activate keeper mode
+    * shift+k: move the robot to configured home location
+    * k: move the robot to the parking area
+
+Notes:
+* arrow/numpad movement cancels any running action
+""")
+
+    def set_stop_flag(self, _):
+        self.stop_flag = True
+
+    def on_event(self, key, event):
+        if self.ignore_key(key):
+            logging.debug('ignore key {}: {}'.format(event, key))
+            return
+        logging.debug('handle key {}: {}'.format(event, key))
+        handler = self.key_handlers.get(key)
+        if handler:
+            if callable(handler):
+                handler(event == 'on_press')
+            else:
+                handler(event)
 
     def on_press(self, key):
         self.on_event(key, 'on_press')
@@ -174,13 +219,13 @@ class Keyboard(JoystickCore):
     def run(self):
         dt = datetime.timedelta(seconds=1.0 / 30)
         t = datetime.datetime.now()
+        # prevent key echo on the terminal
+        orig_settings = termios.tcgetattr(sys.stdin)
         try:
-            # prevent key echo on the terminal
-            orig_settings = termios.tcgetattr(sys.stdin)
             tty.setcbreak(sys.stdin)
             # start the listener
-            with pynput.keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
-                while True:
+            with pynput.keyboard.Listener(on_press=self.on_press, on_release=self.on_release, suppress=True) as listener:
+                while not self.stop_flag:
                     # send controller state to the client
                     self.callback(self)
                     # ensure the loop runs at the given frequency
@@ -188,17 +233,5 @@ class Keyboard(JoystickCore):
                     pause.until(t)
         except KeyboardInterrupt:
             pass
-        finally:
-            # restore terminal settings
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
-
-
-    def help_text(self):
-        print("Keyboard controls help text:")
-        print("  p: A, b: B, g: X, s: Y")
-        print("  arrow keys: LB/RB")
-        print("  e: select, k: mode")
-        print("  numpad 2/8: LS forward/backward")
-        print("  numpad 4/6: LS left/right")
-        print("  numpad 7/9: RS rotate left/right")
-        print("  h: help, q: quit")
+        # restore terminal settings
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)

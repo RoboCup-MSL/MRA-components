@@ -51,57 +51,16 @@ public:
 #include <sstream>
 #include <vector>
 
-std::vector<dynamic_role_e> getListWithRoles() {
+std::vector<dynamic_role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_status) {
 
     auto robot_strategy = RobotsportsRobotStrategy::RobotsportsRobotStrategy();
     auto robot_strategy_input = RobotsportsRobotStrategy::Input();
     auto robot_strategy_output = RobotsportsRobotStrategy::Output();
     auto robot_strategy_params = robot_strategy.defaultParams();
 
-
-
-//    message Input
-//    {
-//        enum GameState
-//        {
-//            NONE = 0;
-//            NORMAL = 1;
-//            NORMAL_ATTACK = 2;
-//            NORMAL_DEFEND = 3;
-//            PARKING = 4;
-//            BEGIN_POSITION = 5;
-//            KICKOFF = 6;
-//            KICKOFF_AGAINST = 7;
-//            FREEKICK = 8;
-//            FREEKICK_AGAINST = 9;
-//            GOALKICK = 10;
-//            GOALKICK_AGAINST = 11;
-//            THROWIN = 12;
-//            THROWIN_AGAINST = 13;
-//            CORNER = 14;
-//            CORNER_AGAINST = 15;
-//            PENALTY = 16;
-//            PENALTY_AGAINST = 17;
-//            PENALTY_SHOOTOUT = 18;
-//            PENALTY_SHOOTOUT_AGAINST = 19;
-//            DROPPED_BALL = 20;
-//            YELLOW_CARD_AGAINST = 21;
-//            RED_CARD_AGAINST = 22;
-//            GOAL = 23;
-//            GOAL_AGAINST = 24;
-//        }
-//
-//        enum BallStatus
-//        {
-//            FREE = 0;
-//            OWNED_BY_PLAYER = 1;
-//            OWNED_BY_TEAMMATE = 2;
-//            OWNED_BY_TEAM = 3;
-//            OWNED_BY_OPPONENT = 4;
-//        }
-//
-//        GameState game_state = 1;
-//        BallStatus ball_status = 2;
+    MRA::RobotsportsRobotStrategy::Input_GameState gs = (MRA::RobotsportsRobotStrategy::Input_GameState) (gameState);
+    robot_strategy_input.set_game_state(gs);
+    robot_strategy_input.set_ball_status((MRA::RobotsportsRobotStrategy::Input_BallStatus) ball_status);
 
     auto error_value = robot_strategy.tick(robot_strategy_input, robot_strategy_params, robot_strategy_output);
     if (error_value != 0) {
@@ -109,12 +68,103 @@ std::vector<dynamic_role_e> getListWithRoles() {
         exit(1);
     }
 
-    std::vector<dynamic_role_e> roles_to_assign = {};
-    roles_to_assign.push_back(dr_SETPLAY_RECEIVER);
-    roles_to_assign.push_back(dr_SETPLAY_KICKER);
-    roles_to_assign.push_back(dr_DEFENDER);
-    roles_to_assign.push_back(dr_ATTACKSUPPORTER);
 
+    std::vector<dynamic_role_e> roles_to_assign = {};
+    for (auto idx = 0; idx < robot_strategy_output.dynamic_roles_size(); idx++) {
+        MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = robot_strategy_output.dynamic_roles(idx);
+        dynamic_role_e dr = dr_NONE;
+
+        switch (odr) {
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_GOALKEEPER:
+                dr = dr_GOALKEEPER;
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_MAIN:
+                if (isOneOf(gameState, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
+                    dr = dr_SETPLAY_KICKER;
+                }
+                else if (gameState == PENALTY) {
+                    dr = dr_PENALTY_KICKER;
+                }
+                else if (gameState == PARKING) {
+                    dr = dr_PARKING;
+                }
+                else if (gameState == BEGIN_POSITION) {
+                    dr = dr_BEGIN_POSITION;
+                }
+                else if (isOneOf(gameState, { FREEKICK_AGAINST, GOALKICK_AGAINST,
+                                             CORNER_AGAINST, KICKOFF_AGAINST,
+                                             THROWIN_AGAINST, PENALTY_AGAINST,
+                                             DROPPED_BALL})) {
+                    dr = dr_INTERCEPTOR;
+                }
+                else if (isOneOf(ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
+                    dr = dr_BALLPLAYER;
+                }
+                else if (ball_status == OWNED_BY_TEAM) {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                else if (isOneOf(ball_status, {FREE, OWNED_BY_OPPONENT})) {
+                    dr = dr_INTERCEPTOR;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_ASSIST:
+                if (gameState == PARKING) {
+                    dr = dr_PARKING;
+                }
+                else if (gameState == BEGIN_POSITION) {
+                    dr = dr_BEGIN_POSITION;
+                }
+                else if (isOneOf(gameState, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
+                    dr = dr_SETPLAY_RECEIVER;
+                }
+                else {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_GENERIC:
+                if (gameState == PARKING) {
+                    dr = dr_PARKING;
+                }
+                else if (gameState == BEGIN_POSITION) {
+                    dr = dr_BEGIN_POSITION;
+                }
+                else {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_MAIN:
+                if (gameState == PARKING) {
+                    dr = dr_PARKING;
+                }
+                else if (gameState == BEGIN_POSITION) {
+                    dr = dr_BEGIN_POSITION;
+                }
+                else {
+                    dr = dr_SWEEPER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_GENERIC:
+                if (gameState == PARKING) {
+                    dr = dr_PARKING;
+                }
+                else if (gameState == BEGIN_POSITION) {
+                    dr = dr_BEGIN_POSITION;
+                }
+                else {
+                    dr = dr_DEFENDER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_OUT:
+                dr = dr_PARKING;
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_IN:
+                dr = dr_BEGIN_POSITION;
+                break;
+            default:
+                break;
+        }
+        roles_to_assign.push_back(dr);
+    }
 
     return roles_to_assign;
 }
@@ -142,47 +192,6 @@ static std::string TeamPlannerResultToString(const team_planner_result_t& player
     }
     return buffer.str();
 }
-
-team_formation_e StringToFormation(const string& formation_string) {
-	team_formation_e formation = team_formation_e::FORMATION_013;
-	if (formation_string == "FORMATION_013") {
-		formation = team_formation_e::FORMATION_013;
-	} else if (formation_string == "FORMATION_112") {
-		formation = team_formation_e::FORMATION_112;
-	} else if (formation_string == "FORMATION_211") {
-		formation = team_formation_e::FORMATION_211;
-	} else if (formation_string == "FORMATION_310") {
-		formation = team_formation_e::FORMATION_310;
-	} else if (formation_string == "FORMATION_ATTACK_SUPPORT_ONLY") {
-		formation = team_formation_e::FORMATION_ATTACK_SUPPORT_ONLY;
-	} else if (formation_string == "FORMATION_DEFENDER_ONLY") {
-		formation = team_formation_e::FORMATION_DEFENDER_ONLY;
-	} else if (formation_string == "FORMATION_INTERCEPTOR_ONLY") {
-		formation = team_formation_e::FORMATION_INTERCEPTOR_ONLY;
-	} else if (formation_string == "FORMATION_SWEEPER_ONLY") {
-		formation = team_formation_e::FORMATION_SWEEPER_ONLY;
-	} else if (formation_string == "FORMATION_SETPLAY_RECEIVER_ONLY") {
-		formation = team_formation_e::FORMATION_SETPLAY_RECEIVER_ONLY;
-	} else if (formation_string == "FORMATION_SETPLAY_KICKER_ONLY") {
-		formation = team_formation_e::FORMATION_SETPLAY_KICKER_ONLY;
-	} else if (formation_string == "FORMATION_BALLPLAYER_ONLY") {
-		formation = team_formation_e::FORMATION_BALLPLAYER_ONLY;
-	} else if (formation_string == "FORMATION_SEARCHFORBALL_ONLY") {
-		formation = team_formation_e::FORMATION_SEARCHFORBALL_ONLY;
-	} else if (formation_string == "FORMATION_BEGINPOSITION_ONLY") {
-		formation = team_formation_e::FORMATION_BEGINPOSITION_ONLY;
-	} else if (formation_string == "FORMATION_PARKING_ONLY") {
-		formation = team_formation_e::FORMATION_PARKING_ONLY;
-	} else if (formation_string == "FORMATION_PENALTYKICKER_ONLY") {
-		formation = team_formation_e::FORMATION_PENALTYKICKER_ONLY;
-	} else {
-		cerr << "UNKNOWN FORMATION xmlTeamPlanner.cpp: " << formation_string
-				<< endl;
-	}
-	return formation;
-}
-
-
 
 void getPlannerOptions(TeamPlannerParameters & options, auto_ptr<robotsports::StrategyType>& c) {
     options.calculateAllPaths = c->Options().calculateAllPaths();
@@ -735,7 +744,7 @@ void xmlplanner(string input_filename) {
 
 
 	// TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
-	teamplannerData.teamFormation = getListWithRoles();
+	teamplannerData.teamFormation = getListWithRoles(gameState, ball_status);
 
 
 	TeamPlay teamplay = TeamPlay();

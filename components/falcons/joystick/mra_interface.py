@@ -6,7 +6,7 @@
 from components.falcons.joystick.pybind import action_planning_pybind
 
 # other MRA imports
-from components.falcons.action_planning.interface import Input_pb2, Params_pb2, State_pb2
+from components.falcons.action_planning.interface import Input_pb2, Params_pb2, State_pb2, Output_pb2
 from datatypes import ActionType_pb2
 
 
@@ -17,6 +17,7 @@ class MRAInterface():
         self.input = Input_pb2.Input()
         self.params = Params_pb2.Params() # client should overrule from config json file, or get error code 1 at first tick
         self.state = State_pb2.State()
+        self.output = Output_pb2.Output()
 
     def set_input_worldstate(self, worldstate):
         self.input.worldstate = worldstate

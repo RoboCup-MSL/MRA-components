@@ -4,6 +4,7 @@ package MRA.FalconsActionPlanning;
 
 import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
+import "datatypes/Pose.proto";
 import "components/falcons/action_aimed_kick/interface/Common.proto";
 
 message MotionSetpoint
@@ -77,9 +78,10 @@ message Setpoints
     // also: an error should be triggered when both ShootingSetpoint and KickerSetpoint are used at the same time -- Shooting controls Kicker
     BallHandlersSetpoint bh = 1;
     MotionSetpoint move = 2;
-    ShootingSetpoint shoot = 3;
-    KickerSetpoint kick = 4;
-    KeeperFrameSetpoint keeperFrame = 5;
+    MRA.Datatypes.Pose velocity = 3;
+    ShootingSetpoint shoot = 4;
+    KickerSetpoint kick = 5;
+    KeeperFrameSetpoint keeperFrame = 6;
 }
 
 message Output

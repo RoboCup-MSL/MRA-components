@@ -4,6 +4,7 @@
 # python imports
 import os
 import json
+import datetime
 import logging
 from google.protobuf import json_format
 
@@ -47,7 +48,13 @@ class RobotInterface():
         logging.debug('controller_packet: ' + str(packet))
         # set input
         self.mra_interface.input.Clear()
-        self.update_worldstate(self.mra_interface.input.worldState)
+        ws_ok = self.update_worldstate(self.mra_interface.input.worldState)
+        if not ws_ok:
+            # warn only once per second
+            if not hasattr(self, 'last_ws_warning') or (datetime.datetime.now() - self.last_ws_warning).total_seconds() > 1:
+                self.last_ws_warning = datetime.datetime.now()
+                logging.warning('failed to update worldstate, is robot SW activated?')
+            return
         self.mra_interface.set_input_action(packet)
         # call MRA actionplanning
         if len(packet['action']) > 0:
@@ -61,9 +68,13 @@ class RobotInterface():
         pass
 
     def update_worldstate(self, world_state):
-        self.worldState.update() # read from RTDB
-        self.worldState.toMRA(world_state)
+        try:
+            self.worldState.update() # read from RTDB
+            self.worldState.toMRA(world_state)
+        except:
+            return False
         logging.debug('worldstate: ' + str(json_format.MessageToJson(world_state, indent=None)))
+        return True
 
     def resolveTarget(self, target):
         if target == 'home':

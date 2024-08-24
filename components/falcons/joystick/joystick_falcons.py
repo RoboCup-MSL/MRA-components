@@ -19,6 +19,7 @@ from google.protobuf import json_format
 # local imports
 from components.falcons.joystick import joystick
 import falcons_interface
+from terminal import TerminalHandler
 
 
 def parse_args():
@@ -55,17 +56,25 @@ def main(args):
         robotId = 0
     # configuration values
     joystick_config = joystick.Configuration(args.config)
+    # terminal echo suppression
+    term = TerminalHandler()
+    term.suppress()
     # setup joystick
-    joystick_controller = joystick.JoystickController(robotId, joystick_config, args.index)
-    robot_interface = falcons_interface.RobotInterface(robotId)
-    robot_interface.homePos[0] = joystick_config.home_x
-    robot_interface.homePos[1] = joystick_config.home_y
-    robot_interface.homePos[2] = joystick_config.home_rz
-    if args.testmode:
-        robot_interface.handle_setpoints = lambda x: logging.debug('setpoints: ' + str(json_format.MessageToJson(x, indent=None)))
-        robot_interface.update_worldstate = set_test_worldstate
-    joystick_controller.packet_handler = robot_interface.handle_packet
-    joystick_controller.run()
+    try:
+        joystick_controller = joystick.JoystickController(robotId, joystick_config, args.index, args.keyboard)
+        robot_interface = falcons_interface.RobotInterface(robotId)
+        robot_interface.homePos[0] = joystick_config.home_x
+        robot_interface.homePos[1] = joystick_config.home_y
+        robot_interface.homePos[2] = joystick_config.home_rz
+        if args.testmode:
+            robot_interface.handle_setpoints = lambda x: logging.debug('setpoints: ' + str(json_format.MessageToJson(x, indent=None)))
+            robot_interface.update_worldstate = set_test_worldstate
+        joystick_controller.packet_handler = robot_interface.handle_packet
+        joystick_controller.run()
+    except Exception as e:
+        raise
+    finally:
+        term.restore()
 
 
 if __name__ == '__main__':

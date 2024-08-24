@@ -4,7 +4,8 @@ py_library(
     name = "joystick_lib",
     srcs = [
         "joystick_controller.py",
-        "joystick_pygame.py",
+        "joystick_core.py",
+        "terminal.py",
         "joystick.py",
     ],
     data = [

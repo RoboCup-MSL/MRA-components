@@ -1,7 +1,5 @@
 '''Joystick and Keyboard Input Handling'''
 
-import tty
-import termios
 import sys
 import pygame
 import logging
@@ -9,6 +7,7 @@ import datetime
 import pause
 import pynput
 from typing import Callable
+from terminal import TerminalHandler
 
 
 class Button:
@@ -31,6 +30,7 @@ class Axis2:
         self.when_moved: Callable[[], None] = lambda: None
         self.x: float = 0.0
         self.y: float = 0.0
+
 
 class JoystickCore:
     def __init__(self, frequency=30.0):
@@ -149,6 +149,7 @@ class Keyboard(JoystickCore):
             pynput.keyboard.KeyCode.from_char('q'): self.set_stop_flag,
         }
         self.stop_flag = False
+        self.pressed_keys = set()
 
     def ignore_key(self, key):
         used_keys = list(self.key_handlers.keys())
@@ -211,21 +212,26 @@ Notes:
                 handler(event)
 
     def on_press(self, key):
+        self.pressed_keys.add(key)
         self.on_event(key, 'on_press')
 
     def on_release(self, key):
+        self.pressed_keys.remove(key)
         self.on_event(key, 'on_release')
 
     def run(self):
         dt = datetime.timedelta(seconds=1.0 / 30)
         t = datetime.datetime.now()
         # prevent key echo on the terminal
-        orig_settings = termios.tcgetattr(sys.stdin)
+        term = TerminalHandler()
+        term.suppress()
         try:
-            tty.setcbreak(sys.stdin)
             # start the listener
             with pynput.keyboard.Listener(on_press=self.on_press, on_release=self.on_release, suppress=True) as listener:
                 while not self.stop_flag:
+                    # detect control-C, needed because of the suppress option
+                    if self.pressed_keys == {pynput.keyboard.Key.ctrl, pynput.keyboard.KeyCode.from_char('c')}:
+                        break
                     # send controller state to the client
                     self.callback(self)
                     # ensure the loop runs at the given frequency
@@ -233,5 +239,6 @@ Notes:
                     pause.until(t)
         except KeyboardInterrupt:
             pass
-        # restore terminal settings
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
+        finally:
+            # restore terminal settings
+            term.restore()

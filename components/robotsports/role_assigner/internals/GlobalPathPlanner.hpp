@@ -61,7 +61,8 @@ public:
 	void setOptions(const TeamPlannerParameters& options);
 
 	/* create graph for the provided input */
-	void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
+	void createGraph(int path_for_robotId,
+	                 const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
 	                 const std::vector<MRA::Vertex>& targetPos,
 	                 planner_target_e targetFunction,
 	                 bool ballIsObstacle,

@@ -364,7 +364,7 @@ TeamPlay::calculatePathForRobot (TeamPlannerData &r_teamplannerData, unsigned id
     bool stay_in_playing_field = stayInPlayingField (r_teamplannerData.gamestate);
 
     targetPos.push_back (Vertex (r_teamplannerData.team[idx].result.target, 0));
-    visibilityGraph.createGraph (r_teamplannerData.team[idx].position, r_teamplannerData.team[idx].velocity, r_teamplannerData,
+    visibilityGraph.createGraph (r_teamplannerData.team[idx].robotId, r_teamplannerData.team[idx].position, r_teamplannerData.team[idx].velocity, r_teamplannerData,
                                  targetPos,r_teamplannerData.team[idx].result.planner_target,
                                  r_teamplannerData.ballIsObstacle,
                                  avoidBallPath, stay_in_playing_field, BallTargetPos);
@@ -1003,7 +1003,8 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
 		visibilityGraph.setOptions(teamplanner_data.parameters);
 		vector<MRA::Geometry::Position> myTeam = getTeamMates(teamplanner_data.team, interceptorIdx, false);
 	    bool stay_in_playing_field = stayInPlayingField (teamplanner_data.gamestate);
-		visibilityGraph.createGraph(teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
+		visibilityGraph.createGraph(teamplanner_data.this_player_robotId,
+		                            teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
 				targetPos, planner_target_e::GOTO_BALL, teamplanner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
 		path = visibilityGraph.getShortestPath(teamplanner_data);
 	} else {
@@ -1029,7 +1030,7 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
         MRA::Geometry::Point BallTargetPos;
         GlobalPathPlanner visibilityGraph = GlobalPathPlanner(teamplanner_data.fieldConfig);
         visibilityGraph.setOptions(teamplanner_data.parameters);
-        visibilityGraph.createGraph(teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
+        visibilityGraph.createGraph(teamplanner_data.this_player_robotId, teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
                 roleTargetPos, planner_target_e::GOTO_BALL, teamplanner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
         path = visibilityGraph.getShortestPath(teamplanner_data);
     }

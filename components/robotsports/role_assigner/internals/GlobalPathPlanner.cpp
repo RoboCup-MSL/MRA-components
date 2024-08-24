@@ -124,7 +124,7 @@ void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
 	m_options = options;
 }
 
-void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
+void GlobalPathPlanner::createGraph(int path_for_robotId, const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
 		const std::vector<MRA::Vertex>& targetPos,
 		planner_target_e targetFunction,
 		bool ballIsObstacle,
@@ -176,7 +176,7 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
 		}
 		// add team as obstacles, except your self
 		for (auto teammate: teamplanner_data.team) {
-            if (teammate.robotId != teamplanner_data.this_player_robotId) {
+            if (teammate.robotId != path_for_robotId) {
                 addObstacle(teammate.position, false, stayInPlayingField);
             }
         }

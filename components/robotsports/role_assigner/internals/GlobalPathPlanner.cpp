@@ -174,8 +174,11 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
 		for (auto opponent: teamplanner_data.opponents) {
 		    addObstacle(opponent.position, false, stayInPlayingField);
 		}
-        for (auto teammate: teamplanner_data.team) {
-            addObstacle(teammate.position, false, stayInPlayingField);
+		// add team as obstacles, except your self
+		for (auto teammate: teamplanner_data.team) {
+            if (teammate.robotId != teamplanner_data.this_player_robotId) {
+                addObstacle(teammate.position, false, stayInPlayingField);
+            }
         }
 	}
 
@@ -199,7 +202,6 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
  */
 vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData& teamplanner_data) {
 	m_start->m_minDistance = 0.0;
-
 	std::list<MRA::Vertex*> sortedList = std::list<MRA::Vertex*>();
 	sortedList.push_back(m_start);
 	// check if start is not on target location
@@ -231,7 +233,7 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
 		}
 	}
 	if (nearTarget) {
-		// start is near a target position.
+	    // start is near a target position.
 		vector < planner_piece_t> p = vector<planner_piece_t>();
 		planner_piece_t piece;
 		piece.x = nearestTarget.x;
@@ -417,6 +419,10 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
 				}
 
 				double safetyCost = barrierCosts(v1, v2);
+	            if (not std::isfinite(safetyCost)) {
+                    continue; // no edge between two vertices due to inifite barrier costs
+	            }
+
 				double rugbyCost = m_options.safetyFactor * safetyCost;
 				double totalCost = distance + rugbyCost;
 				if (v1->equals(*m_start)) {
@@ -538,6 +544,9 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 	for (auto barrier : m_opponents) {
 		double cost = distanceIntegral(barrier, v1->m_coordinate, v2->m_coordinate);
 		safetyCost += cost;
+        if (not std::isfinite(safetyCost)) {
+            break;
+        }
 	}
 
 	// add barrier for each team mate in own penalty area (keeper and an possible defender).
@@ -547,6 +556,9 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 		if (m_fieldConfig.isInOwnPenaltyArea(teammate_position.x, teammate_position.y)) {
 			double cost = distanceIntegral(teammate_position, v1->m_coordinate, v2->m_coordinate);
 			safetyCost += cost;
+            if (not std::isfinite(safetyCost)) {
+                break;
+            }
 		}
 	}
 	return safetyCost;

@@ -98,6 +98,10 @@ class RobotInterface():
 
     def handle_setpoints(self, setpoints):
         logging.debug('handle_setpoints: ' + str(setpoints))
+        # there is a race condition at (sim) init time with execution setting MATCH_MODE ... lets check always
+        if True == self.rtdbGet('MATCH_MODE', timeout=None).value:
+            logging.warning('MATCH_MODE is enabled, cannot overrule setpoints')
+            return
         if setpoints.HasField('bh'):
             self.rtdbPut('BALLHANDLERS_SETPOINT', setpoints.bh.enabled)
         if setpoints.HasField('move'):

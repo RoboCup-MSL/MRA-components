@@ -43,9 +43,11 @@ class MRAInterface():
             pos = getattr(self.input.action, 'pass').target.position
             pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
         elif packet['action'] == 'shoot':
-            self.input.action.shoot.target.position = self.robot_interface.resolveTarget(packet['args']['target'])
+            pos = self.input.action.shoot.target.position
+            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
         elif packet['action'] == 'lob':
-            self.input.action.lob.target.position = self.robot_interface.resolveTarget(packet['args']['target'])
+            pos = self.input.action.lob.target.position
+            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
         elif packet['action'] == 'getball':
             self.input.action.getball.motionType = 0
             self.input.action.getball.radius = packet['args']['radius']

@@ -220,13 +220,16 @@ Notes:
         self.on_event(key, 'on_release')
 
     def run(self):
-        dt = datetime.timedelta(seconds=1.0 / 30)
+        dt = datetime.timedelta(seconds=(1.0 / self.frequency))
         t = datetime.datetime.now()
         # prevent key echo on the terminal
-        term = TerminalHandler()
-        term.suppress()
+        self.term = TerminalHandler()
+        self.term.suppress()
         try:
             # start the listener
+            # TODO: a negative side effect is that too many events are suppressed:
+            # * alt-tab
+            # * mouse events events
             with pynput.keyboard.Listener(on_press=self.on_press, on_release=self.on_release, suppress=True) as listener:
                 while not self.stop_flag:
                     # detect control-C, needed because of the suppress option
@@ -240,5 +243,8 @@ Notes:
         except KeyboardInterrupt:
             pass
         finally:
-            # restore terminal settings
-            term.restore()
+            self.cleanup()
+
+    def cleanup(self):
+        # restore terminal settings
+        self.term.restore()

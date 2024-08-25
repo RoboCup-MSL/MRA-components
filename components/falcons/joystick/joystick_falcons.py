@@ -56,9 +56,6 @@ def main(args):
         robotId = 0
     # configuration values
     joystick_config = joystick.Configuration(args.config)
-    # terminal echo suppression
-    term = TerminalHandler()
-    term.suppress()
     # setup joystick
     try:
         joystick_controller = joystick.JoystickController(robotId, joystick_config, args.index, args.keyboard)
@@ -70,11 +67,14 @@ def main(args):
             robot_interface.handle_setpoints = lambda x: logging.debug('setpoints: ' + str(json_format.MessageToJson(x, indent=None)))
             robot_interface.update_worldstate = set_test_worldstate
         joystick_controller.packet_handler = robot_interface.handle_packet
+        if args.keyboard:
+            logging.info('using keyboard control - press h for help, q to quit')
         joystick_controller.run()
     except Exception as e:
         raise
     finally:
-        term.restore()
+        joystick_controller.cleanup()
+        robot_interface.shutdown()
 
 
 if __name__ == '__main__':

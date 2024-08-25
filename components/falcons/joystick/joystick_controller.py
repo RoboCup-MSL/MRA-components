@@ -75,6 +75,9 @@ Notes:
     def run(self):
         self.controller.run()
 
+    def cleanup(self):
+        self.controller.cleanup()
+
     def toggle_bh(self):
         self.enable_bh = not self.enable_bh
 

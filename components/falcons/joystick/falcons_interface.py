@@ -56,12 +56,14 @@ class RobotInterface():
         self.processhack_end()
 
     def processhack_start(self):
-        logging.info('starting pathPlanning node')
-        self.pp_pid = subprocess.Popen(['processStart', 'A'+str(self.robotId), 'pp']).pid
+        rs = str(self.robotId)
+        os.environ['TURTLE5K_ROBOTNUMBER'] = rs
+        self.pp_pid = subprocess.Popen(['processStart', 'A'+rs, 'pp']).pid
+        logging.info('started pathPlanning node')
 
     def processhack_end(self):
         os.kill(self.pp_pid, signal.SIGTERM)
-        logging.info('killed pathPlanning node')
+        logging.info('killed pathPlanning node') # TODO: make this more robust, restartwrapper and such are in the way
 
     def handle_packet(self, packet : dict) -> None:
         logging.debug('controller_packet: ' + str(packet))
@@ -108,18 +110,17 @@ class RobotInterface():
         if setpoints.HasField('move'):
             move = setpoints.move
             motionSetpoint = {
-                'action': 'STOP' if move.stop else 'MOVE',
-                'position': {
-                    'x': move.target.position.x,
-                    'y': move.target.position.y,
-                    'z': move.target.position.rz
-                },
-                'motionType': move.motionType
+                'action': 5 if move.stop else 1, # TODO: not good to hardcode these enum values
+                'position': [
+                    move.target.position.x,
+                    move.target.position.y,
+                    move.target.position.rz
+                ],
+                'motionType': 1 # 1 is normal, 2 is with ball
             }
             self.rtdbPut('MOTION_SETPOINT', motionSetpoint)
             # it is assumed that pathPlanning is actively iterating (via waitForPut), so we do not need to call it here
             # default Falcons SW deployment gives control to motionPlanning, which in turn calls pathPlanning iterate
-            raise
         if setpoints.HasField('velocity'):
             velocity = setpoints.velocity
             self.rtdbPut('ROBOT_VELOCITY_SETPOINT', [velocity.x, velocity.y, velocity.rz])
@@ -166,6 +167,7 @@ class RobotInterface():
         return False
 
     def rtdbPut(self, key, value):
+        logging.debug('rtdbPut: ' + key + '=' + str(value))
         return self.rtdbStore.put(self.robotId, key, value)
 
     def rtdbGet(self, key, *args, **kwargs):

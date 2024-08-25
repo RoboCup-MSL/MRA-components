@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="19.15cm" height="20.14cm" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width="19.35cm" height="20.14cm" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <desc>MSL field path</desc>
 <!-- 
 
@@ -8,8 +8,7 @@ file: output_team/begin_situation_2b.svg
 
 
 	gamestate = Begin Position (5)
-	orignal_gamestate = NONE (0)
-	team_control_ball = false
+	orignal_gamestate = Begin Position (5)
 	controlball = (not controlled by robot in team)
 	globalBall:  x: 1.20 y: 1.96 rz: 0.00 vx: 0.33 vy: -0.03 vr: 0.00 valid: 1 label: 0
 	previous_ball = true x=1.14 y=1.97
@@ -131,8 +130,8 @@ priority_block_min_distance = 0.75
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
 attack_supporter_extra_distance_to_stay_from_sideline = 0.75
-attack attack_formation = FORMATION_112
-defense formation = FORMATION_112
+attack attack_formation = 112
+defense formation = 112
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
@@ -300,10 +299,9 @@ PARKING_DISTANCE_TO_LINE = -0.25
              penalty_area_present="true" penalty_area_width="6.625" penalty_area_length="2.256" center_circle_diameter="4.255" robot_size="0.520"
              ball_radius="0.110" field_markings_width="0.135" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="-0.250" corner_circle_diameter="0.935" penalty_spot_to_backline="3.130" />
-  <tns:Simulation numberOfIterations="1" simulateOpponent="false"/>
   <tns:GameState>Begin Position</tns:GameState>
-  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
-  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:AttackFormation>112</tns:AttackFormation>
+  <tns:DefenseFormation>112</tns:DefenseFormation>
   <tns:Ball x="1.20" y="1.96" velx="0.33" vely="-0.03"/>
   <tns:PreviousBall x="1.14" y="1.97"/>
   <tns:Team id="2" label="2" x="-1.139" y="-3.386" rz="-0.408" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
@@ -311,26 +309,37 @@ PARKING_DISTANCE_TO_LINE = -0.25
   <tns:Team id="4" label="4" x="-0.720" y="-2.657" rz="-0.438" velx="0.986" vely="-0.635" velrz="0.129"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
   <tns:Team id="1" label="1" x="0.951" y="-3.358" rz="-0.044" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="80550.734" valid="false" />
-  <tns:SituationInfo passing_required="true" team_controls_ball="false">
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
   </tns:SituationInfo>
+  <tns:ParkingInfo>
+    <tns:ParkingPosition x="-6.38" y="-0.25"/>
+    <tns:ParkingPosition x="-6.38" y="-1.25"/>
+    <tns:ParkingPosition x="-6.38" y="-2.25"/>
+    <tns:ParkingPosition x="-6.38" y="-3.25"/>
+    <tns:ParkingPosition x="-6.38" y="-4.25"/>
+  </tns:ParkingInfo>
 </tns:Situation>
 
 -->
 <rect x="0cm" y="0cm" width="14.15cm" height="20.14cm" fill="green" stroke-width="0.02cm" />
-<rect x="14.15cm" y="0cm" width="5.00cm" height="20.14cm" fill="white" stroke-width="0.02cm" />
-<text x="14.25cm" y="2.00cm" font-size="14" font-weight-absolute="bold" fill="black">R02: BEGIN_POSITION</text>
-<text x="14.45cm" y="2.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -1.00 y: -3.39</text>
-<text x="14.45cm" y="3.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 0 costs: 1.395459</text>
-<text x="14.25cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">R03: BEGIN_POSITION</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.54 y: -4.84</text>
-<text x="14.45cm" y="5.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 0 costs: 1.061553</text>
-<text x="14.25cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">R04: BEGIN_POSITION</text>
-<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.54 y: -4.84</text>
-<text x="14.45cm" y="7.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 0 costs: 14.454860</text>
-<text x="14.25cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BEGIN_POSITION</text>
-<text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.00 y: -3.39</text>
-<text x="14.45cm" y="9.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 0 costs: 1.110295</text>
+<rect x="14.15cm" y="0cm" width="5.20cm" height="20.14cm" fill="white" stroke-width="0.02cm" />
+<text x="14.25cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Begin Position</text>
+<text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
+<text x="14.25cm" y="2.50cm" font-size="14" font-weight-absolute="bold" fill="black">Attack formation: 112</text>
+<text x="14.25cm" y="3.00cm" font-size="14" font-weight-absolute="bold" fill="black">Defend formation: 112</text>
+<text x="14.25cm" y="5.00cm" font-size="14" font-weight-absolute="bold" fill="black">R02: BEGIN_POSITION</text>
+<text x="14.45cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -1.00 y: -3.39</text>
+<text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 1.395459</text>
+<text x="14.25cm" y="7.00cm" font-size="14" font-weight-absolute="bold" fill="black">R03: BEGIN_POSITION</text>
+<text x="14.45cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.54 y: -4.84</text>
+<text x="14.45cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 1.061553</text>
+<text x="14.25cm" y="9.00cm" font-size="14" font-weight-absolute="bold" fill="black">R04: BEGIN_POSITION</text>
+<text x="14.45cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.54 y: -4.84</text>
+<text x="14.45cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 14.454860</text>
+<text x="14.25cm" y="11.00cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BEGIN_POSITION</text>
+<text x="14.45cm" y="11.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.00 y: -3.39</text>
+<text x="14.45cm" y="12.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.110295</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="3.76cm" y="1.00cm" width="6.62cm" height="2.26cm" fill="green" stroke="white" stroke-width="0.125cm"/>

@@ -1,0 +1,459 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="22.00cm" height="24.00cm" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<desc>MSL field path</desc>
+<!-- 
+
+file: output_team/teamplay_2024_throwin_own_half_1.svg
+
+
+	gamestate = Throwin (12)
+	orignal_gamestate = Throwin (12)
+	controlball = (not controlled by robot in team)
+	globalBall:  x: -7.00 y: -5.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 0
+	previous_ball = false
+	pass_is_required: true
+	pass_data - valid false
+	pickup ball valid: false
+	pickup ball x: -7.00
+	pickup ball y: -5.50
+	pickup ball ts: 0.00
+
+	team:
+		R01 =  x: 0.00 y: -11.00 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 1 type = GOALIE (2)
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			prev result:  false
+		R02 =  x: -5.00 y: -4.00 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 2 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			prev result:  false
+		R03 =  x: -7.50 y: -5.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 3 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			prev result:  false
+		R04 =  x: 6.50 y: -0.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 4 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			prev result:  false
+		R05 =  x: -6.50 y: 3.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 5 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			prev result:  false
+	opponents:
+		player[0] =  x: 0.00 y: 11.00 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 11
+		player[1] =  x: -3.00 y: -1.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 12
+		player[2] =  x: -5.00 y: 1.50 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 13
+		player[3] =  x: 4.00 y: 1.75 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 14
+		player[4] =  x: 0.50 y: 5.00 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 15
+paths:
+
+Player 0 (id: 1) : 
+	Dynamic-role: GOALKEEPER
+	Game State: Throwin
+	Target position : x: -0.60 y: -10.50
+	Planner target type  Goalie
+	Target_position_is_end_position_of_pass: false
+	Defend info valid:  false
+Path[0]: x: 0.00 y: -11.00 cost: 0.00 target: Goalie (9)
+Path[0]: x: -0.60 y: -10.50 cost: 1.84 target: Goalie (9)
+
+Player 1 (id: 2) : 
+	Dynamic-role: SETPLAY_RECEIVER
+	Game State: Throwin
+	Target position : x: -4.50 y: -5.50
+	Planner target type  Prepare restart
+	Target_position_is_end_position_of_pass: false
+	Defend info valid:  false
+Path[1]: x: -5.00 y: -4.00 cost: 0.00 target: Prepare restart (5)
+Path[1]: x: -4.50 y: -5.50 cost: 3.32 target: Prepare restart (5)
+
+Player 2 (id: 3) : 
+	Dynamic-role: SETPLAY_KICKER
+	Game State: Throwin
+	Target position : x: -7.43 y: -6.17
+	Planner target type  Prepare restart
+	Target_position_is_end_position_of_pass: false
+	Defend info valid:  false
+Path[2]: x: -7.50 y: -5.50 cost: 0.00 target: Prepare restart (5)
+Path[2]: x: -7.43 y: -6.17 cost: 3.91 target: Prepare restart (5)
+
+Player 3 (id: 4) : 
+	Dynamic-role: ATTACKSUPPORTER
+	Game State: Throwin
+	Target position : x: 4.50 y: -0.75
+	Planner target type  Attack support
+	Target_position_is_end_position_of_pass: false
+	Defend info valid:  false
+Path[3]: x: 6.50 y: -0.50 cost: 0.00 target: Attack support (3)
+Path[3]: x: 4.50 y: -0.75 cost: 3.47 target: Attack support (3)
+
+Player 4 (id: 5) : 
+	Dynamic-role: ATTACKSUPPORTER
+	Game State: Throwin
+	Target position : x: -5.25 y: -0.75
+	Planner target type  Attack support
+	Target_position_is_end_position_of_pass: false
+	Defend info valid:  false
+Path[4]: x: -6.50 y: 3.50 cost: 0.00 target: Attack support (3)
+Path[4]: x: -6.60 y: 1.50 cost: 3.93 target: Attack support (3)
+Path[4]: x: -6.13 y: 0.37 cost: 5.99 target: Attack support (3)
+Path[4]: x: -5.25 y: -0.75 cost: 8.37 target: Attack support (3)
+
+	options:
+calculateAllPaths = 1
+minimumEdgeLength = 0.3
+maximumEdgeLength = 4
+minimumDistanceToEndPoint = 3
+nrVerticesFirstCircle = 6
+firstCircleRadius = 1
+VerticesSecondCircle  = 8
+secondCircleRadius  = 1.6
+safetyFactor  = 1
+addBarierVertices  = 1
+addUniformVertices  = 1
+manDefenseBetweenBallAndPlayer = 1
+dist_before_penalty_area_for_sweeper = 0.75
+uniform_x_interval  = 2
+uniform_y_interval  = 2
+startingVelocityPenaltyFactor = 1
+distToapplyBallApproachVertices  = 1
+addBallApproachVertices  = 1
+ballApproachVerticesRadius  = 0.6
+ballApproachNumberOfVertices  = 8
+grid_size  = 0.75
+nrDynamicPlannerIterations = 2
+maxPossibleLinearSpeed = 1.5
+maxPossibleLinearAcceleration = 1.2
+interceptionChanceStartDistance = 1
+interceptionChanceIncreasePerMeter = 0.25
+interceptionChancePenaltyFactor = 4
+grid_close_to_ball_normal_penalty = 17000
+grid_close_to_ball_normal_radius = 3.1
+grid_close_to_ball_restart_normal_penalty = 17000
+grid_close_to_ball_restart_normal_radius = 3.1
+grid_close_to_ball_restart_penalty_penalty = 17000
+grid_close_to_ball_restart_penalty_radius = 3.25
+grid_close_to_ball_restart_dropball_penalty = 17000
+grid_close_to_ball_restart_dropball_radius = 1.1
+grid_opponent_goal_clearance_x = 7
+grid_opponent_goal_clearance_y = 2.5
+grid_own_goal_clearance_x = 3
+grid_own_goal_clearance_y = 0.75
+nr_robots_needed_for_pass_play = 2
+nr_attack_support_during_defensive_period = 0
+wait_on_non_optimal_position_during_prepare_phase = 0
+priority_block_max_ball_y = 0
+priority_block_max_opponent_to_ball_dist = 3
+priority_block_check_ball_in_area = 1
+priority_block_check_opponent_close_to_ball = 1
+priority_block_min_distance = 0.5
+priority_block_max_distance = 1.5
+priority_block_max_distance_to_defense_line = 0.25
+attack_supporter_extra_distance_to_stay_from_sideline = 0.75
+attack attack_formation = 211
+defense formation = 112
+restart_receiver_ball_dist = 2.5
+restart_shooter_ball_dist = 0.8
+equality_cost_threshold = 1.5
+select_lowest_robot_nr_for_dynamic_role = 1
+previous_role_bonus_must_be_applied = 1
+previous_role_bonus_end_pos_radius = 1
+use_pass_to_position_for_attack_support = 1
+no_sweeper_during_setplay= 1
+interceptor_assign_use_ball_velocity = 1
+interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
+man_to_man_defense_during_normal_play = 1
+man_to_man_defense_during_setplay_against = 1
+dist_to_goal_to_mark_opponent_as_goalie = 1.5
+setplay_against_dist_to_opponent = 1.5
+mobile_field_uniform_x_interval = 1
+mobile_field_uniform_y_interval = 1
+mobile_field_grid_size = 0.5
+mobile_field_grid_close_to_ball_normal_radius = 1.5
+mobile_field_grid_close_to_ball_restart_normal_radius = 1.5
+mobile_field_grid_close_to_ball_restart_penalty_radius = 1.5
+mobile_field_grid_close_to_ball_restart_dropball_radius = 1.1
+mobile_field_restart_receiver_ball_dist = 1.2
+mobile_field_restart_shooter_ball_dist = 0.8
+mobile_field_setplay_against_dist_to_opponent = 1.5
+move_to_ball_left_field_position = 1
+auto_save_svg_period = 10
+auto_save_svg_from_ts = 0
+auto_save_svg_to_ts = 0
+svgOutputFileName = output_team/teamplay_2024_throwin_own_half_1.svg
+svgDefaultTargetColor  = red
+svgBallColor = orange
+svgOriginalTargetColor = darkred
+svgTeamColor =  magenta
+svgOpponentColor =  = cyan
+svgDrawVelocity = 1
+svgDrawEdges = 0
+saveGridDataToFile = 1
+svgRobotPlanner = 0
+preferredSetplayKicker = 8
+preferredSetplayReceiver = 9
+setplay_margin_to_penalty_area_side = 0.75
+lobShotWhenPossible = 1
+min_y_for_lob_shot = 0.25
+outsideFieldMargin = 0.5
+kickoff_fp1 x = -1
+kickoff_fp1 y = 0
+kickoff_fp2 x = 1.7
+kickoff_fp2 y = -1.5
+kickoff_fp3 x = -5
+kickoff_fp3 y = -0.75
+kickoff_fp4 x = 5
+kickoff_fp4 y = -0.75
+kickoff_against_fp1 x = 1.87
+kickoff_against_fp1 y = -1.87
+kickoff_against_fp2 x = -1.87
+kickoff_against_fp2 y = -1.87
+kickoff_against_fp3 x = 3.5
+kickoff_against_fp3 y = -0.4
+kickoff_against_fp4 x = -3.5
+kickoff_against_fp4 y = -0.4
+dedicatedSweeper = 0
+autoAssignGoalie = 0
+
+	field:
+FIELD_WIDTH = 14
+FIELD_LENGTH = 22
+FIELD_MARGIN = 1
+FIELD_MARKINGS_WIDTH = 0.125
+CENTER_CIRCLE_DIAMETER = 4
+CORNER_CIRCLE_DIAMETER = 0.75
+GOAL_WIDTH = 2.4
+GOAL_LENGTH = 0.5
+GOAL_AREA_WIDTH = 3.9
+GOAL_AREA_LENGTH = 0.75
+PENALTY_AREA_PRESENT = 1
+PENALTY_AREA_WIDTH = 6.9
+PENALTY_AREA_LENGTH = 2.25
+PENALTY_SPOT_TO_BACKLINE = 3.6
+PENALTY_SPOT_DIAMETER = 0.15
+PENALTY_SPOT_TO_RESTART_SPOT = 3.5
+ROBOTSIZE = 0.52
+BALL_RADIUS = 0.11
+TEAM_TECHNICAL_AREA_PRESENT = 0
+TEAM_TECHNICAL_AREA_SHORT_SIDE = 1
+TEAM_TECHNICAL_AREA_LONG_SIDE = 7.5
+TEAM_TECHNICAL_AREA_ENTRANCE_WIDTH = 1
+TEAM_TECHNICAL_AREA_ENTRANCE_DEPTH = 0.6
+PARKING_AREA_WIDTH = 0.5
+PARKING_AREA_LENGTH = 4.5
+PARKING_DISTANCE_BETWEEN_ROBOTS = 1
+PARKING_DISTANCE_TO_LINE = -0.25
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+<tns:Description>xml from svg-file: output_team/teamplay_2024_throwin_own_half_1.svg</tns:Description>
+<tns:Options svgOutputFileName="output_team/teamplay_2024_throwin_own_half_1.svg_NEW"
+   addBallApproachVertices="true"
+   addBarierVertices="true"
+   addUniformVertices="true"
+   autoAssignGoalie="false"
+   ballApproachNumberOfVertices="8"
+   ballApproachVerticesRadius="0.600"
+   calculateAllPaths="true"
+   dist_before_penalty_area_for_sweeper="0.750"
+   dist_to_goal_to_mark_opponent_as_goalie="1.500"
+   distToapplyBallApproachVertices="1.000"
+   firstCircleRadius="1.000"
+   grid_close_to_ball_normal_penalty="17000.000"
+   grid_close_to_ball_normal_radius="3.100"
+   grid_close_to_ball_restart_dropball_penalty="17000.000"
+   grid_close_to_ball_restart_dropball_radius="1.100"
+   grid_close_to_ball_restart_normal_penalty="17000.000"
+   grid_close_to_ball_restart_normal_radius="3.100"
+   grid_close_to_ball_restart_penalty_penalty="17000.000"
+   grid_close_to_ball_restart_penalty_radius="3.250"
+   grid_opponent_goal_clearance_x="7.000"
+   grid_opponent_goal_clearance_y="2.500"
+   grid_own_goal_clearance_x="3.000"
+   grid_own_goal_clearance_y="0.750"
+   grid_size="0.750"
+   interceptionChanceIncreasePerMeter="0.250"
+   interceptionChancePenaltyFactor="4.000"
+   interceptionChanceStartDistance="1.000"
+   interceptor_assign_min_velocity_for_calculate_interception_position="0.500"
+   interceptor_assign_use_ball_velocity="true"
+   man_to_man_defense_during_normal_play="true"
+   man_to_man_defense_during_setplay_against="true"
+   manDefenseBetweenBallAndPlayer="true"
+   maximumEdgeLength="4.000"
+   maxPossibleLinearAcceleration="1.200"
+   maxPossibleLinearSpeed="1.500"
+   minimumDistanceToEndPoint="3.000"
+   minimumEdgeLength="0.300"
+   move_to_ball_left_field_position="true"
+   no_sweeper_during_setplay="true"
+   nr_attack_support_during_defensive_period="0"
+   nr_robots_needed_for_pass_play="2"
+   nrDynamicPlannerIterations="2"
+   nrVerticesFirstCircle="6"
+   nrVerticesSecondCircle="8"
+   preferredSetplayKicker="8"
+   preferredSetplayReceiver="9"
+   previous_role_bonus_end_pos_radius="1.000"
+   priority_block_max_distance="1.500"
+   safetyFactor="1.000"
+   secondCircleRadius="1.600"
+   setplay_against_dist_to_opponent="1.500"
+   startingVelocityPenaltyFactor="1.000"
+   svgBallColor="orange"
+   svgDefaultTargetColor="red"
+   svgDrawEdges="false"
+   svgDrawVelocity="true"
+   svgOriginalTargetColor="darkred"
+   svgOpponentColor="cyan"
+   svgTeamColor="magenta"
+   saveGridDataToFile="true"
+   svgRobotPlanner="false"
+   uniform_x_interval="2.000"
+   uniform_y_interval="2.000"
+   use_pass_to_position_for_attack_support="true"
+   wait_on_non_optimal_position_during_prepare_phase="false"
+/>
+  <tns:Field field_width="14.000" field_length="22.000" field_margin="1.00" goal_width="2.400" goal_length="0.500" goal_area_width="3.900" goal_area_length="0.750"
+             penalty_area_present="true" penalty_area_width="6.900" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.520"
+             ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
+             parking_distance_to_line="-0.250" corner_circle_diameter="0.750" penalty_spot_to_backline="3.600" />
+  <tns:GameState>Throwin</tns:GameState>
+  <tns:AttackFormation>211</tns:AttackFormation>
+  <tns:DefenseFormation>112</tns:DefenseFormation>
+  <tns:Ball x="-7.00" y="-5.50" velx="0.00" vely="0.00"/>
+  <tns:Team id="1" label="1" x="0.000" y="-11.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"    />
+  <tns:Team id="2" label="2" x="-5.000" y="-4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="3" label="3" x="-7.500" y="-5.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="4" label="4" x="6.500" y="-0.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="5" label="5" x="-6.500" y="3.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Opponent id="1" label="11" x="0.000" y="11.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="2" label="12" x="-3.000" y="-1.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="3" label="13" x="-5.000" y="1.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="4" label="14" x="4.000" y="1.750" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="5" label="15" x="0.500" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:PickupPosition x="-7.000" y="-5.500" ts="0.000" valid="false" />
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
+    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
+  </tns:SituationInfo>
+  <tns:ParkingInfo>
+    <tns:ParkingPosition x="-6.38" y="-0.25"/>
+    <tns:ParkingPosition x="-6.38" y="-1.25"/>
+    <tns:ParkingPosition x="-6.38" y="-2.25"/>
+    <tns:ParkingPosition x="-6.38" y="-3.25"/>
+    <tns:ParkingPosition x="-6.38" y="-4.25"/>
+  </tns:ParkingInfo>
+</tns:Situation>
+
+-->
+<rect x="0cm" y="0cm" width="16.00cm" height="24.00cm" fill="green" stroke-width="0.02cm" />
+<rect x="16.00cm" y="0cm" width="6.00cm" height="24.00cm" fill="white" stroke-width="0.02cm" />
+<text x="16.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Throwin</text>
+<text x="16.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_team</text>
+<text x="16.10cm" y="2.50cm" font-size="14" font-weight-absolute="bold" fill="black">Attack formation: 211</text>
+<text x="16.10cm" y="3.00cm" font-size="14" font-weight-absolute="bold" fill="black">Defend formation: 112</text>
+<text x="16.10cm" y="5.00cm" font-size="14" font-weight-absolute="bold" fill="black">R01: GOALKEEPER</text>
+<text x="16.30cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -0.60 y: -10.50</text>
+<text x="16.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.843866</text>
+<text x="16.10cm" y="7.00cm" font-size="14" font-weight-absolute="bold" fill="black">R02: SETPLAY_RECEIVER</text>
+<text x="16.30cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -4.50 y: -5.50</text>
+<text x="16.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 3.323969</text>
+<text x="16.10cm" y="9.00cm" font-size="14" font-weight-absolute="bold" fill="black">R03: SETPLAY_KICKER</text>
+<text x="16.30cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -7.43 y: -6.17</text>
+<text x="16.30cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 3.912416</text>
+<text x="16.10cm" y="11.00cm" font-size="14" font-weight-absolute="bold" fill="black">R04: ATTACKSUPPORTER</text>
+<text x="16.30cm" y="11.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 4.50 y: -0.75</text>
+<text x="16.30cm" y="12.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 3.468281</text>
+<text x="16.10cm" y="13.00cm" font-size="14" font-weight-absolute="bold" fill="black">R05: ATTACKSUPPORTER</text>
+<text x="16.30cm" y="13.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -5.25 y: -0.75</text>
+<text x="16.30cm" y="14.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 5 costs: 8.370132</text>
+<rect x="1.00cm" y="1.00cm" width="14.00cm" height="22.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="12.00cm" x2="15.00cm" y2="12.00cm" stroke-width="0.125cm"  stroke="white"/>
+<circle cx="8.00cm" cy="12.00cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
+<rect x="4.55cm" y="1.00cm" width="6.90cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
+<rect x="4.55cm" y="20.75cm" width="6.90cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
+<rect x="6.05cm" y="1.00cm" width="3.90cm" height="0.75cm" fill="green" stroke="white" stroke-width="0.125cm"/>
+<rect x="6.05cm" y="22.25cm" width="3.90cm" height="0.75cm" fill="green" stroke="white" stroke-width="0.125cm"/>
+<rect x="6.80cm" y="0.50cm" width="2.40cm" height="0.50cm" fill="plum" stroke="white" stroke-width="0.125cm"/>
+<rect x="6.80cm" y="23.00cm" width="2.40cm" height="0.50cm"  fill="powderblue" stroke="white" stroke-width="0.125cm"/>
+<text x="7.52cm" y="23.38cm" fill="darkred">OWN</text>
+<!-- Opponent -->
+<rect x="7.74cm" y="0.74cm" width="0.52cm" height="0.52cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="7.83cm" y="1.17cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
+<!-- Opponent -->
+<rect x="4.74cm" y="13.24cm" width="0.52cm" height="0.52cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="4.83cm" y="13.67cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
+<!-- Opponent -->
+<rect x="2.74cm" y="10.24cm" width="0.52cm" height="0.52cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="2.83cm" y="10.67cm" font-size="large" font-weight-absolute="bold" fill="black">3</text>
+<!-- Opponent -->
+<rect x="11.74cm" y="9.99cm" width="0.52cm" height="0.52cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="11.83cm" y="10.42cm" font-size="large" font-weight-absolute="bold" fill="black">4</text>
+<!-- Opponent -->
+<rect x="8.24cm" y="6.74cm" width="0.52cm" height="0.52cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="8.33cm" y="7.17cm" font-size="large" font-weight-absolute="bold" fill="black">5</text>
+<!-- ME -->
+<rect x="7.74cm" y="22.74cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- Teammate -->
+<rect x="2.74cm" y="15.74cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- Teammate -->
+<rect x="0.24cm" y="17.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- Teammate -->
+<rect x="14.24cm" y="12.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- Teammate -->
+<rect x="1.24cm" y="8.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="7.74cm" y="22.74cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="7.80cm" y1="22.83cm" x2="7.40cm" y2="22.50cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="7.40cm" cy="22.50cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 1-->
+<rect x="2.74cm" y="15.74cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 1-->
+<line x1="3.08cm" y1="16.25cm" x2="3.50cm" y2="17.50cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 1-->
+<circle cx="3.50cm" cy="17.50cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 2-->
+<rect x="0.24cm" y="17.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 2-->
+<line x1="0.53cm" y1="17.76cm" x2="0.57cm" y2="18.17cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 2-->
+<circle cx="0.57cm" cy="18.17cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 3-->
+<rect x="14.24cm" y="12.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 3-->
+<line x1="14.24cm" y1="12.53cm" x2="12.50cm" y2="12.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 3-->
+<circle cx="12.50cm" cy="12.75cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 4-->
+<rect x="1.24cm" y="8.24cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 4-->
+<line x1="1.49cm" y1="8.76cm" x2="1.40cm" y2="10.50cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 4-->
+<line x1="1.40cm" y1="10.50cm" x2="1.87cm" y2="11.63cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 4-->
+<line x1="1.87cm" y1="11.63cm" x2="2.75cm" y2="12.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 4-->
+<circle cx="2.75cm" cy="12.75cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+<text x="7.83cm" y="23.17cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="2.83cm" y="16.17cm" font-size="large" font-weight-absolute="bold" fill="black">2</text><text x="0.33cm" y="17.67cm" font-size="large" font-weight-absolute="bold" fill="black">3</text><text x="14.33cm" y="12.67cm" font-size="large" font-weight-absolute="bold" fill="black">4</text><text x="1.33cm" y="8.67cm" font-size="large" font-weight-absolute="bold" fill="black">5</text>
+<!-- Ball -->
+<circle cx="1.00cm" cy="17.50cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />
+</svg>

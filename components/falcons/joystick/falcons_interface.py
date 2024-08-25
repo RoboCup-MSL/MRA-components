@@ -83,7 +83,8 @@ class RobotInterface():
             # special case: robot velocity setpoint (sticks) arrives via action 'move' with arguments 'velocity'
             # TODO: consider if ActionPlanning should also cover it, using action DASH?
             if packet['action'] == 'move' and 'velocity' in packet['args']:
-                setpoints = self.mra_interface.output.setpoints
+                setpoints = self.mra_interface.output.setpoints # get the correct protobuf type
+                setpoints.Clear()
                 setpoints.velocity.x = packet['args']['velocity'][0]
                 setpoints.velocity.y = packet['args']['velocity'][1]
                 setpoints.velocity.rz = packet['args']['velocity'][2]

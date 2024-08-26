@@ -1,5 +1,5 @@
 {
-    "no_sweeper_during_setplay": false,
-    "attack_formation": 1,
-    "defense_formation": 1
+    "no_sweeper_during_setplay": true,
+    "attack_formation": 2,
+    "defense_formation": 0
 }

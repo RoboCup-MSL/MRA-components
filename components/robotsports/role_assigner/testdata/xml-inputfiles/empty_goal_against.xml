@@ -6,4 +6,7 @@
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Team id="1" label="1" x="0.0" y="0.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
+  	<tns:PassData valid="false"/>
+  </tns:SituationInfo>
  </tns:Situation>

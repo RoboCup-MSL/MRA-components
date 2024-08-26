@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 # Run with valgrind to see if runtime is ok.
 # compile with -g for valgrind with line numbers
 # check output of valgrind for "Exit program on first error (--exit-on-first-error=yes)" if runnning full_regression.sh

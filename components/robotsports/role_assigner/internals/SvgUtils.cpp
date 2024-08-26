@@ -410,9 +410,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         passRequiredString = "passing_required=\"true\"";
     }
 
-// TODO
-//    string ball_statusString = "ball_status=\"" + ballStatusAsString(data.ball_status) + "\"";
-//    fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), ball_statusString.c_str());
+    string ball_statusString = "ball_status=\"" + ballStatusAsString(data.ball_status) + "\"";
+    fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), ball_statusString.c_str());
     string pass_data_valid_str = "valid=\"false\"";
     if (data.pass_data.valid)
     {
@@ -456,13 +455,12 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
                             GameStateAsString(data.gamestate).c_str());
 
         line_offset += boxLineOffset;
-// TODO
-//        std::string ball_status = ballStatusAsString(data.ball_status);
-//        StringUtil::toLower(ball_status);
-//        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
-//                            "Ball status: %s</text>\n",
-//                            totalFieldWidth+boxTextOffset, line_offset, boxTextSize,
-//                            ball_status.c_str());
+        std::string ball_status = ballStatusAsString(data.ball_status);
+        toLower(ball_status);
+        fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
+                            "Ball status: %s</text>\n",
+                            totalFieldWidth+boxTextOffset, line_offset, boxTextSize,
+                            ball_status.c_str());
 
         line_offset += boxLineOffset;
         line_offset += boxLineOffset;
@@ -761,4 +759,12 @@ bool SvgUtils::doesDirectoryExists(const std::string& filename) {
 std::string SvgUtils::boolToString(bool b)
 {
     return b ? "true" : "false";
+}
+
+
+void SvgUtils::toLower(std::string& r_string) {
+    std::locale loc;
+    for (auto i=0u; i < r_string.length(); ++i) {
+        r_string[i] = std::tolower(r_string[i], loc);
+    }
 }

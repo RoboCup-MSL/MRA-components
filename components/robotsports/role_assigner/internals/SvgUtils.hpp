@@ -36,6 +36,7 @@ private:
 
 	static bool doesDirectoryExists(const std::string& filename);
 	static std::string boolToString(bool b);
+	static void toLower(std::string& r_string);
 };
 
 } // namespace

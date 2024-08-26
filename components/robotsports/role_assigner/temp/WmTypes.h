@@ -140,6 +140,18 @@ inline dynamic_role_e StringToDynamicRole(std::string dynamic_role_str) {
     return dynamic_role;
 }
 
+inline std::string ballStatusAsString(ball_status_e ball_status) {
+    std::string result = "";
+    switch (ball_status) {
+    case ball_status_e::FREE: result = "FREE"; break;
+    case ball_status_e::OWNED_BY_PLAYER: result = "OWNED_BY_PLAYER"; break;
+    case ball_status_e::OWNED_BY_TEAMMATE  : result = "OWNED_BY_TEAMMATE"; break;
+    case ball_status_e::OWNED_BY_TEAM: result = "OWNED_BY_TEAM"; break;
+    case ball_status_e::OWNED_BY_OPPONENT: result = "OWNED_BY_OPPONENT"; break;
+    }
+    return result;
+}
+
 // function checks whether value is one of the given values.
 // function can be use to check against enum values e.g. isOneOf(myFruit, {APPLE, PEAR})
 template <typename T>

@@ -14,7 +14,7 @@
   <tns:Team id="4" label="4" x="2.00" y="4.00" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
   <tns:Opponent label="11" x="-3.25" y="3.0"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="84825.324" valid="false" />
-  <tns:SituationInfo passing_required="false" team_controls_ball="true">
+  <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAM">
   	<tns:PassData valid="true" origin_x="0.614" origin_y="-3.893" target_x="3.550" target_y="2.65" angle="0.0" velocity="1.0" ts="0.1" target_id="2"/>
   </tns:SituationInfo>
 </tns:Situation>

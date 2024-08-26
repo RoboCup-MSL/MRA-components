@@ -503,6 +503,14 @@ int main(int argc, char *argv[]) {
         path compare_new ("./compare_new");
         path compare_old ("./compare_old");
 
+        if (!boost::filesystem::is_directory(compare_new)) {
+            boost::filesystem::remove(compare_new);
+        }
+        if (!boost::filesystem::is_directory(compare_old)) {
+            boost::filesystem::remove(compare_old);
+        }
+
+
 	    // convert string to vector of strings (filenames)
 	    std::vector<std::string> missing_files = std::vector<std::string>();
 		// get files in output-directory
@@ -572,15 +580,14 @@ int main(int argc, char *argv[]) {
                     cerr << "difference found in: " << reg_file  << endl;
 
 					// copy files to compare directories
-					namespace fs = boost::filesystem;
-					if (!fs::is_directory(compare_new)) {
-						fs::create_directories(compare_new);
+					if (!boost::filesystem::is_directory(compare_new)) {
+					    boost::filesystem::create_directories(compare_new);
 					}
-					if (!fs::is_directory(compare_old)) {
-						fs::create_directories(compare_old);
+					if (!boost::filesystem::is_directory(compare_old)) {
+					    boost::filesystem::create_directories(compare_old);
 					}
-					fs::copy_file(path(regression_dir) / path(reg_file), compare_old / path(reg_file), copy_option::overwrite_if_exists);
-					fs::copy_file(path(output_dir) / path(reg_file), compare_new / path(reg_file), copy_option::overwrite_if_exists);
+					boost::filesystem::copy_file(path(regression_dir) / path(reg_file), compare_old / path(reg_file), copy_option::overwrite_if_exists);
+					boost::filesystem::copy_file(path(output_dir) / path(reg_file), compare_new / path(reg_file), copy_option::overwrite_if_exists);
 					nr_failed++;
 				}
 			}
@@ -592,10 +599,10 @@ int main(int argc, char *argv[]) {
 				// copy missing file to compare directory
 				namespace fs = boost::filesystem;
 				path compare_new ("./compare_new");
-				if (!fs::is_directory(compare_new)) {
-					fs::create_directories(compare_new);
+				if (!boost::filesystem::is_directory(compare_new)) {
+				    boost::filesystem::create_directories(compare_new);
 				}
-				fs::copy_file(path(regression_dir) / path(reg_file), compare_new / path(reg_file));
+				boost::filesystem::copy_file(path(regression_dir) / path(reg_file), compare_new / path(reg_file));
 
 				missing_files.push_back(reg_file);
 			}

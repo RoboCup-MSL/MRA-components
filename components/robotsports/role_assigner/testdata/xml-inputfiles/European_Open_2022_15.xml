@@ -20,7 +20,7 @@
 	<tns:Team id="4" label="4" x="0.109" y="-3.483" rz="-2.119" velx="-0.025" vely="-0.706" velrz="0.000"     previous_result_present="true"  previous_result_ts="44768.9" previous_result_x="-0.123" previous_result_y="-3.59" previous_result_dynamic_role="DEFENDER"/>
 	<tns:Opponent label="11" x="0.229" y="-0.569" rz="0.000" velx="0.685" vely="0.875" velrz="0.000" />
 	<tns:PickupPosition x="0.000" y="0.000" ts="44768.809" valid="false" />
-	<tns:SituationInfo passing_required="true" team_controls_ball="false">
+	<tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
 		<tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
 	</tns:SituationInfo>
 

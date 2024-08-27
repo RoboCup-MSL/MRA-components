@@ -139,10 +139,14 @@ class Keyboard(JoystickCore):
             pynput.keyboard.Key.shift_r: (lambda f: self.handle_button('RB', f)),
             pynput.keyboard.KeyCode.from_char('e'): (lambda f: self.handle_button('select', f)),
             pynput.keyboard.KeyCode.from_char('k'): (lambda f: self.handle_button('mode', f)),
-            pynput.keyboard.Key.down: (lambda f: self.handle_axis('LS', 'y', f * -1.0)),
-            pynput.keyboard.Key.up: (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
+            pynput.keyboard.Key.down: (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
+            pynput.keyboard.Key.up: (lambda f: self.handle_axis('LS', 'y', f * -1.0)),
             pynput.keyboard.Key.left: (lambda f: self.handle_axis('LS', 'x', f * -1.0)),
             pynput.keyboard.Key.right: (lambda f: self.handle_axis('LS', 'x', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('5'): (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('8'): (lambda f: self.handle_axis('LS', 'y', f * -1.0)),
+            pynput.keyboard.KeyCode.from_char('4'): (lambda f: self.handle_axis('LS', 'x', f * -1.0)),
+            pynput.keyboard.KeyCode.from_char('6'): (lambda f: self.handle_axis('LS', 'x', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('7'): (lambda f: self.handle_axis('RS', 'x', f * -1.0)),
             pynput.keyboard.KeyCode.from_char('9'): (lambda f: self.handle_axis('RS', 'x', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('h'): self.print_help_text,
@@ -170,7 +174,7 @@ class Keyboard(JoystickCore):
         if is_pressed:
             print("""Controls:
 * movement:
-    * arrow keys: move robot forward, backward, left, right
+    * arrow keys (or numpad 4,5,6,8): move robot forward, backward, left, right
     * numpad 7,9 keys: rotate robot
 * ball handling:
     * b: toggle ballhandlers on/off

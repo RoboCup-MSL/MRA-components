@@ -52,7 +52,14 @@ jobs:
 
     - name: Set up dependencies
       run: |
-        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+        sudo apt-get install -y protobuf-compiler
+        sudo apt-get install -y protobuf-compiler
+        sudo apt-get install -y libboost-all-dev
+        sudo apt-get install -y libgtest-dev
+        sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libxerces-c3-dev
+        sudo apt-get install -y xsdcxx
+
 
     - name: Create build folder
       run: mkdir build

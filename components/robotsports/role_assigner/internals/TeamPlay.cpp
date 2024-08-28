@@ -104,17 +104,17 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
     // Then also putting them back in the correct order at the end of this function can be removed.
     teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
-    std::vector<long> orginal_order_robotIds = std::vector<long>();
-    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
-        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
-    }
-    // first sort TeamPlannerTeam on robotId
-    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
-    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
-        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
-            teamplannerData.this_player_idx = idx;
-        }
-    }
+//    std::vector<long> orginal_order_robotIds = std::vector<long>();
+//    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
+//        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
+//    }
+//    // first sort TeamPlannerTeam on robotId
+//    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
+//    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
+//        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
+//            teamplannerData.this_player_idx = idx;
+//        }
+//    }
     // <<< END sort team of teamplanner data by robotId
 
     bool playerPassedBall = false;
@@ -343,15 +343,19 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     //printAssignOutputs(Team, player_paths_in_correct_order);
 
     // ----------------------------------------------------------
-    // Put the player_paths in the same order as Team was defined by the client
-    // Can be remove if client provide team in correct ordere
+//    // Put the player_paths in the same order as Team was defined by the client
+//    // Can be remove if client provide team in correct ordere
+//    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
+//    for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
+//        for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
+//            if (teamplannerData.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
+//                player_paths_in_correct_order.push_back(player_paths[team_idx]);
+//            }
+//        }
+//    }
     std::vector<PlayerPlannerResult> player_paths_in_correct_order;
-    for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
-        for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
-            if (teamplannerData.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
-                player_paths_in_correct_order.push_back(player_paths[team_idx]);
-            }
-        }
+    for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
+        player_paths_in_correct_order.push_back(player_paths[team_idx]);
     }
     // << END Put the player_paths in order expected by the client
 

@@ -819,14 +819,14 @@ void TeamPlay::assignGoalie(TeamPlannerData& teamplanner_data)
 
     if (keeperFound) {
         teamplanner_data.team[keeper_idx].assigned = true;
+        defend_info_t defend_info = {};
         teamplanner_data.team[keeper_idx].result = PlayerPlannerResult(
             teamplanner_data.gamestate,
             teamplanner_data.gamestate == game_state_e::PARKING ? dr_PARKING : dr_GOALKEEPER,
             teamplanner_data.incrementAndGetRank(),
             goaliePosition,
             teamplanner_data.gamestate == game_state_e::PARKING ? planner_target_e::GOTO_TARGET_POSITION_SLOW : planner_target_e::GOALKEEPER,
-            teamplanner_data.defend_info);
-        //cerr << keeper_idx <<": DR: " << DynamicRoleAsString(dr_GOALKEEPER) << " pos: " << goaliePosition.toString() << endl;
+            defend_info); // no defend info for goalie
     }
 
     return;

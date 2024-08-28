@@ -55,9 +55,11 @@ inline std::string PlannerTargetAsString(planner_target_e target) {
     case planner_target_e::PREPARE_DROPBALL:        targetString = "Prepare dropball"; break;
     case planner_target_e::GOTO_TARGET_POSITION:    targetString = "goto target position"; break;
     case planner_target_e::SWEEPER:                 targetString = "Sweeper"; break;
-    case planner_target_e::GOALIE_POSITION:         targetString = "Goalie"; break;
+    case planner_target_e::GOALIE_POSITION:         targetString = "Goalie position"; break;
     case planner_target_e::GOTO_TARGET_POSITION_SLOW:  targetString = "goto target position slow"; break;
     case planner_target_e::PRIORITY_BLOCK:          targetString = "Priority Block"; break;
+    case planner_target_e::GOALKEEPER:              targetString = "Goalie"; break;
+
     default:
         targetString = "unknown target (ERROR situation)";
     }

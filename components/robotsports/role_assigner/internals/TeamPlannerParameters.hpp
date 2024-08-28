@@ -263,12 +263,12 @@ public:
 	static double kickoff_against_fp4_x;
 	static double kickoff_against_fp4_y;
 
+    static team_formation_e attack_formation;
+    static team_formation_e defense_formation;
+
 
 	TeamPlannerParameters();
 	std::string toString() const;
-	operator planner_options_t();
-	TeamPlannerParameters& operator=(const planner_options_t& opt);
-	static TeamPlannerParameters ReadFromIniFile(const std::string& inifilename);
 };
 
 std::string FormationAsString(team_formation_e formation);

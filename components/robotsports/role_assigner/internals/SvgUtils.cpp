@@ -139,31 +139,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\toriginal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
     string controlBallByPlayerRemark = "";
 
-    int controlBallByPlayerIdx = -1;
-    int controlBallById = -1;
-    for (auto idx = 0u; idx < data.team.size(); idx++) {
-        if (data.team[idx].controlBall) {
-            controlBallByPlayerIdx = idx;
-            controlBallById = data.team[idx].robotId;
-        }
-    }
+    fprintf(fp, "\tball_status = \"%s\"\n", ballStatusAsString(data.ball_status).c_str());
 
-    if (controlBallByPlayerIdx == (int) data.this_player_idx) {
-        controlBallByPlayerRemark = "(not controlled by robot in team)";
-    }
-    else if (controlBallByPlayerIdx == 0) {
-        controlBallByPlayerRemark = "(controlled by me)";
-    }
-    else {
-        controlBallByPlayerRemark = "(controlled by team-member)";
-    }
-    fprintf(fp, "\tcontrolball = %s", controlBallByPlayerRemark.c_str());
-    if (controlBallByPlayerIdx >= 0) {
-        fprintf(fp, " (idx: %d id: %d)", controlBallByPlayerIdx, controlBallById);
-    }
-    fprintf(fp, "\n");
-
-    fprintf(fp, "\tglobalBall: position: %s velocity: %s\n", ball.position.toString().c_str(), ball.velocity.toString().c_str());
+    fprintf(fp, "\tBall: position: %s velocity: %s\n", ball.position.toString().c_str(), ball.velocity.toString().c_str());
     fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.previous_ball_present).c_str());
     if (data.previous_ball.previous_ball_present) {
         fprintf(fp, " x=%4.2f y=%4.2f", data.previous_ball.x, data.previous_ball.y);
@@ -190,8 +168,11 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\tteam:\n");
     for (unsigned int idx = 0; idx < data.team.size(); idx++) {
         TeamPlannerRobot rbt = data.team[idx];
-        fprintf(fp, "\t\tR%02ld = %s type = %s (%d)\n",
-                rbt.robotId, rbt.position.toString().c_str(), PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(), rbt.player_type );
+        fprintf(fp, "\t\tR%02ld = %s vel: %s label: %ld type = %s (%d)\n",
+                rbt.robotId, rbt.position.toString().c_str(), rbt.velocity.toString().c_str(),
+                rbt.labelId,
+                PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
+                rbt.player_type );
         fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
                 boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(rbt.result.dynamic_role).c_str(),
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
@@ -208,7 +189,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
 
     fprintf(fp, "\topponents:\n");
     for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
-        fprintf(fp, "\t\tplayer[%u] = %s\n", idx, data.opponents[idx].position.toString().c_str());
+        fprintf(fp, "\t\tplayer[%u] = position %s velocity %s\n", idx,
+                data.opponents[idx].position.toString().c_str(),
+                data.opponents[idx].velocity.toString().c_str());
     }
 
 
@@ -301,6 +284,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "   preferredSetplayKicker=\"%d\"\n", data.parameters.preferredSetplayKicker);
     fprintf(fp, "   preferredSetplayReceiver=\"%d\"\n", data.parameters.preferredSetplayReceiver);
     fprintf(fp, "   previous_role_bonus_end_pos_radius=\"%4.3f\"\n", data.parameters.previous_role_bonus_end_pos_radius);
+    fprintf(fp, "   priority_block_min_distance=\"%4.3f\"\n", data.parameters.priority_block_min_distance);
     fprintf(fp, "   priority_block_max_distance=\"%4.3f\"\n", data.parameters.priority_block_max_distance);
     fprintf(fp, "   safetyFactor=\"%4.3f\"\n", data.parameters.safetyFactor);
     fprintf(fp, "   secondCircleRadius=\"%4.3f\"\n", data.parameters.secondCircleRadius);
@@ -352,9 +336,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         string labelString = "label=\""+ std::to_string(label_id) + "\"";
 
         string controlBallString = "";
-        if (controlBallByPlayerIdx  == static_cast<int>(idx))
+        if (data.team[idx].controlBall)
         {
-            controlBallString = " hasBall=\"true\" ";
+            controlBallString = " controlBall=\"true\" ";
         }
         string passedBallString = "";
         string previous_result_string = "";
@@ -577,7 +561,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp,
                 "\n<!-- ME -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, teamColor.c_str(), fillColor.c_str());
-        if (controlBallByPlayerIdx == (int) data.this_player_idx) {
+        if (data.team[data.this_player_idx].controlBall) {
             fprintf(fp,
                     "\n<!-- aiming -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.05cm\"  stroke=\"yellow\"/>\n",
                     svgX(bar_pos.x), svgY(bar_pos.y), svgX(bar_pos.x + 12 * cos(r)), svgY(bar_pos.y + 12 * sin(r)));

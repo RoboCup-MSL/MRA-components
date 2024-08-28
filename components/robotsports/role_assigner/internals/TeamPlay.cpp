@@ -10,7 +10,6 @@
 #include "RolePosition.hpp"
 #include "GlobalPathDynamicPlanner.hpp"
 #include "SvgUtils.hpp"
-//#include "StringUtils.hpp"
 #include "MathUtils.h"
 //#include "EnumUtils.h"
 #include <iomanip>
@@ -19,6 +18,7 @@
 #include <cmath>
 #include <climits>
 #include <algorithm>
+#include "TeamFormation.h"  // temporary TODO
 
 using namespace std;
 using namespace MRA;
@@ -50,13 +50,33 @@ void TeamPlay::assign(const TeamPlannerInput& input,
 std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerData)
 {
     teamplannerData.original_gamestate = teamplannerData.gamestate;
+
+    if (teamplannerData.gamestate == game_state_e::NORMAL) {
+        if (teamplannerData.teamControlsBall()) {
+            teamplannerData.gamestate = game_state_e::NORMAL_ATTACK;
+        }
+        else{
+            teamplannerData.gamestate = game_state_e::NORMAL_DEFEND;
+        }
+    }
+
+    team_formation_e formationToUse = FORMATION_112;
+
+    if ((teamplannerData.gamestate == NORMAL_DEFEND)
+            || (teamplannerData.gamestate == KICKOFF_AGAINST) || (teamplannerData.gamestate == FREEKICK_AGAINST) || (teamplannerData.gamestate == GOALKICK_AGAINST)
+            || (teamplannerData.gamestate == CORNER_AGAINST)  || (teamplannerData.gamestate == PENALTY_AGAINST)  || (teamplannerData.gamestate == PENALTY_SHOOTOUT_AGAINST)) {
+        formationToUse = FORMATION_112;
+    }
+    teamplannerData.teamFormation = TeamFormation::selectTeamFormation(formationToUse, teamplannerData.gamestate,
+            teamplannerData.ball_status, teamplannerData.parameters);
+
     // printAssignInputs(teamplannerData);  // for debug purposes
     teamplannerData.original_opponents = teamplannerData.opponents;
     teamplannerData.opponents = {};
     for (unsigned idx = 0; idx < teamplannerData.original_opponents.size(); idx++) {
         MRA::Geometry::Point opponent_pos = teamplannerData.original_opponents[idx].position;
-        bool behind_own_backline = fabs((opponent_pos.x < teamplannerData.fieldConfig.getMaxFieldX()-1))  // 1 meter from side
-                        and (opponent_pos.y < -teamplannerData.fieldConfig.getMaxFieldY()); // behind backline
+        bool behind_own_backline = (fabs(opponent_pos.x) < teamplannerData.fieldConfig.getMaxFieldX()-1)  // 1 meter from side
+                        and opponent_pos.y < -teamplannerData.fieldConfig.getMaxFieldY(); // behind backline
         if (teamplannerData.fieldConfig.isInReachableField(opponent_pos) and not behind_own_backline) {
             teamplannerData.opponents.push_back(teamplannerData.original_opponents[idx]);
         }
@@ -291,8 +311,8 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
 			robotIds.push_back(teamplannerData.team[r_idx].robotId);
 			teamTypes.push_back(teamplannerData.team[r_idx].player_type);
 		}
-		TeamPlannerParameters options = teamplannerData.parameters;
-		std::string save_name = options.svgOutputFileName;
+		TeamPlannerParameters parameters = teamplannerData.parameters;
+		std::string save_name = parameters.svgOutputFileName;
 		if (thisPlayerHasUnallowedPath) {
 			if (thisPlayerStartsAtUnallowedPosition) {
 			    save_name = GetTeamPlannerSVGname(teamplannerData.gamestate, "OUTSIDE_FIELD_BEGIN_ERROR");
@@ -305,6 +325,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
 		{
 		    save_name = GetTeamPlannerSVGname(teamplannerData.gamestate, "DYN_ROLE_NONE");
 		}
+        cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
 
 		SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, teamplannerData.fieldConfig, save_name);
 

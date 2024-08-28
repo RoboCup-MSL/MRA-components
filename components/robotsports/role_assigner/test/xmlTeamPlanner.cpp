@@ -29,6 +29,7 @@
 #include "GlobalPathPlanner.hpp" // for print path
 //#include "TeamPlannerRobot.hpp"
 #include "TeamPlay.hpp"
+#include "planner_types.hpp"
 #include "TeamPlannerResult.hpp"
 
 using namespace MRA;
@@ -193,76 +194,119 @@ static std::string TeamPlannerResultToString(const team_planner_result_t& player
     return buffer.str();
 }
 
-void getPlannerOptions(TeamPlannerParameters & options, auto_ptr<robotsports::StrategyType>& c) {
-    options.calculateAllPaths = c->Options().calculateAllPaths();
-    options.minimumEdgeLength = c->Options().minimumEdgeLength();
-    options.maximumEdgeLength = c->Options().maximumEdgeLength();
-    options.minimumDistanceToEndPoint = c->Options().minimumDistanceToEndPoint();
-    options.nrVerticesFirstCircle = c->Options().nrVerticesFirstCircle();
-    options.firstCircleRadius = c->Options().firstCircleRadius();
-    options.nrVerticesSecondCircle = c->Options().nrVerticesSecondCircle();
-    options.secondCircleRadius = c->Options().secondCircleRadius();
-    options.safetyFactor = c->Options().safetyFactor();
-    options.addBarierVertices = c->Options().addBarierVertices();
-    options.addUniformVertices = c->Options().addUniformVertices();
-    options.uniform_x_interval = c->Options().uniform_x_interval();
-    options.uniform_y_interval = c->Options().uniform_y_interval();
-    options.startingVelocityPenaltyFactor = c->Options().startingVelocityPenaltyFactor();
-    options.addBallApproachVertices = c->Options().addBallApproachVertices();
-    options.distToapplyBallApproachVertices = c->Options().distToapplyBallApproachVertices();
-    options.ballApproachVerticesRadius = c->Options().ballApproachVerticesRadius();
-    options.ballApproachNumberOfVertices = c->Options().ballApproachNumberOfVertices();
-    options.manDefenseBetweenBallAndPlayer = c->Options().manDefenseBetweenBallAndPlayer();
-    options.dist_before_penalty_area_for_sweeper = c->Options().dist_before_penalty_area_for_sweeper();
-    options.grid_size = c->Options().grid_size();
-    options.interceptionChanceStartDistance = c->Options().interceptionChanceStartDistance();
-    options.interceptionChanceIncreasePerMeter = c->Options().interceptionChanceIncreasePerMeter();
-    options.interceptionChancePenaltyFactor = c->Options().interceptionChancePenaltyFactor();
-    options.grid_close_to_ball_normal_penalty = c->Options().grid_close_to_ball_normal_penalty();
-    options.grid_close_to_ball_normal_radius = c->Options().grid_close_to_ball_normal_radius();
-    options.grid_close_to_ball_restart_normal_penalty = c->Options().grid_close_to_ball_restart_normal_penalty();
-    options.grid_close_to_ball_restart_normal_radius = c->Options().grid_close_to_ball_restart_normal_radius();
-    options.grid_close_to_ball_restart_penalty_penalty = c->Options().grid_close_to_ball_restart_penalty_penalty();
-    options.grid_close_to_ball_restart_penalty_radius = c->Options().grid_close_to_ball_restart_penalty_radius();
-    options.grid_close_to_ball_restart_dropball_penalty = c->Options().grid_close_to_ball_restart_dropball_penalty();
-    options.grid_close_to_ball_restart_dropball_radius = c->Options().grid_close_to_ball_restart_dropball_radius();
-    options.grid_opponent_goal_clearance_x = c->Options().grid_opponent_goal_clearance_x();
-    options.grid_opponent_goal_clearance_y = c->Options().grid_opponent_goal_clearance_y();
-    options.grid_own_goal_clearance_x = c->Options().grid_own_goal_clearance_x();
-    options.grid_own_goal_clearance_y = c->Options().grid_own_goal_clearance_y();
-    options.nrDynamicPlannerIterations = c->Options().nrDynamicPlannerIterations();
-    options.maxPossibleLinearSpeed = c->Options().maxPossibleLinearSpeed();
-    options.maxPossibleLinearAcceleration = c->Options().maxPossibleLinearAcceleration();
-    options.nr_robots_needed_for_pass_play = c->Options().nr_robots_needed_for_pass_play();
-    options.nr_attack_support_during_defensive_period = c->Options().nr_attack_support_during_defensive_period();
-    options.wait_on_non_optimal_position_during_prepare_phase = c->Options().wait_on_non_optimal_position_during_prepare_phase();
-    // plannerOptions.auto_save_svg_period not handled for xml only when teamplanner skill is used
-    options.autoAssignGoalie = c->Options().autoAssignGoalie();
-    options.preferredSetplayKicker = c->Options().preferredSetplayKicker();
-    options.preferredSetplayReceiver = c->Options().preferredSetplayReceiver();
-    options.use_pass_to_position_for_attack_support = c->Options().use_pass_to_position_for_attack_support();
-    options.man_to_man_defense_during_normal_play = c->Options().man_to_man_defense_during_normal_play();
-    options.man_to_man_defense_during_setplay_against = c->Options().man_to_man_defense_during_setplay_against();
-    options.no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
-    options.interceptor_assign_use_ball_velocity = c->Options().interceptor_assign_use_ball_velocity();
-    options.interceptor_assign_min_velocity_for_calculate_interception_position =  c->Options().interceptor_assign_min_velocity_for_calculate_interception_position();
-    options.dist_to_goal_to_mark_opponent_as_goalie = c->Options().dist_to_goal_to_mark_opponent_as_goalie();
-    options.setplay_against_dist_to_opponent = c->Options().setplay_against_dist_to_opponent();
-    options.move_to_ball_left_field_position = c->Options().move_to_ball_left_field_position();
+MRA::team_formation_e StringToFormation(const string& formation_string) {
+    MRA::team_formation_e formation = team_formation_e::FORMATION_013;
+    if (formation_string == "FORMATION_013") {
+        formation = team_formation_e::FORMATION_013;
+    } else if (formation_string == "FORMATION_112") {
+        formation = team_formation_e::FORMATION_112;
+    } else if (formation_string == "FORMATION_211") {
+        formation = team_formation_e::FORMATION_211;
+    } else if (formation_string == "FORMATION_310") {
+        formation = team_formation_e::FORMATION_310;
+    } else if (formation_string == "FORMATION_ATTACK_SUPPORT_ONLY") {
+        formation = team_formation_e::FORMATION_ATTACK_SUPPORT_ONLY;
+    } else if (formation_string == "FORMATION_DEFENDER_ONLY") {
+        formation = team_formation_e::FORMATION_DEFENDER_ONLY;
+    } else if (formation_string == "FORMATION_INTERCEPTOR_ONLY") {
+        formation = team_formation_e::FORMATION_INTERCEPTOR_ONLY;
+    } else if (formation_string == "FORMATION_SWEEPER_ONLY") {
+        formation = team_formation_e::FORMATION_SWEEPER_ONLY;
+    } else if (formation_string == "FORMATION_SETPLAY_RECEIVER_ONLY") {
+        formation = team_formation_e::FORMATION_SETPLAY_RECEIVER_ONLY;
+    } else if (formation_string == "FORMATION_SETPLAY_KICKER_ONLY") {
+        formation = team_formation_e::FORMATION_SETPLAY_KICKER_ONLY;
+    } else if (formation_string == "FORMATION_BALLPLAYER_ONLY") {
+        formation = team_formation_e::FORMATION_BALLPLAYER_ONLY;
+    } else if (formation_string == "FORMATION_SEARCHFORBALL_ONLY") {
+        formation = team_formation_e::FORMATION_SEARCHFORBALL_ONLY;
+    } else if (formation_string == "FORMATION_BEGINPOSITION_ONLY") {
+        formation = team_formation_e::FORMATION_BEGINPOSITION_ONLY;
+    } else if (formation_string == "FORMATION_PARKING_ONLY") {
+        formation = team_formation_e::FORMATION_PARKING_ONLY;
+    } else if (formation_string == "FORMATION_PENALTYKICKER_ONLY") {
+        formation = team_formation_e::FORMATION_PENALTYKICKER_ONLY;
+    } else {
+        cerr << "UNKNOWN FORMATION xmlTeamPlanner.cpp: " << formation_string
+                << endl;
+    }
+    return formation;
+}
 
-    options.svgDrawVelocity = c->Options().svgDrawVelocity();
-    options.svgDrawEdges = c->Options().svgDrawEdges();
-    options.svgDefaultTargetColor =  c->Options().svgDefaultTargetColor();
-    options.svgBallColor = c->Options().svgBallColor();
-    options.svgOriginalTargetColor = c->Options().svgOriginalTargetColor();
-    options.svgTeamColor = c->Options().svgTeamColor();
-    options.svgOpponentColor = c->Options().svgOpponentColor();
-    options.svgOutputFileName = c->Options().svgOutputFileName();
-    options.saveGridDataToFile = c->Options().saveGridDataToFile();
-    options.svgRobotPlanner = c->Options().svgRobotPlanner();
-    options.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
-    options.priority_block_min_distance = c->Options().priority_block_min_distance();
-    options.priority_block_max_distance = c->Options().priority_block_max_distance();
+void getPlannerOptions(TeamPlannerParameters & parameters, auto_ptr<robotsports::StrategyType>& c) {
+    parameters.calculateAllPaths = c->Options().calculateAllPaths();
+    parameters.minimumEdgeLength = c->Options().minimumEdgeLength();
+    parameters.maximumEdgeLength = c->Options().maximumEdgeLength();
+    parameters.minimumDistanceToEndPoint = c->Options().minimumDistanceToEndPoint();
+    parameters.nrVerticesFirstCircle = c->Options().nrVerticesFirstCircle();
+    parameters.firstCircleRadius = c->Options().firstCircleRadius();
+    parameters.nrVerticesSecondCircle = c->Options().nrVerticesSecondCircle();
+    parameters.secondCircleRadius = c->Options().secondCircleRadius();
+    parameters.safetyFactor = c->Options().safetyFactor();
+    parameters.addBarierVertices = c->Options().addBarierVertices();
+    parameters.addUniformVertices = c->Options().addUniformVertices();
+    parameters.uniform_x_interval = c->Options().uniform_x_interval();
+    parameters.uniform_y_interval = c->Options().uniform_y_interval();
+    parameters.startingVelocityPenaltyFactor = c->Options().startingVelocityPenaltyFactor();
+    parameters.addBallApproachVertices = c->Options().addBallApproachVertices();
+    parameters.distToapplyBallApproachVertices = c->Options().distToapplyBallApproachVertices();
+    parameters.ballApproachVerticesRadius = c->Options().ballApproachVerticesRadius();
+    parameters.ballApproachNumberOfVertices = c->Options().ballApproachNumberOfVertices();
+    parameters.manDefenseBetweenBallAndPlayer = c->Options().manDefenseBetweenBallAndPlayer();
+    parameters.dist_before_penalty_area_for_sweeper = c->Options().dist_before_penalty_area_for_sweeper();
+    parameters.grid_size = c->Options().grid_size();
+    parameters.interceptionChanceStartDistance = c->Options().interceptionChanceStartDistance();
+    parameters.interceptionChanceIncreasePerMeter = c->Options().interceptionChanceIncreasePerMeter();
+    parameters.interceptionChancePenaltyFactor = c->Options().interceptionChancePenaltyFactor();
+    parameters.grid_close_to_ball_normal_penalty = c->Options().grid_close_to_ball_normal_penalty();
+    parameters.grid_close_to_ball_normal_radius = c->Options().grid_close_to_ball_normal_radius();
+    parameters.grid_close_to_ball_restart_normal_penalty = c->Options().grid_close_to_ball_restart_normal_penalty();
+    parameters.grid_close_to_ball_restart_normal_radius = c->Options().grid_close_to_ball_restart_normal_radius();
+    parameters.grid_close_to_ball_restart_penalty_penalty = c->Options().grid_close_to_ball_restart_penalty_penalty();
+    parameters.grid_close_to_ball_restart_penalty_radius = c->Options().grid_close_to_ball_restart_penalty_radius();
+    parameters.grid_close_to_ball_restart_dropball_penalty = c->Options().grid_close_to_ball_restart_dropball_penalty();
+    parameters.grid_close_to_ball_restart_dropball_radius = c->Options().grid_close_to_ball_restart_dropball_radius();
+    parameters.grid_opponent_goal_clearance_x = c->Options().grid_opponent_goal_clearance_x();
+    parameters.grid_opponent_goal_clearance_y = c->Options().grid_opponent_goal_clearance_y();
+    parameters.grid_own_goal_clearance_x = c->Options().grid_own_goal_clearance_x();
+    parameters.grid_own_goal_clearance_y = c->Options().grid_own_goal_clearance_y();
+    parameters.nrDynamicPlannerIterations = c->Options().nrDynamicPlannerIterations();
+    parameters.maxPossibleLinearSpeed = c->Options().maxPossibleLinearSpeed();
+    parameters.maxPossibleLinearAcceleration = c->Options().maxPossibleLinearAcceleration();
+    parameters.nr_robots_needed_for_pass_play = c->Options().nr_robots_needed_for_pass_play();
+    parameters.nr_attack_support_during_defensive_period = c->Options().nr_attack_support_during_defensive_period();
+    parameters.wait_on_non_optimal_position_during_prepare_phase = c->Options().wait_on_non_optimal_position_during_prepare_phase();
+    // plannerOptions.auto_save_svg_period not handled for xml only when teamplanner skill is used
+    parameters.autoAssignGoalie = c->Options().autoAssignGoalie();
+    parameters.preferredSetplayKicker = c->Options().preferredSetplayKicker();
+    parameters.preferredSetplayReceiver = c->Options().preferredSetplayReceiver();
+    parameters.use_pass_to_position_for_attack_support = c->Options().use_pass_to_position_for_attack_support();
+    parameters.man_to_man_defense_during_normal_play = c->Options().man_to_man_defense_during_normal_play();
+    parameters.man_to_man_defense_during_setplay_against = c->Options().man_to_man_defense_during_setplay_against();
+    parameters.no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
+    parameters.interceptor_assign_use_ball_velocity = c->Options().interceptor_assign_use_ball_velocity();
+    parameters.interceptor_assign_min_velocity_for_calculate_interception_position =  c->Options().interceptor_assign_min_velocity_for_calculate_interception_position();
+    parameters.dist_to_goal_to_mark_opponent_as_goalie = c->Options().dist_to_goal_to_mark_opponent_as_goalie();
+    parameters.setplay_against_dist_to_opponent = c->Options().setplay_against_dist_to_opponent();
+    parameters.move_to_ball_left_field_position = c->Options().move_to_ball_left_field_position();
+
+    parameters.svgDrawVelocity = c->Options().svgDrawVelocity();
+    parameters.svgDrawEdges = c->Options().svgDrawEdges();
+    parameters.svgDefaultTargetColor =  c->Options().svgDefaultTargetColor();
+    parameters.svgBallColor = c->Options().svgBallColor();
+    parameters.svgOriginalTargetColor = c->Options().svgOriginalTargetColor();
+    parameters.svgTeamColor = c->Options().svgTeamColor();
+    parameters.svgOpponentColor = c->Options().svgOpponentColor();
+    parameters.svgOutputFileName = c->Options().svgOutputFileName();
+    parameters.saveGridDataToFile = c->Options().saveGridDataToFile();
+    parameters.svgRobotPlanner = c->Options().svgRobotPlanner();
+    parameters.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
+    parameters.priority_block_min_distance = c->Options().priority_block_min_distance();
+    parameters.priority_block_max_distance = c->Options().priority_block_max_distance();
+
+    parameters.attack_formation =  StringToFormation(c->AttackFormation());
+    parameters.defense_formation = StringToFormation(c->DefenseFormation());
+
 }
 
 game_state_e gamestate_string_to_enum(std::string& gs) {
@@ -728,6 +772,8 @@ void xmlplanner(string input_filename) {
 	teamplannerData.ball.is_valid = ball_is_valid;
 	teamplannerData.fieldConfig = fieldConfig;
 
+    cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
+
 	fillTeamPlannerData(teamplannerData, gameState,
 			ball,
 			ball_vel,
@@ -741,6 +787,8 @@ void xmlplanner(string input_filename) {
 			team_controls_ball, ownPlayerWithBall,
 			teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
 			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
+    cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
+    cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
 
 
 	// TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
@@ -758,6 +806,7 @@ void xmlplanner(string input_filename) {
 			cerr << "<< XML: print received path " << endl << flush;
 			cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
 		}
+	    cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
 
 		SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
 

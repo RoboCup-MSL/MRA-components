@@ -119,6 +119,11 @@ double TeamPlannerParameters::kickoff_against_fp3_y = -0.4;
 double TeamPlannerParameters::kickoff_against_fp4_x = -3.5;
 double TeamPlannerParameters::kickoff_against_fp4_y = -0.4;
 
+team_formation_e TeamPlannerParameters::attack_formation = FORMATION_211;
+team_formation_e TeamPlannerParameters::defense_formation = FORMATION_112;
+
+
+
 TeamPlannerParameters::TeamPlannerParameters() {
 
 }

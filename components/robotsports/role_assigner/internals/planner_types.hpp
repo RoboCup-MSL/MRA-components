@@ -111,125 +111,125 @@ typedef struct moving_object_s {
 	long valid;
 } moving_object_t;
 
-typedef struct planner_options_s {
-	long calculate_all_paths;
-	double minimum_edge_length;
-	double maximum_edge_length;
-	double minimum_distance_to_endpoint;
-	long nr_vertices_first_circle;
-	double first_circle_radius;
-	long nr_vertices_second_circle;
-	double second_circle_radius;
-	double safety_factor;
-	long add_barier_vertices;
-	long add_uniform_vertices;
-	double uniform_x_interval;
-	double uniform_y_interval;
-	double starting_velocity_penalty_factor;
-	double dist_to_apply_ball_approach_vertices;
-	long add_ball_approach_vertices;
-	double ball_approach_vertices_radius;
-	long ball_approach_number_of_vertices;
-	long man_defense_between_ball_and_player;
-	double dist_before_penalty_area_for_sweeper;
-	double grid_size;
-	double interceptionChanceStartDistance;
-	double interceptionChanceIncreasePerMeter;
-	double interceptionChancePenaltyFactor;
-	double grid_close_to_ball_normal_penalty;
-	double grid_close_to_ball_normal_radius;
-	double grid_close_to_ball_restart_normal_penalty;
-	double grid_close_to_ball_restart_normal_radius;
-	double grid_close_to_ball_restart_penalty_penalty;
-	double grid_close_to_ball_restart_penalty_radius;
-	double grid_close_to_ball_restart_dropball_penalty;
-	double grid_close_to_ball_restart_dropball_radius;
-	double grid_opponent_goal_clearance_x;
-	double grid_opponent_goal_clearance_y;
-	double grid_own_goal_clearance_x;
-	double grid_own_goal_clearance_y;
-	long nr_dynamic_planner_iterations;
-	double max_possible_linear_speed;
-	double max_possible_linear_acceleration;
-	long nr_robots_needed_for_pass_play;
-	long nr_attack_support_during_defensive_period;
-    long wait_on_non_optimal_position_during_prepare_phase;
-    long priority_block_apply;
-	double priority_block_max_ball_y;
-	double priority_block_max_opponent_to_ball_dist;
-    long priority_block_check_ball_in_area;
-    long priority_block_check_opponent_close_to_ball;
-    double priority_block_min_distance;
-    double priority_block_max_distance;
-    double priority_block_max_distance_to_defense_line;
-    double attack_supporter_extra_distance_to_stay_from_sideline;
-    long man_to_man_defense_during_normal_play;
-
-    long attack_formation;
-    long defense_formation;
-    double restart_receiver_ball_dist;
-    double restart_shooter_ball_dist;
-    double equality_cost_threshold;
-    long select_lowest_robot_nr_for_dynamic_role;
-	long previous_role_bonus_must_be_applied;
-	double previous_role_bonus_end_pos_radius;
-	long use_pass_to_position_for_attack_support;
-	long no_sweeper_during_setplay;
-	long interceptor_assign_use_ball_velocity;
-	double interceptor_assign_min_velocity_for_calculate_interception_position;
-	long man_to_man_defense_during_setplay_against;
-	double dist_to_goal_to_mark_opponent_as_goalie;
-	double setplay_against_dist_to_opponent;
-
-
-	long move_to_ball_left_field_position;
-
-    double auto_save_svg_period;
-
-	long save_grid_data_to_file;
-	long svg_robot_planner;
-
-	long preferred_setplaykicker;
-	long preferred_setplayreceiver;
-	double setplay_margin_to_penalty_area_side;
-	long dedicated_sweeper;
-	long auto_assign_goalie;
-	long lob_shot_when_possible;
-	double min_y_for_lob_shot;
-	double outside_field_margin;
-
-	double mobile_field_uniform_x_interval;
-	double mobile_field_uniform_y_interval;
-	double mobile_field_grid_size;
-	double mobile_field_grid_close_to_ball_normal_radius;
-	double mobile_field_grid_close_to_ball_restart_normal_radius;
-	double mobile_field_grid_close_to_ball_restart_penalty_radius;
-	double mobile_field_grid_close_to_ball_restart_dropball_radius;
-	double mobile_field_restart_receiver_ball_dist;
-	double mobile_field_restart_shooter_ball_dist;
-	double mobile_field_setplay_against_dist_to_opponent;
-
-	double kickoff_fp1_x;
-	double kickoff_fp1_y;
-	double kickoff_fp2_x;
-	double kickoff_fp2_y;
-	double kickoff_fp3_x;
-	double kickoff_fp3_y;
-	double kickoff_fp4_x;
-	double kickoff_fp4_y;
-
-	double kickoff_against_fp1_x;
-	double kickoff_against_fp1_y;
-	double kickoff_against_fp2_x;
-	double kickoff_against_fp2_y;
-	double kickoff_against_fp3_x;
-	double kickoff_against_fp3_y;
-	double kickoff_against_fp4_x;
-	double kickoff_against_fp4_y;
-
-	// variables for svg generation not in this struct
-} planner_options_t;
-
+//typedef struct planner_options_s {
+//	long calculate_all_paths;
+//	double minimum_edge_length;
+//	double maximum_edge_length;
+//	double minimum_distance_to_endpoint;
+//	long nr_vertices_first_circle;
+//	double first_circle_radius;
+//	long nr_vertices_second_circle;
+//	double second_circle_radius;
+//	double safety_factor;
+//	long add_barier_vertices;
+//	long add_uniform_vertices;
+//	double uniform_x_interval;
+//	double uniform_y_interval;
+//	double starting_velocity_penalty_factor;
+//	double dist_to_apply_ball_approach_vertices;
+//	long add_ball_approach_vertices;
+//	double ball_approach_vertices_radius;
+//	long ball_approach_number_of_vertices;
+//	long man_defense_between_ball_and_player;
+//	double dist_before_penalty_area_for_sweeper;
+//	double grid_size;
+//	double interceptionChanceStartDistance;
+//	double interceptionChanceIncreasePerMeter;
+//	double interceptionChancePenaltyFactor;
+//	double grid_close_to_ball_normal_penalty;
+//	double grid_close_to_ball_normal_radius;
+//	double grid_close_to_ball_restart_normal_penalty;
+//	double grid_close_to_ball_restart_normal_radius;
+//	double grid_close_to_ball_restart_penalty_penalty;
+//	double grid_close_to_ball_restart_penalty_radius;
+//	double grid_close_to_ball_restart_dropball_penalty;
+//	double grid_close_to_ball_restart_dropball_radius;
+//	double grid_opponent_goal_clearance_x;
+//	double grid_opponent_goal_clearance_y;
+//	double grid_own_goal_clearance_x;
+//	double grid_own_goal_clearance_y;
+//	long nr_dynamic_planner_iterations;
+//	double max_possible_linear_speed;
+//	double max_possible_linear_acceleration;
+//	long nr_robots_needed_for_pass_play;
+//	long nr_attack_support_during_defensive_period;
+//    long wait_on_non_optimal_position_during_prepare_phase;
+//    long priority_block_apply;
+//	double priority_block_max_ball_y;
+//	double priority_block_max_opponent_to_ball_dist;
+//    long priority_block_check_ball_in_area;
+//    long priority_block_check_opponent_close_to_ball;
+//    double priority_block_min_distance;
+//    double priority_block_max_distance;
+//    double priority_block_max_distance_to_defense_line;
+//    double attack_supporter_extra_distance_to_stay_from_sideline;
+//    long man_to_man_defense_during_normal_play;
+//
+//    long attack_formation;
+//    long defense_formation;
+//    double restart_receiver_ball_dist;
+//    double restart_shooter_ball_dist;
+//    double equality_cost_threshold;
+//    long select_lowest_robot_nr_for_dynamic_role;
+//	long previous_role_bonus_must_be_applied;
+//	double previous_role_bonus_end_pos_radius;
+//	long use_pass_to_position_for_attack_support;
+//	long no_sweeper_during_setplay;
+//	long interceptor_assign_use_ball_velocity;
+//	double interceptor_assign_min_velocity_for_calculate_interception_position;
+//	long man_to_man_defense_during_setplay_against;
+//	double dist_to_goal_to_mark_opponent_as_goalie;
+//	double setplay_against_dist_to_opponent;
+//
+//
+//	long move_to_ball_left_field_position;
+//
+//    double auto_save_svg_period;
+//
+//	long save_grid_data_to_file;
+//	long svg_robot_planner;
+//
+//	long preferred_setplaykicker;
+//	long preferred_setplayreceiver;
+//	double setplay_margin_to_penalty_area_side;
+//	long dedicated_sweeper;
+//	long auto_assign_goalie;
+//	long lob_shot_when_possible;
+//	double min_y_for_lob_shot;
+//	double outside_field_margin;
+//
+//	double mobile_field_uniform_x_interval;
+//	double mobile_field_uniform_y_interval;
+//	double mobile_field_grid_size;
+//	double mobile_field_grid_close_to_ball_normal_radius;
+//	double mobile_field_grid_close_to_ball_restart_normal_radius;
+//	double mobile_field_grid_close_to_ball_restart_penalty_radius;
+//	double mobile_field_grid_close_to_ball_restart_dropball_radius;
+//	double mobile_field_restart_receiver_ball_dist;
+//	double mobile_field_restart_shooter_ball_dist;
+//	double mobile_field_setplay_against_dist_to_opponent;
+//
+//	double kickoff_fp1_x;
+//	double kickoff_fp1_y;
+//	double kickoff_fp2_x;
+//	double kickoff_fp2_y;
+//	double kickoff_fp3_x;
+//	double kickoff_fp3_y;
+//	double kickoff_fp4_x;
+//	double kickoff_fp4_y;
+//
+//	double kickoff_against_fp1_x;
+//	double kickoff_against_fp1_y;
+//	double kickoff_against_fp2_x;
+//	double kickoff_against_fp2_y;
+//	double kickoff_against_fp3_x;
+//	double kickoff_against_fp3_y;
+//	double kickoff_against_fp4_x;
+//	double kickoff_against_fp4_y;
+//
+//	// variables for svg generation not in this struct
+//} planner_options_t;
+//
 
 
 typedef struct ball_pickup_position_s {

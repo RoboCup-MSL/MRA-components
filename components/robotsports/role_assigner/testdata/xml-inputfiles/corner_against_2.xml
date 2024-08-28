@@ -13,7 +13,7 @@
   <tns:Team id="5" label="5" x="0.0" y="-8.0" isGoalie="true"/>
   <tns:Opponent label="11" x="1.0" y="2.0"/>
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
-  	<tns:PassData valid="false"/>
+      <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>
 

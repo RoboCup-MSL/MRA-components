@@ -15,12 +15,12 @@ class Vertex;
  * The members are the target Vertex and the cost of the edge
  */
 class Edge {
-	public:
-		MRA::Vertex* m_pTarget;
-    	double m_dCost;
+    public:
+        MRA::Vertex* m_pTarget;
+        double m_dCost;
 
-    	Edge(Vertex *pTarget, double dCost);
-    	Edge(const Edge& e);
+        Edge(Vertex *pTarget, double dCost);
+        Edge(const Edge& e);
 };
 
 }

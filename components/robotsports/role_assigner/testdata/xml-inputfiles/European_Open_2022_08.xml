@@ -5,7 +5,7 @@
        previous_role_bonus_end_pos_radius="1.5"
        priority_block_max_distance="2.0"
        use_pass_to_position_for_attack_support="false"
-  />  	
+  />      
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
@@ -20,7 +20,7 @@
   <tns:Opponent label="13" x="-0.25" y="2.5"/>
   <tns:Opponent label="14" x="-4.75" y="6.5"/>
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
-  	<tns:PassData valid="false"/>
+      <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>
 

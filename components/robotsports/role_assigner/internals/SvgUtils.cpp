@@ -73,7 +73,7 @@ static FileParts fileparts(const std::string& filename)
  */
 static bool isDirectory(const string& path)
 {
-	struct stat info;
+    struct stat info;
 
     if(stat( path.c_str(), &info ) != 0) {
         return false;
@@ -331,7 +331,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         // set label for this player: use label if define (> 0), otherwise make label-id same as robot-id.
         auto label_id = data.team[idx].labelId;
         if (label_id <= 0) {
-        	label_id = data.team[idx].robotId;
+            label_id = data.team[idx].robotId;
         }
         string labelString = "label=\""+ std::to_string(label_id) + "\"";
 
@@ -554,7 +554,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     // TEAMMATES
     // draw me first.
     if (data.team.size() > 0 ) {
-    	Geometry::Position bar_pos = data.team[data.this_player_idx].position;
+        Geometry::Position bar_pos = data.team[data.this_player_idx].position;
         double r = data.team[data.this_player_idx].position.rz + M_PI_2;
         string teamColor = parameters.svgTeamColor;
         string fillColor = parameters.svgTeamColor;
@@ -568,7 +568,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         }
     }
     for(auto bar_idx = 1u; bar_idx < data.team.size(); bar_idx++) {
-    	Geometry::Point bar_pos = data.team[bar_idx].position;
+        Geometry::Point bar_pos = data.team[bar_idx].position;
         fprintf(fp,
                 "\n<!-- Teammate -->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                 svgX(bar_pos.x - halfRobotSize), svgY(bar_pos.y + halfRobotSize), robotSize, robotSize, parameters.svgTeamColor.c_str(), parameters.svgTeamColor.c_str());
@@ -591,7 +591,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
             fprintf(fp,
                     "\n<!-- player-path start %d-->\n<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"/>\n",
                     (int)pidx, svgX(player_path.path[0].x - halfRobotSize), svgY(player_path.path[0].y + halfRobotSize), robotSize, robotSize,
-					parameters.svgTeamColor.c_str(), fillColor.c_str());
+                    parameters.svgTeamColor.c_str(), fillColor.c_str());
         }
         for (auto j = 1u; j < player_path.path.size(); j++) {
             double prev_x = (player_path).path[j-1].x;
@@ -600,8 +600,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
             double new_y = (player_path).path[j].y;
             if (j == 1) {
                 // start first path piece not in middle of player but near the edge of the player
-            	Geometry::Point prev_pos(prev_x, prev_y);
-            	Geometry::Point new_pos(new_x, new_y);
+                Geometry::Point prev_pos(prev_x, prev_y);
+                Geometry::Point new_pos(new_x, new_y);
                 double alfa = prev_pos.angle(new_pos);
                 prev_x = prev_x - (cos(alfa) * halfRobotSize);
                 prev_y = prev_y - (sin(alfa) * halfRobotSize);
@@ -619,18 +619,18 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
 
             }
         }
-        //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-        //		string target_color = parameters.svgDefaultTargetColor;
-        //		if ((player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-        //			target_color = parameters.svgBallColor;
-        //		}
+        //        // TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
+        //        string target_color = parameters.svgDefaultTargetColor;
+        //        if ((player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
+        //            target_color = parameters.svgBallColor;
+        //        }
         //
-        //		// draw orange circle (ball) as target
-        //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-        //			fprintf(fp,
-        //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-        //					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
-        //		}
+        //        // draw orange circle (ball) as target
+        //        for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
+        //            fprintf(fp,
+        //                    "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //        }
 
     }
 
@@ -666,18 +666,18 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
 
             }
         }
-        //		// TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
-        //		string target_color = parameters.svgDefaultTargetColor;
-        //		if ((comparing_player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(comparing_player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
-        //			target_color = parameters.svgBallColor;
-        //		}
+        //        // TARGET: draw ball if first path piece is goto_ball, otherwise a red circle
+        //        string target_color = parameters.svgDefaultTargetColor;
+        //        if ((comparing_player_paths[pidx].path.size() > 0) && static_cast<planner_target_e>(comparing_player_paths[pidx].path[0].target) == planner_target_e::GOTO_BALL) {
+        //            target_color = parameters.svgBallColor;
+        //        }
 
-        //		// draw orange circle (ball) as target
-        //		for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-        //			fprintf(fp,
-        //					"<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-        //					svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
-        //		}
+        //        // draw orange circle (ball) as target
+        //        for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
+        //            fprintf(fp,
+        //                    "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
+        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //        }
 
     }
 
@@ -695,11 +695,11 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
                 svgX(ball.position.x),  svgY(ball.position.y), fieldConfig.getBallRadius()); // half ball diameter
     }
     if (parameters.svgDrawVelocity) {
-    	Geometry::Point linVel(ball.velocity.x, ball.velocity.y);
+        Geometry::Point linVel(ball.velocity.x, ball.velocity.y);
         double speed  = linVel.size();
         if (speed > 1e-6) {
-        	Geometry::Point endVelocityVector(ball.position.x, ball.position.y);
-        	endVelocityVector += linVel;
+            Geometry::Point endVelocityVector(ball.position.x, ball.position.y);
+            endVelocityVector += linVel;
             //FIELD - middle line
             fprintf(fp,
                     "\n<!-- velocity line -->\n<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"red\"/>\n",

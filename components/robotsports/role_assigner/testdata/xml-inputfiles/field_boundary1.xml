@@ -2,11 +2,11 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test field boundary: avoid move behind goal</tns:Description>
   <tns:Options svgOutputFileName="output_team/field_boundary1.svg" svgRobotPlanner="false" calculateAllPaths="true"/>
-	<tns:GameState>Normal</tns:GameState>
-	<tns:AttackFormation>FORMATION_211</tns:AttackFormation>
-	<tns:DefenseFormation>FORMATION_211</tns:DefenseFormation>
-	<tns:Ball x="6.0" y="+9.2" velx="0.00" vely="0.00"/>
-	<tns:Team id="1" label="1" x="-2.0" y="+9.5" rz="1.30097" velx="-0.618437" vely="0.17525" velrz="-0.0201686"    />
+    <tns:GameState>Normal</tns:GameState>
+    <tns:AttackFormation>FORMATION_211</tns:AttackFormation>
+    <tns:DefenseFormation>FORMATION_211</tns:DefenseFormation>
+    <tns:Ball x="6.0" y="+9.2" velx="0.00" vely="0.00"/>
+    <tns:Team id="1" label="1" x="-2.0" y="+9.5" rz="1.30097" velx="-0.618437" vely="0.17525" velrz="-0.0201686"    />
 </tns:Situation>
 
 

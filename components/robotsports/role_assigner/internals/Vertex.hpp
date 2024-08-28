@@ -16,27 +16,27 @@ namespace MRA {
 class Vertex {
 
 public:
-	double m_minDistance;
-	double m_extraCost;
-	MRA::Geometry::Point m_coordinate;
-	double m_straightLineToTarget;
-	std::vector<Edge> m_neighbours;
-	Vertex * m_pPrevious;
+    double m_minDistance;
+    double m_extraCost;
+    MRA::Geometry::Point m_coordinate;
+    double m_straightLineToTarget;
+    std::vector<Edge> m_neighbours;
+    Vertex * m_pPrevious;
 
-	Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget);
-	Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget, double dCost);
-	Vertex(const Vertex& rVertex);
-	virtual ~Vertex();
+    Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget);
+    Vertex(const MRA::Geometry::Point& aCoordinate, double distanceToTarget, double dCost);
+    Vertex(const Vertex& rVertex);
+    virtual ~Vertex();
 
-	std::string toString();
+    std::string toString();
 
-	bool equals(const Vertex& v) const;
+    bool equals(const Vertex& v) const;
 
-	double totalCosts() const;
+    double totalCosts() const;
 private:
-	Vertex() {
-			/* empty*/
-	};
+    Vertex() {
+            /* empty*/
+    };
 
 };
 

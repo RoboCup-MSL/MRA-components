@@ -18,7 +18,7 @@
   <tns:Opponent label="15" x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="-2.000" y="2.750" ts="0.000" valid="false" />
     <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
-  	<tns:PassData valid="false"/>
+      <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>
 

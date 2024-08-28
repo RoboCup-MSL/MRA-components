@@ -443,7 +443,7 @@ void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, boo
             cout << "No id defined for robot" << endl;
             exit(1);
         }
-     	P.robotId = (*team_iter).id().get();
+         P.robotId = (*team_iter).id().get();
 
         // label of robot must be defined in xml-file
         if (not (*team_iter).label()) {
@@ -499,15 +499,15 @@ void fillOpponents(std::vector<TeamPlannerOpponent>& Opponents, auto_ptr<robotsp
 }
 
 void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
-		const Geometry::Position& ball_position,
-		const Geometry::Position& ball_velocity,
-		ball_status_e ball_status,
+        const Geometry::Position& ball_position,
+        const Geometry::Position& ball_velocity,
+        ball_status_e ball_status,
         const std::vector<Geometry::Position>& myTeam,
         const std::vector<Geometry::Position>& myTeam_vel,
-		const std::vector<int>& myTeam_labels,
-		const std::vector<Geometry::Position>& opponents,
-		const std::vector<Geometry::Position>& opponents_vel,
-		const std::vector<int>& opponents_labels,
+        const std::vector<int>& myTeam_labels,
+        const std::vector<Geometry::Position>& opponents,
+        const std::vector<Geometry::Position>& opponents_vel,
+        const std::vector<int>& opponents_labels,
         bool team_controls_ball, long controlBallByPlayerId,
         const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
         const TeamPlannerParameters& options,
@@ -518,7 +518,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         long passBallByPlayerId, const pass_data_t& pass_data,
         const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area)
 {
-	tdp.previous_ball = previous_ball;
+    tdp.previous_ball = previous_ball;
     // calculate assignment for the given situation
     vector<TeamPlannerRobot> Team = vector<TeamPlannerRobot>();
     for (unsigned idx = 0; idx < myTeam.size(); idx++) {
@@ -578,54 +578,54 @@ void xmlplanner(string input_filename) {
     }
 
     TeamPlannerParameters parameters = {};
-	std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>();
-	std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>();
-	std::vector<int> myTeam_labels = std::vector<int>();
-	std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
-	std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
-	Geometry::Position ball = Geometry::Position();
-	Geometry::Position ball_vel = Geometry::Position();
-	std::vector<Geometry::Position> opponents = std::vector<Geometry::Position>();
-	std::vector<Geometry::Position> opponents_vel = std::vector<Geometry::Position>();
-	std::vector<int> opponents_labels = std::vector<int>();
-	game_state_e gameState;
-	std::string description = "";
-	MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
-	ball_pickup_position_t pickup_pos = {};
-	bool pickup_pos_set = false;
+    std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>();
+    std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>();
+    std::vector<int> myTeam_labels = std::vector<int>();
+    std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
+    std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
+    Geometry::Position ball = Geometry::Position();
+    Geometry::Position ball_vel = Geometry::Position();
+    std::vector<Geometry::Position> opponents = std::vector<Geometry::Position>();
+    std::vector<Geometry::Position> opponents_vel = std::vector<Geometry::Position>();
+    std::vector<int> opponents_labels = std::vector<int>();
+    game_state_e gameState;
+    std::string description = "";
+    MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
+    ball_pickup_position_t pickup_pos = {};
+    bool pickup_pos_set = false;
 
-	std::vector<double> time_in_own_penalty_area = std::vector<double>();
-	std::vector<double> time_in_opponent_penalty_area = std::vector<double>();
+    std::vector<double> time_in_own_penalty_area = std::vector<double>();
+    std::vector<double> time_in_opponent_penalty_area = std::vector<double>();
 
-	std::vector<long> robotIds = std::vector<long>();
-	std::vector<long> opponentIds = std::vector<long>();
-	std::vector<final_planner_result_t> previous_planner_results = std::vector<final_planner_result_t>();
+    std::vector<long> robotIds = std::vector<long>();
+    std::vector<long> opponentIds = std::vector<long>();
+    std::vector<final_planner_result_t> previous_planner_results = std::vector<final_planner_result_t>();
 
 
     std::vector<TeamPlannerRobot> Team = {};
     std::vector<TeamPlannerOpponent> Opponents = {};
     vector<Geometry::Point> parking_positions = {};
 
-	bool passIsRequired = false;
-	bool team_controls_ball = false;
-	long passBallByPlayer = -1; // no pass by any player is on its way
-	long ownPlayerWithBall = -1;
-	bool playerPassedBall = false;
-	bool team_has_ball = false;
-	bool ball_is_valid = false;
-	pass_data_t pass_data = {.target_id=-1};
+    bool passIsRequired = false;
+    bool team_controls_ball = false;
+    long passBallByPlayer = -1; // no pass by any player is on its way
+    long ownPlayerWithBall = -1;
+    bool playerPassedBall = false;
+    bool team_has_ball = false;
+    bool ball_is_valid = false;
+    pass_data_t pass_data = {.target_id=-1};
     previous_used_ball_by_planner_t previous_ball = {};
     ball_status_e ball_status = ball_status_e::FREE;
-	try {
-		auto_ptr<robotsports::StrategyType> c(robotsports::Situation(filename));
-		description = c->Description();
-		if (c->Ball() != 0) {
-			ball_is_valid = true;
-			ball.x = *c->Ball()->x();
-			ball.y = *c->Ball()->y();
-			ball_vel.x = c->Ball()->velx();
-			ball_vel.y = c->Ball()->vely();
-		}
+    try {
+        auto_ptr<robotsports::StrategyType> c(robotsports::Situation(filename));
+        description = c->Description();
+        if (c->Ball() != 0) {
+            ball_is_valid = true;
+            ball.x = *c->Ball()->x();
+            ball.y = *c->Ball()->y();
+            ball_vel.x = c->Ball()->velx();
+            ball_vel.y = c->Ball()->vely();
+        }
 
         fillTeam(Team, playerPassedBall, team_has_ball, c);
 
@@ -655,51 +655,51 @@ void xmlplanner(string input_filename) {
             opponentTypes.push_back(player_type_e::FIELD_PLAYER);
         }
 
-		gameState = gamestate_string_to_enum(c->GameState());
+        gameState = gamestate_string_to_enum(c->GameState());
         fillFieldConfig(fieldConfig, c);
         getPlannerOptions(parameters, c);
 
-		string svgOutputFileName = parameters.svgOutputFileName;
-		std::size_t found = svgOutputFileName.find_last_of("/");
-		if (found != string::npos) {
-			// svgOutputFileName contains /,the sub directory relative to current directory should exists
-			auto svg_output_dir = svgOutputFileName.substr(0,found);
-			if (not boost::filesystem::exists(svg_output_dir)) {
-				auto created_new_directory = boost::filesystem::create_directory(svg_output_dir);
-				if (not created_new_directory) {
-					// Either creation failed or the directory was already present.
-					cout << "FAILED to create directory: " << svg_output_dir << endl;
-				}
-				else {
-					cout << "Successful created directory: " << svg_output_dir << endl;
-				}
-			}
-		}
+        string svgOutputFileName = parameters.svgOutputFileName;
+        std::size_t found = svgOutputFileName.find_last_of("/");
+        if (found != string::npos) {
+            // svgOutputFileName contains /,the sub directory relative to current directory should exists
+            auto svg_output_dir = svgOutputFileName.substr(0,found);
+            if (not boost::filesystem::exists(svg_output_dir)) {
+                auto created_new_directory = boost::filesystem::create_directory(svg_output_dir);
+                if (not created_new_directory) {
+                    // Either creation failed or the directory was already present.
+                    cout << "FAILED to create directory: " << svg_output_dir << endl;
+                }
+                else {
+                    cout << "Successful created directory: " << svg_output_dir << endl;
+                }
+            }
+        }
 
-		if (c->PickupPosition()) {
-			pickup_pos.x = c->PickupPosition()->x();
-			pickup_pos.y = c->PickupPosition()->y();
-			pickup_pos.valid = c->PickupPosition()->valid();
-			pickup_pos.ts = c->PickupPosition()->ts();
-			pickup_pos_set = true;
-		}
-		if (c->SituationInfo()) {
-		    if (not c->SituationInfo()->passing_required()) {
-	            cout << "SituationInfo must have attribute \"passing_required\"" << endl;
-	            exit(1);
-		    }
-			passIsRequired = c->SituationInfo()->passing_required().get();
-			ball_status = ball_status_to_enum(c->SituationInfo()->ball_status());
-			if (c->SituationInfo()->PassData() != 0) {
-				pass_data.ts = c->SituationInfo()->PassData()->ts();
-				pass_data.origin_pos.x = c->SituationInfo()->PassData()->origin_x();
-				pass_data.origin_pos.y = c->SituationInfo()->PassData()->origin_y();
-				pass_data.target_pos.x = c->SituationInfo()->PassData()->target_x();
-				pass_data.target_pos.y = c->SituationInfo()->PassData()->target_y();
-				pass_data.valid = c->SituationInfo()->PassData()->valid();
-				pass_data.target_id = c->SituationInfo()->PassData()->target_id();
-			}
-		}
+        if (c->PickupPosition()) {
+            pickup_pos.x = c->PickupPosition()->x();
+            pickup_pos.y = c->PickupPosition()->y();
+            pickup_pos.valid = c->PickupPosition()->valid();
+            pickup_pos.ts = c->PickupPosition()->ts();
+            pickup_pos_set = true;
+        }
+        if (c->SituationInfo()) {
+            if (not c->SituationInfo()->passing_required()) {
+                cout << "SituationInfo must have attribute \"passing_required\"" << endl;
+                exit(1);
+            }
+            passIsRequired = c->SituationInfo()->passing_required().get();
+            ball_status = ball_status_to_enum(c->SituationInfo()->ball_status());
+            if (c->SituationInfo()->PassData() != 0) {
+                pass_data.ts = c->SituationInfo()->PassData()->ts();
+                pass_data.origin_pos.x = c->SituationInfo()->PassData()->origin_x();
+                pass_data.origin_pos.y = c->SituationInfo()->PassData()->origin_y();
+                pass_data.target_pos.x = c->SituationInfo()->PassData()->target_x();
+                pass_data.target_pos.y = c->SituationInfo()->PassData()->target_y();
+                pass_data.valid = c->SituationInfo()->PassData()->valid();
+                pass_data.target_id = c->SituationInfo()->PassData()->target_id();
+            }
+        }
         if (c->PreviousBall()) {
             previous_ball.previous_ball_present = true;
             previous_ball.x = c->PreviousBall()->x();
@@ -721,29 +721,29 @@ void xmlplanner(string input_filename) {
             parking_positions.push_back(Geometry::Point(-6.375, -4.25));
         }
 
-	} catch (const xml_schema::exception& e) {
-		cerr << e << endl;
-		return;
-	} catch (const xml_schema::properties::argument&) {
-		cerr << "invalid property argument (empty namespace or location)"
-				<< endl;
-		return;
-	} catch (const xsd::cxx::xml::invalid_utf16_string&) {
-		cerr << "invalid UTF-16 text in DOM model" << endl;
-		return;
-	} catch (const xsd::cxx::xml::invalid_utf8_string&) {
-		cerr << "invalid UTF-8 text in object model" << endl;
-		return;
-	}
+    } catch (const xml_schema::exception& e) {
+        cerr << e << endl;
+        return;
+    } catch (const xml_schema::properties::argument&) {
+        cerr << "invalid property argument (empty namespace or location)"
+                << endl;
+        return;
+    } catch (const xsd::cxx::xml::invalid_utf16_string&) {
+        cerr << "invalid UTF-16 text in DOM model" << endl;
+        return;
+    } catch (const xsd::cxx::xml::invalid_utf8_string&) {
+        cerr << "invalid UTF-8 text in object model" << endl;
+        return;
+    }
     if (not print_only_errors) {
         cerr << "start planner" << endl;
         cout << "running : " << endl << description << endl;
     }
 
-	string orginal_svgOutputFileName = parameters.svgOutputFileName;
-	auto start = std::chrono::system_clock::now();
+    string orginal_svgOutputFileName = parameters.svgOutputFileName;
+    auto start = std::chrono::system_clock::now();
 
-	std::vector<PlayerPlannerResult> player_paths = {};
+    std::vector<PlayerPlannerResult> player_paths = {};
 
     char buffer[250];
     sprintf(buffer, ".svg");
@@ -764,62 +764,62 @@ void xmlplanner(string input_filename) {
     }
 
     std::vector<RunData> run_results = {};
-	string run_filename = parameters.svgOutputFileName;
-	if (not print_only_errors) {
-		cout <<" xmlPlanner Fill DATA" << endl;
-	}
-	TeamPlannerData teamplannerData = {};
-	teamplannerData.ball.is_valid = ball_is_valid;
-	teamplannerData.fieldConfig = fieldConfig;
+    string run_filename = parameters.svgOutputFileName;
+    if (not print_only_errors) {
+        cout <<" xmlPlanner Fill DATA" << endl;
+    }
+    TeamPlannerData teamplannerData = {};
+    teamplannerData.ball.is_valid = ball_is_valid;
+    teamplannerData.fieldConfig = fieldConfig;
 
     cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
 
-	fillTeamPlannerData(teamplannerData, gameState,
-			ball,
-			ball_vel,
-			ball_status,
-			myTeam,
-			myTeam_vel,
-			myTeam_labels,
-			opponents,
-			opponents_vel,
-			opponents_labels,
-			team_controls_ball, ownPlayerWithBall,
-			teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
-			pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
+    fillTeamPlannerData(teamplannerData, gameState,
+            ball,
+            ball_vel,
+            ball_status,
+            myTeam,
+            myTeam_vel,
+            myTeam_labels,
+            opponents,
+            opponents_vel,
+            opponents_labels,
+            team_controls_ball, ownPlayerWithBall,
+            teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
+            pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
     cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
     cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
 
 
-	// TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
-	teamplannerData.teamFormation = getListWithRoles(gameState, ball_status);
+    // TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
+    teamplannerData.teamFormation = getListWithRoles(gameState, ball_status);
 
 
-	TeamPlay teamplay = TeamPlay();
-	player_paths = teamplay.assign(teamplannerData);
+    TeamPlay teamplay = TeamPlay();
+    player_paths = teamplay.assign(teamplannerData);
 
-	RunData run_data (teamplannerData, player_paths);
-	run_results.push_back(run_data);
+    RunData run_data (teamplannerData, player_paths);
+    run_results.push_back(run_data);
 
-	if (player_paths.size() > 0) {
-		if (not print_only_errors) {
-			cerr << "<< XML: print received path " << endl << flush;
-			cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
-		}
-	    cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
+    if (player_paths.size() > 0) {
+        if (not print_only_errors) {
+            cerr << "<< XML: print received path " << endl << flush;
+            cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
+        }
+        cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
 
-		SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
+        SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
 
-	} else {
-		cerr << "<< XML: no path received" << endl << flush;
-	}
-	if (not print_only_errors) {
-		cerr << "<< Assign roles" << endl << flush;
-	}
+    } else {
+        cerr << "<< XML: no path received" << endl << flush;
+    }
+    if (not print_only_errors) {
+        cerr << "<< Assign roles" << endl << flush;
+    }
 
     auto finish = std::chrono::system_clock::now();
-	double elapsed_seconds = std::chrono::duration_cast< std::chrono::duration<double> > (finish - start).count();
-	// test start position assignments
+    double elapsed_seconds = std::chrono::duration_cast< std::chrono::duration<double> > (finish - start).count();
+    // test start position assignments
     if (not print_only_errors) {
         std::cout << "elapsed time: " << elapsed_seconds * 1000 << " [ms]" << std::endl;
     }

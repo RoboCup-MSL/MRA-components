@@ -17,6 +17,6 @@
   <tns:Opponent label="14" x="3.25" y="-1.0"/>
   <tns:Opponent label="15" x="1.75" y="-6.5"/>
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
-  	<tns:PassData valid="false"/>
+      <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>

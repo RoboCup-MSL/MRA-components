@@ -15,7 +15,7 @@
 
 
 namespace MRA {
-	std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix = "");
+    std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix = "");
 } // namespace
 
 #endif /* TEAM_PLANNER_H */

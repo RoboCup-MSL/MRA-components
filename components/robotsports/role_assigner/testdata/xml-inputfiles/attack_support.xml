@@ -12,7 +12,7 @@
   <tns:Team id="4" label="4" x="2.00" y="1.50" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"  />
   <tns:Opponent label="11" x="-3.25" y="3.25"/>
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAMMATE">
-  	<tns:PassData valid="false"/>
+      <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>
 

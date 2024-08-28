@@ -37,7 +37,7 @@ bool inTriangle(double x1, double y1, double x2, double y2, double x3, double y3
 // return value is number of solutions (0, 1 or 2).
 // solution-1: <int1x, int1y> solution-2: <int2x, int2y>
 int findLineCircleIntersections(double cx, double cy, double radius, double x1, double y1, double x2, double y2,
-		                        double& int1x, double& int1y, double& int2x, double& int2y);
+                                double& int1x, double& int1y, double& int2x, double& int2y);
 
 //  Determines the intersection point of the line segment defined by points (Ax,Ay) and (Bx, By)
 //  with the line segment defined by points (Cx, Cy) and (Dx, Dy).
@@ -46,14 +46,14 @@ int findLineCircleIntersections(double cx, double cy, double radius, double x1, 
 //  Returns false, if there is no determinable intersection point, in which case Px, and Py will
 //  be unmodified.
 bool lineSegmentIntersection(double Ax, double Ay, double Bx, double By,
-							 double Cx, double Cy, double Dx, double Dy, double& px, double& py);
+                             double Cx, double Cy, double Dx, double Dy, double& px, double& py);
 
 // Find the points where the two circles intersect.
 // return number of solutions
 int findCircleCircleIntersections(
-		double cx0, double cy0, double radius0,
-		double cx1, double cy1, double radius1,
-		double& rInt1x, double& rInt1y, double& rInt2x, double& rInt2y);
+        double cx0, double cy0, double radius0,
+        double cx1, double cy1, double radius1,
+        double& rInt1x, double& rInt1y, double& rInt2x, double& rInt2y);
 
 // Find the tangent points for this circle and external point.
 // Return true if we find the tangents, false if the point is

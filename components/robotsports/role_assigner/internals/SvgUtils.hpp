@@ -26,17 +26,17 @@ public:
 private:
 
 
-	static FieldConfig m_fieldConfig;
+    static FieldConfig m_fieldConfig;
 
-	/*  Get svg x coordinate for given field X */
-	static double svgX(double fieldX);
+    /*  Get svg x coordinate for given field X */
+    static double svgX(double fieldX);
 
-	/* Get svg x coordinate for given field Y */
-	static double svgY(double fieldY);
+    /* Get svg x coordinate for given field Y */
+    static double svgY(double fieldY);
 
-	static bool doesDirectoryExists(const std::string& filename);
-	static std::string boolToString(bool b);
-	static void toLower(std::string& r_string);
+    static bool doesDirectoryExists(const std::string& filename);
+    static std::string boolToString(bool b);
+    static void toLower(std::string& r_string);
 };
 
 } // namespace

@@ -14,7 +14,7 @@ double from0topi(double a)
 {
     a = fmod(a, M_PI);
     if (a < 0) {
-    	a += M_PI;
+        a += M_PI;
     }
     return(a);
 }
@@ -25,7 +25,7 @@ double from0to2pi(double a)
 {
     a = fmod(a, 2 * M_PI);
     if (a < 0) {
-    	a += 2*M_PI;
+        a += 2*M_PI;
     }
     return(a);
 }
@@ -36,7 +36,7 @@ double from_pitopi(double a)
 {
     a = fmod(a+M_PI, 2 * M_PI);
     if (a < 0) {
-    	a += 2*M_PI;
+        a += 2*M_PI;
     }
     return(a - M_PI);
 }
@@ -59,29 +59,29 @@ double deg2rad(double deg)
 // get shortest angle between two angle [rad]
 double min_angle(double start_angle, double end_angle)
 {
-	double x1=cos(start_angle);
-	double y1=sin(start_angle);
-	double x2=cos(end_angle);
-	double y2=sin(end_angle);
+    double x1=cos(start_angle);
+    double y1=sin(start_angle);
+    double x2=cos(end_angle);
+    double y2=sin(end_angle);
 
-	double dot_product = x1*x2 + y1*y2;
-	return acos(dot_product);
+    double dot_product = x1*x2 + y1*y2;
+    return acos(dot_product);
 }
 
 // -----------------------------------------------------------------------------
 // intersection point for two lines L1 = [(x1,y1) (x2,y2)] L2 = [(x3,y3) (x4,y4)]. formula from wikipedia line-intersection
 bool getIntersectionOfTwoLines(double& px, double& py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-	double divider = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
-	if (divider != 0.0) {
-		px = ( (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4-y3*x4)) / divider;
-		py = ( (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4-y3*x4)) / divider;
-		return true;
-	}
-	else {
-		px = 0; // dummy values
-		py = 0; // dummy values
-		return false;
-	}
+    double divider = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
+    if (divider != 0.0) {
+        px = ( (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4-y3*x4)) / divider;
+        py = ( (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4-y3*x4)) / divider;
+        return true;
+    }
+    else {
+        px = 0; // dummy values
+        py = 0; // dummy values
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -121,12 +121,12 @@ double getDistanceFromPointToLineSegment(double Ax, double Ay, double Bx, double
 // -----------------------------------------------------------------------------
 // return true if point (x,y) is in triangle defined by the points (x1,y1), (x2,y2), (x3,y3), else return false
 bool inTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double x, double y) {
-	double alpha = ((y2 - y3)*(x - x3) + (x3 - x2)*(y - y3)) / ((y2 - y3)*(x1- x3) + (x3 - x2)*(y1 - y3));
-	double beta = ((y3 - y1)*(x - x3) + (x1- x3)*(y - y3)) / ((y2 - y3)*(x1- x3) + (x3 - x2)*(y1 - y3));
-	double gamma = 1.0 - alpha - beta;
+    double alpha = ((y2 - y3)*(x - x3) + (x3 - x2)*(y - y3)) / ((y2 - y3)*(x1- x3) + (x3 - x2)*(y1 - y3));
+    double beta = ((y3 - y1)*(x - x3) + (x1- x3)*(y - y3)) / ((y2 - y3)*(x1- x3) + (x3 - x2)*(y1 - y3));
+    double gamma = 1.0 - alpha - beta;
 
-	bool in_triangle = ((alpha > 0) && (beta > 0) && (gamma > 0));
-	return in_triangle;
+    bool in_triangle = ((alpha > 0) && (beta > 0) && (gamma > 0));
+    return in_triangle;
 }
 
 
@@ -136,7 +136,7 @@ bool inTriangle(double x1, double y1, double x2, double y2, double x3, double y3
 // return value is number of solutions (0, 1 or 2).
 // solution-1: <int1x, int1y> solution-2: <int2x, int2y>
 int findLineCircleIntersections(double cx, double cy, double radius, double x1, double y1, double x2, double y2,
-		                        double& int1x, double& int1y, double& int2x, double& int2y)
+                                double& int1x, double& int1y, double& int2x, double& int2y)
 {
     float dx, dy, A, B, C, det, t;
 
@@ -153,10 +153,10 @@ int findLineCircleIntersections(double cx, double cy, double radius, double x1, 
     if ((A <= 0.0000001) || (det < 0))
     {
         // No real solutions.
-    	int1x = NAN;
-		int1y = NAN;
-		int2x = NAN;
-		int2y = NAN;
+        int1x = NAN;
+        int1y = NAN;
+        int2x = NAN;
+        int2y = NAN;
         return 0;
     }
     else if (det == 0)
@@ -195,77 +195,77 @@ int findLineCircleIntersections(double cx, double cy, double radius, double x1, 
 //  Returns false, if there is no determinable intersection point, in which case Px, and Py will
 //  be unmodified.
 bool lineSegmentIntersection(double Ax, double Ay, double Bx, double By,
-							 double Cx, double Cy, double Dx, double Dy,
-		                     double& px, double& py) {
-	double distAB, theCos, theSin, newX, ABpos;
+                             double Cx, double Cy, double Dx, double Dy,
+                             double& px, double& py) {
+    double distAB, theCos, theSin, newX, ABpos;
 
-	// Fail if either line segment is zero-length
-	if ((Ax == Bx && Ay == By) || (Cx == Dx && Cy == Dy)) {
-		return false;
-	}
+    // Fail if either line segment is zero-length
+    if ((Ax == Bx && Ay == By) || (Cx == Dx && Cy == Dy)) {
+        return false;
+    }
 
-	// Fail if the segments share an end-point
-	if ((Ax == Cx && Ay == Cy) || (Bx == Cx && By == Cy)
-			|| (Ax == Dx && Ay == Dy) || (Bx == Dx && By == Dy)) {
-		return false;
-	}
+    // Fail if the segments share an end-point
+    if ((Ax == Cx && Ay == Cy) || (Bx == Cx && By == Cy)
+            || (Ax == Dx && Ay == Dy) || (Bx == Dx && By == Dy)) {
+        return false;
+    }
 
-	// (1) Translate the system so that point A is on the origin
-	Bx -= Ax;
-	By -= Ay;
-	Cx -= Ax;
-	Cy -= Ay;
-	Dx -= Ax;
-	Dy -= Ay;
+    // (1) Translate the system so that point A is on the origin
+    Bx -= Ax;
+    By -= Ay;
+    Cx -= Ax;
+    Cy -= Ay;
+    Dx -= Ax;
+    Dy -= Ay;
 
-	// Discover the length of segment A-B
-	distAB = sqrt(Bx * Bx + By * By);
+    // Discover the length of segment A-B
+    distAB = sqrt(Bx * Bx + By * By);
 
-	// (2) Rotate the system so that point B is on the positive X axis.
-	theCos = Bx / distAB;
-	theSin = By / distAB;
-	newX = Cx * theCos + Cy * theSin;
-	Cy = Cy * theCos - Cx * theSin;
-	Cx = newX;
-	newX = Dx * theCos + Dy * theSin;
-	Dy = Dy * theCos - Dx * theSin;
-	Dx = newX;
+    // (2) Rotate the system so that point B is on the positive X axis.
+    theCos = Bx / distAB;
+    theSin = By / distAB;
+    newX = Cx * theCos + Cy * theSin;
+    Cy = Cy * theCos - Cx * theSin;
+    Cx = newX;
+    newX = Dx * theCos + Dy * theSin;
+    Dy = Dy * theCos - Dx * theSin;
+    Dx = newX;
 
-	// Fail if segment C-D doesn't cross line A-B.
-	if ((Cy < 0. && Dy < 0.) || (Cy >= 0. && Dy >= 0.)) {
-		return false;
-	}
+    // Fail if segment C-D doesn't cross line A-B.
+    if ((Cy < 0. && Dy < 0.) || (Cy >= 0. && Dy >= 0.)) {
+        return false;
+    }
 
-	// (3) Discover the position of the intersection point along line A-B.
-	ABpos = Dx + (Cx - Dx) * Dy / (Dy - Cy);
+    // (3) Discover the position of the intersection point along line A-B.
+    ABpos = Dx + (Cx - Dx) * Dy / (Dy - Cy);
 
-	// Fail if segment C-D crosses line A-B outside of segment A-B.
-	if (ABpos < 0. || ABpos > distAB) {
-		return false;
-	}
+    // Fail if segment C-D crosses line A-B outside of segment A-B.
+    if (ABpos < 0. || ABpos > distAB) {
+        return false;
+    }
 
-	// (4) Apply the discovered position to line A-B in the original coordinate system.
-	px = Ax + ABpos * theCos;
-	py = Ay + ABpos * theSin;
+    // (4) Apply the discovered position to line A-B in the original coordinate system.
+    px = Ax + ABpos * theCos;
+    py = Ay + ABpos * theSin;
 
-	//  Success.
-	return true;
+    //  Success.
+    return true;
 }
 
 
 // -----------------------------------------------------------------------------
 // Find the points where the two circles intersect.
 int FindCircleCircleIntersections(
-		double cx0, double cy0, double radius0,
-		double cx1, double cy1, double radius1,
-		double& rInt1x, double& rInt1y, double& rInt2x, double& rInt2y)
+        double cx0, double cy0, double radius0,
+        double cx1, double cy1, double radius1,
+        double& rInt1x, double& rInt1y, double& rInt2x, double& rInt2y)
 {
-	rInt1x = NAN;
-	rInt1y = NAN;
-	rInt2x = NAN;
-	rInt2y = NAN;
+    rInt1x = NAN;
+    rInt1y = NAN;
+    rInt2x = NAN;
+    rInt2y = NAN;
 
-	// Find the distance between the centers.
+    // Find the distance between the centers.
     float dx = cx0 - cx1;
     float dy = cy0 - cy1;
     double dist = sqrt(dx * dx + dy * dy);
@@ -305,7 +305,7 @@ int FindCircleCircleIntersections(
 
         // See if we have 1 or 2 solutions.
         if (dist == radius0 + radius1) {
-        	return 1; // one solution
+            return 1; // one solution
         }
         return 2; // two solutions
     }
@@ -342,7 +342,7 @@ bool findTangentsOfPointWithCircle(double cx, double cy, double radius,
     FindCircleCircleIntersections(
         cx, cy, radius,
         px, py, L,
-		rT1x, rT1y, rT2x, rT2y);
+        rT1x, rT1y, rT2x, rT2y);
 
     return true;
 }
@@ -368,9 +368,9 @@ bool findTangentsOfPointWithCircle(double cx, double cy, double radius,
  * @return Intersection point D. Note that c.distanceTo(D) is the distance of c to the line (p1,p2).
  */
 void  intersectPerpendicular(double& intX, double& intY, double p1x, double p1y, double p2x, double p2y, double px, double py) {
-	double lambda =((p2x - p1x) * (px - p1x) + (p2y - p1y) * (py - p1y)) / ((p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y));
-	intX = p1x + lambda * (p2x - p1x);
-	intY = p1y + lambda * (p2y - p1y);
+    double lambda =((p2x - p1x) * (px - p1x) + (p2y - p1y) * (py - p1y)) / ((p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y));
+    intX = p1x + lambda * (p2x - p1x);
+    intY = p1y + lambda * (p2y - p1y);
 }
 
 /*

@@ -54,7 +54,7 @@ private:
 
     planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-    std::vector<MRA::Geometry::Position> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
+    std::vector<TeamPlannerRobot> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
     bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& result);
 

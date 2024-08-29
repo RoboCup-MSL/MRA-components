@@ -12,6 +12,8 @@
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
+#include "TeamPlannerOpponent.hpp"
+
 #include "Vertex.hpp"
 #include "planner_types.hpp"
 
@@ -61,11 +63,13 @@ public:
     void setOptions(const TeamPlannerParameters& options);
 
     /* create graph for the provided input */
-    void createGraph(int path_for_robotId,
-                     const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
+    void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
+                     const TeamPlannerBall& ball,
+                     const std::vector<TeamPlannerRobot>& teammates, /* filtered based on robot to calculate the graph for */
+                     const std::vector<TeamPlannerOpponent>& opponents,
                      const std::vector<MRA::Vertex>& targetPos,
                      planner_target_e targetFunction,
-                     bool ballIsObstacle,
+                     bool ballIsObstacleAndValid,
                      bool avoidBallPath,
                      bool stayInPlayingField,
                      const MRA::Geometry::Point& rBallTargetPos);

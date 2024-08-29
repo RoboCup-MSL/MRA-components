@@ -11,6 +11,9 @@
 #include "GlobalPathPlanner.hpp"
 #include "geometry.hpp"
 #include "TeamPlannerParameters.hpp"
+#include "TeamPlannerOpponent.hpp"
+#include "TeamPlannerRobot.hpp"
+
 
 namespace MRA {
 /**
@@ -37,9 +40,9 @@ public:
      * @return path
      */
     std::vector<planner_piece_t> planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-            const TeamPlannerData& teamplanner_data,
-            const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
-            double maxSpeed, int nrIterations,  const FieldConfig& fieldConfig, bool stayInPlayingField);
+                                          const std::vector<TeamPlannerRobot>& r_teammates, const TeamPlannerData& r_teamPlannerData,
+                                          const std::vector<MRA::Vertex>& r_targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+                                          double maxSpeed, int nrIterations, bool stayInPlayingField);
 
 private:
 

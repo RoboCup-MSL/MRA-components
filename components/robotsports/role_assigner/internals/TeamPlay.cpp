@@ -103,18 +103,18 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     // sort team of teamplanner data by robotId. Remember order to have output in the original order
     // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
     // Then also putting them back in the correct order at the end of this function can be removed.
-    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
-//    std::vector<long> orginal_order_robotIds = std::vector<long>();
-//    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
-//        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
-//    }
-//    // first sort TeamPlannerTeam on robotId
-//    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
-//    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
-//        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
-//            teamplannerData.this_player_idx = idx;
-//        }
-//    }
+//    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
+    std::vector<long> orginal_order_robotIds = std::vector<long>();
+    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
+        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
+    }
+    // first sort TeamPlannerTeam on robotId
+    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
+    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
+        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
+            teamplannerData.this_player_idx = idx;
+        }
+    }
     // <<< END sort team of teamplanner data by robotId
 
     bool playerPassedBall = false;
@@ -343,20 +343,20 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     //printAssignOutputs(Team, player_paths_in_correct_order);
 
     // ----------------------------------------------------------
-//    // Put the player_paths in the same order as Team was defined by the client
-//    // Can be remove if client provide team in correct ordere
-//    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
-//    for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
-//        for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
-//            if (teamplannerData.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
-//                player_paths_in_correct_order.push_back(player_paths[team_idx]);
-//            }
-//        }
-//    }
+    // Put the player_paths in the same order as Team was defined by the client
+    // Can be remove if client provide team in correct ordere
     std::vector<PlayerPlannerResult> player_paths_in_correct_order;
-    for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
-        player_paths_in_correct_order.push_back(player_paths[team_idx]);
+    for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
+        for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
+            if (teamplannerData.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
+                player_paths_in_correct_order.push_back(player_paths[team_idx]);
+            }
+        }
     }
+//    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
+//    for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
+//        player_paths_in_correct_order.push_back(player_paths[team_idx]);
+//    }
     // << END Put the player_paths in order expected by the client
 
     return player_paths_in_correct_order;
@@ -375,7 +375,7 @@ TeamPlay::calculatePathForRobot (TeamPlannerData &r_teamplannerData, unsigned id
         avoidBallPath = false;
     }
 
-    vector<MRA::Geometry::Position> myTeam = getTeamMates (r_teamplannerData.team, idx, true);
+    vector<TeamPlannerRobot> myTeam = getTeamMates (r_teamplannerData.team, idx, true);
     GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_teamplannerData.fieldConfig); // create robot planner
     visibilityGraph.setOptions (r_teamplannerData.parameters);
     // create list of possible targets for robot-planner
@@ -389,7 +389,8 @@ TeamPlay::calculatePathForRobot (TeamPlannerData &r_teamplannerData, unsigned id
     bool stay_in_playing_field = stayInPlayingField (r_teamplannerData.gamestate);
 
     targetPos.push_back (Vertex (r_teamplannerData.team[idx].result.target, 0));
-    visibilityGraph.createGraph (r_teamplannerData.team[idx].robotId, r_teamplannerData.team[idx].position, r_teamplannerData.team[idx].velocity, r_teamplannerData,
+    visibilityGraph.createGraph (r_teamplannerData.team[idx].position, r_teamplannerData.team[idx].velocity, r_teamplannerData.ball,
+                                 myTeam, r_teamplannerData.opponents,
                                  targetPos,r_teamplannerData.team[idx].result.planner_target,
                                  r_teamplannerData.ballIsObstacle,
                                  avoidBallPath, stay_in_playing_field, BallTargetPos);
@@ -909,17 +910,18 @@ void TeamPlay::assignTooLongInPenaltyAreaPlayers(TeamPlannerData&  teamplanner_d
 }
 
 //----------------------------------------------------------------------------------------
-vector<MRA::Geometry::Position> TeamPlay::getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition) {
-    vector<MRA::Geometry::Position> teammates = vector<MRA::Geometry::Position>();
+vector<TeamPlannerRobot> TeamPlay::getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition) {
+    vector<TeamPlannerRobot> teammates = {};
     for (unsigned int idx = 0; idx < Team.size(); idx++) {
         if (idx != meIdx) {
-            teammates.push_back(Team[idx].position);
+            teammates.push_back(Team[idx]);
             if (addAssignedTargetAsTeamPosition && Team[idx].assigned) {
                 //add target position as barrier
                 if (Team[idx].result.path.size() > 0) {
                     planner_piece_t last_piece = Team[idx].result.path[Team[idx].result.path.size()-1];
-                    Geometry::Position lastPos(last_piece.x, last_piece.y);
-                    teammates.push_back(lastPos);
+                    TeamPlannerRobot barrierRobot = {};
+                    barrierRobot.position = Geometry::Position(last_piece.x, last_piece.y);
+                    teammates.push_back(barrierRobot);
                 }
             }
         }
@@ -1016,7 +1018,7 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
     targetPos.push_back(Vertex(teamplanner_data.ball.position, 0));
     std::vector<planner_piece_t> path;
 
-    vector<MRA::Geometry::Position> myTeam = getTeamMates(teamplanner_data.team, interceptorIdx, true);
+    vector<TeamPlannerRobot> myTeam = getTeamMates(teamplanner_data.team, interceptorIdx, true);
     bool stay_in_playing_field = stayInPlayingField (teamplanner_data.gamestate);
 
     if (nrDynamicPlannerIterations <= 0) {
@@ -1026,19 +1028,19 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
         // when ball is obstacle or no iterations for dynamic planner is defined.
         GlobalPathPlanner visibilityGraph = GlobalPathPlanner(teamplanner_data.fieldConfig);
         visibilityGraph.setOptions(teamplanner_data.parameters);
-        vector<MRA::Geometry::Position> myTeam = getTeamMates(teamplanner_data.team, interceptorIdx, false);
+        vector<TeamPlannerRobot> myTeam = getTeamMates(teamplanner_data.team, interceptorIdx, false);
         bool stay_in_playing_field = stayInPlayingField (teamplanner_data.gamestate);
-        visibilityGraph.createGraph(teamplanner_data.this_player_robotId,
-                                    teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
+        visibilityGraph.createGraph(teamplanner_data.team[interceptorIdx].position,
+                                    teamplanner_data.team[interceptorIdx].velocity, teamplanner_data.ball, myTeam, teamplanner_data.opponents,
                 targetPos, planner_target_e::GOTO_BALL, teamplanner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
         path = visibilityGraph.getShortestPath(teamplanner_data);
     } else {
         // use dynamic robot planner for goto ball
         GlobalPathDynamicPlanner dp = GlobalPathDynamicPlanner();
         path = dp.planPath(    teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity,
-                               teamplanner_data, targetPos,
+                               myTeam, teamplanner_data, targetPos,
                 planner_target_e::GOTO_BALL, teamplanner_data.ballIsObstacle, maxSpeed,
-                nrDynamicPlannerIterations, teamplanner_data.fieldConfig, stay_in_playing_field);
+                nrDynamicPlannerIterations, stay_in_playing_field);
     }
 
     if (not path.empty()) {
@@ -1055,7 +1057,8 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
         MRA::Geometry::Point BallTargetPos;
         GlobalPathPlanner visibilityGraph = GlobalPathPlanner(teamplanner_data.fieldConfig);
         visibilityGraph.setOptions(teamplanner_data.parameters);
-        visibilityGraph.createGraph(teamplanner_data.this_player_robotId, teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity, teamplanner_data,
+        visibilityGraph.createGraph(teamplanner_data.team[interceptorIdx].position, teamplanner_data.team[interceptorIdx].velocity,
+                                    teamplanner_data.ball, myTeam, teamplanner_data.opponents,
                 roleTargetPos, planner_target_e::GOTO_BALL, teamplanner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
         path = visibilityGraph.getShortestPath(teamplanner_data);
     }

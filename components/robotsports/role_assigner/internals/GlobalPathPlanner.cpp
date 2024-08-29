@@ -124,10 +124,13 @@ void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
     m_options = options;
 }
 
-void GlobalPathPlanner::createGraph(int path_for_robotId, const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel, const TeamPlannerData& teamplanner_data,
+void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
+                                    const TeamPlannerBall& ball,
+                                    const std::vector<TeamPlannerRobot>& teammates, /* filtered based on robot to calculate the graph for */
+                                    const std::vector<TeamPlannerOpponent>& opponents,
         const std::vector<MRA::Vertex>& targetPos,
         planner_target_e targetFunction,
-        bool ballIsObstacle,
+        bool ballIsObstacleAndValid,
         bool avoidBallPath,
         bool stayInPlayingField,
         const MRA::Geometry::Point& rBallTargetPos) {
@@ -165,20 +168,18 @@ void GlobalPathPlanner::createGraph(int path_for_robotId, const MRA::Geometry::P
     if (m_options.addBarierVertices) {
                     // handle ball as obstacle
 
-        if (ballIsObstacle) {
+        if (ballIsObstacleAndValid) {
             // handle ball as obstacle
-            if (teamplanner_data.ball.is_valid) {
-                addObstacle(teamplanner_data.ball.position, true, stayInPlayingField);
-            }
+            addObstacle(ball.position, true, stayInPlayingField);
         }
-        for (auto opponent: teamplanner_data.opponents) {
+        for (auto opponent: opponents) {
             addObstacle(opponent.position, false, stayInPlayingField);
+            m_opponents.push_back(opponent.position);
         }
         // add team as obstacles, except your self
-        for (auto teammate: teamplanner_data.team) {
-            if (teammate.robotId != path_for_robotId) {
-                addObstacle(teammate.position, false, stayInPlayingField);
-            }
+        for (auto teammate: teammates) {
+            addObstacle(teammate.position, false, stayInPlayingField);
+            m_teammates.push_back(teammate.position);
         }
     }
 
@@ -190,7 +191,7 @@ void GlobalPathPlanner::createGraph(int path_for_robotId, const MRA::Geometry::P
     }
 
     // Add edges
-    addEdges(avoidBallPath, rBallTargetPos, teamplanner_data.ball);
+    addEdges(avoidBallPath, rBallTargetPos, ball);
 }
 
 /**

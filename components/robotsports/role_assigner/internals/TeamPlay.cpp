@@ -60,6 +60,25 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // sort team of teamplanner data by robotId. Remember order to have output in the original order
+    // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
+    // Then also putting them back in the correct order at the end of this function can be removed.
+//    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
+    std::vector<long> orginal_order_robotIds = std::vector<long>();
+    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
+        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
+    }
+    // first sort TeamPlannerTeam on robotId
+    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
+    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
+        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
+            teamplannerData.this_player_idx = idx;
+        }
+    }
+    // <<< END sort team of teamplanner data by robotId
+
+
     team_formation_e formationToUse = FORMATION_112;
 
     if ((teamplannerData.gamestate == NORMAL_DEFEND)
@@ -98,24 +117,6 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
         }
         return player_paths; // no path will be planned if game state is NONE
     }
-
-    // ---------------------------------------------------------------------------------------------
-    // sort team of teamplanner data by robotId. Remember order to have output in the original order
-    // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
-    // Then also putting them back in the correct order at the end of this function can be removed.
-//    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
-    std::vector<long> orginal_order_robotIds = std::vector<long>();
-    for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
-        orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
-    }
-    // first sort TeamPlannerTeam on robotId
-    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
-    for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
-        if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
-            teamplannerData.this_player_idx = idx;
-        }
-    }
-    // <<< END sort team of teamplanner data by robotId
 
     bool playerPassedBall = false;
     for (unsigned r_idx = 0; r_idx < teamplannerData.team.size(); r_idx++) {

@@ -338,8 +338,8 @@ public:
     virtual ~InterceptionThreatHeuristic() {};
     double getValue(double x, double y);
 private:
-    const Geometry::Point& m_ball;
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const Geometry::Point m_ball;
+    const std::vector<TeamPlannerRobot> m_Team;
     std::vector<Geometry::Position> m_Opponents;
     const double m_interceptionChanceStartDistance;
     const double m_interceptionChanceIncreasePerMeter;

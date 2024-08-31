@@ -79,12 +79,11 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     // <<< END sort team of teamplanner data by robotId
 
 
-    team_formation_e formationToUse = FORMATION_112;
-
+    team_formation_e formationToUse = teamplannerData.parameters.attack_formation;
     if ((teamplannerData.gamestate == NORMAL_DEFEND)
             || (teamplannerData.gamestate == KICKOFF_AGAINST) || (teamplannerData.gamestate == FREEKICK_AGAINST) || (teamplannerData.gamestate == GOALKICK_AGAINST)
             || (teamplannerData.gamestate == CORNER_AGAINST)  || (teamplannerData.gamestate == PENALTY_AGAINST)  || (teamplannerData.gamestate == PENALTY_SHOOTOUT_AGAINST)) {
-        formationToUse = FORMATION_112;
+        formationToUse = teamplannerData.parameters.defense_formation;
     }
     teamplannerData.teamFormation = TeamFormation::selectTeamFormation(formationToUse, teamplannerData.gamestate,
             teamplannerData.ball_status, teamplannerData.parameters);
@@ -326,8 +325,6 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
         {
             save_name = GetTeamPlannerSVGname(teamplannerData.gamestate, "DYN_ROLE_NONE");
         }
-        cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
-
         SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, teamplannerData.fieldConfig, save_name);
 
         // create empty path for robot with a path that ends outside the field.
@@ -354,10 +351,6 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             }
         }
     }
-//    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
-//    for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
-//        player_paths_in_correct_order.push_back(player_paths[team_idx]);
-//    }
     // << END Put the player_paths in order expected by the client
 
     return player_paths_in_correct_order;

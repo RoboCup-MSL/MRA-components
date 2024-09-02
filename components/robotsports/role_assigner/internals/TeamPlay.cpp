@@ -59,12 +59,12 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             teamplannerData.gamestate = game_state_e::NORMAL_DEFEND;
         }
     }
+    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
 
     // ---------------------------------------------------------------------------------------------
     // sort team of teamplanner data by robotId. Remember order to have output in the original order
     // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
     // Then also putting them back in the correct order at the end of this function can be removed.
-//    teamplannerData.this_player_robotId = teamplannerData.team[0].robotId;
     std::vector<long> orginal_order_robotIds = std::vector<long>();
     for (auto idx = 0u; idx < teamplannerData.team.size(); idx++) {
         orginal_order_robotIds.push_back(teamplannerData.team[idx].robotId);
@@ -343,15 +343,20 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     // ----------------------------------------------------------
     // Put the player_paths in the same order as Team was defined by the client
     // Can be remove if client provide team in correct ordere
-    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
+    std::vector<TeamPlannerRobot> restored_order_team = {};
     for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
         for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
             if (teamplannerData.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
-                player_paths_in_correct_order.push_back(player_paths[team_idx]);
+                restored_order_team.push_back(teamplannerData.team[team_idx]);
             }
         }
     }
-    // << END Put the player_paths in order expected by the client
+    teamplannerData.team = restored_order_team;
+
+    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
+    for (unsigned team_idx = 0; team_idx < teamplannerData.team.size(); team_idx++) {
+        player_paths_in_correct_order.push_back(teamplannerData.team[team_idx].result);
+    }
 
     return player_paths_in_correct_order;
 }

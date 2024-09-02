@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>input-set:  play 2 teams without ball</tns:Description>
-  <tns:Options svgOutputFileName="output_team/no_ball_freekick.svg" svgDrawEdges="true" />
+  <tns:Options svgOutputFileName="output_team/no_ball_freekick.svg"
+  	firstCircleRadius="1.0" 
+  	priority_block_min_distance="0.75"
+  />
   <tns:GameState>Freekick</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>

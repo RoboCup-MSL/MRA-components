@@ -8,4 +8,7 @@
   <tns:Ball x="0.69" y="-3.58"/>
   <tns:Team id="1" label="1" x="0.423231" y="-0.381771" rz="-3.0664" velx="0.0452048" vely="-0.999428" />
   <tns:Team id="2" label="2" x="0.38" y="-2.9" rz="0.47" velx="0.0452048" vely="-0.999428" />
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
 </tns:Situation>

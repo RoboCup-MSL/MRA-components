@@ -2,19 +2,19 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test attack during normal play</tns:Description>
   <tns:Options svgOutputFileName="output_team/ball_with_velocity3.svg"/>
-    <tns:GameState>Normal</tns:GameState>
-    <tns:AttackFormation>FORMATION_211</tns:AttackFormation>
-    <tns:DefenseFormation>FORMATION_211</tns:DefenseFormation>
-    <tns:Ball x="1.32" y="-1.00" velx="1.01185" vely="-0.157619"/>
-    <tns:Team id="1" label="1" x="-1.870" y="-1.703" rz="1.301" velx="-0.618" vely="0.175" velrz="-0.020"    />
-    <tns:Team id="2" label="2" x="-2.362" y="-3.601" rz="0.832" velx="-1.112" vely="0.877" velrz="0.000"    />
-    <tns:Team id="3" label="3" x="-3.047" y="3.734" rz="-3.099" velx="0.000" vely="0.000" velrz="0.000"    />
-    <tns:Team id="4" label="4" x="-0.149" y="-6.050" rz="0.112" velx="-0.159" vely="-0.938" velrz="0.000"    />
-    <tns:Opponent label="11" x="0.905" y="-5.484" rz="0.000" velx="0.233" vely="0.592" velrz="0.000" />
-    <tns:PickupPosition x="0.000" y="0.000" ts="70983.842" valid="false" />
-    <tns:SituationInfo passing_required="true"  ball_status="FREE">
-        <tns:PassData valid="false"/>
-    </tns:SituationInfo>
+	<tns:GameState>Normal</tns:GameState>
+	<tns:AttackFormation>FORMATION_211</tns:AttackFormation>
+	<tns:DefenseFormation>FORMATION_211</tns:DefenseFormation>
+	<tns:Ball x="1.32" y="-1.00" velx="1.01185" vely="-0.157619"/>
+	<tns:Team id="1" label="1" x="-1.870" y="-1.703" rz="1.301" velx="-0.618" vely="0.175" velrz="-0.020"    />
+	<tns:Team id="2" label="2" x="-2.362" y="-3.601" rz="0.832" velx="-1.112" vely="0.877" velrz="0.000"    />
+	<tns:Team id="3" label="3" x="-3.047" y="3.734" rz="-3.099" velx="0.000" vely="0.000" velrz="0.000"    />
+	<tns:Team id="4" label="4" x="-0.149" y="-6.050" rz="0.112" velx="-0.159" vely="-0.938" velrz="0.000"    />
+	<tns:Opponent label="11" x="0.905" y="-5.484" rz="0.000" velx="0.233" vely="0.592" velrz="0.000" />
+	<tns:PickupPosition x="0.000" y="0.000" ts="70983.842" valid="false" />
+	<tns:SituationInfo passing_required="true" ball_status="FREE">
+		<tns:PassData valid="false"/>
+	</tns:SituationInfo>
 </tns:Situation>
 
 

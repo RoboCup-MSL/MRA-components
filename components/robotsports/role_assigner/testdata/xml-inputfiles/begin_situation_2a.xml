@@ -83,7 +83,7 @@
   <tns:Team id="4" label="4" x="-0.720" y="-2.657" rz="-0.438" velx="0.986" vely="-0.635" velrz="0.129"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="80550.734" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
+    <tns:PassData valid="false" />
   </tns:SituationInfo>
 </tns:Situation>
 

@@ -8,18 +8,8 @@
   <tns:Ball x="6.0" y="2.00"/>
   <tns:Team id="1" label="1" x="1.0" y="-3.0"/>
   <tns:Team id="2" label="2" x="-2.0" y="4.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
+  	<tns:PassData valid="false"/>
+  </tns:SituationInfo>
 </tns:Situation>
-
-
-
-
-
-
-
-
-
-
-
-
-
 

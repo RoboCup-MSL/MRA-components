@@ -11,7 +11,7 @@
   <tns:Team id="3" label="3" x="2.642" y="-3.283" rz="1.820" velx="-1.171" vely="-1.609" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="75595.473" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="FREE">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000"/>
+    <tns:PassData valid="false"/>
   </tns:SituationInfo>
 </tns:Situation>
 

@@ -11,8 +11,8 @@
   <tns:Opponent label="11" x="4" y="1.0"/>
   <tns:Opponent label="12" x="2.5" y="6.0"/>
   <tns:PickupPosition x="5.0" y="0.0" ts="0.1" valid="true" />
-  <tns:SituationInfo  passing_required="true" ball_status="OWNED_BY_PLAYER">
-      <tns:PassData valid="false"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_PLAYER">
+  	<tns:PassData valid="false"/>
   </tns:SituationInfo>
  </tns:Situation>
 

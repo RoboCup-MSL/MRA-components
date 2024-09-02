@@ -11,10 +11,8 @@
   <tns:Team id="3" label="3" x="2.0" y="1.0"/>
   <tns:Team id="4" label="4" x="-2.0" y="-3.0"/>
   <tns:Team id="5" label="5" x="0.0" y="-8.0" isGoalie="true"/>
-  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
-      <tns:PassData valid="false"/>
-  </tns:SituationInfo>
- </tns:Situation>
+  <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT"/>
+</tns:Situation>
 
 
 

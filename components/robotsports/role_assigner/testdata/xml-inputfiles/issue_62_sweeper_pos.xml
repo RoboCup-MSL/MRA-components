@@ -11,4 +11,7 @@
   <tns:Team id="3" label="3" x="0.38" y="-3.9" rz="0.47" velx="0.0452048" vely="-0.999428" />
   <tns:Team id="4" label="4" x="1.38" y="-2.9" rz="0.47" velx="0.0452048" vely="-0.999428" />
   <tns:Team id="5" label="5" x="0.38" y="-7.9" rz="0.47" velx="0.0452048" vely="-0.999428" isGoalie="true"/>
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
 </tns:Situation>

@@ -18,8 +18,8 @@
   <tns:Opponent id="1" label="11" x="-0.476" y="-2.197" rz="0.000" velx="-1.205" vely="-0.671" velrz="0.000" />
   <tns:Opponent id="2" label="12" x="-0.451" y="-1.178" rz="0.000" velx="0.075" vely="0.047" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="48890.968" valid="false" />
-  <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAM">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
+    <tns:PassData valid="false"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
     <tns:ParkingPosition x="-6.00" y="-3.25"/>

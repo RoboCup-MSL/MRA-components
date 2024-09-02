@@ -9,17 +9,7 @@
   <tns:Team id="1" label="1" x="1.5" y="-8.75"/>
   <tns:Team id="2" label="2" x="0.0" y="-8.5" isGoalie= "true"/>
   <tns:Opponent label="11" x="-6.5" y="-4.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
 </tns:Situation>
-
-
-
-
-
-
-
-
-
-
-
-
-

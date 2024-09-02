@@ -13,8 +13,8 @@
   <tns:Opponent label="12" x="-1.75" y="6.0"/>
   <tns:Opponent label="13" x="2.75" y="6.0"/>
   <tns:PickupPosition x="-3.9" y="-3.4" ts="0.1" valid="true" />
-  <tns:SituationInfo  ball_status="OWNED_BY_PLAYER" passing_required="true">
-      <tns:PassData valid="false"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_PLAYER">
+  	<tns:PassData valid="false"/>
   </tns:SituationInfo>
  </tns:Situation>
 

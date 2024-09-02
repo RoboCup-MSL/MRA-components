@@ -82,7 +82,7 @@
   <tns:Team id="3" label="3" x="3.589" y="-4.699" rz="-2.104" velx="-0.395" vely="-0.382" velrz="0.000"   hasBall="true"    previous_result_present="true"  previous_result_ts="6434.61" previous_result_x="3.86046" previous_result_y="-3.89988" previous_result_dynamic_role="BALLPLAYER"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="6434.636" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAMMATE">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
+    <tns:PassData valid="false"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
     <tns:ParkingPosition x="-6.00" y="-3.25"/>

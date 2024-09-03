@@ -30,6 +30,7 @@ py_binary(
         "joystick_falcons.py",
         "falcons_interface.py",
         "mra_interface.py",
+        "tracing.py",
     ],
     main = "joystick_falcons.py",
     deps = [
@@ -38,5 +39,6 @@ py_binary(
     ],
     data = [
         "//components/falcons/joystick/pybind:action_planning_pybind.so",
+        "@extendedlogging//:extendedlogging",
     ],
 )

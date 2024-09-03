@@ -83,7 +83,10 @@ void outputToSetpointsActionMove(MRA::FalconsActionMove::OutputType const &actio
 
 void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.target();
+    if (actionOutput.has_target())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.target();
+    }
     setpoints->mutable_bh()->set_enabled(true);
 }
 

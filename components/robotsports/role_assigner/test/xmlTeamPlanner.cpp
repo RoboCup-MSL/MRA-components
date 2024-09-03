@@ -526,6 +526,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         robot.robotId = robotIds[idx];
         robot.labelId = myTeam_labels[idx];
         robot.position = myTeam[idx];
+        robot.velocity = myTeam_vel[idx];
         if (controlBallByPlayerId >= 0 && robotIds[idx] == static_cast<unsigned>(controlBallByPlayerId)) {
             robot.controlBall = true;
         }
@@ -772,7 +773,6 @@ void xmlplanner(string input_filename) {
     teamplannerData.ball.is_valid = ball_is_valid;
     teamplannerData.fieldConfig = fieldConfig;
 
-    cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
 
     fillTeamPlannerData(teamplannerData, gameState,
             ball,
@@ -787,8 +787,7 @@ void xmlplanner(string input_filename) {
             team_controls_ball, ownPlayerWithBall,
             teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
             pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
-    cout << __func__ << " line: " << __LINE__ << "parameters.priority_block_min_distance = " << parameters.priority_block_min_distance << endl;
-    cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
+
 
 
     // TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)

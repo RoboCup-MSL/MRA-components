@@ -19,7 +19,7 @@ using namespace MRA;
 std::string TeamPlannerRobot::toString() const {
     std::stringstream buffer;
     buffer << "ID: " << robotId   << " type: " << PlayerTypeAsString(player_type) << endl
-           << "Position: " << position.toString() <<  " control ball: " <<  controlBall << endl
+           << "Pos: " << position.toString() << " Vel: " << velocity.toString() << " control ball: " <<  controlBall << endl
            << "pass is on its way: " << passBall << endl
             << "assigned: " << assigned << endl;
     buffer << " dynamic role: " << DynamicRoleAsString(result.dynamic_role) << " (rank: " << result.role_rank << " )"

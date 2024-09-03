@@ -57,7 +57,10 @@ int FalconsGetball::FalconsGetball::tick
             subcomponent_local
         );
         output.set_actionresult(subcomponent_output.actionresult());
-        *output.mutable_target() = subcomponent_output.target();
+        if (subcomponent_output.has_target())
+        {
+            *output.mutable_target() = subcomponent_output.target();
+        }
     }
 /*    else
     {

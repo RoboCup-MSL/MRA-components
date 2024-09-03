@@ -44,6 +44,8 @@ def set_test_worldstate(worldstate):
 
 def main(args):
     # configure logging with timestamps (milliseconds)
+    if args.debug:
+        falcons_interface.extra_tracing()
     loglevel = (logging.DEBUG if args.debug else logging.INFO)
     logging.basicConfig(level=loglevel, format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     # check arguments

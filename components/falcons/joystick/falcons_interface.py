@@ -24,6 +24,11 @@ import EnvironmentField
 
 
 
+def extra_tracing():
+    # slap some tracing decorators onto our code, automagically!
+    # (based on autologging extensions in my repo https://github.com/janfeitsma/extendedlogging)
+    import tracing
+
 
 class RobotInterface():
     def __init__(self, robotId):
@@ -65,6 +70,19 @@ class RobotInterface():
         os.kill(self.pp_pid, signal.SIGTERM)
         logging.info('killed pathPlanning node') # TODO: make this more robust, restartwrapper and such are in the way
 
+    def poke_action(self, action):
+        self.current_action = action
+        setpoints, actionresult = None, None
+        # regular handling: call MRA action planning
+        if 0 == self.mra_interface.call_action_planning(): # 0 is OK
+            setpoints = self.mra_interface.output.setpoints
+            actionresult = self.mra_interface.output.actionresult
+        return setpoints, actionresult
+
+    def on_action_end(self, actionresult):
+        self.current_action = None
+        # TODO: active stop?
+
     def handle_packet(self, packet : dict) -> None:
         logging.debug('controller_packet: ' + str(packet))
         # set input
@@ -78,26 +96,30 @@ class RobotInterface():
             return
         self.mra_interface.set_input_action(packet)
         # prep setpoints
-        setpoints = None
-        # call MRA actionplanning
-        mra_ok = 0
+        setpoints = self.mra_interface.output.setpoints # get the correct protobuf type
+        setpoints.Clear()
+        actionresult = None
+        # fill setpoints
         if len(packet['action']) > 0:
             # special case: robot velocity setpoint (sticks) arrives via action 'move' with arguments 'velocity'
             # TODO: consider if ActionPlanning should also cover it, using action DASH?
             if packet['action'] == 'move' and 'velocity' in packet['args']:
-                setpoints = self.mra_interface.output.setpoints # get the correct protobuf type
-                setpoints.Clear()
                 setpoints.velocity.x = packet['args']['velocity'][0]
                 setpoints.velocity.y = packet['args']['velocity'][1]
                 setpoints.velocity.rz = packet['args']['velocity'][2]
             else:
-                # regular handling: call action planning
-                if 0 == self.mra_interface.call_action_planning():
-                    setpoints = self.mra_interface.output.setpoints
+                setpoints, actionresult = self.poke_action(packet['action'])
+        # special case: ballHandler setpoint
+        # TODO: similar to velocity/DASH comment above, it seems cleaner to give all control (and ownership of enabled state) to ActionPlanning
+        if 'enableBallHandlers' in packet and packet['enableBallHandlers'] != self.getBallHandlersEnabled():
+            if not setpoints.HasField('bh'): # if MRA already decided on ballhandlers, do not overrule
+                setpoints.bh.enabled = packet['enableBallHandlers']
         # dispatch setpoints
         if setpoints:
             self.handle_setpoints(setpoints)
-        # TODO: if action finished (either PASSED or FAILED), then go idle? packet producer does not know this
+        if actionresult in ['PASSED', 'FAILED']:
+            logging.info('action {} finished: {}'.format(self.current_action, actionresult))
+            self.on_action_end(actionresult)
 
     def handle_setpoints(self, setpoints):
         logging.debug('handle_setpoints: ' + str(setpoints))
@@ -150,7 +172,7 @@ class RobotInterface():
         if target == 'home':
             return self.homePos
         elif target == 'goal':
-            return self.goalPos
+            return (self.goalPos.x, self.goalPos.y, 0)
         elif target == 'nearestObstacle':
             xy = self.worldState.nearestObstacle()
             return (xy.x, xy.y, 0)

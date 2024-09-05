@@ -7,24 +7,25 @@
 file: output_team/ball_pass_during_setplay.svg
 
 
-	gamestate = Normal (1)
-	orignal_gamestate = Normal (1)
-	controlball = (not controlled by robot in team)
-	globalBall:  x: 1.20 y: 2.05 rz: 0.00 vx: 0.00 vy: 0.00 vr: 0.00 valid: 1 label: 0
+	gamestate = Normal attack (2)
+	original_gamestate = Normal (1)
+	ball_status = "OWNED_BY_TEAM"
+	Ball: position: x: 1.20 y: 2.05 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
 	previous_ball = false
 	pass_is_required: false
-	pass_data - valid false
+	pass_data - valid true
+	 PassData origin_x=0.614 origin_y=1.893 target_x=3.550 target_y=2.650 velocity=0.000 angle= 0.000 ts=0.100/>
 	pickup ball valid: false
 	pickup ball x: 0.00
 	pickup ball y: 0.00
 	pickup ball ts: 84825.32
 
 	team:
-		R01 =  x: 0.61 y: 1.89 rz: -1.31 vx: -0.39 vy: 0.23 vr: 0.00 valid: 1 label: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: true role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+		R01 = x: 0.61 y: 1.89 z:-1.31 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.39 y: 0.23 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
+			control-ball: false passBall: true role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R02 =  x: 3.56 y: 2.68 rz: 2.06 vx: -0.00 vy: 0.00 vr: 0.00 valid: 1 label: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+		R02 = x: 3.56 y: 2.68 z:2.06 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
@@ -43,14 +44,14 @@ Path[0]: x: -3.00 y: 3.75 cost: 4.69 target: Attack support (3)
 Player 1 (id: 2) : 
 	Dynamic-role: ATTACKSUPPORTER
 	Game State: Normal attack
-	Target position : x: 4.50 y: 4.50
+	Target position : x: 3.55 y: 2.65
 	Planner target type  Attack support
-	Target_position_is_end_position_of_pass: false
+	Target_position_is_end_position_of_pass: true
 	Defend info valid:  false
 Path[1]: x: 3.56 y: 2.68 cost: 0.00 target: Attack support (3)
-Path[1]: x: 4.50 y: 4.50 cost: 3.23 target: Attack support (3)
+Path[1]: x: 3.55 y: 2.65 cost: 1.04 target: Attack support (3)
 
-	options:
+	parameters:
 calculateAllPaths = 1
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
@@ -101,8 +102,6 @@ priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
 attack_supporter_extra_distance_to_stay_from_sideline = 0.75
-attack attack_formation = 112
-defense formation = 112
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
@@ -117,20 +116,8 @@ man_to_man_defense_during_normal_play = 1
 man_to_man_defense_during_setplay_against = 1
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-mobile_field_uniform_x_interval = 1
-mobile_field_uniform_y_interval = 1
-mobile_field_grid_size = 0.5
-mobile_field_grid_close_to_ball_normal_radius = 1.5
-mobile_field_grid_close_to_ball_restart_normal_radius = 1.5
-mobile_field_grid_close_to_ball_restart_penalty_radius = 1.5
-mobile_field_grid_close_to_ball_restart_dropball_radius = 1.1
-mobile_field_restart_receiver_ball_dist = 1.2
-mobile_field_restart_shooter_ball_dist = 0.8
-mobile_field_setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = 1
 auto_save_svg_period = 10
-auto_save_svg_from_ts = 0
-auto_save_svg_to_ts = 0
 svgOutputFileName = output_team/ball_pass_during_setplay.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
@@ -167,29 +154,20 @@ dedicatedSweeper = 0
 autoAssignGoalie = 0
 
 	field:
-FIELD_WIDTH = 12
 FIELD_LENGTH = 18
+FIELD_WIDTH = 12
 FIELD_MARGIN = 1.5
-FIELD_MARKINGS_WIDTH = 0.125
-CENTER_CIRCLE_DIAMETER = 4
-CORNER_CIRCLE_DIAMETER = 0.75
 GOAL_WIDTH = 2
 GOAL_LENGTH = 0.5
+CENTER_CIRCLE_DIAMETER = 4
 GOAL_AREA_WIDTH = 3.5
 GOAL_AREA_LENGTH = 0.75
 PENALTY_AREA_PRESENT = 1
 PENALTY_AREA_WIDTH = 6.5
 PENALTY_AREA_LENGTH = 2.25
-PENALTY_SPOT_TO_BACKLINE = 3
-PENALTY_SPOT_DIAMETER = 0.15
-PENALTY_SPOT_TO_RESTART_SPOT = 3.5
 ROBOTSIZE = 0.5
 BALL_RADIUS = 0.11
-TEAM_TECHNICAL_AREA_PRESENT = 0
-TEAM_TECHNICAL_AREA_SHORT_SIDE = 1
-TEAM_TECHNICAL_AREA_LONG_SIDE = 7.5
-TEAM_TECHNICAL_AREA_ENTRANCE_WIDTH = 1
-TEAM_TECHNICAL_AREA_ENTRANCE_DEPTH = 0.6
+FIELD_MARKINGS_WIDTH = 0.125
 PARKING_AREA_WIDTH = 0.5
 PARKING_AREA_LENGTH = 4.5
 PARKING_DISTANCE_BETWEEN_ROBOTS = 1
@@ -247,6 +225,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
    preferredSetplayKicker="0"
    preferredSetplayReceiver="0"
    previous_role_bonus_end_pos_radius="1.000"
+   priority_block_min_distance="0.500"
    priority_block_max_distance="1.500"
    safetyFactor="1.000"
    secondCircleRadius="1.600"
@@ -269,16 +248,13 @@ PARKING_DISTANCE_TO_LINE = 0.5
   <tns:Field field_width="12.000" field_length="18.000" field_margin="1.50" goal_width="2.000" goal_length="0.500" goal_area_width="3.500" goal_area_length="0.750"
              penalty_area_present="true" penalty_area_width="6.500" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.500"
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
-             parking_distance_to_line="0.500" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
+             parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
-  <tns:AttackFormation>112</tns:AttackFormation>
-  <tns:DefenseFormation>112</tns:DefenseFormation>
-  <tns:Ball x="1.20" y="2.05" velx="0.00" vely="0.00"/>
-  <tns:Team id="1" label="1" x="0.614" y="1.893" rz="-1.314" velx="-0.393" vely="0.227" velrz="0.000"   passedBall="true" />
-  <tns:Team id="2" label="2" x="3.563" y="2.682" rz="2.063" velx="-0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="1" label="1" x="0.614" y="1.893" rz="0.000" velx="-0.393" vely="0.227" velrz="0.000"   passedBall="true" />
+  <tns:Team id="2" label="2" x="3.563" y="2.682" rz="0.000" velx="-0.000" vely="0.000" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="84825.324" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAM">
-    <tns:PassData valid="false" origin_x="0.614" origin_y="1.893" target_x="3.550" target_y="2.650" velocity="0.000" angle="0.000" ts="0.100" target_id="2"/>
+    <tns:PassData valid="true" origin_x="0.614" origin_y="1.893" target_x="3.550" target_y="2.650" velocity="0.000" angle="0.000" ts="0.100" target_id="2"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
     <tns:ParkingPosition x="-6.38" y="-0.25"/>
@@ -292,16 +268,14 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal attack</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_team</text>
-<text x="15.10cm" y="2.50cm" font-size="14" font-weight-absolute="bold" fill="black">Attack formation: 112</text>
-<text x="15.10cm" y="3.00cm" font-size="14" font-weight-absolute="bold" fill="black">Defend formation: 112</text>
-<text x="15.10cm" y="5.00cm" font-size="14" font-weight-absolute="bold" fill="black">R01: ATTACKSUPPORTER</text>
-<text x="15.30cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: 3.75</text>
-<text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 4.693028</text>
-<text x="15.10cm" y="7.00cm" font-size="14" font-weight-absolute="bold" fill="black">R02: ATTACKSUPPORTER</text>
-<text x="15.30cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 4.50 y: 4.50</text>
-<text x="15.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 3.232334</text>
+<text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: ATTACKSUPPORTER</text>
+<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: 3.75</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 4.693028</text>
+<text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: ATTACKSUPPORTER</text>
+<text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.55 y: 2.65</text>
+<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.039054</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -333,10 +307,10 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="10.81cm" y="7.57cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- path player 1-->
-<line x1="11.18cm" y1="7.60cm" x2="12.00cm" y2="6.00cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="10.97cm" y1="8.05cm" x2="11.05cm" y2="7.85cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path-end player 1-->
-<circle cx="12.00cm" cy="6.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+<circle cx="11.05cm" cy="7.85cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="7.95cm" y="8.77cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="10.90cm" y="7.98cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
 <!-- Ball -->
 <circle cx="8.70cm" cy="8.45cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

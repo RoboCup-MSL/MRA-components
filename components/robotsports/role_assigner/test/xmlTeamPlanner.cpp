@@ -788,7 +788,8 @@ void xmlplanner(string input_filename) {
             teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
             pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
 
-
+    teamplannerData.ball.is_valid = ball_is_valid;
+    teamplannerData.fieldConfig = fieldConfig;
 
     // TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
     teamplannerData.teamFormation = getListWithRoles(gameState, ball_status);
@@ -805,8 +806,6 @@ void xmlplanner(string input_filename) {
             cerr << "<< XML: print received path " << endl << flush;
             cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
         }
-        cout << __func__ << " line: " << __LINE__ << "teamplannerData.parameters.priority_block_min_distance = " << teamplannerData.parameters.priority_block_min_distance << endl;
-
         SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
 
     } else {

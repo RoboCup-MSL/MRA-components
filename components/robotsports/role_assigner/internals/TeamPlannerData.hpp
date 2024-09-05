@@ -98,7 +98,6 @@ public:
     TeamPlannerData() {};
     /* inputs */
     game_state_e gamestate;
-    bool ball_present;
     TeamPlannerBall ball;
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;

@@ -159,7 +159,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     else if (teamplannerData.gamestate == game_state_e::PARKING) {
         assignParkingPositions (teamplannerData);
     }
-    else if (isOneOf(teamplannerData.gamestate, {FREEKICK, GOALKICK, CORNER, THROWIN})) {
+    else if (isOneOf(teamplannerData.gamestate, {FREEKICK, GOALKICK, CORNER, THROWIN}) and not teamplannerData.searchForBall) {
         int assignment_nr = 0;
         for (unsigned dr_idx = 0; dr_idx < teamplannerData.teamFormation.size() and dr_idx < teamplannerData.team.size(); dr_idx++) {
 

@@ -127,7 +127,7 @@ class RobotInterface():
             self.current_action = 'dash'
         elif packet['action'] == 'none' and self.current_action == 'dash':
             self.stop_moving(setpoints)
-        elif packet['action'] == 'toggleBallHandlers':
+        elif packet['action'] == 'toggleBallhandlers':
             setpoints.bh.enabled = not self.getBallHandlersEnabled()
         # handle regular actions
         elif len(packet['action']) > 0:

@@ -65,6 +65,7 @@ Notes:
         self.vy = 0.0
         self.vrz = 0.0
         self.kicker_power = 0.0 # remember, to discharge when released
+        self.prev_B_pressed = False # for toggle bh action
         self.dt = 1.0 / cfg.frequency
 
     def run(self):
@@ -117,8 +118,7 @@ Notes:
             else:
                 action_args = {'target': 'nearestTeammember'}
         elif controller_state.buttons['B'].is_pressed:
-            # only on press...
-            if not self.prev_controller_state.buttons['B'].is_pressed:
+            if not self.prev_B_pressed:
                 action = 'toggleBallhandlers' # special -- not for ActionPlanning
         elif controller_state.buttons['X'].is_pressed:
             if controller_state.buttons['LB'].is_pressed:
@@ -157,8 +157,8 @@ Notes:
             'args': action_args
         }
         self.packet_handler(packet)
-        # store previous state
-        self.prev_controller_state = controller_state
+        # store stuff for use in next iteration
+        self.prev_B_pressed = controller_state.buttons['B'].is_pressed
 
     def display_packet(self, packet):
         # only on change

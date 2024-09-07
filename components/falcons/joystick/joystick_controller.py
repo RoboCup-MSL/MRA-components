@@ -56,21 +56,16 @@ Notes:
         self.cfg = cfg
         self.prev_display_string = None
         self.packet_handler = self.display_packet
-        self.enable_bh = False
-        self.toggle_bh()
         if keyboard:
             self.controller = Keyboard(cfg.frequency)
         else:
             self.controller = JoystickPygame(cfg.frequency, cfg.axis_threshold, jsId)
-        self.controller.buttons['B'].on_press = self.toggle_bh
         self.controller.callback = self.process_state
         self.vx = 0.0
         self.vy = 0.0
         self.vrz = 0.0
+        self.kicker_power = 0.0 # remember, to discharge when released
         self.dt = 1.0 / cfg.frequency
-        self.rt = -1.0
-        self.action = ''
-        self.action_args = {}
 
     def run(self):
         self.controller.run()
@@ -78,11 +73,9 @@ Notes:
     def cleanup(self):
         self.controller.cleanup()
 
-    def toggle_bh(self):
-        self.enable_bh = not self.enable_bh
-
     def process_state(self, controller_state):
         logging.debug('controller_state: ' + str(controller_state))
+        # analog stick input
         def calc(current_setpoint, axis_input, speed_limit, acc_limit, deadzone):
             if abs(axis_input) < deadzone:
                 return 0.0
@@ -95,69 +88,84 @@ Notes:
         vy = calc(self.vy, -controller_state.axis_ls.y, self.cfg.motion_xy_max_speed, self.cfg.motion_xy_acceleration, self.cfg.motion_xy_deadzone)
         vrz = calc(self.vrz, -controller_state.axis_rs.x, self.cfg.motion_rz_max_speed, self.cfg.motion_rz_acceleration, self.cfg.motion_rz_deadzone)
         self.vx, self.vy, self.vrz = vx, vy, vrz
-        self.kicker_power = 0.0
-        self.kicker_height = 0.0
+        # kicker control
+        kicker_power = 0.0
         if controller_state.axis_rt.x > 0:
-            self.kicker_power = clip(controller_state.axis_rt.x * self.cfg.kicker_power_scale, self.cfg.kicker_power_max, self.cfg.kicker_power_min)
+            kicker_power = clip(controller_state.axis_rt.x * self.cfg.kicker_power_scale, self.cfg.kicker_power_max, self.cfg.kicker_power_min)
         if controller_state.axis_lt.x > 0:
-            self.kicker_height = clip(controller_state.axis_lt.x * self.cfg.kicker_height_scale, self.cfg.kicker_height_max)
-        if self.kicker_power != 0.0:
-            self.action = 'kick'
-            self.action_args = {'power': self.kicker_power, 'height': self.kicker_height}
-        elif self.vx != 0.0 or self.vy != 0.0 or self.vrz != 0.0:
-            self.action = 'move' # TODO 'dash' # local move
-            self.action_args = {'velocity': [self.vx, self.vy, self.vrz]}
+            kicker_height = clip(controller_state.axis_lt.x * self.cfg.kicker_height_scale, self.cfg.kicker_height_max)
+        if kicker_power > 0.0:
+            self.kicker_power = max(kicker_power, self.kicker_power)
+        # select action, according to this protocol:
+        # * action packet is treated as a command, not as a setpoint
+        #   example: getball is briefly set, then it is assumed that outside it is continuously handled
+        # * action 'none' means that current action is continued and robot goes idle afterwards
+        # * any state handling is done outside of the joystick controller
+        # * exceptions are for analog setpoints (sticks)
+        action = 'none'
+        action_args = {}
+        if kicker_power == 0.0 and self.kicker_power > 0.0: # first check kicker discharge
+            action = 'kick'
+            action_args = {'power': self.kicker_power, 'height': kicker_height}
+            self.kicker_power = 0.0 # reset
         elif controller_state.buttons['A'].is_pressed:
-            self.action = 'pass'
+            action = 'pass'
             if controller_state.buttons['RB'].is_pressed:
-                self.action_args = {'target': 'home'}
+                action_args = {'target': 'home'}
             elif controller_state.buttons['LB'].is_pressed:
-                self.action_args = {'target': 'nearestObstacle'}
+                action_args = {'target': 'nearestObstacle'}
             else:
-                self.action_args = {'target': 'nearestTeammember'}
+                action_args = {'target': 'nearestTeammember'}
+        elif controller_state.buttons['B'].is_pressed:
+            # only on press...
+            if not self.prev_controller_state.buttons['B'].is_pressed:
+                action = 'toggleBallhandlers' # special -- not for ActionPlanning
         elif controller_state.buttons['X'].is_pressed:
             if controller_state.buttons['LB'].is_pressed:
-                self.action = 'getball'
-                self.action_args = {'radius': self.cfg.getball_extended_radius}
+                action = 'getball'
+                action_args = {'radius': self.cfg.getball_extended_radius}
             elif controller_state.buttons['RB'].is_pressed:
-                self.action = 'bump'
-                self.action_args = {'target': 'nearestTeammember'}
+                action = 'bump'
+                action_args = {'target': 'nearestTeammember'}
             else:
-                self.action = 'getball'
-                self.action_args = {'radius': self.cfg.getball_close_radius}
+                action = 'getball'
+                action_args = {'radius': self.cfg.getball_close_radius}
         elif controller_state.buttons['Y'].is_pressed:
             if controller_state.buttons['LB'].is_pressed:
-                self.action = 'shoot'
-                self.action_args = {'target': 'home'}
+                action = 'shoot'
+                action_args = {'target': 'home'}
             elif controller_state.buttons['RB'].is_pressed:
-                self.action = 'bump'
-                self.action_args = {'target': 'goal'}
+                action = 'bump'
+                action_args = {'target': 'goal'}
             else:
-                self.action = 'shoot'
-                self.action_args = {'target': 'goal'}
+                action = 'shoot'
+                action_args = {'target': 'goal'}
         elif controller_state.buttons['select'].is_pressed:
-            self.action = 'keeper'
+            action = 'keeper'
         elif controller_state.buttons['mode'].is_pressed:
-            self.action = 'park'
+            action = 'park'
             if controller_state.buttons['LB'].is_pressed:
-                self.action = 'move'
-                self.action_args = {'target': 'home'}
-        elif self.vx == 0.0 and self.vy == 0.0 and self.vrz == 0.0 and self.action == 'move':
-            self.action_args = {}
-            self.action = 'stop'
+                action = 'move'
+                action_args = {'target': 'home'}
+        elif self.vx != 0.0 or self.vy != 0.0 or self.vrz != 0.0:
+            action = 'dash'
+            action_args = {'velocity': [self.vx, self.vy, self.vrz]}
+        #elif self.vx == 0.0 and self.vy == 0.0 and self.vrz == 0.0 and action == 'move':
+        #    action_args = {}
+        #    action = 'stop'
         # send/handle packet
         packet = {
             'robotId': self.robotId,
-            'action': self.action,
-            'enableBallHandlers': self.enable_bh,
-            'args': self.action_args
+            'action': action,
+            'args': action_args
         }
         self.packet_handler(packet)
+        # store previous state
+        self.prev_controller_state = controller_state
 
     def display_packet(self, packet):
         # only on change
         display_string = (
-            f"bh={'on' if packet['enableBallHandlers'] else 'off':3} "
             f"action={packet['action']:10s}"
         )
         def float_formatter(v):

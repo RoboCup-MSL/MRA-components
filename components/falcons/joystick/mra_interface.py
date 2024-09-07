@@ -22,42 +22,42 @@ class MRAInterface():
     def set_input_worldstate(self, worldstate):
         self.input.worldstate = worldstate
 
-    def set_input_action(self, packet : dict):
+    def set_input_action(self, action : str, action_args : dict):
         # return if no action set
-        if packet['action'] == '':
+        if action == '':
             return
         # convert to enum action value
         # TODO: implement all actions after interface is agreed upon
-        action_str = 'ACTION_' + packet['action'].upper()
+        action_str = 'ACTION_' + action.upper()
         self.input.action.type = getattr(ActionType_pb2, action_str)
-        # switch on packet['action'] and assign subfield accordingly
-        if packet['action'] == 'stop':
+        # switch on action and assign subfield accordingly
+        if action == 'stop':
             self.input.action.stop.ballHandlersEnabled = self.robot_interface.getBallHandlersEnabled()
-        elif packet['action'] == 'move':
-            # TODO self.input.action.move.motionTarget.position = self.robot_interface.resolveTarget(packet['args']['target'])
+        elif action == 'move':
+            # TODO self.input.action.move.motionTarget.position = self.robot_interface.resolveTarget(action_args['target'])
             self.input.action.move.motionType = 0 # TODO dribble?
             self.input.action.move.ballHandlersEnabled = self.robot_interface.getBallHandlersEnabled()
-        elif packet['action'] == 'kick':
+        elif action == 'kick':
             pass
-        elif packet['action'] == 'pass':
+        elif action == 'pass':
             pos = getattr(self.input.action, 'pass').target.position
-            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
-        elif packet['action'] == 'shoot':
+            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(action_args['target'])
+        elif action == 'shoot':
             pos = self.input.action.shoot.target.position
-            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
-        elif packet['action'] == 'lob':
+            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(action_args['target'])
+        elif action == 'lob':
             pos = self.input.action.lob.target.position
-            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(packet['args']['target'])
-        elif packet['action'] == 'getball':
+            pos.x, pos.y, pos.rz = self.robot_interface.resolveTarget(action_args['target'])
+        elif action == 'getball':
             self.input.action.getball.motionType = 0
-            self.input.action.getball.radius = packet['args']['radius']
-        elif packet['action'] == 'shield':
+            self.input.action.getball.radius = action_args['radius']
+        elif action == 'shield':
             self.input.action.shield.CopyFrom(ActionShieldInputs())
-        elif packet['action'] == 'keeper':
+        elif action == 'keeper':
             self.input.action.keeper.CopyFrom(ActionKeeperInputs())
-        elif packet['action'] == 'intercept':
+        elif action == 'intercept':
             self.input.action.intercept.CopyFrom(ActionInterceptInputs())
-        elif packet['action'] == 'park':
+        elif action == 'park':
             self.input.action.park.CopyFrom(MRA.FalconsActionPark.Input())
 
     def call_action_planning(self, check : bool = True) -> int:

@@ -50,6 +50,9 @@ class RobotInterface():
         self.rtdbPut('MATCH_MODE', False)
         # process hack: pathPlanning is not started by default
         self.processhack_start()
+        # running action
+        self.current_action = None
+        self.current_action_args = None
 
     def __del__(self):
         self.shutdown()
@@ -70,57 +73,57 @@ class RobotInterface():
 
     def processhack_end(self):
         self.pp_proc.kill()
-        logging.info('killed pathPlanning node') # TODO: make this more robust, restartwrapper and such are in the way
+        logging.info('killed pathPlanning node')
 
-    def poke_action(self, action):
-        self.current_action = action
+    def poke_action(self, action, action_args):
+        # check for new action; action 'none' signals to continue any current unfinished action
+        if action != 'none':
+            if action != self.current_action:
+                self.on_action_start(action, action_args)
+        # call MRA action planning
         setpoints, actionresult = None, None
-        # regular handling: call MRA action planning
-        if 0 == self.mra_interface.call_action_planning(): # 0 is OK
-            setpoints = self.mra_interface.output.setpoints
-            actionresult = self.mra_interface.output.actionresult
+        if self.current_action:
+            self.mra_interface.set_input_action(self.current_action, self.current_action_args)
+            if 0 == self.mra_interface.call_action_planning(): # 0 is OK
+                setpoints = self.mra_interface.output.setpoints
+                # convert int actionresult to protobuf enum string
+                # TODO: this is not ideal, sensitive to enum change ... better to use the enum value directly
+                actionresult = ['INVALID', 'FAILED', 'RUNNING', 'PASSED'][self.mra_interface.output.actionresult]
         return setpoints, actionresult
 
+    def on_action_start(self, action, action_args):
+        logging.info('action {} starting (args {})'.format(action, str(action_args)))
+        self.current_action = action
+        self.current_action_args = action_args
+
     def on_action_end(self, actionresult):
+        logging.info('action {} finished: {}'.format(self.current_action, actionresult))
         self.current_action = None
+        self.current_action_args = None
         # TODO: active stop?
 
     def handle_packet(self, packet : dict) -> None:
         logging.debug('controller_packet: ' + str(packet))
-        # set input
+        # prepare
         self.mra_interface.input.Clear()
-        ws_ok = self.update_worldstate(self.mra_interface.input.worldState)
-        if not ws_ok:
-            # warn only once per second
-            if not hasattr(self, 'last_ws_warning') or (datetime.datetime.now() - self.last_ws_warning).total_seconds() > 1:
-                self.last_ws_warning = datetime.datetime.now()
-                logging.warning('failed to update worldstate, is robot SW activated?')
-            return
-        self.mra_interface.set_input_action(packet)
-        # prep setpoints
+        self.update_worldstate(self.mra_interface.input.worldState)
         setpoints = self.mra_interface.output.setpoints # get the correct protobuf type
         setpoints.Clear()
         actionresult = None
-        # fill setpoints
-        if len(packet['action']) > 0:
-            # special case: robot velocity setpoint (sticks) arrives via action 'move' with arguments 'velocity'
-            # TODO: consider if ActionPlanning should also cover it, using action DASH?
-            if packet['action'] == 'move' and 'velocity' in packet['args']:
-                setpoints.velocity.x = packet['args']['velocity'][0]
-                setpoints.velocity.y = packet['args']['velocity'][1]
-                setpoints.velocity.rz = packet['args']['velocity'][2]
-            else:
-                setpoints, actionresult = self.poke_action(packet['action'])
-        # special case: ballHandler setpoint
-        # TODO: similar to velocity/DASH comment above, it seems cleaner to give all control (and ownership of enabled state) to ActionPlanning
-        if 'enableBallHandlers' in packet and packet['enableBallHandlers'] != self.getBallHandlersEnabled():
-            if not setpoints.HasField('bh'): # if MRA already decided on ballhandlers, do not overrule
-                setpoints.bh.enabled = packet['enableBallHandlers']
+        # handle packets which should not be handled by ActionPlanning (yet)
+        if packet['action'] == 'dash' and 'velocity' in packet['args']:
+            setpoints.velocity.x = packet['args']['velocity'][0]
+            setpoints.velocity.y = packet['args']['velocity'][1]
+            setpoints.velocity.rz = packet['args']['velocity'][2]
+        elif packet['action'] == 'toggleBallHandlers':
+            setpoints.bh.enabled = not self.getBallHandlersEnabled()
+        # handle regular actions
+        elif len(packet['action']) > 0:
+            setpoints, actionresult = self.poke_action(packet['action'], packet['args'])
         # dispatch setpoints
         if setpoints:
             self.handle_setpoints(setpoints)
-        if actionresult in ['PASSED', 'FAILED']:
-            logging.info('action {} finished: {}'.format(self.current_action, actionresult))
+        if actionresult in ['PASSED', 'FAILED'] and self.current_action:
             self.on_action_end(actionresult)
 
     def handle_setpoints(self, setpoints):
@@ -165,10 +168,18 @@ class RobotInterface():
         try:
             self.worldState.update() # read from RTDB
             self.worldState.toMRA(world_state)
+            success = True
         except:
-            return False
-        logging.debug('worldstate: ' + str(json_format.MessageToJson(world_state, indent=None)))
-        return True
+            success = False
+        if success:
+            logging.debug('worldstate: ' + str(json_format.MessageToJson(world_state, indent=None)))
+        else:
+            # warn only once every few seconds
+            num_seconds = 3
+            if not hasattr(self, 'last_ws_warning') or (datetime.datetime.now() - self.last_ws_warning).total_seconds() > num_seconds:
+                self.last_ws_warning = datetime.datetime.now()
+                logging.warning('failed to update worldstate, is robot SW activated?')
+        return success
 
     def resolveTarget(self, target):
         if target == 'home':

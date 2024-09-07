@@ -63,11 +63,13 @@ class RobotInterface():
     def processhack_start(self):
         rs = str(self.robotId)
         os.environ['TURTLE5K_ROBOTNUMBER'] = rs
-        self.pp_pid = subprocess.Popen(['processStart', 'A'+rs, 'pp']).pid
+        pp_cmd = subprocess.check_output(['processCmd', 'pp']).strip().decode('utf-8') # something like : '/home/jan/falcons/code/bazel-bin/packages/pathPlanning/pathplanningNode'
+        logfile_base = '/tmp/joystick_falcons'
+        self.pp_proc = subprocess.Popen([pp_cmd], stdout=open(logfile_base + '_stdout_' + rs + '.txt', 'w'), stderr=open(logfile_base + '_stderr_' + rs + '.txt', 'w'))
         logging.info('started pathPlanning node')
 
     def processhack_end(self):
-        os.kill(self.pp_pid, signal.SIGTERM)
+        self.pp_proc.kill()
         logging.info('killed pathPlanning node') # TODO: make this more robust, restartwrapper and such are in the way
 
     def poke_action(self, action):

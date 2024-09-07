@@ -150,9 +150,6 @@ Notes:
         elif self.vx != 0.0 or self.vy != 0.0 or self.vrz != 0.0:
             action = 'dash'
             action_args = {'velocity': [self.vx, self.vy, self.vrz]}
-        #elif self.vx == 0.0 and self.vy == 0.0 and self.vrz == 0.0 and action == 'move':
-        #    action_args = {}
-        #    action = 'stop'
         # send/handle packet
         packet = {
             'robotId': self.robotId,

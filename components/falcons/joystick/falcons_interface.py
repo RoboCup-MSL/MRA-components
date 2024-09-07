@@ -80,7 +80,7 @@ class RobotInterface():
         if action != 'none':
             if action != self.current_action:
                 self.on_action_start(action, action_args)
-        # call MRA action planning
+        # call MRA action planning, use current action memory
         setpoints, actionresult = None, None
         if self.current_action:
             self.mra_interface.set_input_action(self.current_action, self.current_action_args)
@@ -89,18 +89,28 @@ class RobotInterface():
                 # convert int actionresult to protobuf enum string
                 # TODO: this is not ideal, sensitive to enum change ... better to use the enum value directly
                 actionresult = ['INVALID', 'FAILED', 'RUNNING', 'PASSED'][self.mra_interface.output.actionresult]
+        if actionresult in ['PASSED', 'FAILED'] and self.current_action:
+            self.on_action_end(actionresult)
+            self.stop_moving(setpoints)
         return setpoints, actionresult
 
     def on_action_start(self, action, action_args):
-        logging.info('action {} starting (args {})'.format(action, str(action_args)))
+        if action not in ['stop']:
+            logging.info('action {} starting (args {})'.format(action, str(action_args)))
         self.current_action = action
         self.current_action_args = action_args
 
     def on_action_end(self, actionresult):
-        logging.info('action {} finished: {}'.format(self.current_action, actionresult))
+        if self.current_action not in ['stop']:
+            logging.info('action {} finished: {}'.format(self.current_action, actionresult))
         self.current_action = None
         self.current_action_args = None
-        # TODO: active stop?
+
+    def stop_moving(self, setpoints):
+        setpoints.velocity.x = 0
+        setpoints.velocity.y = 0
+        setpoints.velocity.rz = 0
+        self.current_action == None
 
     def handle_packet(self, packet : dict) -> None:
         logging.debug('controller_packet: ' + str(packet))
@@ -109,12 +119,14 @@ class RobotInterface():
         self.update_worldstate(self.mra_interface.input.worldState)
         setpoints = self.mra_interface.output.setpoints # get the correct protobuf type
         setpoints.Clear()
-        actionresult = None
         # handle packets which should not be handled by ActionPlanning (yet)
         if packet['action'] == 'dash' and 'velocity' in packet['args']:
             setpoints.velocity.x = packet['args']['velocity'][0]
             setpoints.velocity.y = packet['args']['velocity'][1]
             setpoints.velocity.rz = packet['args']['velocity'][2]
+            self.current_action = 'dash'
+        elif packet['action'] == 'none' and self.current_action == 'dash':
+            self.stop_moving(setpoints)
         elif packet['action'] == 'toggleBallHandlers':
             setpoints.bh.enabled = not self.getBallHandlersEnabled()
         # handle regular actions
@@ -123,8 +135,6 @@ class RobotInterface():
         # dispatch setpoints
         if setpoints:
             self.handle_setpoints(setpoints)
-        if actionresult in ['PASSED', 'FAILED'] and self.current_action:
-            self.on_action_end(actionresult)
 
     def handle_setpoints(self, setpoints):
         logging.debug('handle_setpoints: ' + str(setpoints))

@@ -371,6 +371,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
 
     FalconsActionPlanning::ActionInputs testActionInput;
     testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    // not specifying radius should lead to any ball
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -386,6 +387,74 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestGetBallFarNoRadius)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_ball()->mutable_position()->set_x(2.0);
+    testWorldState.mutable_ball()->mutable_position()->set_y(2.0);
+    testWorldState.mutable_robot()->mutable_position()->set_x(-10.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
+
+    FalconsActionPlanning::ActionInputs testActionInput;
+    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInput);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_bh()->set_enabled(true);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(2.0);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
+    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestGetBallRadiusClipping)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_ball()->mutable_position()->set_x(2.0);
+    testWorldState.mutable_ball()->mutable_position()->set_y(2.0);
+    testWorldState.mutable_robot()->mutable_position()->set_x(-10.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
+
+    FalconsActionPlanning::ActionInputs testActionInput;
+    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.mutable_getball()->set_radius(10.0);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInput);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_bh()->set_enabled(true);
+    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));

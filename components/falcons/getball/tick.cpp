@@ -12,7 +12,7 @@ using namespace MRA;
 
 // custom includes, if any
 #include <cmath>
-
+#include "geometry.hpp"
 
 // globals
 FalconsGetballFetch::StateType g_fetch_state;
@@ -33,6 +33,12 @@ int FalconsGetball::FalconsGetball::tick
     MRA_LOG_TICK();
 
     // user implementation goes here
+
+    Geometry::Position bpos = Geometry::Position(input.worldstate().ball().position()) - Geometry::Position(input.worldstate().robot().position());
+    if (input.radius() > 0.0 && bpos.size() > input.radius()) {
+        output.set_actionresult(Datatypes::ActionResult::FAILED);
+    }
+    else {
 
     float vx = input.worldstate().ball().velocity().x();
     float vy = input.worldstate().ball().velocity().y();
@@ -61,6 +67,8 @@ int FalconsGetball::FalconsGetball::tick
         {
             *output.mutable_target() = subcomponent_output.target();
         }
+    }
+
     }
 /*    else
     {

@@ -144,6 +144,7 @@ class Keyboard(JoystickCore):
             pynput.keyboard.Key.left: (lambda f: self.handle_axis('LS', 'x', f * -1.0)),
             pynput.keyboard.Key.right: (lambda f: self.handle_axis('LS', 'x', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('5'): (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
+            pynput.keyboard.KeyCode.from_vk(65437): (lambda f: self.handle_axis('LS', 'y', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('8'): (lambda f: self.handle_axis('LS', 'y', f * -1.0)),
             pynput.keyboard.KeyCode.from_char('4'): (lambda f: self.handle_axis('LS', 'x', f * -1.0)),
             pynput.keyboard.KeyCode.from_char('6'): (lambda f: self.handle_axis('LS', 'x', f * 1.0)),

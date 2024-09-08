@@ -19,6 +19,9 @@ import falconsrtdb
 import worldState # from Falcons WorldModel
 import EnvironmentField
 
+# constants
+ENABLE_ACTION_PLANNING = False # temporary disable action planning, to prevent strange situations or crashes when driving outside
+
 
 
 def extra_tracing():
@@ -136,7 +139,7 @@ class RobotInterface():
             setpoints.bh.enabled = not self.getBallHandlersEnabled()
             logging.info('{:s} ballhandlers'.format(['disable', 'enable'][setpoints.bh.enabled]))
         # handle regular actions
-        elif len(packet['action']) > 0:
+        elif len(packet['action']) > 0 and ENABLE_ACTION_PLANNING:
             setpoints, actionresult = self.poke_action(packet['action'], packet['args'])
         # dispatch setpoints
         if setpoints:

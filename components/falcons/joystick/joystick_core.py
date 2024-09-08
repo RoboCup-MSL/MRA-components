@@ -150,6 +150,8 @@ class Keyboard(JoystickCore):
             pynput.keyboard.KeyCode.from_char('6'): (lambda f: self.handle_axis('LS', 'x', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('7'): (lambda f: self.handle_axis('RS', 'x', f * -1.0)),
             pynput.keyboard.KeyCode.from_char('9'): (lambda f: self.handle_axis('RS', 'x', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('w'): (lambda f: self.handle_axis('RT', 'x', f * 1.0)),
+            pynput.keyboard.KeyCode.from_char('x'): (lambda f: self.handle_axis('LT', 'x', f * 1.0)),
             pynput.keyboard.KeyCode.from_char('h'): self.print_help_text,
             pynput.keyboard.KeyCode.from_char('q'): self.set_stop_flag,
         }
@@ -191,7 +193,8 @@ class Keyboard(JoystickCore):
     * left-shift+s: shoot at the home location
     * right-shift+s: bump towards goal
 * lob/kicker control:
-    * not mapped
+    * w: kick the ball (hold for a stronger kick)
+    * x: increase the kicker height setpoint
 * special actions:
     * e: activate keeper mode
     * shift+k: move the robot to configured home location

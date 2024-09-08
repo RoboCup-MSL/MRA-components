@@ -91,6 +91,7 @@ Notes:
         self.vx, self.vy, self.vrz = vx, vy, vrz
         # kicker control
         kicker_power = 0.0
+        kicker_height = 0.0
         if controller_state.axis_rt.x > 0:
             kicker_power = clip(controller_state.axis_rt.x * self.cfg.kicker_power_scale, self.cfg.kicker_power_max, self.cfg.kicker_power_min)
         if controller_state.axis_lt.x > 0:

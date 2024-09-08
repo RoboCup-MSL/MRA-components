@@ -124,11 +124,19 @@ class RobotInterface():
             setpoints.velocity.x = packet['args']['velocity'][0]
             setpoints.velocity.y = packet['args']['velocity'][1]
             setpoints.velocity.rz = packet['args']['velocity'][2]
+            if not self.current_action in [None, 'dash']:
+                logging.info('canceling action {}'.format(self.current_action))
             self.current_action = 'dash'
         elif packet['action'] == 'none' and self.current_action == 'dash':
             self.stop_moving(setpoints)
+        elif packet['action'] == 'kick':
+            setpoints.kick.power = packet['args']['power']
+            setpoints.kick.height = packet['args']['height']
+            logging.info('kick with power {:.1f} and height {:.1f}'.format(setpoints.kick.power, setpoints.kick.height))
+            self.current_action = None
         elif packet['action'] == 'toggleBallhandlers':
             setpoints.bh.enabled = not self.getBallHandlersEnabled()
+            logging.info('{:s} ballhandlers'.format(['disable', 'enable'][setpoints.bh.enabled]))
         # handle regular actions
         elif len(packet['action']) > 0:
             setpoints, actionresult = self.poke_action(packet['action'], packet['args'])
@@ -164,15 +172,21 @@ class RobotInterface():
         if setpoints.HasField('shoot'):
             shoot = setpoints.shoot
             shootSetpoint = {
-                'position': {
-                    'x': shoot.pos_x,
-                    'y': shoot.pos_y,
-                    'z': shoot.pos_z
-                },
                 'shootPhase': shoot.phase,
-                'shootType': shoot.type
+                'shootType': shoot.type,
+                'position': [
+                    shoot.pos_x,
+                    shoot.pos_y,
+                    shoot.pos_z
+                ]
             }
             self.rtdbPut('SHOOT_SETPOINT', shootSetpoint)
+        if setpoints.HasField('kick'):
+            kick = setpoints.kick
+            kick_mode = 2 # 2 is SHOOT, 0 is HOME, 1 is SET_HEIGHT
+            # TODO: this is a bit of a hack, we should move to action_kick in MRA, also for height (RUNNING)
+            kickerSetpoint = [kick_mode, kick.height, kick.power]
+            self.rtdbPut('KICKER_SETPOINT', kickerSetpoint)
 
     def update_worldstate(self, world_state):
         try:

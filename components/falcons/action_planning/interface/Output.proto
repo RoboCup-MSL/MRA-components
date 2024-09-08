@@ -31,26 +31,11 @@ message ShootingSetpoint
     ShootingType type = 5;
 }
 
-message KickerPowerSetpoint
-{
-    float power = 1;
-}
-
-message KickerHeightSetpoint
-{
-    float height = 1;
-}
-
-message KickerDischargeSetpoint
-{
-    bool discharge = 1; // trigger
-}
-
 message KickerSetpoint
 {
-    KickerPowerSetpoint power = 1;
-    KickerHeightSetpoint height = 2;
-    KickerDischargeSetpoint discharge = 3; // trigger
+    float power = 1;
+    float height = 2;
+    bool discharge = 3; // trigger
 }
 
 enum KeeperFrameExtensionDirection

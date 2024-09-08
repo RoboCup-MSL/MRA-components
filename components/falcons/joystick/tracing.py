@@ -62,7 +62,5 @@ if True:
     # Now call the decorate_all function here so that the decorator is automatically applied
     auto_decorate()
     decorate_module(get_parent_module())
-    # Configure
-    extendedlogging.configure(tracing=True, thread_names=True)
 
 

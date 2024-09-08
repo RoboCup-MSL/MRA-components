@@ -18,9 +18,6 @@ import falconspy # modifies sys.path to enable next imports
 import falconsrtdb
 import worldState # from Falcons WorldModel
 import EnvironmentField
-# import falconsrtdb
-# from sharedTypes import sharedTypes
-# write RTDB setpoints, etc.
 
 
 
@@ -28,6 +25,7 @@ def extra_tracing():
     # slap some tracing decorators onto our code, automagically!
     # (based on autologging extensions in my repo https://github.com/janfeitsma/extendedlogging)
     import tracing
+    tracing.extendedlogging.configure(tracing=True, thread_names=True)
 
 
 class RobotInterface():

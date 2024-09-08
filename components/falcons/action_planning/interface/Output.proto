@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPlanning;
+
+import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
+import "datatypes/Pose.proto";
+
+// TODO: are these setpoints generic enough to be moved to shared Datatypes?
+
+message BallHandlersSetpoint
+{
+    bool enabled = 1; // engage to grab the ball
+}
+
+message MoveSetpoint
+{
+    MRA.Datatypes.PosVel target = 1; // use position.x, y and rz; velocity typically unused
+    bool stop = 2; // use either this or target
+    int32 motionType = 3; // optional
+    bool obstacleAvoidanceDisabled = 4; // optional, default enabled
+}
+
+enum ShootingPhase
+{
+    SHOOT_PHASE_INVALID = 0;
+    SHOOT_PHASE_PREPARE = 1; // moving the height actuator may take a while
+    SHOOT_PHASE_DISCHARGE = 2; // one moment actually, not really a phase
+    SHOOT_PHASE_COOLDOWN = 3; // give ball some time to leave before signaling success, perhaps evaluate shot result
+}
+
+enum ShootingType
+{
+    // this affects the shot solver in ShootPlanning
+    // TODO, should SP be merged into ActionPlanning? Advantage: get rid of this intermediate Shooting layer, instead only directly control kicker
+    SHOOT_TYPE_PASS = 0; // soft landing at teammate
+    SHOOT_TYPE_SHOOT = 1; // max power typically
+    SHOOT_TYPE_LOB = 2; // maximize height
+}
+
+message ShootingSetpoint
+{
+    float pos_x = 1; // FCS coordinates
+    float pos_y = 2;
+    float pos_z = 3;
+    ShootingPhase phase = 4;
+    ShootingType type = 5; // settings for the shot solver
+}
+
+message KickerSetpoint
+{
+    float power = 1;
+    float height = 2;
+    bool discharge = 3; // trigger
+}
+
+enum KeeperFrameExtensionDirection
+{
+    KEEPER_FRAME_EXTEND_NONE = 0;
+    KEEPER_FRAME_EXTEND_TOP = 1;
+    KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
+    KEEPER_FRAME_EXTEND_RIGHT = 3;
+}
+
+message KeeperExtensionSetpoint
+{
+    KeeperFrameExtensionDirection direction = 1;
+}
+
+message Setpoints
+{
+    // combinations may be used, but not all combinations make sense
+    // for instance: keeperFrame extension in combination with kick/shoot would be strange
+    // also: an error should be triggered when both ShootingSetpoint and KickerSetpoint are used at the same time -- Shooting controls Kicker
+    BallHandlersSetpoint bh = 1;
+    MoveSetpoint move = 2;
+    MRA.Datatypes.Pose velocity = 3;
+    ShootingSetpoint shoot = 4;
+    KickerSetpoint kick = 5;
+    KeeperExtensionSetpoint keeperExtension = 6;
+}
+
+message Output
+{
+    Setpoints setpoints = 1;
+    MRA.Datatypes.ActionResult actionresult = 2;
+}
+

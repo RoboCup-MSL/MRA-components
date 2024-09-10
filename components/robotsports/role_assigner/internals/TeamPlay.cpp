@@ -640,11 +640,8 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
             player.distToTarget = currentEndPos.distanceTo(fullStopPos);
 
             // calculate previous target position distance-threshold.
-            if ((teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_role) ||
-                (teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_SWEEPER && dr_role == dr_DEFENDER) ||
-                (teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_DEFENDER && dr_role == dr_SWEEPER)) {
-                Geometry::Point previousEndPos = Geometry::Point(teamplanner_data.team[idx].previous_result.end_position.x, teamplanner_data.team[idx].previous_result.end_position.y);
-                player.distToPreviousTarget = 5*max(previous_role_threshold - currentEndPos.distanceTo(previousEndPos), 0.0);
+            if (teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_role)            {
+                player.distToPreviousTarget =previous_role_threshold;
             }
             else {
                 player.distToPreviousTarget = 0.0;

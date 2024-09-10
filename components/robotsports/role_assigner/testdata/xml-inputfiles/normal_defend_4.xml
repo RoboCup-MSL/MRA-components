@@ -4,7 +4,6 @@
   <tns:Options svgOutputFileName="output_team/normal_defend_4.svg"
        distToapplyBallApproachVertices="12"
        priority_block_max_distance="2.0"
-       previous_role_bonus_end_pos_radius="1.5"
   />
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>

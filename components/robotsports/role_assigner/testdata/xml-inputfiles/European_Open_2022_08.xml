@@ -2,7 +2,6 @@
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>https://www.youtube.com/watch?v=hjckDx-BQqM&amp;t=1548s 25:48</tns:Description>
   <tns:Options svgOutputFileName="output_team/European_Open_2022_08.svg" 
-       previous_role_bonus_end_pos_radius="1.5"
        priority_block_max_distance="2.0"
        use_pass_to_position_for_attack_support="false"
   />  	

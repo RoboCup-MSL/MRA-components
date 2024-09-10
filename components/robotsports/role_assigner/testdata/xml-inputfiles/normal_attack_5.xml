@@ -48,7 +48,7 @@
    nrVerticesSecondCircle="8"
    preferredSetplayKicker="3"
    preferredSetplayReceiver="2"
-   previous_role_bonus_end_pos_radius="1.000"
+   previous_role_bonus_end_pos_radius="5.000"
    priority_block_max_distance="1.500"
    safetyFactor="1.000"
    secondCircleRadius="1.600"

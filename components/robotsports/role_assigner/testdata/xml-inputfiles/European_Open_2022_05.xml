@@ -3,7 +3,6 @@
   <tns:Description>https://www.youtube.com/watch?v=hjckDx-BQqM&amp;t=1221s</tns:Description>
   <tns:Options svgOutputFileName="output_team/European_Open_2022_05.svg"
     priority_block_max_distance="2"
-    previous_role_bonus_end_pos_radius="1.5"
     use_pass_to_position_for_attack_support="false"/>
   <tns:GameState>Normal</tns:GameState>
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>

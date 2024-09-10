@@ -8,7 +8,6 @@
 #include "components/falcons/action_stop/interface/Params.pb.h"
 #include "components/falcons/action_stop/interface/State.pb.h"
 #include "components/falcons/action_stop/interface/Output.pb.h"
-#include "components/falcons/action_stop/interface/Local.pb.h"
 
 
 #endif

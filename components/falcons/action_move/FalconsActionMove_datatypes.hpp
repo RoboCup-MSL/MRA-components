@@ -8,7 +8,6 @@
 #include "components/falcons/action_move/interface/Params.pb.h"
 #include "components/falcons/action_move/interface/State.pb.h"
 #include "components/falcons/action_move/interface/Output.pb.h"
-#include "components/falcons/action_move/interface/Local.pb.h"
 
 
 #endif

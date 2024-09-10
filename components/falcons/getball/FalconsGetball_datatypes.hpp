@@ -8,7 +8,6 @@
 #include "components/falcons/getball/interface/Params.pb.h"
 #include "components/falcons/getball/interface/State.pb.h"
 #include "components/falcons/getball/interface/Output.pb.h"
-#include "components/falcons/getball/interface/Local.pb.h"
 
 
 #endif

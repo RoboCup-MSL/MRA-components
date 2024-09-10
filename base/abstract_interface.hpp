@@ -7,7 +7,7 @@
 namespace MRA
 {
 
-template <typename T_InputType, typename T_ParamsType, typename T_StateType, typename T_OutputType, typename T_LocalType>
+template <typename T_InputType, typename T_ParamsType, typename T_StateType, typename T_OutputType, typename T_DiagnosticsType>
 class MRAInterface
 {
 public:
@@ -15,7 +15,7 @@ public:
     using ParamsType = T_ParamsType;
     using StateType = T_StateType;
     using OutputType = T_OutputType;
-    using LocalType = T_LocalType;
+    using DiagnosticsType = T_DiagnosticsType;
 
     MRAInterface() {};
     ~MRAInterface() {};
@@ -26,7 +26,7 @@ public:
 		ParamsType const           &params,      // configuration parameters, type generated from Params.proto
 		StateType                  &state,       // state data, type generated from State.proto
 		OutputType                 &output,      // output data, type generated from Output.proto
-		LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+		DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
     ) = 0;
 
 }; // template class MRAInterface

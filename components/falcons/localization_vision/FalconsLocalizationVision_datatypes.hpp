@@ -8,7 +8,7 @@
 #include "components/falcons/localization_vision/interface/Params.pb.h"
 #include "components/falcons/localization_vision/interface/State.pb.h"
 #include "components/falcons/localization_vision/interface/Output.pb.h"
-#include "components/falcons/localization_vision/interface/Local.pb.h"
+#include "components/falcons/localization_vision/interface/Diagnostics.pb.h"
 
 
 #endif

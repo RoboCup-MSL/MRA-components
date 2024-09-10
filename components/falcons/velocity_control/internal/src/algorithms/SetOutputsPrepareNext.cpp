@@ -21,7 +21,7 @@ void SetOutputsPrepareNext::execute(VelocityControlData &data)
     data.state.mutable_velocitysetpointfcs()->set_y(data.previousVelocitySetpointFcs.y);
     data.state.mutable_velocitysetpointfcs()->set_rz(data.previousVelocitySetpointFcs.rz);
 
-    data.diag.set_controlmode(data.controlMode);
-    data.diag.set_numalgorithmsexecuted(data.num_algorithms_executed);
+    data.diagnostics.set_controlmode(data.controlMode);
+    data.diagnostics.set_numalgorithmsexecuted(data.num_algorithms_executed);
 }
 

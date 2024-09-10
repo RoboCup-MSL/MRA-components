@@ -33,7 +33,7 @@ TEST(RobotsportsLocalBallPreprocessorTest, FourMeasurements)
     auto m = RobotsportsLocalBallPreprocessor::RobotsportsLocalBallPreprocessor();
     auto input = RobotsportsLocalBallPreprocessor::Input();
     auto output = RobotsportsLocalBallPreprocessor::Output();
-    auto local = RobotsportsLocalBallPreprocessor::LocalType();
+    auto diagnostics = RobotsportsLocalBallPreprocessor::DiagnosticsType();
     auto state = RobotsportsLocalBallPreprocessor::StateType();
     auto params = m.defaultParams();
 
@@ -79,7 +79,7 @@ TEST(RobotsportsLocalBallPreprocessorTest, FourMeasurements)
 
 
     // Act
-    int error_value = m.tick(timestamp, input, params, state, output, local);
+    int error_value = m.tick(timestamp, input, params, state, output, diagnostics);
 
     // Assert
     EXPECT_EQ(error_value, 0);

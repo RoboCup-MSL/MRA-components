@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package MRA.RobotsportsProveIsAlive;
 
-message Local
+message Diagnostics
 {
 
 }

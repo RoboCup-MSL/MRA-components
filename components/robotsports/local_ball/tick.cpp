@@ -17,7 +17,7 @@ int RobotsportsLocalBall::RobotsportsLocalBall::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
@@ -28,7 +28,7 @@ int RobotsportsLocalBall::RobotsportsLocalBall::tick
     auto preproccessor = RobotsportsLocalBallPreprocessor::RobotsportsLocalBallPreprocessor();
     auto preproccessor_input = RobotsportsLocalBallPreprocessor::Input();
     auto preproccessor_output = RobotsportsLocalBallPreprocessor::Output();
-    auto preproccessor_local = RobotsportsLocalBallPreprocessor::LocalType();
+    auto preproccessor_diagnostics = RobotsportsLocalBallPreprocessor::DiagnosticsType();
     auto preproccessor_state = RobotsportsLocalBallPreprocessor::StateType();
     auto preproccessor_params = preproccessor.defaultParams();
 
@@ -40,13 +40,13 @@ int RobotsportsLocalBall::RobotsportsLocalBall::tick
     for (auto idx = 0; idx < input.omnivision_balls().size(); idx++) {
         preproccessor_input.mutable_omnivision_balls()->Add()->CopyFrom(input.omnivision_balls(idx));
     }
-    error_value = preproccessor.tick(timestamp, preproccessor_input, preproccessor_params, preproccessor_state, preproccessor_output, preproccessor_local);
+    error_value = preproccessor.tick(timestamp, preproccessor_input, preproccessor_params, preproccessor_state, preproccessor_output, preproccessor_diagnostics);
 
     if (error_value == 0) {
         auto ball_tracker = RobotsportsLocalBallTracking::RobotsportsLocalBallTracking();
         auto ball_tracker_input = RobotsportsLocalBallTracking::Input();
         auto ball_tracker_output = RobotsportsLocalBallTracking::Output();
-        auto ball_tracker_local = RobotsportsLocalBallTracking::LocalType();
+        auto ball_tracker_diagnostics = RobotsportsLocalBallTracking::DiagnosticsType();
         auto ball_tracker_state = RobotsportsLocalBallTracking::StateType();
         auto ball_tracker_params = ball_tracker.defaultParams();
 
@@ -56,7 +56,7 @@ int RobotsportsLocalBall::RobotsportsLocalBall::tick
         }
         ball_tracker_state.set_is_initialized(state.is_initialized());
 
-        error_value = ball_tracker.tick(timestamp, ball_tracker_input, ball_tracker_params, ball_tracker_state, ball_tracker_output, ball_tracker_local);
+        error_value = ball_tracker.tick(timestamp, ball_tracker_input, ball_tracker_params, ball_tracker_state, ball_tracker_output, ball_tracker_diagnostics);
         state.set_is_initialized(ball_tracker_state.is_initialized());
         output.mutable_ball()->CopyFrom(ball_tracker_output.ball());
 

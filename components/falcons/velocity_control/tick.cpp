@@ -17,7 +17,7 @@ int FalconsVelocityControl::FalconsVelocityControl::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
@@ -37,7 +37,7 @@ int FalconsVelocityControl::FalconsVelocityControl::tick
         controller.iterate();
         output = controller.data.output;
         state = controller.data.state;
-        local = controller.data.diag;
+        diagnostics = controller.data.diagnostics;
     }
     catch (const std::exception& e)
     {

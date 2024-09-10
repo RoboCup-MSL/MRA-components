@@ -20,7 +20,7 @@ int RobotsportsProveIsAlive::RobotsportsProveIsAlive::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics   // local/diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;

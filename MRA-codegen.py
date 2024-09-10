@@ -103,7 +103,7 @@ class ComponentGenerator():
     def analyze(self) -> None:
         """Analyze component."""
         # interface parts, max 5
-        self.all_interface_parts = ['Input', 'Params', 'State', 'Output', 'Local']
+        self.all_interface_parts = ['Input', 'Params', 'State', 'Output', 'Diagnostics']
         self.interface_parts = [p for p in self.all_interface_parts if os.path.isfile(os.path.join(self.component_folder, 'interface', p + '.proto'))]
         self.check_component_name_valid()
         self.check_component_interface_valid()

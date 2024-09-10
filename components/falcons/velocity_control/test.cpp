@@ -151,7 +151,7 @@ TEST(FalconsVelocityControlTest, stop)
     auto input = FalconsVelocityControl::Input();
     auto output = FalconsVelocityControl::Output();
     auto state = FalconsVelocityControl::State();
-    auto local = FalconsVelocityControl::Local();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
     auto params = m.defaultParams();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     // STOP command is given by VEL_ONLY (0,0,0)
@@ -165,11 +165,11 @@ TEST(FalconsVelocityControlTest, stop)
     state.mutable_velocitysetpointfcs()->set_rz(1.0);
 
     // Act
-    int error_value = m.tick(input, params, state, output, local);
+    int error_value = m.tick(input, params, state, output, diagnostics);
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(local.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
     EXPECT_FLOAT_EQ(output.velocity().x(), 0.0);
     EXPECT_FLOAT_EQ(output.velocity().y(), 0.0);
     EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
@@ -185,7 +185,7 @@ TEST(FalconsVelocityControlTest, noHotRestart)
     auto input2 = FalconsVelocityControl::Input();
     auto output = FalconsVelocityControl::Output();
     auto state = FalconsVelocityControl::State();
-    auto local = FalconsVelocityControl::Local();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
     auto params = m.defaultParams();
     input1.mutable_worldstate()->mutable_robot()->set_active(true);
     input2.mutable_worldstate()->mutable_robot()->set_active(true);
@@ -204,8 +204,8 @@ TEST(FalconsVelocityControlTest, noHotRestart)
     state.mutable_velocitysetpointfcs()->set_rz(1.0);
 
     // Act
-    int error_value1 = m.tick(input1, params, state, output, local);
-    int error_value2 = m.tick(input2, params, state, output, local);
+    int error_value1 = m.tick(input1, params, state, output, diagnostics);
+    int error_value2 = m.tick(input2, params, state, output, diagnostics);
 
     // Assert
     EXPECT_EQ(error_value1, 0);

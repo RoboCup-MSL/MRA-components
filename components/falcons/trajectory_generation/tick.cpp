@@ -21,7 +21,7 @@ int FalconsTrajectoryGeneration::FalconsTrajectoryGeneration::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
@@ -42,7 +42,7 @@ int FalconsTrajectoryGeneration::FalconsTrajectoryGeneration::tick
     vcInput.set_motionprofile(input.motionprofile());
     auto vcState = MRA::FalconsVelocityControl::State();
     auto vcOutput = MRA::FalconsVelocityControl::Output();
-    auto vcLocal = MRA::FalconsVelocityControl::Local();
+    auto vcDiagnostics = MRA::FalconsVelocityControl::Diagnostics();
 
     // configure VelocityControl, overruling its default configuration
     //    auto vcParams = vcModel.defaultParams();
@@ -75,7 +75,7 @@ int FalconsTrajectoryGeneration::FalconsTrajectoryGeneration::tick
         sim_timestamp += google::protobuf::util::TimeUtil::NanosecondsToDuration(dt * 1e9);
 
         // call model tick
-        int error_value = vcModel.tick(sim_timestamp, vcInput, vcParams, vcState, vcOutput, vcLocal);
+        int error_value = vcModel.tick(sim_timestamp, vcInput, vcParams, vcState, vcOutput, vcDiagnostics);
 
         // use MRA geometry library for display and simulated worldstate update
         MRA::Geometry::Position pos_fcs(vcInput.worldstate().robot().position());

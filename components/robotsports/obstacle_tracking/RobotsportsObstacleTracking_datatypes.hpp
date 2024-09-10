@@ -8,7 +8,7 @@
 #include "components/robotsports/obstacle_tracking/interface/Params.pb.h"
 #include "components/robotsports/obstacle_tracking/interface/State.pb.h"
 #include "components/robotsports/obstacle_tracking/interface/Output.pb.h"
-#include "components/robotsports/obstacle_tracking/interface/Local.pb.h"
+#include "components/robotsports/obstacle_tracking/interface/Diagnostics.pb.h"
 
 
 #endif

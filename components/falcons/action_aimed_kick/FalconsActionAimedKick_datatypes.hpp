@@ -8,6 +8,7 @@
 #include "components/falcons/action_aimed_kick/interface/Params.pb.h"
 #include "components/falcons/action_aimed_kick/interface/State.pb.h"
 #include "components/falcons/action_aimed_kick/interface/Output.pb.h"
+#include "components/falcons/action_aimed_kick/interface/Diagnostics.pb.h"
 
 
 #endif

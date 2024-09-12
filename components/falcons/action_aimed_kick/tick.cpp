@@ -14,7 +14,7 @@ using namespace MRA;
 class ActionAimedKick
 {
 public:
-    ActionAimedKick(google::protobuf::Timestamp const &timestamp, FalconsActionAimedKick::InputType const &input, FalconsActionAimedKick::ParamsType const &params, FalconsActionAimedKick::StateType &state, FalconsActionAimedKick::OutputType &output, FalconsActionAimedKick::LocalType &local);
+    ActionAimedKick(google::protobuf::Timestamp const &timestamp, FalconsActionAimedKick::InputType const &input, FalconsActionAimedKick::ParamsType const &params, FalconsActionAimedKick::StateType &state, FalconsActionAimedKick::OutputType &output, FalconsActionAimedKick::DiagnosticsType &diagnostics);
     int run();
 
 private:
@@ -23,7 +23,7 @@ private:
     FalconsActionAimedKick::ParamsType const &_params;
     FalconsActionAimedKick::StateType &_state;
     FalconsActionAimedKick::OutputType &_output;
-    FalconsActionAimedKick::LocalType &_local;
+    FalconsActionAimedKick::DiagnosticsType &_diagnostics;
     MRA::Geometry::Position _robotPos;
     MRA::Geometry::Position _ballCurrentPos;
     MRA::Geometry::Position _ballTargetPos;
@@ -45,25 +45,25 @@ int FalconsActionAimedKick::FalconsActionAimedKick::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
     MRA_LOG_TICK();
     // user implementation goes here
-    auto a = ActionAimedKick(timestamp, input, params, state, output, local);
+    auto a = ActionAimedKick(timestamp, input, params, state, output, diagnostics);
     error_value = a.run();
     return error_value;
 }
 
-ActionAimedKick::ActionAimedKick(google::protobuf::Timestamp const &timestamp, FalconsActionAimedKick::InputType const &input, FalconsActionAimedKick::ParamsType const &params, FalconsActionAimedKick::StateType &state, FalconsActionAimedKick::OutputType &output, FalconsActionAimedKick::LocalType &local)
+ActionAimedKick::ActionAimedKick(google::protobuf::Timestamp const &timestamp, FalconsActionAimedKick::InputType const &input, FalconsActionAimedKick::ParamsType const &params, FalconsActionAimedKick::StateType &state, FalconsActionAimedKick::OutputType &output, FalconsActionAimedKick::DiagnosticsType &diagnostics)
 :
     _timestamp(timestamp),
     _input(input),
     _params(params),
     _state(state),
     _output(output),
-    _local(local)
+    _diagnostics(diagnostics)
 {}
 
 int ActionAimedKick::run()
@@ -137,7 +137,7 @@ void ActionAimedKick::phasePrepare()
         _output.mutable_motiontarget()->mutable_position()->set_rz(_ballTargetPos.rz);
         *_output.mutable_balltarget() = _input.target().position();
         _output.set_actionresult(MRA::Datatypes::RUNNING);
-        _local.set_remainingrotationangle(_remainingRotationAngle);
+        _diagnostics.set_remainingrotationangle(_remainingRotationAngle);
     }
     else
     {
@@ -189,7 +189,7 @@ void ActionAimedKick::phaseCooldown()
         float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
         if (ballTargetDistance < _params.balltargetproximity())
         {
-            _local.set_aimerror(calculateAimError());
+            _diagnostics.set_aimerror(calculateAimError());
             _output.set_actionresult(MRA::Datatypes::PASSED);
         }
     }

@@ -17,7 +17,7 @@ This is a nested component, controlled by `ActionPlanning`.
 
 See [Input.proto](interface/Input.proto) and [Output.proto](interface/Output.proto).
 
-No params / state / local.
+No params / state / diagnostics.
 
 # Design
 

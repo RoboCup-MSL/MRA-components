@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package MRA.FalconsActionAimedKick;
 
-message Local
+message Diagnostics
 {
     float remainingRotationAngle = 1;
     float aimError = 2; // radians, evaluation after shot, fill in when PASSED

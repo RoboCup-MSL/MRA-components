@@ -33,7 +33,7 @@ typedef MRA::FalconsActionAimedKick::Input InputType;
 typedef MRA::FalconsActionAimedKick::Params ParamsType;
 typedef MRA::FalconsActionAimedKick::State StateType;
 typedef MRA::FalconsActionAimedKick::Output OutputType;
-typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
+typedef MRA::FalconsActionAimedKick::Diagnostics DiagnosticsType;
 
 
 class FalconsActionAimedKick: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>

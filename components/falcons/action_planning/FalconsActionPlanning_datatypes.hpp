@@ -8,6 +8,7 @@
 #include "components/falcons/action_planning/interface/Params.pb.h"
 #include "components/falcons/action_planning/interface/State.pb.h"
 #include "components/falcons/action_planning/interface/Output.pb.h"
+#include "components/falcons/action_planning/interface/Diagnostics.pb.h"
 
 
 #endif

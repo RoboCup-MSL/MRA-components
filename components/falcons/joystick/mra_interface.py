@@ -75,5 +75,5 @@ class MRAInterface():
         # store results
         self.state = return_tuple[1]
         self.output = return_tuple[2]
-        self.local = return_tuple[3]
+        self.diagnostics = return_tuple[3]
         return return_code

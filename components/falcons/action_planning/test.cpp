@@ -483,7 +483,7 @@ TEST_F(TestActionPlanner, TickTestPassActionNoBall)
 
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_INVALID);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionPlanning::SHOOT_PHASE_INVALID);
     Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
 
     // check the outputs
@@ -523,7 +523,7 @@ TEST_F(TestActionPlanner, TickTestPassActionRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_shoot()->set_type(FalconsActionPlanning::SHOOT_TYPE_PASS);
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionPlanning::SHOOT_PHASE_PREPARE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
@@ -565,7 +565,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_shoot()->set_type(FalconsActionPlanning::SHOOT_TYPE_PASS);
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionPlanning::SHOOT_PHASE_PREPARE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
@@ -584,7 +584,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     // Setup expected outputs for the second tick
     expectedSetpoints.mutable_move()->Clear();
     expectedSetpoints.mutable_shoot()->Clear();
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionPlanning::SHOOT_PHASE_DISCHARGE);
 
     // Check the outputs after the second tick
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -594,7 +594,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     feedTick();
 
     // Check the outputs
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionPlanning::SHOOT_PHASE_COOLDOWN);
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 

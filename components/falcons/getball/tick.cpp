@@ -38,17 +38,19 @@ int FalconsGetball::FalconsGetball::tick
         // call component: FalconsGetballFetch
         FalconsGetballFetch::InputType subcomponent_input;
         FalconsGetballFetch::OutputType subcomponent_output;
-        //fbi.worldstate() = input.worldstate();
+        FalconsGetballFetch::StateType subcomponent_state;
+        FalconsGetballFetch::DiagnosticsType subcomponent_diagnostics;
+        *subcomponent_input.mutable_worldstate() = input.worldstate();
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
             timestamp,
             subcomponent_input,
             params.fetch(),
-            state,
+            subcomponent_state,
             subcomponent_output,
-            diagnostics
+            subcomponent_diagnostics
         );
-        //output.set_actionresult(subcomponent_output.actionresult());
-        //output.set_target(subcomponent_output.target());
+        output.set_actionresult(subcomponent_output.actionresult());
+        *output.mutable_target() = subcomponent_output.target();
     }
 /*    else
     {
@@ -59,7 +61,7 @@ int FalconsGetball::FalconsGetball::tick
             params.fetch,
             state,
             output,
-            local
+            diagnositcs
         );
     }
 */

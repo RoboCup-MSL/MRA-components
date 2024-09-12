@@ -31,9 +31,9 @@ namespace MRA::FalconsGetball
 
 typedef MRA::FalconsGetball::Input InputType;
 typedef MRA::FalconsGetball::Params ParamsType;
-typedef google::protobuf::Empty StateType; // no .proto -> unused
+typedef MRA::FalconsGetball::State StateType;
 typedef MRA::FalconsGetball::Output OutputType;
-typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
+typedef MRA::FalconsGetball::Diagnostics DiagnosticsType;
 
 
 class FalconsGetball: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>

@@ -53,14 +53,14 @@ int FalconsGetball::FalconsGetball::tick
         input.SerializeToString(&tmpdata);
         subcomponent_input.ParseFromString(tmpdata);
         FalconsGetballFetch::OutputType subcomponent_output;
-        FalconsGetballFetch::LocalType subcomponent_local;
+        FalconsGetballFetch::DiagnosticsType subcomponent_diagnostics;
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
             timestamp,
             subcomponent_input,
             params.fetch(),
             g_fetch_state,
             subcomponent_output,
-            diagnostics
+            subcomponent_diagnostics
         );
         output.set_actionresult(subcomponent_output.actionresult());
         if (subcomponent_output.has_target())
@@ -79,7 +79,7 @@ int FalconsGetball::FalconsGetball::tick
             params.fetch,
             state,
             output,
-            local
+            diagnostics
         );
     }
 */

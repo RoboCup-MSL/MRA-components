@@ -602,7 +602,6 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
     }
 
     vector <AssignToTargetData> assignToTargetData = vector<AssignToTargetData>();
-    double previous_role_threshold =  teamplanner_data.parameters.previous_role_bonus_end_pos_radius;
     MRA::Geometry::Point currentEndPos = target;  // intended target, can be slightly different than calculated (if path is blocked);
 
     const int BEST_PLAYER_UNASSIGNED = -1;
@@ -639,12 +638,15 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
             // calculate distance from robot's full stop position to target
             player.distToTarget = currentEndPos.distanceTo(fullStopPos);
 
+            player.distToPreviousTarget = 0.0;
             // calculate previous target position distance-threshold.
-            if (teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_role)            {
-                player.distToPreviousTarget =previous_role_threshold;
-            }
-            else {
-                player.distToPreviousTarget = 0.0;
+            if (teamplanner_data.team[idx].previous_result.previous_result_present == 1 && teamplanner_data.team[idx].previous_result.dynamic_role == dr_role)
+            {
+                Geometry::Point previousEndPos = Geometry::Point(teamplanner_data.team[idx].previous_result.end_position.x,
+                                                                 teamplanner_data.team[idx].previous_result.end_position.y);
+                if (currentEndPos.distanceTo(previousEndPos) < teamplanner_data.parameters.previous_role_end_pos_threshold) {
+                    player.distToPreviousTarget = teamplanner_data.parameters.previous_role_bonus_end_pos_radius;
+                }
             }
             player.totalCost = player.distToTarget - player.distToPreviousTarget;
         }

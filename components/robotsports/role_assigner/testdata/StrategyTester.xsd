@@ -123,7 +123,8 @@
         <attribute name="nrVerticesSecondCircle" type="integer" default="8"> <annotation> <documentation>Number of vertices on the second circle around the object. Set to 0 if none.</documentation> </annotation> </attribute>
         <attribute name="preferredSetplayKicker" type="integer" default="0"> <annotation> <documentation>preferred player for rol setplay kicker</documentation> </annotation> </attribute>
         <attribute name="preferredSetplayReceiver" type="integer" default="0"> <annotation> <documentation>preferred player for rol setplay receiver</documentation> </annotation> </attribute>
-        <attribute name="previous_role_bonus_end_pos_radius" type="double" default="5.0"> <annotation> <documentation>radius to apply previous position bonus value</documentation> </annotation> </attribute>
+        <attribute name="previous_role_end_pos_threshold" type="double" default="1.5"> <annotation> <documentation>Radius of current end-position compared to previous end-position to apply previous role bonus</documentation> </annotation> </attribute>
+        <attribute name="previous_role_bonus_end_pos_radius" type="double" default="5.0"> <annotation> <documentation>cost function bonus if previous role end position is close current role end position</documentation> </annotation> </attribute>
         <attribute name="priority_block_min_distance" type="double" default="0.5"> <annotation> <documentation>min distance for priority blocker to opponent</documentation> </annotation> </attribute>
         <attribute name="priority_block_max_distance" type="double" default="1.5"> <annotation> <documentation>max distance for priority blocker to opponent</documentation> </annotation> </attribute>
         <attribute name="safetyFactor" type="double" default="1.00"> <annotation> <documentation>Factor for obstacle cost.</documentation> </annotation> </attribute>

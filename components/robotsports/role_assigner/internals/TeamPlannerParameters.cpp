@@ -80,7 +80,8 @@ double TeamPlannerParameters::restart_receiver_ball_dist = 2.5;
 double TeamPlannerParameters::restart_shooter_ball_dist = 0.8;
 double TeamPlannerParameters::equality_cost_threshold = 1.5;
 bool TeamPlannerParameters::previous_role_bonus_must_be_applied = true;
-double TeamPlannerParameters::previous_role_bonus_end_pos_radius = 1.5;
+double TeamPlannerParameters::previous_role_end_pos_threshold = 1.5;
+double TeamPlannerParameters::previous_role_bonus_end_pos_radius = 5.0;
 bool TeamPlannerParameters::use_pass_to_position_for_attack_support = true;
 bool TeamPlannerParameters::man_to_man_defense_during_setplay_against = true;
 double  TeamPlannerParameters::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
@@ -212,6 +213,7 @@ std::string TeamPlannerParameters::toString() const  {
     buffer << "equality_cost_threshold = " <<  equality_cost_threshold << endl;
     buffer << "select_lowest_robot_nr_for_dynamic_role = " << select_lowest_robot_nr_for_dynamic_role << endl;
     buffer << "previous_role_bonus_must_be_applied = " << previous_role_bonus_must_be_applied << endl;
+    buffer << "previous_role_end_pos_threshold = " << previous_role_end_pos_threshold << endl;
     buffer << "previous_role_bonus_end_pos_radius = " << previous_role_bonus_end_pos_radius << endl;
     buffer << "use_pass_to_position_for_attack_support = " << use_pass_to_position_for_attack_support << endl;
     buffer << "no_sweeper_during_setplay= " << no_sweeper_during_setplay << endl;

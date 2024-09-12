@@ -184,7 +184,11 @@ public:
     static bool previous_role_bonus_must_be_applied;
 
     // Radius of current end-position compared to previous end-position to apply previous role bonus
+    static double previous_role_end_pos_threshold;
+
+    // cost function bonus if previous role end position is close current role end position
     static double previous_role_bonus_end_pos_radius;
+
 
     // Use pass to position for attack supporter as ball position
     static bool use_pass_to_position_for_attack_support;

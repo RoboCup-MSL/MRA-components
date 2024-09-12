@@ -300,6 +300,7 @@ void getPlannerOptions(TeamPlannerParameters & parameters, auto_ptr<robotsports:
     parameters.svgOutputFileName = c->Options().svgOutputFileName();
     parameters.saveGridDataToFile = c->Options().saveGridDataToFile();
     parameters.svgRobotPlanner = c->Options().svgRobotPlanner();
+    parameters.previous_role_end_pos_threshold  = c->Options().previous_role_end_pos_threshold();
     parameters.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
     parameters.priority_block_min_distance = c->Options().priority_block_min_distance();
     parameters.priority_block_max_distance = c->Options().priority_block_max_distance();

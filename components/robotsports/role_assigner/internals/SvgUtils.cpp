@@ -283,6 +283,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "   nrVerticesSecondCircle=\"%d\"\n", data.parameters.nrVerticesSecondCircle);
     fprintf(fp, "   preferredSetplayKicker=\"%d\"\n", data.parameters.preferredSetplayKicker);
     fprintf(fp, "   preferredSetplayReceiver=\"%d\"\n", data.parameters.preferredSetplayReceiver);
+    fprintf(fp, "   previous_role_end_pos_threshold=\"%4.3f\"\n", data.parameters.previous_role_end_pos_threshold);
     fprintf(fp, "   previous_role_bonus_end_pos_radius=\"%4.3f\"\n", data.parameters.previous_role_bonus_end_pos_radius);
     fprintf(fp, "   priority_block_min_distance=\"%4.3f\"\n", data.parameters.priority_block_min_distance);
     fprintf(fp, "   priority_block_max_distance=\"%4.3f\"\n", data.parameters.priority_block_max_distance);

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPlanning;
+import "datatypes/ActionType.proto";
+import "components/falcons/getball/interface/Diagnostics.proto";
+import "components/falcons/action_stop/interface/Diagnostics.proto";
+import "components/falcons/action_move/interface/Diagnostics.proto";
+import "components/falcons/action_aimed_kick/interface/Diagnostics.proto";
+import "components/falcons/action_park/interface/Diagnostics.proto";
+
+message ActionDiagnostics
+{
+    MRA.Datatypes.ActionType type = 1;
+    oneof diagnostics
+    {
+        MRA.FalconsActionStop.Diagnostics stop = 2;
+        MRA.FalconsActionMove.Diagnostics move = 3;
+        MRA.FalconsActionAimedKick.Diagnostics pass = 5;
+        MRA.FalconsActionAimedKick.Diagnostics shoot = 6;
+        MRA.FalconsGetball.Diagnostics getball = 8;
+        MRA.FalconsActionPark.Diagnostics park = 12;
+    }
+}
+
+message Diagnostics
+{
+    ActionDiagnostics action = 1;
+}
+

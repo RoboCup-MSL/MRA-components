@@ -33,7 +33,7 @@ typedef MRA::FalconsActionPlanning::Input InputType;
 typedef MRA::FalconsActionPlanning::Params ParamsType;
 typedef MRA::FalconsActionPlanning::State StateType;
 typedef MRA::FalconsActionPlanning::Output OutputType;
-typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
+typedef MRA::FalconsActionPlanning::Diagnostics DiagnosticsType;
 
 
 class FalconsActionPlanning: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>

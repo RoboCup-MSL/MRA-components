@@ -25,7 +25,7 @@ protected:
     FalconsActionPlanning::Params params;
     FalconsActionPlanning::State state;
     FalconsActionPlanning::Output output;
-    FalconsActionPlanning::Local local;
+    FalconsActionPlanning::Diagnostics diagnostics;
     int lastTickResult = 0;
 
     virtual void SetUp()
@@ -39,7 +39,7 @@ protected:
 
     void feedTick()
     {
-        lastTickResult = planner.tick(timestamp, input, params, state, output, local);
+        lastTickResult = planner.tick(timestamp, input, params, state, output, diagnostics);
         advanceTime(0.10); // Advance time by 0.10 seconds for each tick
     }
 
@@ -69,9 +69,9 @@ protected:
         return output.actionresult();
     }
 
-    FalconsActionPlanning::Local getDiagnostics()
+    FalconsActionPlanning::Diagnostics getDiagnostics()
     {
-        return local;
+        return diagnostics;
     }
 
     void advanceTime(double seconds)
@@ -616,7 +616,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     feedTick();
 
     // Check the outputs
-    FalconsActionPlanning::Local expectedDiagnostics;
+    FalconsActionPlanning::Diagnostics expectedDiagnostics;
     expectedDiagnostics.mutable_action()->set_type(Datatypes::ACTION_PASS);
     expectedDiagnostics.mutable_action()->mutable_pass()->set_aimerror(0.0);
     expectedActionResult = Datatypes::PASSED;

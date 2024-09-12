@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package MRA.FalconsActionStop;
 
-message Local
+message Diagnostics
 {
 }

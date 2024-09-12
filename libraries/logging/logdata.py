@@ -35,7 +35,7 @@ FILE_ELEMENTS = (
     'params',
     'state_before',
     'output',
-    'local',
+    'diagnostics',
     'state_after',
     )
 EXPECTED_FILE_ELEMENT_COUNT = len(FILE_ELEMENTS)

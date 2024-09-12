@@ -8,6 +8,7 @@
 #include "components/falcons/action_park/interface/Params.pb.h"
 #include "components/falcons/action_park/interface/State.pb.h"
 #include "components/falcons/action_park/interface/Output.pb.h"
+#include "components/falcons/action_park/interface/Diagnostics.pb.h"
 
 
 #endif

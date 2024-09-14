@@ -1,11 +1,28 @@
 
 Documentation:
 ==============
+* **TODO** add documentation in subdirectory (start with updated copy from robotsports)
 
+REMAINING WORK (TODO list) - to create first version:
+==================================================== 
 
-REMAINING WORK
-==============
-A lot of work must be done.
+* Use Protobuf on the interface
+* Clean up interfaces
+** remove unused data
+** document inputs and outputs properly
+** restructure: split role assignement and calculate rough path
+* Bazel support
+* remove TODOs
+* updated based on known issues in original code
+** filter objects to defined: only inside the playing field (including goal) or (max X from ball)
+** apply additional cost of edges outside the playing field (scaled with distance to outerlines of the playing field)
+** fix overshoot in graphs
+* Review
+
+Future development:
+===================
+
+* Output as MRA roles instead of robotsports specific roles (these are mixing behavior and role)
 
 
 TIP:

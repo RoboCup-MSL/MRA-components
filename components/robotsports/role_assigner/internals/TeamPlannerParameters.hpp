@@ -240,7 +240,6 @@ public:
     static int preferredSetplayKicker;
     static int preferredSetplayReceiver;
     static double setplay_margin_to_penalty_area_side;  // min distance for setplay receiver to side of penalty area
-    static bool no_sweeper_during_setplay; // skip sweeper and assign additional attack-supporter
     static bool interceptor_assign_use_ball_velocity; // use ball velocity to determine the interceptor
     static double interceptor_assign_min_velocity_for_calculate_interception_position; // minimum ball velocity needed to calculate interception position for interceptor role assignment
     static int dedicatedSweeper;
@@ -266,10 +265,6 @@ public:
     static double kickoff_against_fp3_y;
     static double kickoff_against_fp4_x;
     static double kickoff_against_fp4_y;
-
-    static team_formation_e attack_formation;
-    static team_formation_e defense_formation;
-
 
     TeamPlannerParameters();
     std::string toString() const;

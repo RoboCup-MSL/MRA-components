@@ -92,7 +92,6 @@ bool TeamPlannerParameters::select_lowest_robot_nr_for_dynamic_role = true;
 int TeamPlannerParameters::preferredSetplayKicker = 0;
 int TeamPlannerParameters::preferredSetplayReceiver = 0;
 double TeamPlannerParameters::setplay_margin_to_penalty_area_side = 0.75;
-bool TeamPlannerParameters::no_sweeper_during_setplay = true;
 bool TeamPlannerParameters::interceptor_assign_use_ball_velocity = true;
 double TeamPlannerParameters::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
 
@@ -119,11 +118,6 @@ double TeamPlannerParameters::kickoff_against_fp3_x = 3.5;
 double TeamPlannerParameters::kickoff_against_fp3_y = -0.4;
 double TeamPlannerParameters::kickoff_against_fp4_x = -3.5;
 double TeamPlannerParameters::kickoff_against_fp4_y = -0.4;
-
-team_formation_e TeamPlannerParameters::attack_formation = FORMATION_211;
-team_formation_e TeamPlannerParameters::defense_formation = FORMATION_112;
-
-
 
 TeamPlannerParameters::TeamPlannerParameters() {
 
@@ -216,7 +210,6 @@ std::string TeamPlannerParameters::toString() const  {
     buffer << "previous_role_end_pos_threshold = " << previous_role_end_pos_threshold << endl;
     buffer << "previous_role_bonus_end_pos_radius = " << previous_role_bonus_end_pos_radius << endl;
     buffer << "use_pass_to_position_for_attack_support = " << use_pass_to_position_for_attack_support << endl;
-    buffer << "no_sweeper_during_setplay= " << no_sweeper_during_setplay << endl;
     buffer << "interceptor_assign_use_ball_velocity = " << interceptor_assign_use_ball_velocity << endl;
     buffer << "interceptor_assign_min_velocity_for_calculate_interception_position = " << interceptor_assign_min_velocity_for_calculate_interception_position << endl;
     buffer << "man_to_man_defense_during_normal_play = " << man_to_man_defense_during_normal_play << endl;

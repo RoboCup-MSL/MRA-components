@@ -75,7 +75,6 @@ std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(
         exit(1);
     }
 
-
     std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> roles_to_assign = {};
     for (auto idx = 0; idx < robot_strategy_output.dynamic_roles_size(); idx++) {
         MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = robot_strategy_output.dynamic_roles(idx);
@@ -148,7 +147,7 @@ MRA::team_formation_e StringToFormation(const string& formation_string) {
     return formation;
 }
 
-void getPlannerOptions(TeamPlannerParameters & parameters, auto_ptr<robotsports::StrategyType>& c) {
+void getRoleAssignParameters(TeamPlannerParameters & parameters, auto_ptr<robotsports::StrategyType>& c) {
     parameters.calculateAllPaths = c->Options().calculateAllPaths();
     parameters.minimumEdgeLength = c->Options().minimumEdgeLength();
     parameters.maximumEdgeLength = c->Options().maximumEdgeLength();
@@ -198,7 +197,6 @@ void getPlannerOptions(TeamPlannerParameters & parameters, auto_ptr<robotsports:
     parameters.use_pass_to_position_for_attack_support = c->Options().use_pass_to_position_for_attack_support();
     parameters.man_to_man_defense_during_normal_play = c->Options().man_to_man_defense_during_normal_play();
     parameters.man_to_man_defense_during_setplay_against = c->Options().man_to_man_defense_during_setplay_against();
-    parameters.no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
     parameters.interceptor_assign_use_ball_velocity = c->Options().interceptor_assign_use_ball_velocity();
     parameters.interceptor_assign_min_velocity_for_calculate_interception_position =  c->Options().interceptor_assign_min_velocity_for_calculate_interception_position();
     parameters.dist_to_goal_to_mark_opponent_as_goalie = c->Options().dist_to_goal_to_mark_opponent_as_goalie();
@@ -219,10 +217,6 @@ void getPlannerOptions(TeamPlannerParameters & parameters, auto_ptr<robotsports:
     parameters.previous_role_bonus_end_pos_radius = c->Options().previous_role_bonus_end_pos_radius();
     parameters.priority_block_min_distance = c->Options().priority_block_min_distance();
     parameters.priority_block_max_distance = c->Options().priority_block_max_distance();
-
-    parameters.attack_formation =  StringToFormation(c->AttackFormation());
-    parameters.defense_formation = StringToFormation(c->DefenseFormation());
-
 }
 
 game_state_e gamestate_string_to_enum(std::string& gs) {
@@ -494,6 +488,11 @@ void xmlplanner(string input_filename) {
         cout << "reading file : " << filename << endl;
     }
 
+    bool robot_strategy_parameter_no_sweeper_during_setplay = true;
+    team_formation_e robot_strategy_parameter_attack_formation = FORMATION_013;
+    team_formation_e robot_strategy_parameter_defense_formation = FORMATION_013;
+
+
     TeamPlannerParameters parameters = {};
     std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>();
     std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>();
@@ -574,7 +573,12 @@ void xmlplanner(string input_filename) {
 
         gameState = gamestate_string_to_enum(c->GameState());
         fillFieldConfig(fieldConfig, c);
-        getPlannerOptions(parameters, c);
+        getRoleAssignParameters(parameters, c);
+        robot_strategy_parameter_no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
+        robot_strategy_parameter_attack_formation =  StringToFormation(c->AttackFormation());
+        robot_strategy_parameter_defense_formation = StringToFormation(c->DefenseFormation());
+
+
 
         string svgOutputFileName = parameters.svgOutputFileName;
         std::size_t found = svgOutputFileName.find_last_of("/");
@@ -707,11 +711,10 @@ void xmlplanner(string input_filename) {
     teamplannerData.ball.is_valid = ball_is_valid;
     teamplannerData.fieldConfig = fieldConfig;
 
-    // TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
     teamplannerData.input_formation = getListWithRoles(gameState, ball_status,
-                                                       teamplannerData.parameters.man_to_man_defense_during_setplay_against,
-                                                       teamplannerData.parameters.attack_formation,
-                                                       teamplannerData.parameters.defense_formation);
+                                                       robot_strategy_parameter_no_sweeper_during_setplay,
+                                                       robot_strategy_parameter_attack_formation,
+                                                       robot_strategy_parameter_defense_formation);
 
 
     TeamPlay teamplay = TeamPlay();

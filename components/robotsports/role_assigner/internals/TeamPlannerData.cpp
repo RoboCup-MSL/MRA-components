@@ -6,10 +6,11 @@
 
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerResult.hpp"
+
+#include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
-#include <cmath>
 
 using namespace std;
 using namespace MRA;

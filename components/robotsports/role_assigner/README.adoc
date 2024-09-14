@@ -17,6 +17,9 @@ REMAINING WORK (TODO list) - to create first version:
 ** filter objects to defined: only inside the playing field (including goal) or (max X from ball)
 ** apply additional cost of edges outside the playing field (scaled with distance to outerlines of the playing field)
 ** fix overshoot in graphs
+* Create generic types / library functions (candidates):
+** FieldConfig
+** MathUtils
 * Review
 
 Future development:

@@ -3,16 +3,17 @@
  *  @brief   Class for the dynamic robot planner
  *  @curator Jürge van Eijck
  */
-#include "Dynamics.hpp"
 #include "GlobalPathDynamicPlanner.hpp"
-#include <iostream>
-#include <sstream>
-#include <limits>
-
+#include "Dynamics.hpp"
 #include "Vertex.hpp"
 #include "GlobalPathPlanner.hpp"
 
 #include "logging.hpp"
+
+#include <iostream>
+#include <sstream>
+#include <limits>
+
 
 using namespace MRA;
 

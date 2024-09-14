@@ -4,10 +4,11 @@
  *  @curator Jürge van Eijck
  */
 
-#ifndef FIELD_CONFIG_H
-#define FIELD_CONFIG_H 1
-#include <string>
+#ifndef FIELD_CONFIG_HPP
+#define FIELD_CONFIG_HPP 1
 #include "geometry.hpp"
+
+#include <string>
 
 namespace MRA {
 
@@ -151,4 +152,4 @@ private:
 
 } //namespace
 
-#endif
+#endif /* FIELD_CONFIG_HPP */

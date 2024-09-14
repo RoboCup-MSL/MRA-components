@@ -3,10 +3,8 @@
  *  @brief   Class for the dynamic robot planner
  *  @curator Jürge van Eijck
  */
-#ifndef GlobalPathDynamicPlanner_H
-#define GlobalPathDynamicPlanner_H 1
-
-#include <vector>
+#ifndef GlobalPathDynamicPlanner_HPP
+#define GlobalPathDynamicPlanner_HPP 1
 
 #include "GlobalPathPlanner.hpp"
 #include "geometry.hpp"
@@ -14,6 +12,7 @@
 #include "TeamPlannerOpponent.hpp"
 #include "TeamPlannerRobot.hpp"
 
+#include <vector>
 
 namespace MRA {
 /**
@@ -49,4 +48,4 @@ private:
 };
 
 } // namespace
-#endif
+#endif /* GlobalPathDynamicPlanner_HPP */

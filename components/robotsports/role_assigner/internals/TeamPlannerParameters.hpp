@@ -3,12 +3,12 @@
  *  @brief    Options for generating the visibility graph and the path planner
  *  @curator Jürge van Eijck
  */
-#ifndef PLANNER_OPTIONS_H
-#define PLANNER_OPTIONS_H 1
-
-#include <string>
+#ifndef ROLE_ASSIGNER_PARAMETERS_HPP
+#define  ROLE_ASSIGNER_PARAMETERS_HPP 1
 
 #include "planner_types.hpp" // define of planner_options_t
+
+#include <string>
 
 namespace MRA {
 // Constructing a new object will set the default options.
@@ -274,4 +274,4 @@ std::string FormationAsString(team_formation_e formation);
 
 } // namespace
 
-#endif
+#endif //  ROLE_ASSIGNER_PARAMETERS_HPP

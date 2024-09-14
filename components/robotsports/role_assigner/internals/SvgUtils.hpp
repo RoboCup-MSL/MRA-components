@@ -3,16 +3,16 @@
  *  @brief   Utility class for plotting planner to svg file
  *  @curator Jürge van Eijck
  */
-#ifndef SVGUTILS_H
-#define SVGUTILS_H 1
+#ifndef SVGUTILS_HPP
+#define SVGUTILS_HPP 1
 
-#include <vector>
-#include "WmTypes.h"
-#include "FieldConfig.h"
 #include "GlobalPathPlanner.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerParameters.hpp"
+#include "FieldConfig.hpp"
+
 #include <string>
+#include <vector>
 
 namespace MRA {
 
@@ -41,4 +41,4 @@ private:
 
 } // namespace
 
-#endif
+#endif // SVGUTILS_HPP

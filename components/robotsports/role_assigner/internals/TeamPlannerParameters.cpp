@@ -8,7 +8,6 @@
 #include <ostream>
 #include <sstream>
 #include <iostream>
-#include "WmTypes.h"
 
 using namespace std;
 

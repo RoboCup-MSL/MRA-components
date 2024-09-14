@@ -4,9 +4,11 @@
  *  @curator Jürge van Eijck
  */
 #include "SvgUtils.hpp"
-#include "FieldConfig.h"
-#include "MathUtils.h"
+#include "FieldConfig.hpp"
+#include "MathUtils.hpp"
 #include "logging.hpp"
+
+#include <cmath>
 #include <iostream>
 #include <ostream>
 #include <sstream>
@@ -18,8 +20,8 @@
 #include <limits>
 #include <map>
 #include <vector>
-#include <cmath>
 #include <sys/stat.h>
+
 using namespace std;
 using namespace MRA;
 

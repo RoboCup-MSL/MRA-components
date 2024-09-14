@@ -5,14 +5,13 @@
  *      Author: jurge
  */
 
-#ifndef TEAMFORMATION_H
-#define TEAMFORMATION_H 1
+#ifndef TEAMFORMATION_HPP
+#define TEAMFORMATION_HPP 1
 
 #include "WmTypes.h"
-#include <vector>
-
 #include "planner_types.hpp"
 #include "TeamPlannerParameters.hpp"
+#include <vector>
 
 namespace MRA {
 
@@ -31,4 +30,4 @@ private:
 
 } // namespace
 
-#endif // TEAMFORMATION_H
+#endif // TEAMFORMATION_HPP

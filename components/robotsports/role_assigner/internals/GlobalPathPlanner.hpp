@@ -3,12 +3,10 @@
  *  @brief   class for robot planner
  *  @curator Jürge van Eijck
  */
-#ifndef GlobalPathPlanner_H
-#define GlobalPathPlanner_H 1
+#ifndef GlobalPathPlanner_HPP
+#define GlobalPathPlanner_HPP 1
 
-#include <vector>
-#include <list>
-#include "FieldConfig.h"
+#include "FieldConfig.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
@@ -16,6 +14,9 @@
 
 #include "Vertex.hpp"
 #include "planner_types.hpp"
+
+#include <vector>
+#include <list>
 
 /**
  * Represents an undirected graph with nodes the important point in the field.
@@ -116,4 +117,4 @@ private:
 };
 
 } // namespace
-#endif
+#endif // GlobalPathPlanner_HPP

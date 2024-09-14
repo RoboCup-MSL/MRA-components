@@ -4,7 +4,8 @@
  *  @curator Jürge van Eijck
  */
 
-#include "FieldConfig.h"
+#include "FieldConfig.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <ostream>

@@ -1,20 +1,19 @@
 /**
  *  @file
- *  @brief   Class for team planning 2017
+ *  @brief   Main Class for role assigner
  *  @curator Jürge van Eijck
  */
-#ifndef TEAMPLAY_H
-#define TEAMPLAY_H 1
+#ifndef TEAMPLAY_HPP
+#define TEAMPLAY_HPP 1
 
-#include <vector>
+#include "FieldConfig.hpp"
 #include "TeamPlannerParameters.hpp"
 #include "GlobalPathPlanner.hpp"
-#include "WmTypes.h"
-#include "FieldConfig.h"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerRobot.hpp"
 #include "TeamPlannerOpponent.hpp"
 
+#include <vector>
 
 namespace MRA {
 
@@ -85,4 +84,4 @@ private:
 };
 } // namespace
 
-#endif /* TEAM_PLANNER_H */
+#endif // TEAMPLAY_HPP

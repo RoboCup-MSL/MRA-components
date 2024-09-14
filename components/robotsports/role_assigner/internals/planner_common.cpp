@@ -1,10 +1,11 @@
 #include "planner_common.hpp"
 
-#include <vector>
-#include <iostream>
-#include <iomanip>
+#include "MathUtils.hpp"
+
 #include <cmath>
-#include "MathUtils.h"
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace MRA;

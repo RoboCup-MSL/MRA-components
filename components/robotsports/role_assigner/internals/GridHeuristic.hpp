@@ -5,13 +5,13 @@
  *      Author: jurge
  */
 
-#ifndef PLANNER_GRID_GRIDHEURISTIC_H
-#define PLANNER_GRID_GRIDHEURISTIC_H 1
+#ifndef PLANNER_GRID_GRIDHEURISTIC_HPP
+#define PLANNER_GRID_GRIDHEURISTIC_HPP 1
 
 #include "TeamPlay.hpp"
 #include "PlannerGridInfoData.hpp"
-#include "FieldConfig.h"
-#include "WmTypes.h"
+#include "FieldConfig.hpp"
+
 #include <string>
 
 namespace MRA {
@@ -443,4 +443,4 @@ private:
 } // namespace trs
 
 
-#endif /* PLANNER_GRID_GRIDHEURISTIC_H  */
+#endif // PLANNER_GRID_GRIDHEURISTIC_HPP

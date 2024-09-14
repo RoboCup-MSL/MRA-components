@@ -5,6 +5,14 @@
  *      Author: jurge
  */
 
+#include "TeamPlannerGrid.hpp"
+#include "FieldConfig.hpp"
+#include "PlannerGridInfoData.hpp"
+#include "GridHeuristic.hpp"
+#include "MathUtils.hpp"
+#include "logging.hpp"
+#include "TeamPlay.hpp"
+
 #include <limits>
 #include <iostream>
 #include <fstream>
@@ -12,13 +20,6 @@
 #include <cmath>
 #include <list>
 #include <iomanip>
-#include "TeamPlannerGrid.hpp"
-#include "FieldConfig.h"
-#include "PlannerGridInfoData.hpp"
-#include "GridHeuristic.hpp"
-#include "MathUtils.h"
-#include "logging.hpp"
-#include "TeamPlay.hpp"
 
 using namespace std;
 

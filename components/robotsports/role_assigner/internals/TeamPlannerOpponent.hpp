@@ -3,8 +3,8 @@
  *  @brief   Class for team planning 2017
  *  @curator Jürge van Eijck
  */
-#ifndef TeamPlannerOpponent_H
-#define TeamPlannerOpponent_H 1
+#ifndef TeamPlannerOpponent_HPP
+#define TeamPlannerOpponent_HPP 1
 
 namespace MRA {
 
@@ -18,4 +18,4 @@ public:
 
 } // namespace
 
-#endif /* TeamPlannerOpponent_H */
+#endif // TeamPlannerOpponent_HPP

@@ -6,11 +6,12 @@
  */
 
 #include "GridHeuristic.hpp"
+#include "planner_common.hpp"
+#include "MathUtils.hpp"
+
 #include <cmath>
 #include <limits>
 #include <iostream>
-#include "planner_common.hpp"
-#include "MathUtils.h"
 using namespace MRA;
 
 double grid_eps = 1e-3; // 1 mm

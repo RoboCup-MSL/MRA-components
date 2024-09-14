@@ -6,7 +6,6 @@
 
 #include "TeamPlannerRobot.hpp"
 #include "TeamPlannerData.hpp"
-#include "WmTypes.h"
 
 #include <iomanip>
 #include <sstream>

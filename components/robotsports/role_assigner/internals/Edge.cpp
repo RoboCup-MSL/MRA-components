@@ -3,8 +3,9 @@
  *  @brief   Represents a vertex in the graph..
  *  @curator Jürge van Eijck
  */
-#include "Vertex.hpp"
 #include "Edge.hpp"
+#include "Vertex.hpp"
+
 namespace MRA {
 
 Edge::Edge(Vertex* pTarget, double dCost) :

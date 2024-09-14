@@ -5,12 +5,13 @@
  *      Author: jurge
  */
 
-#ifndef PLANNERGRIDINFODATA_H_
-#define PLANNERGRIDINFODATA_H_
+#ifndef PLANNERGRIDINFODATA_HPP
+#define PLANNERGRIDINFODATA_HPP
+
+#include "geometry.hpp"
 
 #include <vector>
 #include <string>
-#include "geometry.hpp"
 
 namespace MRA {
 
@@ -47,4 +48,4 @@ public:
 
 } /* namespace trs */
 
-#endif /* PLANNERGRIDINFODATA_H_ */
+#endif // PLANNERGRIDINFODATA_HPP

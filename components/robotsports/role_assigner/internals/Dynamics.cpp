@@ -4,11 +4,14 @@
  *  @curator Jürge van Eijck
  */
 #include "Dynamics.hpp"
-#include "MathUtils.h"
+
+#include "MathUtils.hpp"
+
+#include "geometry.hpp"
+
 #include <cmath>
 #include <limits>
 #include <iostream>
-#include "geometry.hpp"
 
 using namespace MRA;
 

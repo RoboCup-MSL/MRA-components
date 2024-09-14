@@ -3,6 +3,9 @@
  *  @brief   main file for testing the xml planner
  *  @curator Jürge van Eijck
  */
+#include "SvgUtils.hpp"
+#include "FieldConfig.hpp"
+
 #include <iostream>
 #include <signal.h>
 #include <fstream>
@@ -15,10 +18,6 @@
 #include <cstdio>
 #include <cmath>
 #include <boost/filesystem.hpp>
-#include "SvgUtils.hpp"
-#include "FieldConfig.h"
-//#include "SegmentationHandler.h"
-//#include "INIReader.h"
 
 using namespace std;
 using namespace boost::filesystem;

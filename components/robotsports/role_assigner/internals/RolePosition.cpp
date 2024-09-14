@@ -3,16 +3,20 @@
  *  @brief   Class for team planning
  *  @curator Jürge van Eijck
  */
-#include "TeamPlannerGrid.hpp"  // grid related teamplanner functions
 #include "RolePosition.hpp"
+
+#include "TeamPlannerGrid.hpp"  // grid related teamplanner functions
 #include "planner_types.hpp"
 #include "Dynamics.hpp"
-#include <cmath>
-#include <iostream>
-#include "MathUtils.h"
-#include <limits>
+#include "MathUtils.hpp"
+
 #include "logging.hpp"
 #include "geometry.hpp"
+
+#include <cmath>
+#include <iostream>
+#include <limits>
+
 
 using namespace std;
 using namespace MRA;

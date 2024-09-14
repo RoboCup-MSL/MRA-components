@@ -5,13 +5,12 @@
  */
 #include "TeamPlay.hpp"
 
-//#include "TeamFormation.h"
 #include "TeamPlannerExport.hpp"
 #include "RolePosition.hpp"
 #include "GlobalPathDynamicPlanner.hpp"
 #include "SvgUtils.hpp"
-#include "MathUtils.h"
-//#include "EnumUtils.h"
+#include "MathUtils.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <limits>

@@ -3,8 +3,8 @@
  *  @brief   Represents a vertex in the graph..
  *  @curator Jürge van Eijck
  */
-#ifndef EDGE_H
-#define EDGE_H 1
+#ifndef EDGE_HPP
+#define EDGE_HPP 1
 
 namespace MRA {
 
@@ -24,4 +24,4 @@ class Edge {
 };
 
 }
-#endif
+#endif /* EDGE_HPP */

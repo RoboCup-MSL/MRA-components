@@ -3,18 +3,17 @@
  *  @brief   Class for team planning 2017
  *  @curator Jürge van Eijck
  */
-#ifndef ROLE_POSITION_H
-#define ROLE_POSITION_H 1
+#ifndef ROLE_POSITION_HPP
+#define ROLE_POSITION_HPP 1
 
-#include "WmTypes.h"
-#include "FieldConfig.h"
-#include <vector>
+#include "FieldConfig.hpp"
 #include "GlobalPathPlanner.hpp"
 #include "planner_types.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerOpponent.hpp"
 #include "TeamPlannerParameters.hpp"
 
+#include <vector>
 
 namespace MRA {
 
@@ -63,4 +62,4 @@ private:
 
 } // namespace
 
-#endif /* TEAM_PLANNER_H */
+#endif // ROLE_POSITION_HPP

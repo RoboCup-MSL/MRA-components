@@ -3,9 +3,11 @@
  *  @brief   Generic mathematical functions
  *  @curator Jürge van Eijck
  */
+#include "MathUtils.hpp"
+
 #include <cmath>
-#include "MathUtils.h"
 #include <iostream>
+
 using namespace std;
 
 // -----------------------------------------------------------------------------

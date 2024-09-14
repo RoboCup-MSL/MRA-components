@@ -3,8 +3,8 @@
  *  @brief   Generic mathematical functions
  *  @curator Jürge van Eijck
  */
-#ifndef MATHUTILS_H
-#define MATHUTILS_H 1
+#ifndef MATHUTILS_HPP
+#define MATHUTILS_HPP 1
 
 #define SIGN(a) (((a)>0)-((a)<0))
 
@@ -65,4 +65,4 @@ void intersectPerpendicular(double& intX, double& intY, double p1x, double p1y, 
 double legRightTriangle(double hypotenusa, double otherLeg);
 
 
-#endif
+#endif // MATHUTILS_HPP

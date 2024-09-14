@@ -4,12 +4,13 @@
  *  Created on: Jan 3, 2016
  *      Author: jurge
  */
-#include <sstream>
-#include <iostream>
-#include <fstream>
 #include "PlannerGridInfoData.hpp"
 #include "logging.hpp"
 #include "geometry.hpp"
+
+#include <sstream>
+#include <iostream>
+#include <fstream>
 
 using namespace MRA;
 using namespace std;

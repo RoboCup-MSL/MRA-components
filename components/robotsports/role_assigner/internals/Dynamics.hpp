@@ -4,13 +4,13 @@
  *  @curator Jürge van Eijck
  */
 
-#ifndef DYNAMICS_H
-#define DYNAMICS_H 1
+#ifndef DYNAMICS_HPP
+#define DYNAMICS_HPP 1
 
 #include "geometry.hpp"
-#include <vector>
-
 #include "GlobalPathPlanner.hpp" // for planner_piece_t
+
+#include <vector>
 
 namespace MRA {
 
@@ -63,4 +63,4 @@ class Dynamics {
 };
 
 } // namespace
-#endif
+#endif /* DYNAMICS_HPP */

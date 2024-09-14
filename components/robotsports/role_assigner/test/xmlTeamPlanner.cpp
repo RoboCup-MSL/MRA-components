@@ -18,16 +18,13 @@
 #include <boost/filesystem.hpp>
 
 #include "xmlTeamPlanner.h"
-//#include "TeamPlannerThread.h"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 
 
 #include "StrategyTester_generated.h" // generated
-//#include "MovingObject.h"
-#include "FieldConfig.h"
+#include "FieldConfig.hpp"
 #include "SvgUtils.hpp"
 #include "GlobalPathPlanner.hpp" // for print path
-//#include "TeamPlannerRobot.hpp"
 #include "TeamPlay.hpp"
 #include "planner_types.hpp"
 #include "TeamPlannerResult.hpp"

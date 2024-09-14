@@ -3,11 +3,11 @@
  *  @brief   Class for team planning
  *  @curator Jürge van Eijck
  */
-#ifndef TEAM_PLANNER_RESULT_H
-#define TEAM_PLANNER_RESULT_H 1
+#ifndef TEAM_PLANNER_RESULT_HPP
+#define TEAM_PLANNER_RESULT_HPP 1
 
-#include "WmTypes.h"
-#include "FieldConfig.h"
+#include "FieldConfig.hpp"
+
 #include <vector>
 
 namespace MRA {
@@ -47,4 +47,4 @@ typedef std::vector<PlayerPlannerResult> team_planner_result_t;
 
 } // namespace
 
-#endif /* TEAM_PLANNER_RESULT_H */
+#endif // TEAM_PLANNER_RESULT_HPP

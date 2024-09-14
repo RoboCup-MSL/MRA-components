@@ -3,23 +3,24 @@
  *  @brief   class for robot planner
  *  @curator Jürge van Eijck
  */
-#include <vector>
+
+#include "FieldConfig.hpp"
+#include "MathUtils.hpp"
+#include "SvgUtils.hpp"
+#include "Vertex.hpp"
+#include "logging.hpp"
+
+#include <algorithm>
 #include <cmath>
-#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <limits>
 #include <list>
 #include <iostream>
 #include <ostream>
 #include <sstream>
-#include <cstdio>
-#include <cstdlib>
-#include <algorithm>
-#include <limits>
-
-#include "FieldConfig.h"
-#include "MathUtils.h"
-#include "SvgUtils.hpp"
-#include "Vertex.hpp"
-#include "logging.hpp"
+#include <string>
+#include <vector>
 
 using namespace std;
 

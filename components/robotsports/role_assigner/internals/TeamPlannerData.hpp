@@ -3,18 +3,17 @@
  *  @brief   Class for team planning
  *  @curator Jürge van Eijck
  */
-#ifndef TEAM_PLANNER_DATA_H
-#define TEAM_PLANNER_DATA_H 1
+#ifndef TEAM_PLANNER_DATA_HPP
+#define TEAM_PLANNER_DATA_HPP 1
 
-#include "WmTypes.h"
-#include "FieldConfig.h"
-#include <vector>
-
+#include "FieldConfig.hpp"
 #include "TeamPlannerOpponent.hpp"
 #include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 #include "TeamPlannerRobot.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
+
+#include <vector>
 
 namespace MRA {
 
@@ -134,4 +133,4 @@ public:
 
 } // namespace
 
-#endif /* TEAM_PLANNER_DATA_H */
+#endif // TEAM_PLANNER_DATA_HPP

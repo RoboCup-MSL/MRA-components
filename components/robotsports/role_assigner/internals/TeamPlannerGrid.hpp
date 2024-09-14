@@ -5,11 +5,12 @@
  *      Author: jurge
  */
 
-#ifndef TEAMPLANNERGRID_H_
-#define TEAMPLANNERGRID_H_
+#ifndef TEAMPLANNERGRID_HPP
+#define TEAMPLANNERGRID_HPP
 
 #include "geometry.hpp"
 #include "TeamPlay.hpp"
+
 #include <string>
 
 namespace MRA {
@@ -61,4 +62,4 @@ private:
 
 } /* namespace trs */
 
-#endif /* TEAMPLANNERGRID_H_ */
+#endif // TEAMPLANNERGRID_HPP

@@ -1,3 +1,8 @@
+/**
+ *  @file
+ *  @brief   Dynamic Rle assignment
+ *  @curator Jürge van Eijck
+ */
 
 #include "DynamicRoleAssignment.hpp"
 

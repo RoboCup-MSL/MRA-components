@@ -12,9 +12,11 @@ add_library(MRA-components-robotsports-role-assigner
     internals/DynamicRoleAssignment.cpp
     internals/Dynamics.cpp
     internals/Edge.cpp
+    internals/FieldConfig.cpp
     internals/GlobalPathPlanner.cpp
     internals/GlobalPathDynamicPlanner.cpp
     internals/GridHeuristic.cpp
+    internals/MathUtils.cpp
     internals/planner_common.cpp
     internals/PlannerGridInfoData.cpp
     internals/RolePosition.cpp
@@ -26,8 +28,6 @@ add_library(MRA-components-robotsports-role-assigner
     internals/TeamPlay.cpp
     internals/Vertex.cpp
     internals/TeamPlannerGrid.cpp
-    temp/FieldConfig.cpp
-    temp/MathUtils.cpp
 )
 
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC

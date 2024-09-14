@@ -3,13 +3,13 @@
  *  @brief   Represents a vertex in the graph.
  *  @curator Jürge van Eijck
  */
-#ifndef VERTEX_H
-#define VERTEX_H 1
-
-#include <vector>
+#ifndef VERTEX_HPP
+#define VERTEX_HPP 1
 
 #include "Edge.hpp"
 #include "geometry.hpp"
+
+#include <vector>
 
 namespace MRA {
 
@@ -46,5 +46,5 @@ bool VertexCompareFunction (Vertex* t1, Vertex* t2);
 };
 
 
-#endif
+#endif // VERTEX_HPP
 

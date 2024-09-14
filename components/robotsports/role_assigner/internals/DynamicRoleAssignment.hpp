@@ -5,8 +5,8 @@
  *      Author: jurge
  */
 
-#ifndef DYNAMICROLEASSIGNMENT_H
-#define DYNAMICROLEASSIGNMENT_H 1
+#ifndef DYNAMICROLEASSIGNMENT_HPP
+#define DYNAMICROLEASSIGNMENT_HPP 1
 
 #include <vector>
 
@@ -20,4 +20,4 @@ public:
 
 
 
-#endif /* DYNAMICROLEASSIGNMENT_H */
+#endif /* DYNAMICROLEASSIGNMENT_HPP */

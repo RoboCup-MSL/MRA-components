@@ -35,4 +35,4 @@ public:
 };
 } // namespace
 
-#endif /* TEAM_PLANNER_ROBOT_H */
+#endif // TEAM_PLANNER_ROBOT_HPP

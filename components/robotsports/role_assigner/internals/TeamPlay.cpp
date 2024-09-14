@@ -18,7 +18,6 @@
 #include <cmath>
 #include <climits>
 #include <algorithm>
-#include "TeamFormation.h"  // temporary TODO
 
 using namespace std;
 using namespace MRA;
@@ -77,16 +76,6 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
         }
     }
     // <<< END sort team of teamplanner data by robotId
-
-
-    team_formation_e formationToUse = teamplannerData.parameters.attack_formation;
-    if ((teamplannerData.gamestate == NORMAL_DEFEND)
-            || (teamplannerData.gamestate == KICKOFF_AGAINST) || (teamplannerData.gamestate == FREEKICK_AGAINST) || (teamplannerData.gamestate == GOALKICK_AGAINST)
-            || (teamplannerData.gamestate == CORNER_AGAINST)  || (teamplannerData.gamestate == PENALTY_AGAINST)  || (teamplannerData.gamestate == PENALTY_SHOOTOUT_AGAINST)) {
-        formationToUse = teamplannerData.parameters.defense_formation;
-    }
-    auto original_teamFormation = TeamFormation::selectTeamFormation(formationToUse, teamplannerData.gamestate,
-            teamplannerData.ball_status, teamplannerData.parameters);
 
     teamplannerData.teamFormation = getListWithRoles(teamplannerData);
 

@@ -78,10 +78,10 @@ private:
     MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, dynamic_role_e dr_role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
 
     bool stayInPlayingField(game_state_e gamestate) const;
-    ;
+
     int m_gridFileNumber;
 
-
+    std::vector<dynamic_role_e> getListWithRoles(TeamPlannerData& teamplannerData);
 };
 } // namespace
 

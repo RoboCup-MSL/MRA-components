@@ -14,6 +14,7 @@
 #include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 #include "TeamPlannerRobot.hpp"
+#include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 
 namespace MRA {
 
@@ -97,6 +98,7 @@ class TeamPlannerData {
 public:
     TeamPlannerData() {};
     /* inputs */
+    std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
     game_state_e gamestate;
     TeamPlannerBall ball;
     std::vector<MRA::Geometry::Point> parking_positions;

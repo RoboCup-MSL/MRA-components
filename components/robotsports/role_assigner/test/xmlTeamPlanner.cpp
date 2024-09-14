@@ -52,12 +52,18 @@ public:
 #include <sstream>
 #include <vector>
 
-std::vector<dynamic_role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_status) {
+std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
+                                                                                bool no_sweeper_during_setplay,
+                                                                                team_formation_e attack_formation,
+                                                                                team_formation_e defense_formation ) {
 
     auto robot_strategy = RobotsportsRobotStrategy::RobotsportsRobotStrategy();
     auto robot_strategy_input = RobotsportsRobotStrategy::Input();
     auto robot_strategy_output = RobotsportsRobotStrategy::Output();
-    auto robot_strategy_params = robot_strategy.defaultParams();
+    auto robot_strategy_params = RobotsportsRobotStrategy::Params();
+    robot_strategy_params.set_no_sweeper_during_setplay(no_sweeper_during_setplay);
+    robot_strategy_params.set_attack_formation((RobotsportsRobotStrategy::Params_TeamFormation)attack_formation);
+    robot_strategy_params.set_defense_formation((RobotsportsRobotStrategy::Params_TeamFormation)defense_formation);
 
     MRA::RobotsportsRobotStrategy::Input_GameState gs = (MRA::RobotsportsRobotStrategy::Input_GameState) (gameState);
     robot_strategy_input.set_game_state(gs);
@@ -70,101 +76,10 @@ std::vector<dynamic_role_e> getListWithRoles(game_state_e gameState, ball_status
     }
 
 
-    std::vector<dynamic_role_e> roles_to_assign = {};
+    std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> roles_to_assign = {};
     for (auto idx = 0; idx < robot_strategy_output.dynamic_roles_size(); idx++) {
         MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = robot_strategy_output.dynamic_roles(idx);
-        dynamic_role_e dr = dr_NONE;
-
-        switch (odr) {
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_GOALKEEPER:
-                dr = dr_GOALKEEPER;
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_MAIN:
-                if (isOneOf(gameState, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
-                    dr = dr_SETPLAY_KICKER;
-                }
-                else if (gameState == PENALTY) {
-                    dr = dr_PENALTY_KICKER;
-                }
-                else if (gameState == PARKING) {
-                    dr = dr_PARKING;
-                }
-                else if (gameState == BEGIN_POSITION) {
-                    dr = dr_BEGIN_POSITION;
-                }
-                else if (isOneOf(gameState, { FREEKICK_AGAINST, GOALKICK_AGAINST,
-                                             CORNER_AGAINST, KICKOFF_AGAINST,
-                                             THROWIN_AGAINST, PENALTY_AGAINST,
-                                             DROPPED_BALL})) {
-                    dr = dr_INTERCEPTOR;
-                }
-                else if (isOneOf(ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
-                    dr = dr_BALLPLAYER;
-                }
-                else if (ball_status == OWNED_BY_TEAM) {
-                    dr = dr_ATTACKSUPPORTER;
-                }
-                else if (isOneOf(ball_status, {FREE, OWNED_BY_OPPONENT})) {
-                    dr = dr_INTERCEPTOR;
-                }
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_ASSIST:
-                if (gameState == PARKING) {
-                    dr = dr_PARKING;
-                }
-                else if (gameState == BEGIN_POSITION) {
-                    dr = dr_BEGIN_POSITION;
-                }
-                else if (isOneOf(gameState, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
-                    dr = dr_SETPLAY_RECEIVER;
-                }
-                else {
-                    dr = dr_ATTACKSUPPORTER;
-                }
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_GENERIC:
-                if (gameState == PARKING) {
-                    dr = dr_PARKING;
-                }
-                else if (gameState == BEGIN_POSITION) {
-                    dr = dr_BEGIN_POSITION;
-                }
-                else {
-                    dr = dr_ATTACKSUPPORTER;
-                }
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_MAIN:
-                if (gameState == PARKING) {
-                    dr = dr_PARKING;
-                }
-                else if (gameState == BEGIN_POSITION) {
-                    dr = dr_BEGIN_POSITION;
-                }
-                else {
-                    dr = dr_SWEEPER;
-                }
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_GENERIC:
-                if (gameState == PARKING) {
-                    dr = dr_PARKING;
-                }
-                else if (gameState == BEGIN_POSITION) {
-                    dr = dr_BEGIN_POSITION;
-                }
-                else {
-                    dr = dr_DEFENDER;
-                }
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_OUT:
-                dr = dr_PARKING;
-                break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_IN:
-                dr = dr_BEGIN_POSITION;
-                break;
-            default:
-                break;
-        }
-        roles_to_assign.push_back(dr);
+        roles_to_assign.push_back(odr);
     }
 
     return roles_to_assign;
@@ -793,7 +708,10 @@ void xmlplanner(string input_filename) {
     teamplannerData.fieldConfig = fieldConfig;
 
     // TODO calculate formation from robot_strategy AND translate to dynamic roles (till is working properly)
-    teamplannerData.teamFormation = getListWithRoles(gameState, ball_status);
+    teamplannerData.input_formation = getListWithRoles(gameState, ball_status,
+                                                       teamplannerData.parameters.man_to_man_defense_during_setplay_against,
+                                                       teamplannerData.parameters.attack_formation,
+                                                       teamplannerData.parameters.defense_formation);
 
 
     TeamPlay teamplay = TeamPlay();

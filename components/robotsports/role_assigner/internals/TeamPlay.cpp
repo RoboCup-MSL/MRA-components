@@ -85,8 +85,10 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             || (teamplannerData.gamestate == CORNER_AGAINST)  || (teamplannerData.gamestate == PENALTY_AGAINST)  || (teamplannerData.gamestate == PENALTY_SHOOTOUT_AGAINST)) {
         formationToUse = teamplannerData.parameters.defense_formation;
     }
-    teamplannerData.teamFormation = TeamFormation::selectTeamFormation(formationToUse, teamplannerData.gamestate,
+    auto original_teamFormation = TeamFormation::selectTeamFormation(formationToUse, teamplannerData.gamestate,
             teamplannerData.ball_status, teamplannerData.parameters);
+
+    teamplannerData.teamFormation = getListWithRoles(teamplannerData);
 
     // printAssignInputs(teamplannerData);  // for debug purposes
     teamplannerData.original_opponents = teamplannerData.opponents;
@@ -1306,4 +1308,81 @@ bool TeamPlay::stayInPlayingField(game_state_e gamestate) const {
         PENALTY_SHOOTOUT_AGAINST,
         DROPPED_BALL,
     });
+}
+
+std::vector<dynamic_role_e> TeamPlay::getListWithRoles(TeamPlannerData& teamplannerData) {
+
+
+    std::vector<dynamic_role_e> roles_to_assign = {};
+    for (auto idx = 0u; idx < teamplannerData.input_formation.size(); idx++) {
+        MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = teamplannerData.input_formation[idx];
+        dynamic_role_e dr = dr_NONE;
+
+        switch (odr) {
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_GOALKEEPER:
+                dr = dr_GOALKEEPER;
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_MAIN:
+                if (isOneOf(teamplannerData.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
+                    dr = dr_SETPLAY_KICKER;
+                }
+                else if (isOneOf(teamplannerData.gamestate, {PENALTY, PENALTY_SHOOTOUT})) {
+                    dr = dr_PENALTY_KICKER;
+                }
+                else if (isOneOf(teamplannerData.ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
+                    dr = dr_BALLPLAYER;
+                }
+                else if (isOneOf(teamplannerData.gamestate, { FREEKICK_AGAINST, GOALKICK_AGAINST,
+                                             CORNER_AGAINST, KICKOFF_AGAINST,
+                                             THROWIN_AGAINST, PENALTY_AGAINST,
+                                             DROPPED_BALL})) {
+                    dr = dr_INTERCEPTOR;
+                }
+                else if (teamplannerData.ball_status == OWNED_BY_TEAM) {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                else if (isOneOf(teamplannerData.ball_status, {FREE, OWNED_BY_OPPONENT})) {
+                    dr = dr_INTERCEPTOR;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_ASSIST:
+                if (isOneOf(teamplannerData.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
+                    dr = dr_SETPLAY_RECEIVER;
+                }
+                else {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_GENERIC:
+                dr = dr_ATTACKSUPPORTER;
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_MAIN:
+                if (isOneOf(teamplannerData.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
+                    dr = dr_ATTACKSUPPORTER;
+                }
+                else {
+                    dr = dr_SWEEPER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_GENERIC:
+                if (isOneOf(teamplannerData.gamestate, { PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST})) {
+                    dr = dr_PENALTY_DEFENDER;
+                }
+                else {
+                    dr = dr_DEFENDER;
+                }
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_OUT:
+                dr = dr_PARKING;
+                break;
+            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_IN:
+                dr = dr_BEGIN_POSITION;
+                break;
+            default:
+                break;
+        }
+        roles_to_assign.push_back(dr);
+    }
+
+    return roles_to_assign;
 }

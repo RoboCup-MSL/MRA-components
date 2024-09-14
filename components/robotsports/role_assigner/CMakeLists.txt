@@ -32,6 +32,7 @@ add_library(MRA-components-robotsports-role-assigner
 )
 
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
+    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base

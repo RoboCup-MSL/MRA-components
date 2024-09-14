@@ -3,7 +3,6 @@
 
 // generated component header:
 #include "RobotsportsRobotStrategy.hpp"
-
 using namespace MRA;
 using namespace MRA::RobotsportsRobotStrategy;
 
@@ -351,14 +350,18 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
     }
     else {
         Params_TeamFormation team_formation = params.attack_formation();
+        std::cout << "set params.attack_formation()\n";
 
-        if ((input.game_state() == Input_GameState_NORMAL_DEFEND)
-               || (input.game_state() == Input_GameState_KICKOFF_AGAINST)
+        if ( (input.game_state() == Input_GameState_NORMAL and
+              (input.ball_status() == Input_BallStatus_FREE or input.ball_status() == Input_BallStatus_OWNED_BY_OPPONENT))
+            || (input.game_state() == Input_GameState_NORMAL_DEFEND)
+            || (input.game_state() == Input_GameState_KICKOFF_AGAINST)
             || (input.game_state() == Input_GameState_FREEKICK_AGAINST)
             || (input.game_state() == Input_GameState_GOALKICK_AGAINST)
             || (input.game_state() == Input_GameState_CORNER_AGAINST)
             || (input.game_state() == Input_GameState_PENALTY_AGAINST)
             || (input.game_state() == Input_GameState_PENALTY_SHOOTOUT_AGAINST)) {
+            std::cout << "SELECTION params.defense_formation()\n";
             team_formation = params.defense_formation();
         }
 

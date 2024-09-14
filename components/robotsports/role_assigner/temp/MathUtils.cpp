@@ -9,66 +9,6 @@
 using namespace std;
 
 // -----------------------------------------------------------------------------
-/* bring any angle to the range 0 .. pi */
-double from0topi(double a)
-{
-    a = fmod(a, M_PI);
-    if (a < 0) {
-        a += M_PI;
-    }
-    return(a);
-}
-
-// -----------------------------------------------------------------------------
-/* bring any angle to the range 0 .. 2 pi */
-double from0to2pi(double a)
-{
-    a = fmod(a, 2 * M_PI);
-    if (a < 0) {
-        a += 2*M_PI;
-    }
-    return(a);
-}
-
-// -----------------------------------------------------------------------------
-/* bring any angle to the range -pi .. pi */
-double from_pitopi(double a)
-{
-    a = fmod(a+M_PI, 2 * M_PI);
-    if (a < 0) {
-        a += 2*M_PI;
-    }
-    return(a - M_PI);
-}
-
-// -----------------------------------------------------------------------------
-// convert from radials to degrees
-double rad2deg(double rad)
-{
-      return (180.0 * rad / (M_PI));
-}
-
-// -----------------------------------------------------------------------------
-// convert from degrees to radial
-double deg2rad(double deg)
-{
-      return (M_PI * deg / 180.0);
-}
-
-// -----------------------------------------------------------------------------
-// get shortest angle between two angle [rad]
-double min_angle(double start_angle, double end_angle)
-{
-    double x1=cos(start_angle);
-    double y1=sin(start_angle);
-    double x2=cos(end_angle);
-    double y2=sin(end_angle);
-
-    double dot_product = x1*x2 + y1*y2;
-    return acos(dot_product);
-}
-
-// -----------------------------------------------------------------------------
 // intersection point for two lines L1 = [(x1,y1) (x2,y2)] L2 = [(x3,y3) (x4,y4)]. formula from wikipedia line-intersection
 bool getIntersectionOfTwoLines(double& px, double& py, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
     double divider = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4));
@@ -310,44 +250,6 @@ int FindCircleCircleIntersections(
         return 2; // two solutions
     }
 }
-
-// -----------------------------------------------------------------------------
-// Find the tangent points for this circle and external point.
-// Return true if we find the tangents, false if the point is
-// inside the circle.
-bool findTangentsOfPointWithCircle(double cx, double cy, double radius,
-    double px, double py, double& rT1x, double& rT1y, double& rT2x, double& rT2y)
-{
-    // Find the distance squared from the
-    // external point to the circle's center.
-    double dx = cx - px;
-    double dy = cy - py;
-    double D_squared = dx * dx + dy * dy;
-    if (D_squared < radius * radius)
-    {
-        rT1x = NAN;
-        rT1y = NAN;
-        rT2x = NAN;
-        rT2y = NAN;
-        return false;
-    }
-
-    // Find the distance from the external point
-    // to the tangent points.
-    double L = sqrt(D_squared - radius * radius);
-
-    // Find the points of intersection between
-    // the original circle and the circle with
-    // center external_point and radius distance
-    FindCircleCircleIntersections(
-        cx, cy, radius,
-        px, py, L,
-        rT1x, rT1y, rT2x, rT2y);
-
-    return true;
-}
-
-
 
 /**
  * Calculates the intersection point of line given by points P1 (p1x, p1y) and P2 (p2x, p2y), and the line perpendicular to (p1,p2) going

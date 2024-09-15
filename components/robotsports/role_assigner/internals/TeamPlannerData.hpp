@@ -33,6 +33,7 @@ inline std::string PlayerTypeAsString(player_type_e player_type) {
 
 class TeamPlannerBall {
 public:
+    ball_status_e status;
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
     double confidence;
@@ -85,7 +86,6 @@ public:
     std::vector<dynamic_role_e> teamFormation;
     MRA::FieldConfig fieldConfig;
     bool teamControlBall;
-    bool playerPassedBall;
 };
 
 
@@ -109,10 +109,8 @@ public:
     TeamPlannerParameters parameters;
 
     // based on inputs
-    ball_status_e ball_status;
     bool ballIsObstacle;
     bool searchForBall;
-    int playerWhoIsPassing;
     defend_info_t defend_info;
     previous_used_ball_by_planner_t previous_ball = {};
 
@@ -123,7 +121,7 @@ public:
     std::vector<TeamPlannerOpponent> original_opponents  = {};
     int nr_players_assigned = 0;
 
-    unsigned this_player_idx = 0; // idex of this robot: Team will be sorted on RobotId.
+    unsigned this_player_idx = 0; // index of this robot: Team will be sorted on RobotId.
     unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.
 
     int incrementAndGetRank();

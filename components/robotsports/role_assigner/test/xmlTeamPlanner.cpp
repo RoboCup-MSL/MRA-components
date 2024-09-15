@@ -467,7 +467,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.gamestate = gamestate;
     tdp.ball.position = ball_position;
     tdp.ball.velocity = ball_velocity;
-    tdp.ball_status = ball_status;
+    tdp.ball.status = ball_status;
     tdp.team = Team;
     tdp.opponents = Opponents;
     tdp.parameters = options;

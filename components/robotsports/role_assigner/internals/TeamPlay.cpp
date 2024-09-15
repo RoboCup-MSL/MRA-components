@@ -35,6 +35,57 @@ void TeamPlay::assign(const TeamPlannerInput& input,
             TeamPlannerOutput& r_output,
             const TeamPlannerParameters& parameters) {
     // convert to teamplannerData;
+#if 0
+    TeamPlannerData teamplannerData = {};
+    teamplannerData.parameters = parameters;
+    teamplannerData.input_formation = input.input_formation;
+    teamplannerData.gamestate = input.gamestate;
+    teamplannerData.ball = input.ball;
+    ball_status_e ball_status;
+    teamplannerData.parking_positions = input.parking_positions;
+    teamplannerData.ball_pickup_position;
+    teamplannerData.passIsRequired;
+    teamplannerData.pass_data;
+    teamplannerData.fieldConfig;
+    int playerWhoIsPassing;
+    defend_info_t defend_info;
+    previous_used_ball_by_planner_t previous_ball = {};
+
+    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
+    std::vector<TeamPlannerOpponent> opponents = {};
+    std::vector<TeamPlannerOpponent> original_opponents  = {};
+
+    //    std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
+//    game_state_e gamestate;
+//    TeamPlannerBall ball;
+//    std::vector<MRA::Geometry::Point> parking_positions;
+//    ball_pickup_position_t ball_pickup_position;
+//    bool passIsRequired;
+//    pass_data_t pass_data;
+//    std::vector<dynamic_role_e> teamFormation;
+//    MRA::FieldConfig fieldConfig;
+//    ball_status_e ball_status;
+//    TeamPlannerParameters parameters;
+//
+//    // based on inputs
+//    bool ballIsObstacle;
+//    bool searchForBall;
+//    int playerWhoIsPassing;
+//    defend_info_t defend_info;
+//    previous_used_ball_by_planner_t previous_ball = {};
+//
+//    // internal administration
+//    game_state_e original_gamestate;
+//    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
+//    std::vector<TeamPlannerOpponent> opponents = {};
+//    std::vector<TeamPlannerOpponent> original_opponents  = {};
+//    int nr_players_assigned = 0;
+//
+//    unsigned this_player_idx = 0; // idex of this robot: Team will be sorted on RobotId.
+//    unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.
+
+    std::vector<PlayerPlannerResult> assign_results = assign(teamplannerData);
+#endif
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -111,7 +162,6 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     for (unsigned r_idx = 0; r_idx < teamplannerData.team.size(); r_idx++) {
         if (teamplannerData.team[r_idx].passBall) {
             playerPassedBall = true;
-            teamplannerData.playerWhoIsPassing = teamplannerData.team[r_idx].robotId;
         }
     }
 
@@ -247,7 +297,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     }
 
     if (teamplannerData.gamestate == NORMAL_DEFEND and
-        (teamplannerData.ball_status == ball_status_e::FREE or teamplannerData.ball_status == ball_status_e::OWNED_BY_TEAMMATE)) {
+        (isOneOf(teamplannerData.ball.status, {FREE, OWNED_BY_TEAMMATE}))) {
         // replan interceptor with local ball only if interceptor is not performing a priority block
         int interceptorIdx = -1;
         for (unsigned idx = 0; idx < teamplannerData.team.size(); idx++) {
@@ -1317,7 +1367,7 @@ std::vector<dynamic_role_e> TeamPlay::getListWithRoles(TeamPlannerData& teamplan
                 else if (isOneOf(teamplannerData.gamestate, {PENALTY, PENALTY_SHOOTOUT})) {
                     dr = dr_PENALTY_KICKER;
                 }
-                else if (isOneOf(teamplannerData.ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
+                else if (isOneOf(teamplannerData.ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
                     dr = dr_BALLPLAYER;
                 }
                 else if (isOneOf(teamplannerData.gamestate, { FREEKICK_AGAINST, GOALKICK_AGAINST,
@@ -1326,10 +1376,10 @@ std::vector<dynamic_role_e> TeamPlay::getListWithRoles(TeamPlannerData& teamplan
                                              DROPPED_BALL})) {
                     dr = dr_INTERCEPTOR;
                 }
-                else if (teamplannerData.ball_status == OWNED_BY_TEAM) {
+                else if (teamplannerData.ball.status == OWNED_BY_TEAM) {
                     dr = dr_ATTACKSUPPORTER;
                 }
-                else if (isOneOf(teamplannerData.ball_status, {FREE, OWNED_BY_OPPONENT})) {
+                else if (isOneOf(teamplannerData.ball.status, {FREE, OWNED_BY_OPPONENT})) {
                     dr = dr_INTERCEPTOR;
                 }
                 break;

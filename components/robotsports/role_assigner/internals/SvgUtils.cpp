@@ -141,7 +141,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\toriginal_gamestate = %s (%d)\n", GameStateAsString(data.original_gamestate).c_str(), data.original_gamestate);
     string controlBallByPlayerRemark = "";
 
-    fprintf(fp, "\tball_status = \"%s\"\n", ballStatusAsString(data.ball_status).c_str());
+    fprintf(fp, "\tball_status = \"%s\"\n", ballStatusAsString(data.ball.status).c_str());
 
     fprintf(fp, "\tBall: position: %s velocity: %s\n", ball.position.toString().c_str(), ball.velocity.toString().c_str());
     fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.previous_ball_present).c_str());
@@ -396,7 +396,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         passRequiredString = "passing_required=\"true\"";
     }
 
-    string ball_statusString = "ball_status=\"" + ballStatusAsString(data.ball_status) + "\"";
+    string ball_statusString = "ball_status=\"" + ballStatusAsString(data.ball.status) + "\"";
     fprintf(fp, "  <tns:SituationInfo %s %s>\n", passRequiredString.c_str(), ball_statusString.c_str());
     string pass_data_valid_str = "valid=\"false\"";
     if (data.pass_data.valid)
@@ -441,7 +441,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
                             GameStateAsString(data.gamestate).c_str());
 
         line_offset += boxLineOffset;
-        std::string ball_status = ballStatusAsString(data.ball_status);
+        std::string ball_status = ballStatusAsString(data.ball.status);
         toLower(ball_status);
         fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                             "Ball status: %s</text>\n",

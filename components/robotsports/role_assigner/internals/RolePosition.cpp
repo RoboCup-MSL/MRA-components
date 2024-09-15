@@ -164,7 +164,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         }
         else {
             MRA::Geometry::Point intercept_position = r_teamplannerData.ball.position;
-            if ((r_teamplannerData.ball_status == ball_status_e::FREE or r_teamplannerData.ball_status == ball_status_e::OWNED_BY_TEAMMATE) and
+            if ((r_teamplannerData.ball.status == ball_status_e::FREE or r_teamplannerData.ball.status == ball_status_e::OWNED_BY_TEAMMATE) and
                 r_teamplannerData.parameters.interceptor_assign_use_ball_velocity and
                 r_teamplannerData.ball.velocity.size() > r_teamplannerData.parameters.interceptor_assign_min_velocity_for_calculate_interception_position) {
                 // ball is moving: calculate distance to interception position per robot.
@@ -875,7 +875,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
     MRA::Geometry::Point rolePosition = ballPos; // set default position to the ball position
 
     // CHECK if priority block must be performed:
-    if (r_teamplannerData.ball_status == ball_status_e::OWNED_BY_OPPONENT) {
+    if (r_teamplannerData.ball.status == ball_status_e::OWNED_BY_OPPONENT) {
         // determine the smallest distance from any opponent to the ball
         MRA::Geometry::Point opponent_with_ball_pos = ballPos;
         double smallestDistOpponentToBall = r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance ();

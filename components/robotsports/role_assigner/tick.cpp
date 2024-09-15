@@ -35,9 +35,6 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
             if (tp_input.team[r_idx].controlBall) {
                 playerControlBall = true;
             }
-            if (tp_input.team[r_idx].passBall) {
-                tp_input.playerPassedBall = true;
-            }
         }
         tp_input.teamControlBall = playerPassedBall || playerControlBall;
         if (tp_input.teamControlBall) {

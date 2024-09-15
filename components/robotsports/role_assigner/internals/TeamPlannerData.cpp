@@ -160,7 +160,5 @@ int TeamPlannerData::incrementAndGetRank() {
 }
 
 bool TeamPlannerData::teamControlsBall() const {
-    return     ball_status == ball_status_e::OWNED_BY_PLAYER
-            or ball_status == ball_status_e::OWNED_BY_TEAMMATE
-            or ball_status == OWNED_BY_TEAM;
+    return isOneOf(ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE, OWNED_BY_TEAM});
 }

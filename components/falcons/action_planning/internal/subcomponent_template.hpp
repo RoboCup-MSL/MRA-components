@@ -49,10 +49,62 @@ int handleAction(
     {
         throw std::runtime_error("invalid action name or incomplete protobuf diagnostics interface definition: " + actionName);
     }
-
     // setup subcomponent data, access the action field dynamically
-    typename SubcomponentType::InputType subcomponent_input = dynamic_cast<const typename SubcomponentType::InputType&>(inputRef->GetMessage(input.action(), inputField));
+    typename SubcomponentType::InputType subcomponent_input;
+
+    // copy fields from input to subcomponent_input
     subcomponent_input.mutable_worldstate()->CopyFrom(input.worldstate());
+
+    // use reflection to copy all action fields and check that they are of the correct type
+    // this is done to have the action_planning interface self-contained
+    // alternatively, most of below could be replaced with this, when the datatype is nested (protobuf imports)
+    //typename SubcomponentType::InputType subcomponent_input = dynamic_cast<const typename SubcomponentType::InputType&>(inputRef->GetMessage(input.action(), inputField));
+    const google::protobuf::Message& inputActionMessage = inputRef->GetMessage(input.action(), inputField);
+    const google::protobuf::Descriptor* subcomponentInputDesc = subcomponent_input.GetDescriptor();
+    const google::protobuf::Reflection* subcomponentInputRef = subcomponent_input.GetReflection();
+
+    for (int i = 0; i < inputActionMessage.GetDescriptor()->field_count(); ++i) {
+        const google::protobuf::FieldDescriptor* field = inputActionMessage.GetDescriptor()->field(i);
+        const google::protobuf::FieldDescriptor* subcomponentField = subcomponentInputDesc->FindFieldByName(actionName + "." + field->name());
+        if (subcomponentField) {
+            if (field->type() == subcomponentField->type()) {
+                switch (field->cpp_type()) {
+                    case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+                        subcomponentInputRef->MutableMessage(&subcomponent_input, subcomponentField)->CopyFrom(inputRef->GetMessage(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:
+                        subcomponentInputRef->SetBool(&subcomponent_input, subcomponentField, inputRef->GetBool(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
+                        subcomponentInputRef->SetInt32(&subcomponent_input, subcomponentField, inputRef->GetInt32(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
+                        subcomponentInputRef->SetInt64(&subcomponent_input, subcomponentField, inputRef->GetInt64(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
+                        subcomponentInputRef->SetUInt32(&subcomponent_input, subcomponentField, inputRef->GetUInt32(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
+                        subcomponentInputRef->SetUInt64(&subcomponent_input, subcomponentField, inputRef->GetUInt64(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+                        subcomponentInputRef->SetFloat(&subcomponent_input, subcomponentField, inputRef->GetFloat(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+                        subcomponentInputRef->SetDouble(&subcomponent_input, subcomponentField, inputRef->GetDouble(inputActionMessage, field));
+                        break;
+                    case google::protobuf::FieldDescriptor::CPPTYPE_STRING:
+                        subcomponentInputRef->SetString(&subcomponent_input, subcomponentField, inputRef->GetString(inputActionMessage, field));
+                        break;
+                    default:
+                        throw std::runtime_error("unsupported input field type: " + field->name());
+                }
+            } else {
+                MRA_LOG_DEBUG("field type mismatch for input field: %s", field->name().c_str());
+            }
+        }
+    }
+
     typename SubcomponentType::ParamsType subcomponent_params = dynamic_cast<const typename SubcomponentType::ParamsType&>(paramsRef->GetMessage(params.action(), paramsField));
     typename SubcomponentType::StateType subcomponent_state = dynamic_cast<const typename SubcomponentType::StateType&>(stateRef->GetMessage(state.action(), stateField));
     typename SubcomponentType::OutputType subcomponent_output;

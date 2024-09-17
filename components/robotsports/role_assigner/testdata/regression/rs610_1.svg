@@ -20,16 +20,16 @@ file: output_team/rs610_1.svg
 	pickup ball ts: 0.00
 
 	team:
-		R01 = x: 0.56 y: 0.51 z:-1.32 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.65 y: 0.54 z:0.26 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
+		R01 = x: 0.56 y: 0.51 z:0.00 rx:0.00 ry:0.00 rz:-1.33 vel: x: 0.65 y: 0.54 z:0.00 rx:0.00 ry:0.00 rz:0.26 label: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: DEFENDER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R02 = x: 0.76 y: -4.49 z:-0.22 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
+		R02 = x: 0.76 y: -4.49 z:0.00 rx:0.00 ry:0.00 rz:-0.22 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SWEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R03 = x: 1.97 y: 0.54 z:0.25 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.02 y: 0.15 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
+		R03 = x: 1.97 y: 0.54 z:0.00 rx:0.00 ry:0.00 rz:0.25 vel: x: -0.02 y: 0.15 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: true passBall: false role: BALLPLAYER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R04 = x: -2.98 y: 4.50 z:-2.22 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
+		R04 = x: -2.98 y: 4.50 z:0.00 rx:0.00 ry:0.00 rz:-2.22 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
@@ -277,10 +277,10 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
-  <tns:Team id="1" label="1" x="0.559" y="0.508" rz="0.000" velx="0.651" vely="0.542" velrz="0.000"    />
-  <tns:Team id="2" label="2" x="0.763" y="-4.491" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Team id="3" label="3" x="1.974" y="0.542" rz="0.000" velx="-0.021" vely="0.151" velrz="0.000"   controlBall="true"   />
-  <tns:Team id="4" label="4" x="-2.975" y="4.498" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="1" label="1" x="0.559" y="0.508" rz="-1.325" velx="0.651" vely="0.542" velrz="0.262"    />
+  <tns:Team id="2" label="2" x="0.763" y="-4.491" rz="-0.224" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="3" label="3" x="1.974" y="0.542" rz="0.247" velx="-0.021" vely="0.151" velrz="0.000"   controlBall="true"   />
+  <tns:Team id="4" label="4" x="-2.975" y="4.498" rz="-2.223" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Opponent id="1" label="1" x="1.613" y="2.152" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:Opponent id="2" label="2" x="1.002" y="6.003" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="1.690" y="1.730" ts="0.000" valid="true" />

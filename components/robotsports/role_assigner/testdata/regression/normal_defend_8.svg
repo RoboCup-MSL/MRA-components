@@ -20,13 +20,13 @@ file: output_team/normal_defend_8.svg
 	pickup ball ts: 76967.72
 
 	team:
-		R04 = x: -0.56 y: -1.38 z:-0.20 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.31 y: 0.58 z:-0.89 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
+		R04 = x: -0.56 y: -1.38 z:0.00 rx:0.00 ry:0.00 rz:-0.20 vel: x: -0.31 y: 0.58 z:0.00 rx:0.00 ry:0.00 rz:-0.89 label: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  true role: INTERCEPTOR end-pos x: 0.22 y: -0.15 target: Goto ball ts: 76967.60
-		R01 = x: 0.00 y: -8.45 z:-0.05 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.23 y: 0.01 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = GOALIE (2)
+		R01 = x: 0.00 y: -8.45 z:0.00 rx:0.00 ry:0.00 rz:-0.05 vel: x: -0.23 y: 0.01 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = GOALIE (2)
 			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R03 = x: 0.75 y: -4.98 z:0.21 rx:0.00 ry:0.00 rz:0.00 vel: x: -1.01 y: -1.37 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
+		R03 = x: 0.75 y: -4.98 z:0.00 rx:0.00 ry:0.00 rz:0.21 vel: x: -1.01 y: -1.37 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
@@ -269,9 +269,9 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
-  <tns:Team id="4" label="4" x="-0.560" y="-1.379" rz="0.000" velx="-0.314" vely="0.580" velrz="0.000"     previous_result_present="true"  previous_result_ts="76967.6" previous_result_x="0.215717" previous_result_y="-0.145265" previous_result_dynamic_role="INTERCEPTOR"/>
-  <tns:Team id="1" label="1" x="0.000" y="-8.448" rz="0.000" velx="-0.231" vely="0.011" velrz="0.000"  isGoalie="true"    />
-  <tns:Team id="3" label="3" x="0.751" y="-4.981" rz="0.000" velx="-1.014" vely="-1.370" velrz="0.000"    />
+  <tns:Team id="4" label="4" x="-0.560" y="-1.379" rz="-0.201" velx="-0.314" vely="0.580" velrz="-0.889"     previous_result_present="true"  previous_result_ts="76967.6" previous_result_x="0.215717" previous_result_y="-0.145265" previous_result_dynamic_role="INTERCEPTOR"/>
+  <tns:Team id="1" label="1" x="0.000" y="-8.448" rz="-0.047" velx="-0.231" vely="0.011" velrz="0.000"  isGoalie="true"    />
+  <tns:Team id="3" label="3" x="0.751" y="-4.981" rz="0.215" velx="-1.014" vely="-1.370" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="76967.723" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>

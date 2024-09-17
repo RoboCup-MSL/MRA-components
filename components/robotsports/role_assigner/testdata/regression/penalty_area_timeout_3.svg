@@ -84,7 +84,7 @@ Player 3 (id: 4) :
 	Target position : x: -3.50 y: -7.78
 	Planner target type  Defense support
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140735408897232 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140729014544144 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -2.82 y: -7.78 cost: 0.00 target: Defense support (2)
 Path[3]: x: -3.50 y: -7.78 cost: 2.20 target: Defense support (2)
 

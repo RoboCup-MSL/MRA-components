@@ -76,7 +76,7 @@ Player 2 (id: 3) :
 	Target position : x: 3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140720613417840 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140733125675472 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: 2.00 y: 1.00 cost: 0.00 target: goto target position (7)
 Path[2]: x: 2.50 y: 1.13 cost: 3.33 target: goto target position (7)
 Path[2]: x: 3.60 y: 2.00 cost: 8.21 target: goto target position (7)
@@ -88,7 +88,7 @@ Player 3 (id: 4) :
 	Target position : x: -3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140720613417840 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140733125675472 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -2.00 y: -3.00 cost: 0.00 target: goto target position (7)
 Path[3]: x: -4.25 y: -1.25 cost: 5.47 target: goto target position (7)
 Path[3]: x: -4.25 y: 0.75 cost: 8.63 target: goto target position (7)

@@ -49,7 +49,7 @@ Player 0 (id: 1) :
 	Target position : x: -6.38 y: -3.25
 	Planner target type  goto target position slow
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140737000156896 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725533464000 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[0]: x: 1.00 y: -3.00 cost: 0.00 target: goto target position slow (10)
 Path[0]: x: -0.87 y: -4.13 cost: 4.68 target: goto target position slow (10)
 Path[0]: x: -2.00 y: -4.60 cost: 6.90 target: goto target position slow (10)
@@ -62,7 +62,7 @@ Player 1 (id: 2) :
 	Target position : x: -6.38 y: -2.25
 	Planner target type  goto target position slow
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140737000156896 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725533464000 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[1]: x: -2.00 y: 4.00 cost: 0.00 target: goto target position slow (10)
 Path[1]: x: -3.13 y: 3.13 cost: 4.11 target: goto target position slow (10)
 Path[1]: x: -4.25 y: 0.75 cost: 9.53 target: goto target position slow (10)
@@ -74,7 +74,7 @@ Player 2 (id: 3) :
 	Target position : x: -6.38 y: -1.25
 	Planner target type  goto target position slow
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140737000156896 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725533464000 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: 2.00 y: 1.00 cost: 0.00 target: goto target position slow (10)
 Path[2]: x: 1.60 y: 0.00 cost: 4.68 target: goto target position slow (10)
 Path[2]: x: -0.00 y: -1.60 cost: 10.85 target: goto target position slow (10)
@@ -89,7 +89,7 @@ Player 3 (id: 4) :
 	Target position : x: -6.38 y: -0.25
 	Planner target type  goto target position slow
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140737000156896 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725533464000 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -2.00 y: -3.00 cost: 0.00 target: goto target position slow (10)
 Path[3]: x: -4.25 y: -1.25 cost: 6.03 target: goto target position slow (10)
 Path[3]: x: -5.72 y: -0.12 cost: 10.02 target: goto target position slow (10)

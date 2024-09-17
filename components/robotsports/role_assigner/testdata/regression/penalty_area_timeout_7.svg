@@ -73,7 +73,7 @@ Player 2 (id: 3) :
 	Target position : x: -3.50 y: -7.48
 	Planner target type  Defense support
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140729361511792 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725355214992 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: -2.82 y: -7.48 cost: 0.00 target: Defense support (2)
 Path[2]: x: -3.50 y: -7.48 cost: 2.17 target: Defense support (2)
 
@@ -83,7 +83,7 @@ Player 3 (id: 4) :
 	Target position : x: 0.82 y: -6.50
 	Planner target type  Defense support
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140729361511792 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140725355214992 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: 0.82 y: -7.48 cost: 0.00 target: Defense support (2)
 Path[3]: x: 0.65 y: -6.87 cost: 5.60 target: Defense support (2)
 Path[3]: x: 0.82 y: -6.50 cost: 9.85 target: Defense support (2)

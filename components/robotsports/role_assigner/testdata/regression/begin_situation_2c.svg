@@ -20,16 +20,16 @@ file: output_team/begin_situation_2c.svg
 	pickup ball ts: 80550.73
 
 	team:
-		R03 = x: 3.49 y: -4.83 z:0.34 rx:0.00 ry:0.00 rz:0.00 vel: x: -0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
+		R03 = x: 3.49 y: -4.83 z:0.00 rx:0.00 ry:0.00 rz:0.34 vel: x: -0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  true role: BEGIN_POSITION end-pos x: 3.54 y: -4.84 target: Goto ball ts: 80550.70
-		R04 = x: -0.72 y: -2.66 z:-0.44 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.99 y: -0.64 z:0.13 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
+		R04 = x: -0.72 y: -2.66 z:0.00 rx:0.00 ry:0.00 rz:-0.44 vel: x: 0.99 y: -0.64 z:0.00 rx:0.00 ry:0.00 rz:0.13 label: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  true role: BEGIN_POSITION end-pos x: -1.00 y: -3.39 target: Goto ball ts: 80550.60
-		R01 = x: 0.95 y: -3.36 z:-0.04 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
+		R01 = x: 0.95 y: -3.36 z:0.00 rx:0.00 ry:0.00 rz:-0.04 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  true role: BEGIN_POSITION end-pos x: 1.00 y: -3.39 target: Goto ball ts: 80550.70
-		R02 = x: -1.14 y: -3.39 z:-0.41 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
+		R02 = x: -1.14 y: -3.39 z:0.00 rx:0.00 ry:0.00 rz:-0.41 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  true role: BEGIN_POSITION end-pos x: -1.00 y: -3.39 target: Goto ball ts: 80550.70
 	opponents:
@@ -41,7 +41,7 @@ Player 0 (id: 3) :
 	Target position : x: 3.54 y: -4.84
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140734701269712 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140726730646688 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[0]: x: 3.49 y: -4.83 cost: 0.00 target: goto target position (7)
 Path[0]: x: 3.54 y: -4.84 cost: 1.05 target: goto target position (7)
 
@@ -51,7 +51,7 @@ Player 1 (id: 4) :
 	Target position : x: -3.54 y: -4.84
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140734701269712 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140726730646688 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[1]: x: -0.72 y: -2.66 cost: 0.00 target: goto target position (7)
 Path[1]: x: -0.18 y: -2.23 cost: 4.06 target: goto target position (7)
 Path[1]: x: -1.14 y: -1.79 cost: 6.72 target: goto target position (7)
@@ -64,7 +64,7 @@ Player 2 (id: 1) :
 	Target position : x: 1.00 y: -3.39
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140734701269712 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140726730646688 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: 0.95 y: -3.36 cost: 0.00 target: goto target position (7)
 Path[2]: x: 1.00 y: -3.39 cost: 1.10 target: goto target position (7)
 
@@ -74,7 +74,7 @@ Player 3 (id: 2) :
 	Target position : x: -1.00 y: -3.39
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140734701269712 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140726730646688 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -1.14 y: -3.39 cost: 0.00 target: goto target position (7)
 Path[3]: x: -1.00 y: -3.39 cost: 1.43 target: goto target position (7)
 
@@ -278,10 +278,10 @@ PARKING_DISTANCE_TO_LINE = -0.25
              parking_distance_to_line="-0.250" corner_circle_diameter="0.935" penalty_spot_to_backline="3.130" />
   <tns:GameState>Begin Position</tns:GameState>
   <tns:PreviousBall x="1.14" y="1.97"/>
-  <tns:Team id="3" label="3" x="3.492" y="-4.835" rz="0.000" velx="-0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="3.5365" previous_result_y="-4.83525" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="4" label="4" x="-0.720" y="-2.657" rz="0.000" velx="0.986" vely="-0.635" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="1" label="1" x="0.951" y="-3.358" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="2" label="2" x="-1.139" y="-3.386" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
+  <tns:Team id="3" label="3" x="3.492" y="-4.835" rz="0.344" velx="-0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="3.5365" previous_result_y="-4.83525" previous_result_dynamic_role="BEGIN_POSITION"/>
+  <tns:Team id="4" label="4" x="-0.720" y="-2.657" rz="-0.438" velx="0.986" vely="-0.635" velrz="0.129"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
+  <tns:Team id="1" label="1" x="0.951" y="-3.358" rz="-0.044" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
+  <tns:Team id="2" label="2" x="-1.139" y="-3.386" rz="-0.408" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="80550.734" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>

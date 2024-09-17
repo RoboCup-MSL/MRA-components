@@ -32,7 +32,7 @@ Player 0 (id: 1) :
 	Target position : x: -3.00 y: -4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140737292040384 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 140729717951744 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[0]: x: 0.00 y: 0.00 cost: 0.00 target: Goto ball (0)
 Path[0]: x: -0.25 y: 2.75 cost: 3.76 target: Goto ball (0)
 Path[0]: x: -0.25 y: 4.75 cost: 5.76 target: Goto ball (0)

@@ -342,8 +342,8 @@ void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, boo
         }
 
 
-        P.position = Geometry::Position(*team_iter->x(), *team_iter->y(), team_iter->rz());
-        P.velocity= Geometry::Position(team_iter->velx(), team_iter->vely(), team_iter->velrz());
+        P.position = Geometry::Position(*team_iter->x(), *team_iter->y(), 0.0, 0.0, 0.0, team_iter->rz());
+        P.velocity= Geometry::Position(team_iter->velx(), team_iter->vely(), 0.0, 0.0, 0.0, team_iter->velrz());
         
         // id of robot must be defined in xml-file
         if (not (*team_iter).id()) {
@@ -397,8 +397,8 @@ void fillOpponents(std::vector<TeamPlannerOpponent>& Opponents, auto_ptr<robotsp
             exit(1);
         }
         TeamPlannerOpponent opponent;
-        opponent.position = Geometry::Position(*opponent_iter->x(), *opponent_iter->y(), opponent_iter->rz());
-        opponent.velocity= Geometry::Position(opponent_iter->velx(), opponent_iter->vely(), opponent_iter->velrz());
+        opponent.position = Geometry::Position(*opponent_iter->x(), *opponent_iter->y(), 0.0, 0.0, 0.0, opponent_iter->rz());
+        opponent.velocity= Geometry::Position(opponent_iter->velx(), opponent_iter->vely(), 0.0, 0.0, 0.0, opponent_iter->velrz());
         opponent.label = playerId;
         Opponents.push_back(opponent);
     }

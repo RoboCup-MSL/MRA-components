@@ -170,10 +170,10 @@ double InTriangleHeuristic::getValue(double x, double y)
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in opponent penaltyArea
 InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-                                                               const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
+                                                               const TeamPlannerData& r_teamplanner_data) :
                         InSquareHeuristic(id, weight, pgid,
-                                -(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY(),
-                                +(plannerOptions.grid_opponent_goal_clearance_x*0.5), fieldConfig.getMaxFieldY() - plannerOptions.grid_opponent_goal_clearance_y)
+                                -(r_teamplanner_data.parameters.grid_opponent_goal_clearance_x*0.5), r_teamplanner_data.fieldConfig.getMaxFieldY(),
+                                +(r_teamplanner_data.parameters.grid_opponent_goal_clearance_x*0.5), r_teamplanner_data.fieldConfig.getMaxFieldY() - r_teamplanner_data.parameters.grid_opponent_goal_clearance_y)
 {
     // empty
 }
@@ -181,10 +181,10 @@ InOppenentPenaltyAreaHeuristic::InOppenentPenaltyAreaHeuristic(const char * id, 
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own penaltyArea
 InOwnPenaltyAreaHeuristic::InOwnPenaltyAreaHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
-        const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
+                                                     const TeamPlannerData& r_teamplanner_data) :
                                 InSquareHeuristic(id, weight, pgid,
-                                        -(plannerOptions.grid_opponent_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_opponent_goal_clearance_y,
-                                        +(plannerOptions.grid_opponent_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY())
+                                        -(r_teamplanner_data.parameters.grid_opponent_goal_clearance_x*0.5), (-r_teamplanner_data.fieldConfig.getMaxFieldY()) + r_teamplanner_data.parameters.grid_opponent_goal_clearance_y,
+                                        +(r_teamplanner_data.parameters.grid_opponent_goal_clearance_x*0.5),  -r_teamplanner_data.fieldConfig.getMaxFieldY())
 {
     // empty
 }
@@ -192,15 +192,15 @@ InOwnPenaltyAreaHeuristic::InOwnPenaltyAreaHeuristic(const char * id, double wei
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty when already assigned field player has end position in own penaltyArea
 AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic::AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic(const char * id, double weight,
-        PlannerGridInfoData& pgid,     const std::vector<TeamPlannerRobot>& Team, const FieldConfig& fieldConfig) :
+        PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplanner_data) :
                                                                         GridHeuristic(id, weight, pgid),
                                                                         m_alreadyPlayerAssignedToOwnPenaltyArea(false),
-                                                                        m_fieldConfig(fieldConfig) {
-    for (unsigned idx = 0; idx < Team.size(); idx++) {
-        if (Team[idx].assigned && Team[idx].player_type == player_type_e::FIELD_PLAYER) {
+                                                                        m_fieldConfig(r_teamplanner_data.fieldConfig) {
+    for (unsigned idx = 0; idx < r_teamplanner_data.team.size(); idx++) {
+        if (r_teamplanner_data.team_admin[idx].assigned && r_teamplanner_data.team[idx].player_type == player_type_e::FIELD_PLAYER) {
             // field player is assigned and has a path
-            double end_x = Team[idx].result.target.x;
-            double end_y = Team[idx].result.target.y;
+            double end_x = r_teamplanner_data.team_admin[idx].result.target.x;
+            double end_y = r_teamplanner_data.team_admin[idx].result.target.y;
             if (m_fieldConfig.isInOwnPenaltyArea(end_x, end_y) or m_fieldConfig.isInOwnGoalArea(end_x, end_y)) {
                 m_alreadyPlayerAssignedToOwnPenaltyArea = true;
                 break; // break out the loop
@@ -220,15 +220,15 @@ double AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic::getValue(double x, double
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty when already assigned field player has end position in opponent penaltyArea
 AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic::AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic(const char * id, double weight,
-        PlannerGridInfoData& pgid,     const std::vector<TeamPlannerRobot>& Team, const FieldConfig& fieldConfig) :
+        PlannerGridInfoData& pgid, const TeamPlannerData& r_teamplanner_data) :
                                                                         GridHeuristic(id, weight, pgid),
                                                                         m_alreadyPlayerAssignedToOpponentPenaltyArea(false),
-                                                                        m_fieldConfig(fieldConfig) {
-    for (unsigned idx = 0; idx < Team.size(); idx++) {
-        if (Team[idx].assigned  && Team[idx].player_type == player_type_e::FIELD_PLAYER) {
+                                                                        m_fieldConfig(r_teamplanner_data.fieldConfig) {
+    for (unsigned idx = 0; idx < r_teamplanner_data.team.size(); idx++) {
+        if (r_teamplanner_data.team_admin[idx].assigned  && r_teamplanner_data.team[idx].player_type == player_type_e::FIELD_PLAYER) {
             // field player is assigned and has a path
-            double end_x = Team[idx].result.target.x;
-            double end_y = Team[idx].result.target.y;
+            double end_x = r_teamplanner_data.team_admin[idx].result.target.x;
+            double end_y = r_teamplanner_data.team_admin[idx].result.target.y;
             if  (m_fieldConfig.isInOpponentPenaltyArea(end_x, end_y)) {
                 m_alreadyPlayerAssignedToOpponentPenaltyArea = true;
                 break; // break out the loop
@@ -248,10 +248,10 @@ double AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic::getValue(double x, d
 //-------------------------------------------------------------------------------------------------------
 // Calculate penalty for position in own goalArea
 InOwnGoalAreaHeuristic::InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const TeamPlannerParameters& plannerOptions, const FieldConfig& fieldConfig) :
+                                               const TeamPlannerData& r_teamplanner_data) :
                                                 InSquareHeuristic(id, weight, pgid,
-                                                        -(plannerOptions.grid_own_goal_clearance_x*0.5), (-fieldConfig.getMaxFieldY()) + plannerOptions.grid_own_goal_clearance_y,
-                                                        +(plannerOptions.grid_own_goal_clearance_x*0.5), -fieldConfig.getMaxFieldY()) {
+                                                        -(r_teamplanner_data.parameters.grid_own_goal_clearance_x*0.5), (-r_teamplanner_data.fieldConfig.getMaxFieldY()) + r_teamplanner_data.parameters.grid_own_goal_clearance_y,
+                                                        +(r_teamplanner_data.parameters.grid_own_goal_clearance_x*0.5), -r_teamplanner_data.fieldConfig.getMaxFieldY()) {
 
 }
 
@@ -310,10 +310,12 @@ double InfluenceCornerHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 CollideTeamMateHeuristic::CollideTeamMateHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const std::vector<TeamPlannerRobot>& Team, double radius) :
+                                                   const TeamPlannerData& r_teamplanner_data, double radius, bool assigned_attack_supporters) :
                                                                         GridHeuristic(id, weight, pgid),
-                                                                        m_Team(Team),
-                                                                        m_radius(radius) {
+                                                                        m_r_teamplanner_data(r_teamplanner_data),
+                                                                        m_radius(radius),
+                                                                        m_assigned_attack_supporters(assigned_attack_supporters)
+{
 
 }
 
@@ -321,10 +323,14 @@ double CollideTeamMateHeuristic::getValue(double x, double y) {
     // add influence: team mate also supporter (half ball influence?)
     // TODO: rewrite this function to not have ax_sqr and ball_c, but radius and penalty.
     double value = 0.0;
-    for (unsigned idx = 0; idx < m_Team.size(); idx++) {
-        if (m_Team[idx].assigned) {
+    for (unsigned idx = 0; idx < m_r_teamplanner_data.team_admin.size(); idx++) {
+        if (m_r_teamplanner_data.team_admin[idx].assigned) {
+            if (m_assigned_attack_supporters and  m_r_teamplanner_data.team_admin[idx].result.dynamic_role != dynamic_role_e::dr_ATTACKSUPPORTER)
+            {
+                // role is not attack supporter
+            }
             // player is assigned and has a path
-            if (m_Team[idx].result.target.distanceTo(Geometry::Position(x,y)) < m_radius) {
+            else if (m_r_teamplanner_data.team_admin[idx].result.target.distanceTo(Geometry::Position(x,y)) < m_radius) {
                 value = 1.0;
             }
         }
@@ -519,29 +525,25 @@ NotOnLineBetweenBallAndOpponentGoalHeuristic::NotOnLineBetweenBallAndOpponentGoa
 // ----------------------------------------------------------------------------------------
 InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
         const MRA::Geometry::Point& ball,
-        const std::vector<TeamPlannerRobot>& Team,
-        const std::vector<TeamPlannerOpponent>& Opponents,
-        double interceptionChanceStartDistance,
-        double interceptionChanceIncreasePerMeter,
-        double interceptionChancePenaltyFactor) :
+        const TeamPlannerData& r_teamplanner_data, bool skipOwnTeam) :
                                             GridHeuristic(id, weight, pgid),
                                             m_ball(ball),
-                                            m_Team(Team),
-                                            m_Opponents(std::vector<MRA::Geometry::Position>()),
-                                            m_interceptionChanceStartDistance(interceptionChanceStartDistance),
-                                            m_interceptionChanceIncreasePerMeter(interceptionChanceIncreasePerMeter),
-                                            m_interceptionChancePenaltyFactor(interceptionChancePenaltyFactor)
+                                            m_interceptionChanceStartDistance(r_teamplanner_data.parameters.interceptionChanceStartDistance),
+                                            m_interceptionChanceIncreasePerMeter(r_teamplanner_data.parameters.interceptionChanceIncreasePerMeter),
+                                            m_interceptionChancePenaltyFactor(r_teamplanner_data.parameters.interceptionChancePenaltyFactor)
 {
-    for (unsigned idx = 0; idx < Opponents.size(); idx++) {
-        m_Opponents.push_back(Opponents[idx].position);
+    for (unsigned idx = 0; idx < r_teamplanner_data.opponents.size(); idx++) {
+        m_Opponents.push_back(r_teamplanner_data.opponents[idx].position);
     }
     // avoid being intercepted by own team mate (attack supporter)
-    for (unsigned idx = 0; idx < Team.size(); idx++) {
-        if (Team[idx].assigned && Team[idx].result.dynamic_role == dr_ATTACKSUPPORTER) {
-            m_Opponents.push_back(Team[idx].position);
+    if (not skipOwnTeam) {
+        for (unsigned idx = 0; idx < r_teamplanner_data.team.size(); idx++) {
+            if (r_teamplanner_data.team_admin[idx].assigned and
+                r_teamplanner_data.team_admin[idx].result.dynamic_role == dr_ATTACKSUPPORTER) {
+                m_Opponents.push_back(r_teamplanner_data.team[idx].position);
+            }
         }
     }
-
 }
 
 double InterceptionThreatHeuristic::getValue(double x, double y) {
@@ -559,10 +561,11 @@ double InterceptionThreatHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 InfluenceCurrentPositionsHeuristic::InfluenceCurrentPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const std::vector<TeamPlannerRobot>& Team, double maxPossibleFieldDistance) :
+                                                                       const TeamPlannerData& r_teamplanner_data,
+                                                                       double dScaling):
                                                                         GridHeuristic(id, weight, pgid),
-                                                                        m_Team(Team),
-                                                                        m_dScaling(maxPossibleFieldDistance) {
+                                                                        m_r_teamplanner_data(r_teamplanner_data),
+                                                                        m_dScaling(dScaling) {
 
 }
 
@@ -570,10 +573,10 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
     // add influence of the current own positions of all players of our team. Penalty increases linearly with distance.
     double value = 1.0;
     // Add cones around all current positions
-    for (unsigned idx = 0; idx < m_Team.size(); idx++) {
-        if (!m_Team[idx].assigned ) {
+    for (unsigned idx = 0; idx < m_r_teamplanner_data.team_admin.size(); idx++) {
+        if (not m_r_teamplanner_data.team_admin[idx].assigned ) {
             // player is not yet assigned. If he's assigned, his position does not have an advantage anymore, so no cone for him.
-            double temp_value = m_Team[idx].position.distanceTo( Geometry::Position(x,y) ) / m_dScaling;
+            double temp_value = m_r_teamplanner_data.team[idx].position.distanceTo( Geometry::Position(x,y) ) / m_dScaling;
             value = ( value < temp_value ) ? value : temp_value;
         }
     }
@@ -582,9 +585,10 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 InfluencePreviousAssignedPositionsHeuristic::InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const std::vector<TeamPlannerRobot>& Team, double maxPossibleFieldDistance, dynamic_role_e dynamic_role) :
+                                                                                         const TeamPlannerData& r_teamplanner_data,
+                                                                double maxPossibleFieldDistance, dynamic_role_e dynamic_role) :
                                                                         GridHeuristic(id, weight, pgid),
-                                                                        m_Team(Team),
+                                                                        m_r_teamplanner_data(r_teamplanner_data),
                                                                         m_dScaling(maxPossibleFieldDistance),
                                                                         m_dynamic_role(dynamic_role){
 }
@@ -592,10 +596,11 @@ InfluencePreviousAssignedPositionsHeuristic::InfluencePreviousAssignedPositionsH
 double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y) {
     // add influence of the previous positions of any players of our team. Penalty increases linearly with distance.
     double value = 0.0;
-    for (unsigned idx = 0; idx < m_Team.size(); idx++) {
-        if (m_Team[idx].previous_result.previous_result_present) {
-            if (m_Team[idx].previous_result.dynamic_role == m_dynamic_role) {
-                Geometry::Position prevPos = Geometry::Position(m_Team[idx].previous_result.end_position.x, m_Team[idx].previous_result.end_position.y);
+    for (unsigned idx = 0; idx < m_r_teamplanner_data.team_admin.size(); idx++) {
+        if (m_r_teamplanner_data.team_admin[idx].previous_result.present) {
+            if (m_r_teamplanner_data.team_admin[idx].previous_result.dynamic_role == m_dynamic_role) {
+                Geometry::Position prevPos = Geometry::Position(m_r_teamplanner_data.team_admin[idx].previous_result.end_position.x,
+                                                                m_r_teamplanner_data.team_admin[idx].previous_result.end_position.y);
                 // check if previous assigned
                 value += prevPos.distanceTo( Geometry::Position(x,y) ) / m_dScaling;
             }
@@ -670,15 +675,15 @@ PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData&
         const std::vector<TeamPlannerOpponent>& Opponents,
         const FieldConfig& fieldConfig,
         const ball_pickup_position_t& ball_pickup_position,
-        const TeamPlannerParameters& plannerOptions) :
+        const TeamPlannerParameters& parameters) :
                                         GridHeuristic(id, weight, pgid),
                                         m_Team(Team),
                                         m_Opponents(std::vector<MRA::Geometry::Position>()),
                                         m_robotRadius(fieldConfig.getRobotRadius()),
                                         m_ball_pickup_position(ball_pickup_position),
-                                        m_interceptionChanceStartDistance(plannerOptions.interceptionChanceStartDistance),
-                                        m_interceptionChanceIncreasePerMeter(plannerOptions.interceptionChanceIncreasePerMeter),
-                                        m_interceptionChancePenaltyFactor(plannerOptions.interceptionChancePenaltyFactor),
+                                        m_interceptionChanceStartDistance(parameters.interceptionChanceStartDistance),
+                                        m_interceptionChanceIncreasePerMeter(parameters.interceptionChanceIncreasePerMeter),
+                                        m_interceptionChancePenaltyFactor(parameters.interceptionChancePenaltyFactor),
                                         m_numberOfFieldPlayers(0)
 {
     // calculate number of own fieldplayers

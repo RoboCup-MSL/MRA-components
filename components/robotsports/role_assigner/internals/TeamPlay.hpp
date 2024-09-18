@@ -53,11 +53,9 @@ private:
 
     planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-    std::vector<TeamPlannerRobot> getTeamMates(const std::vector<TeamPlannerRobot>& Team, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
+    std::vector<TeamPlannerRobot> getTeamMates(const TeamPlannerData& teamplanner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
     bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& result);
-
-    void printAssignOutputs(const std::vector<TeamPlannerRobot>& Team, const std::vector<PlayerPlannerResult>&  player_paths);
 
     void printAssignInputs(const TeamPlannerData& teamplanner_data);
 

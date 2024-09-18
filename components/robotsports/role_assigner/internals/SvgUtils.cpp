@@ -144,8 +144,8 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\tball_status = \"%s\"\n", ballStatusAsString(data.ball.status).c_str());
 
     fprintf(fp, "\tBall: position: %s velocity: %s\n", ball.position.toString().c_str(), ball.velocity.toString().c_str());
-    fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.previous_ball_present).c_str());
-    if (data.previous_ball.previous_ball_present) {
+    fprintf(fp, "\tprevious_ball = %s", boolToString(data.previous_ball.present).c_str());
+    if (data.previous_ball.present) {
         fprintf(fp, " x=%4.2f y=%4.2f", data.previous_ball.x, data.previous_ball.y);
     }
     fprintf(fp, "\n");
@@ -170,17 +170,18 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     fprintf(fp, "\tteam:\n");
     for (unsigned int idx = 0; idx < data.team.size(); idx++) {
         TeamPlannerRobot rbt = data.team[idx];
+        auto rbt_admin = data.team_admin[idx];
         fprintf(fp, "\t\tR%02ld = %s vel: %s label: %ld type = %s (%d)\n",
                 rbt.robotId, rbt.position.toString().c_str(), rbt.velocity.toString().c_str(),
                 rbt.labelId,
                 PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
                 rbt.player_type );
         fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
-                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(rbt.result.dynamic_role).c_str(),
+                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(rbt_admin.result.dynamic_role).c_str(),
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
-        auto prev_res = rbt.previous_result;
-        fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.previous_result_present).c_str());
-        if (prev_res.previous_result_present)
+        auto prev_res = rbt_admin.previous_result;
+        fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
+        if (prev_res.present)
         {
             fprintf(fp, " role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
                     DynamicRoleAsString(static_cast<dynamic_role_e>(prev_res.dynamic_role)).c_str(), prev_res.end_position.x, prev_res.end_position.y,
@@ -319,7 +320,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
                 ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
     }
-    if (data.previous_ball.previous_ball_present) {
+    if (data.previous_ball.present) {
         fprintf(fp, "  <tns:PreviousBall x=\"%4.2f\" y=\"%4.2f\"/>\n", data.previous_ball.x, data.previous_ball.y);
      }
     for (unsigned int idx = 0; idx < data.team.size(); idx++) {
@@ -348,9 +349,9 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         {
             passedBallString = "passedBall=\"true\"";
         }
-        if (data.team[idx].previous_result.previous_result_present)
+        if (data.team_admin[idx].previous_result.present)
         {
-            auto previous_result = data.team[idx].previous_result;
+            auto previous_result = data.team_admin[idx].previous_result;
             std::stringstream previous_result_Xtext;
             previous_result_Xtext << " previous_result_present=\"true\" "
                     <<" previous_result_ts=\""  << previous_result.ts << "\""

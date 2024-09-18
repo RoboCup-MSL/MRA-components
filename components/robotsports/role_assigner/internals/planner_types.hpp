@@ -49,14 +49,14 @@ typedef struct defend_info {
 
 
 typedef struct previous_planner_result  {
-    long previous_result_present;
-    double ts;
+    long present = false;
+    double ts = 0;
     planner_piece_t end_position;
     long dynamic_role;
 } final_planner_result_t;
 
 typedef struct previous_used_ball_by_planner  {
-    long previous_ball_present;
+    bool   present;
     double x;
     double y;
 } previous_used_ball_by_planner_t;

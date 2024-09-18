@@ -126,7 +126,7 @@ class InOppenentPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
     InOppenentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
+                                   const TeamPlannerData& r_teamplanner_data);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ class InOwnPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
     InOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
+                              const TeamPlannerData& r_teamplanner_data);
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ class AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic : public GridHeuristic {
 
 public:
     AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team, const FieldConfig& fieldConfig);
+                                                   const TeamPlannerData& r_teamplanner_data);
     virtual ~AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic() {};
     double getValue(double x, double y);
 private:
@@ -158,7 +158,7 @@ class AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic : public GridHeuristic
 
 public:
     AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team, const FieldConfig& fieldConfig);
+                                                        const TeamPlannerData& r_teamplanner_data);
     virtual ~AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic() {};
     double getValue(double x, double y);
 private:
@@ -172,7 +172,7 @@ class InOwnGoalAreaHeuristic : public InSquareHeuristic
 {
 public:
     InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const TeamPlannerParameters& parameters, const FieldConfig& fieldConfig);
+                           const TeamPlannerData& r_teamplanner_data);
 };
 
 
@@ -211,12 +211,13 @@ class CollideTeamMateHeuristic : public GridHeuristic
 {
 public:
     CollideTeamMateHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team, double radius);
+            const TeamPlannerData& r_teamplanner_data, double radius, bool assigned_attack_supporters = false);
     virtual ~CollideTeamMateHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const TeamPlannerData& m_r_teamplanner_data;
     const double m_radius;
+    bool m_assigned_attack_supporters;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -331,15 +332,11 @@ class InterceptionThreatHeuristic : public GridHeuristic
 public:
     InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
             const Geometry::Point& ball,
-            const std::vector<TeamPlannerRobot>& Team, const std::vector<TeamPlannerOpponent>& Opponents,
-            double interceptionChanceStartDistance,
-            double interceptionChanceIncreasePerMeter,
-            double interceptionChancePenaltyFactor);
+            const TeamPlannerData& r_teamplanner_data, bool skipOwnTeam = false);
     virtual ~InterceptionThreatHeuristic() {};
     double getValue(double x, double y);
 private:
     const Geometry::Point m_ball;
-    const std::vector<TeamPlannerRobot> m_Team;
     std::vector<Geometry::Position> m_Opponents;
     const double m_interceptionChanceStartDistance;
     const double m_interceptionChanceIncreasePerMeter;
@@ -351,11 +348,13 @@ class InfluenceCurrentPositionsHeuristic : public GridHeuristic
 {
 public:
     InfluenceCurrentPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team, double dScaling);
+                                       const TeamPlannerData& r_teamplanner_data,
+                                       double dScaling);
     virtual ~InfluenceCurrentPositionsHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const TeamPlannerData& m_r_teamplanner_data;
+
     const double m_dScaling;
 };
 
@@ -364,11 +363,11 @@ class InfluencePreviousAssignedPositionsHeuristic : public GridHeuristic
 {
 public:
     InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team, double dScaling, dynamic_role_e dynamic_role);
+                                                const TeamPlannerData& r_teamplanner_data, double dScaling, dynamic_role_e dynamic_role);
     virtual ~InfluencePreviousAssignedPositionsHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const TeamPlannerData& m_r_teamplanner_data;
     const double m_dScaling;
     dynamic_role_e m_dynamic_role;
 };

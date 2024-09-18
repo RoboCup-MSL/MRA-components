@@ -134,7 +134,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
 
     if (r_teamplannerData.gamestate == game_state_e::PENALTY_AGAINST) {
         // Not allow to be in own penalty area (RoboCup rules)
-        heuristics.push_back(new InOwnPenaltyAreaHeuristic("InOwnPenalyArea", 100000, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+        heuristics.push_back(new InOwnPenaltyAreaHeuristic("InOwnPenalyArea", 100000, pgid, r_teamplannerData));
 
         // prefer position close to the backline: Y halfway between goal area en penalty area
         auto desired_y = -r_teamplannerData.fieldConfig.getMaxFieldY() + r_teamplannerData.fieldConfig.getGoalAreaLength() + 0.5 * (r_teamplannerData.fieldConfig.getPenaltyAreaLength() - r_teamplannerData.fieldConfig.getGoalAreaLength());
@@ -142,7 +142,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
                 -r_teamplannerData.fieldConfig.getMaxFullFieldX(), desired_y, r_teamplannerData.fieldConfig.getMaxFullFieldX(), desired_y, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
         // Do not position close to already assigned team-mate position: avoid to be close to eachother
-        heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 2000.0, pgid, r_teamplannerData.team, 1.5));
+        heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 2000.0, pgid, r_teamplannerData, 1.5));
 
         // Prefer position close too the ball
         heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid,
@@ -151,7 +151,7 @@ void TeamPlanner_Grid::handle_penalty_heuristics(const TeamPlannerData& r_teampl
     }
     if (r_teamplannerData.gamestate == game_state_e::PENALTY) {
         // Not allow to be in opponent penalty area (RoboCup rules)
-        heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOpponentPenalyArea", 100000, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+        heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOpponentPenalyArea", 100000, pgid, r_teamplannerData));
     }
 }
 
@@ -199,22 +199,22 @@ Geometry::Position TeamPlanner_Grid::findManToManDefensivePosition(dynamic_role_
     heuristics.push_back(new DistanceToPointHeuristic("Opponent to defend", 200, pgid, Geometry::Position(preferred_x, preferred_y), 8.0, 8.0, false));
 
     // Do not position close to team-mate path position, avoid double defense if other opponents are available
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 1000, pgid, r_teamplannerData.team, 0.7));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 1000, pgid, r_teamplannerData, 0.7));
 
     // Do not plan in opponent penalty area
-    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData));
 
     // Do not plan in own goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData));
 
     // Do not plan in own penalty area if already somebody assigned
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData));
 
     // This still needed?
     heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_teamplannerData.fieldConfig, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 150.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 150.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role));
 
     /*
      * Additional defender position heuristics in set-play (various)
@@ -344,7 +344,7 @@ Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlannerData
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 200.0, pgid, r_teamplannerData.opponents, 0.7));
 
     // Do not position close to team-mate path position, avoid double defense if other opponents are available
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 50.0, pgid, r_teamplannerData.team, 2.5));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 50.0, pgid, r_teamplannerData, 2.5));
 
     // Defend on -4.5 M line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
     heuristics.push_back(new DesiredY("DesiredYDefender", 20.0, pgid, -r_teamplannerData.fieldConfig.getMaxFieldY()*0.5, r_teamplannerData.fieldConfig));
@@ -352,23 +352,23 @@ Geometry::Position TeamPlanner_Grid::findDefensivePosition(const TeamPlannerData
     // Stay away out of corners of the field, not the best defensive position
     heuristics.push_back(new InfluenceCornerHeuristic("InfluenceCorner", 10.0, pgid, r_teamplannerData.fieldConfig));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_DEFENDER));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_DEFENDER));
 
 
     // Do not plan in opponent penalty area
-    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData));
 
     // Do not plan in own goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData));
 
     // Do not plan in own penalty area if already somebody assigned
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData));
 
     // This still needed?
     heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_teamplannerData.fieldConfig, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
     /*
      * Additional defender position heuristics in set-play (various)
@@ -451,7 +451,7 @@ Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 200.0, pgid, r_teamplannerData.opponents, 1.0));
 
     // Do not position close to team-mate path position, avoid double defense if other opponents are available
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 200.0, pgid, r_teamplannerData.team, 1.0));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 200.0, pgid, r_teamplannerData, 1.0));
 
     // stay on  1 meter from center line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
     heuristics.push_back(new DesiredY("DesiredYDefender", 200.0, pgid, field_direction * 1.0, r_teamplannerData.fieldConfig));
@@ -459,9 +459,9 @@ Geometry::Position TeamPlanner_Grid::findDefensivePositionDuringPenaltyShootOut(
     heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 100.0, pgid, r_teamplannerData.fieldConfig, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_PENALTY_DEFENDER));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_PENALTY_DEFENDER));
 
     //stay out of 3 meter zone around center of the field
     heuristics.push_back(new InfluenceBallHeuristic("Influence Center Circle", 1000.0, pgid, 0, 0, r_teamplannerData.fieldConfig.getCenterCirleDiameter() + 0.5));
@@ -557,18 +557,18 @@ Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerData& 
 
     }
     // Do not position on top off team-mate
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getRobotSize()*2));
 
     // Only one player is allowed in the penalty area
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 100000, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig)); // Do not enter the outer goal area if already an another player is in.
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 100000, pgid, r_teamplannerData)); // Do not enter the outer goal area if already an another player is in.
 
     // Do not plan outside playing field or in goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig)); // Do not enter the inner Goal area
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData)); // Do not enter the inner Goal area
 
     // Stability heuristic: 5 weight
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_SWEEPER));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_SWEEPER));
 
     /*
      * Additional sweeper position heuristics in set-play (various)
@@ -716,7 +716,7 @@ Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(const 
     heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, r_teamplannerData.ball.position, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
     // Position interceptor as close as possible to opponent interceptor (located within the 3 meter circle)
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_INTERCEPTOR));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_INTERCEPTOR));
 
 
     // Position interceptor/sweeper optimized when defending on own half (both leave room for each other)
@@ -735,22 +735,22 @@ Geometry::Position TeamPlanner_Grid::findInterceptorPositionDuringRestart(const 
 
 
     // Do not position on top off team-mate
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getRobotSize()*2));
 
     // Do not plan outside playing field or in goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig)); // Do not enter the inner Goal area
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData)); // Do not enter the inner Goal area
 
     // Stability heuristic: 5 weight
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
     // DO not plan on top of opponent
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 5.0, pgid, r_teamplannerData.opponents, 0.7));
 
 
-    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 100000, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
-    heuristics.push_back(new InOwnGoalAreaHeuristic("Own goal area", 100000, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 100000, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
-    heuristics.push_back(new AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic("Already player assigned to opponent penalty area", 100000, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 100000, pgid, r_teamplannerData));
+    heuristics.push_back(new InOwnGoalAreaHeuristic("Own goal area", 100000, pgid, r_teamplannerData));
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 100000, pgid, r_teamplannerData));
+    heuristics.push_back(new AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic("Already player assigned to opponent penalty area", 100000, pgid, r_teamplannerData));
 
     // create x,y grid for calculation. make 0,0 center of grid !!
     std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
@@ -810,7 +810,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // Determine if this is the first attack supporter or not (second/third/etc)
     bool first_attack_supporter = true;
     for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-        if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
+        if (r_teamplannerData.team_admin[idx].assigned  && r_teamplannerData.team_admin[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
             first_attack_supporter= false;
         }
     };
@@ -835,7 +835,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // Avoid difficult collaboration, do not position close to opponents
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 50.0, pgid, r_teamplannerData.opponents, 1));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_ATTACKSUPPORTER));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_ATTACKSUPPORTER));
 
     // stay in front of the ball on own half, so play forward on own half
     if (y_pos_ball < 0) {
@@ -848,10 +848,10 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // if we control the ball make yourself available to receive a pass, especially for the first attack supporter
     if (r_teamplannerData.teamControlsBall()) {
         if (first_attack_supporter) {
-            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 80.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 80.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
         }
         else {
-            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
         }
     }
 
@@ -867,8 +867,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
         }
 
         // Avoid difficult collaboration, not behind opponent (from ball position)
-        heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_ballPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
-                r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter, r_teamplannerData.parameters.interceptionChancePenaltyFactor));
+        heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", 20.0, pgid, r_ballPositionToUse, r_teamplannerData));
     }
 
 
@@ -886,33 +885,26 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
 
 
     // Do not position close to team-mate path position
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 10.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 10.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getRobotSize()*2));
 
-    // Do not position close to attack supporters path position
-    std::vector<TeamPlannerRobot> AttackSupportTeam = vector<TeamPlannerRobot>();
-    for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-        if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
-            AttackSupportTeam.push_back(r_teamplannerData.team[idx]);
-        }
-    }
-    heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, AttackSupportTeam, 4.0));
+    heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, r_teamplannerData, 4.0, true));
 
 
     // Do not plan in opponent penalty area
-    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", 1000.0, pgid, r_teamplannerData));
     // heuristics.push_back(new AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic("Already player assigned to opponent penalty area", 1000.0, pgid, Team, fieldConfig));
 
     // Do not plan in own goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_teamplannerData));
 
     // Do not plan in own penalty area if already somebody assigned
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_teamplannerData));
 
     // This still needed?
     heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_teamplannerData.fieldConfig, r_teamplannerData.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
 
     /*
@@ -943,9 +935,7 @@ bool TeamPlanner_Grid::findAttackSupportPosition(Geometry::Point& bestPosition, 
         const unsigned nr_wait_positions = 8;   // check for 8 positions 1.5 meter around best position
         const double radius_non_opt_wait = 2.0;
         const double infield_margin = 0.25;   // distance to stay from side of field
-        InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_ballPositionToUse, r_teamplannerData.team, r_teamplannerData.opponents,
-                r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
-                r_teamplannerData.parameters.interceptionChancePenaltyFactor);
+        InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid, r_ballPositionToUse, r_teamplannerData);
 
         double bestX = bestPosition.x;
         double bestY = bestPosition.y;
@@ -1080,7 +1070,7 @@ Geometry::Position TeamPlanner_Grid::findSetPlayPosition(dynamic_role_e dynamic_
     // Avoid difficult collaboration, do not position close to opponents
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", WEIGHT_INFLUENCE_OPPONENTS, pgid, r_teamplannerData.opponents, 2.0));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", WEIGHT_PREVIOUS_ASSIGN_POSITION, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_ATTACKSUPPORTER));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", WEIGHT_PREVIOUS_ASSIGN_POSITION, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance(), dynamic_role_e::dr_ATTACKSUPPORTER));
 
     // stay in front of the ball on own half, so play forward on own half
     if (y_pos_ball < 0) {
@@ -1100,41 +1090,32 @@ Geometry::Position TeamPlanner_Grid::findSetPlayPosition(dynamic_role_e dynamic_
 
     if (beAvailableForPass) {
         // Avoid difficult collaboration, not behind opponent (from ball position)
-        const std::vector<TeamPlannerRobot> emptyTeam = {}; // dont take assigned attacksupporters into account
         heuristics.push_back(new InterceptionThreatHeuristic("Interception threat", WEIGHT_INTERCEPTION_THREAT, pgid,
                                                              Geometry::Point(r_teamplannerData.ball.position.x, r_teamplannerData.ball.position.y),
-                                                             emptyTeam, r_teamplannerData.opponents,
-                                                             r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter, r_teamplannerData.parameters.interceptionChancePenaltyFactor));
+                                                             r_teamplannerData, true));
     }
 
-    // Do not position close to attack supporters path position
-    std::vector<TeamPlannerRobot> AttackSupportTeam = vector<TeamPlannerRobot>();
-    for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-        if (r_teamplannerData.team[idx].assigned  && r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
-            AttackSupportTeam.push_back(r_teamplannerData.team[idx]);
-        }
-    }
-    heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, AttackSupportTeam, 4.0));
-
+    heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, r_teamplannerData, 4.0, true));
 
     // Do not position close to team-mate path position
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", WEIGHT_COLLIDE_TEAM_MATE, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", WEIGHT_COLLIDE_TEAM_MATE, pgid, r_teamplannerData, r_teamplannerData.fieldConfig.getRobotSize()*2));
 
 
     // Do not plan in opponent penalty area
-    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOppenentPenaltyAreaHeuristic("InOppenentPenalyArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData));
 
     // Do not plan in own goal area
-    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData.parameters, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", WEIGHT_NOT_AREA, pgid, r_teamplannerData));
 
     // Do not plan in own penalty area if already somebody assigned
-    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", WEIGHT_NOT_AREA, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig));
+    heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", WEIGHT_NOT_AREA, pgid, r_teamplannerData));
 
     // Not outside the playing field
     heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", WEIGHT_NOT_AREA, pgid, r_teamplannerData.fieldConfig, r_teamplannerData.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", WEIGHT_INFLUENCE_CURRENT_POSITION, pgid, r_teamplannerData.team, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", WEIGHT_INFLUENCE_CURRENT_POSITION, pgid,
+                                                                r_teamplannerData, r_teamplannerData.fieldConfig.getMaxPossibleFieldDistance()));
 
 
     /*
@@ -1168,10 +1149,7 @@ Geometry::Position TeamPlanner_Grid::findSetPlayPosition(dynamic_role_e dynamic_
         const double radius_non_opt_wait = 2.0;
         const double infield_margin = 0.25;   // distance to stay from side of field
         InterceptionThreatHeuristic InterceptionThreat = InterceptionThreatHeuristic("Interception threat", -18.0, pgid,
-                Geometry::Point(r_teamplannerData.ball.position.x, r_teamplannerData.ball.position.y),
-                r_teamplannerData.team, r_teamplannerData.opponents,
-                r_teamplannerData.parameters.interceptionChanceStartDistance, r_teamplannerData.parameters.interceptionChanceIncreasePerMeter,
-                r_teamplannerData.parameters.interceptionChancePenaltyFactor);
+                Geometry::Point(r_teamplannerData.ball.position.x, r_teamplannerData.ball.position.y), r_teamplannerData);
 
         double bestX = rolePosition.x;
         double bestY = rolePosition.y;

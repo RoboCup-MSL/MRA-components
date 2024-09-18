@@ -133,7 +133,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         // check if already player moves to ball target position
         bool target_player_for_pass_is_present = false;
         for (unsigned ap_idx = 0; ap_idx < r_teamplannerData.team.size(); ap_idx++) {
-            if (r_teamplannerData.team[ap_idx].assigned and r_teamplannerData.team[ap_idx].robotId == r_teamplannerData.pass_data.target_id)  {
+            if (r_teamplannerData.team_admin[ap_idx].assigned and r_teamplannerData.team[ap_idx].robotId == r_teamplannerData.pass_data.target_id)  {
                 // player is target for the pass
                 target_player_for_pass_is_present = true;
             }
@@ -171,7 +171,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
                 double maxSpeed = r_teamplannerData.parameters.maxPossibleLinearSpeed;
                 double bestIntercept_distance = std::numeric_limits<double>::infinity();
                 for (unsigned int idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-                    if (!r_teamplannerData.team[idx].assigned) {
+                    if (!r_teamplannerData.team_admin[idx].assigned) {
                         // Find initial intercept point
                         MRA::Geometry::Point player_pos = r_teamplannerData.team[idx].position;
                         Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(r_teamplannerData.ball, player_pos, maxSpeed,
@@ -566,8 +566,8 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const TeamPl
 
     MRA::Geometry::Point previousEndPos;
     for (unsigned int idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-        if (r_teamplannerData.team[idx].previous_result.previous_result_present == 1 && static_cast<dynamic_role_e>(r_teamplannerData.team[idx].previous_result.dynamic_role) == dr_SETPLAY_RECEIVER) {
-            MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(r_teamplannerData.team[idx].previous_result.end_position.x, r_teamplannerData.team[idx].previous_result.end_position.y);
+        if (r_teamplannerData.team_admin[idx].previous_result.present == 1 && static_cast<dynamic_role_e>(r_teamplannerData.team_admin[idx].previous_result.dynamic_role) == dr_SETPLAY_RECEIVER) {
+            MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(r_teamplannerData.team_admin[idx].previous_result.end_position.x, r_teamplannerData.team_admin[idx].previous_result.end_position.y);
             MRA::Geometry::Point previousBall = MRA::Geometry::Point(r_teamplannerData.previous_ball.x, r_teamplannerData.previous_ball.y);
 
             if (r_teamplannerData.ball.position.distanceTo(previousBall) < 0.26) {
@@ -899,11 +899,11 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
         int nr_field_players_between_posOfInterest_and_own_goal = 0;
 
         // count number of field-players on the line between ball and own goal.
-        for (auto it = r_teamplannerData.team.begin (); it != r_teamplannerData.team.end (); ++it) {
-            if (it->player_type == player_type_e::FIELD_PLAYER and !(it->assigned)) {
+        for (auto idx = 0u;  idx< r_teamplannerData.team.size(); idx++) {
+            if (r_teamplannerData.team[idx].player_type == player_type_e::FIELD_PLAYER and (not r_teamplannerData.team_admin[idx].assigned)) {
                 // only unassigned field-players
 
-                MRA::Geometry::Point playerPos(it->position.x, it->position.y);
+                MRA::Geometry::Point playerPos(r_teamplannerData.team[idx].position.x, r_teamplannerData.team[idx].position.y);
                 double distToDefenseLine = getDistanceFromPointToLineSegment(posOfInterest.x, posOfInterest.y,
                                                                       goalPos.x, goalPos.y, playerPos.x, playerPos.y);
                 double distToGoal = playerPos.distanceTo (goalPos);
@@ -915,7 +915,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
                     // field player is on line between goal and ball AND close enough to the ball (<safeDistanceToBall):
                     // -> closer than the ball to the goal and small distance to defense line
                     double distToPosOfInterest = playerPos.distanceTo (posOfInterest);
-                    smallestDistToBallOnTheDefenseLine = min (distToPosOfInterest, smallestDistToBallOnTheDefenseLine);
+                    smallestDistToBallOnTheDefenseLine = std::min (distToPosOfInterest, smallestDistToBallOnTheDefenseLine);
                     nr_field_players_between_posOfInterest_and_own_goal++;
                 }
             }
@@ -943,10 +943,10 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
             // find team-mate which is closest to defense line then the priority block position
             // (from ball to safe priority block position - (between ball and own goal))
             MRA::Geometry::Point bestPos = maxPriorityBlockPoint;
-            for (auto it = r_teamplannerData.team.begin (); it != r_teamplannerData.team.end (); ++it) {
-                if (it->player_type == player_type_e::FIELD_PLAYER and !(it->assigned)) {
+            for (auto idx = 0u;  idx < r_teamplannerData.team.size(); idx++) {
+                if (r_teamplannerData.team[idx].player_type == player_type_e::FIELD_PLAYER and (not r_teamplannerData.team_admin[idx].assigned)) {
                     // only unassigned field-players
-                    MRA::Geometry::Point teamMatePos(it->position.x, it->position.y);
+                    MRA::Geometry::Point teamMatePos(r_teamplannerData.team[idx].position.x, r_teamplannerData.team[idx].position.y);
                     // calculate second location of on the perpendicular to the defense line
                     double tx1 = teamMatePos.x + (cos (goalToPosOfInterestAngle + M_PI * 0.5) * 1.0);
                     double ty1 = teamMatePos.y + (sin (goalToPosOfInterestAngle + M_PI * 0.5) * 1.0);
@@ -1096,7 +1096,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
     // calculate number of field players
     auto nr_field_players = r_teamplannerData.team.size();
     for (unsigned idx = 0; idx < r_teamplannerData.team.size(); idx++) {
-        if (r_teamplannerData.team[idx].player_type == GOALIE or r_teamplannerData.team[idx].result.dynamic_role == dynamic_role_e::dr_GOALKEEPER) {
+        if (r_teamplannerData.team[idx].player_type == GOALIE or r_teamplannerData.team_admin[idx].result.dynamic_role == dynamic_role_e::dr_GOALKEEPER) {
             nr_field_players--;
         }
     }

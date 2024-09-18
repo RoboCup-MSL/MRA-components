@@ -316,20 +316,21 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
     }
 }
 
-void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, bool& r_team_has_ball, auto_ptr<robotsports::StrategyType>& c)
+void fillTeam(std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerAdminTeam>& TeamAdmin,  bool& r_playerPassedBall, bool& r_team_has_ball, auto_ptr<robotsports::StrategyType>& c)
 {
     long playerId = 0;
     r_playerPassedBall = false;
     for (StrategyType::Team_const_iterator team_iter = c->Team().begin(); team_iter != c->Team().end(); ++team_iter) {
         playerId++;
         TeamPlannerRobot P;
-        final_planner_result_t previous_result = { 0 };
-        previous_result.previous_result_present =
-                (*team_iter).previous_result_present();
-        previous_result.dynamic_role = StringToDynamicRole((*team_iter).previous_result_dynamic_role());
-        previous_result.end_position.x = (*team_iter).previous_result_x();
-        previous_result.end_position.y = (*team_iter).previous_result_y();
-        previous_result.ts = (*team_iter).previous_result_ts();
+        TeamPlannerAdminTeam PA;
+        PA.previous_result.present = (*team_iter).previous_result_present();
+        PA.previous_result.dynamic_role = StringToDynamicRole((*team_iter).previous_result_dynamic_role());
+        PA.previous_result.end_position.x = (*team_iter).previous_result_x();
+        PA.previous_result.end_position.y = (*team_iter).previous_result_y();
+        PA.previous_result.ts = (*team_iter).previous_result_ts();
+        PA.assigned = false;
+        PA.result = {};
 
         if ((*team_iter).passedBall()) {
             r_playerPassedBall = true;
@@ -368,11 +369,9 @@ void fillTeam(std::vector<TeamPlannerRobot>& Team, bool& r_playerPassedBall, boo
         P.time_in_own_penalty_area = (*team_iter).time_in_own_penalty_area();
         P.time_in_opponent_penalty_area =  (*team_iter).time_in_enemy_penalty_area();
         P.passBall = (*team_iter).passedBall();
-        P.assigned = false;
-        P.result = {};
-        P.previous_result = previous_result;
-
+        PA.robotId = P.robotId;
         Team.push_back(P);
+        TeamAdmin.push_back(PA);
     }
 }
 
@@ -428,8 +427,10 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.previous_ball = previous_ball;
     // calculate assignment for the given situation
     vector<TeamPlannerRobot> Team = vector<TeamPlannerRobot>();
+    vector<TeamPlannerAdminTeam> TeamAdmin = vector<TeamPlannerAdminTeam>();
     for (unsigned idx = 0; idx < myTeam.size(); idx++) {
         TeamPlannerRobot robot = {};
+        TeamPlannerAdminTeam robot_admin = {};
         robot.robotId = robotIds[idx];
         robot.labelId = myTeam_labels[idx];
         robot.position = myTeam[idx];
@@ -442,10 +443,11 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         }
         robot.passBall = robot.robotId == static_cast<unsigned>(passBallByPlayerId);
         robot.player_type = teamTypes[idx];
-        robot.assigned = false;
-        robot.result = {};
+        robot_admin.assigned = false;
+        robot_admin.result = {};
+        robot_admin.robotId = robot.robotId;
         if (idx < previous_planner_results.size()) {
-            robot.previous_result = previous_planner_results[idx];
+            robot_admin.previous_result = previous_planner_results[idx];
         }
         if (idx < time_in_own_penalty_area.size()) {
             robot.time_in_own_penalty_area = time_in_own_penalty_area[idx];
@@ -454,6 +456,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
             robot.time_in_opponent_penalty_area = time_in_opponent_penalty_area[idx];
         }
         Team.push_back(robot);
+        TeamAdmin.push_back(robot_admin);
     }
     std::vector<TeamPlannerOpponent> Opponents = std::vector<TeamPlannerOpponent>();
     for (unsigned idx = 0; idx < opponents.size(); idx++) {
@@ -469,6 +472,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
     tdp.ball.velocity = ball_velocity;
     tdp.ball.status = ball_status;
     tdp.team = Team;
+    tdp.team_admin = TeamAdmin;
     tdp.opponents = Opponents;
     tdp.parameters = options;
     tdp.parking_positions = parking_positions;
@@ -516,6 +520,8 @@ void xmlplanner(string input_filename) {
 
 
     std::vector<TeamPlannerRobot> Team = {};
+    std::vector<TeamPlannerAdminTeam> TeamAdmin = {};
+
     std::vector<TeamPlannerOpponent> Opponents = {};
     vector<Geometry::Point> parking_positions = {};
 
@@ -540,14 +546,19 @@ void xmlplanner(string input_filename) {
             ball_vel.y = c->Ball()->vely();
         }
 
-        fillTeam(Team, playerPassedBall, team_has_ball, c);
+        fillTeam(Team, TeamAdmin, playerPassedBall, team_has_ball, c);
+        for (auto idx = 0u; idx< TeamAdmin.size(); idx++) {
+            cout << __func__<<" : " << __LINE__<< " TeamAdmin["<<idx<<"].roboId: " << TeamAdmin[idx].robotId << endl;
+            cout << __func__<<" : " << __LINE__<<"  TeamAdmin["<<idx<<"].previous_result.present: " << TeamAdmin[idx].previous_result.present
+                 << " x: " << TeamAdmin[idx].previous_result.end_position.x << " y: " << TeamAdmin[idx].previous_result.end_position.y << endl;
+        }
 
         for (auto idx = 0u; idx< Team.size(); idx++) {
             myTeam.push_back(Team[idx].position);
             myTeam_vel.push_back(Team[idx].velocity);
             myTeam_labels.push_back(Team[idx].labelId);
 
-            previous_planner_results.push_back(Team[idx].previous_result);
+            previous_planner_results.push_back(TeamAdmin[idx].previous_result);
             teamTypes.push_back(Team[idx].player_type);
             time_in_own_penalty_area.push_back(Team[idx].time_in_own_penalty_area);
             time_in_opponent_penalty_area.push_back(Team[idx].time_in_opponent_penalty_area);
@@ -619,7 +630,7 @@ void xmlplanner(string input_filename) {
             }
         }
         if (c->PreviousBall()) {
-            previous_ball.previous_ball_present = true;
+            previous_ball.present = true;
             previous_ball.x = c->PreviousBall()->x();
             previous_ball.y = c->PreviousBall()->y();
         }

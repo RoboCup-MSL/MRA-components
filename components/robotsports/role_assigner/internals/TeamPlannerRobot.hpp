@@ -16,7 +16,6 @@ namespace MRA {
 class TeamPlannerRobot {
 public:
     bool active; // participating in the game (robot may be inactive when figuring out where it is)
-    bool assigned;
     bool human;
     long robotId;
     long labelId;  // NEW
@@ -25,11 +24,9 @@ public:
     player_type_e player_type;
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
-    final_planner_result_t previous_result;
     double time_in_own_penalty_area;
     double time_in_opponent_penalty_area;
 
-    PlayerPlannerResult result = {};
     static bool CompareRobotId(const TeamPlannerRobot& r1, const TeamPlannerRobot&  r2);
     std::string toString() const;
 };

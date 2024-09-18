@@ -9,7 +9,6 @@ find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread 
 
 add_library(MRA-components-robotsports-role-assigner
     tick.cpp
-    internals/DynamicRoleAssignment.cpp
     internals/Dynamics.cpp
     internals/Edge.cpp
     internals/FieldConfig.cpp

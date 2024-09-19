@@ -9,20 +9,23 @@ import "datatypes/ActionType.proto";
 
 message ActionStopInput
 {
-    bool ballHandlersEnabled = 1; // relay
+    bool ballHandlersEnabled = 1; // relay, i.e. pass on the setting
 }
 
 message ActionMoveInput
 {
     MRA.Datatypes.PosVel motionTarget = 1; // in FCS
     int32 motionType = 2; // relay, optionally set to dribble
-    bool ballHandlersEnabled = 3; // relay
+    bool ballHandlersEnabled = 3;
 }
 
 message ActionDashInput
 {
-    MRA.Datatypes.Pose velocity = 1; // in RCS
-    // TODO: allow target in RCS?
+    oneof target
+    {
+        MRA.Datatypes.Pose velocity = 1; // in RCS
+        MRA.Datatypes.Pose position = 2; // in RCS
+    }
 }
 
 message ActionKickInput

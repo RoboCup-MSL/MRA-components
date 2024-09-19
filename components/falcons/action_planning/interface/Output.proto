@@ -56,7 +56,7 @@ message KickerSetpoint
 
 enum KeeperFrameExtensionDirection
 {
-    KEEPER_FRAME_EXTEND_NONE = 0;
+    KEEPER_FRAME_EXTEND_NONE = 0; // retract all, satisfy MSL rules
     KEEPER_FRAME_EXTEND_TOP = 1;
     KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
     KEEPER_FRAME_EXTEND_RIGHT = 3;

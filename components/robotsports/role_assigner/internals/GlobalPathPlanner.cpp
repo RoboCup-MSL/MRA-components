@@ -6,7 +6,6 @@
 
 #include "FieldConfig.hpp"
 #include "MathUtils.hpp"
-#include "SvgUtils.hpp"
 #include "Vertex.hpp"
 #include "logging.hpp"
 
@@ -21,6 +20,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "RoleAssignerSvg.hpp"
 
 using namespace std;
 

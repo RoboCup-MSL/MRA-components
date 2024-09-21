@@ -3,7 +3,6 @@
  *  @brief   main file for testing the xml planner
  *  @curator Jürge van Eijck
  */
-#include "SvgUtils.hpp"
 #include "FieldConfig.hpp"
 
 #include <iostream>
@@ -18,6 +17,7 @@
 #include <cstdio>
 #include <cmath>
 #include <boost/filesystem.hpp>
+#include "../internals/RoleAssignerSvg.hpp"
 
 using namespace std;
 using namespace boost::filesystem;

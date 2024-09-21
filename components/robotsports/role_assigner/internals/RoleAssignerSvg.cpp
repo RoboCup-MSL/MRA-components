@@ -3,7 +3,6 @@
  *  @brief   Utility class for plotting planner to svg file
  *  @curator Jürge van Eijck
  */
-#include "SvgUtils.hpp"
 #include "FieldConfig.hpp"
 #include "MathUtils.hpp"
 #include "logging.hpp"
@@ -21,30 +20,31 @@
 #include <map>
 #include <vector>
 #include <sys/stat.h>
+#include "RoleAssignerSvg.hpp"
 
 using namespace std;
 using namespace MRA;
 
-FieldConfig SvgUtils::m_fieldConfig(FillDefaultFieldConfig());
+FieldConfig RoleAssignerSvg::m_fieldConfig(FillDefaultFieldConfig());
 
 /**
  * Get svg x coordinate for given field X
  */
-double SvgUtils::svgX(double fieldX) {
+double RoleAssignerSvg::svgX(double fieldX) {
     return m_fieldConfig.getMaxFullFieldX() + fieldX;
 }
 
 /**
  * Get svg x coordinate for given field Y
  */
-double SvgUtils::svgY(double fieldY) {
+double RoleAssignerSvg::svgY(double fieldY) {
     return m_fieldConfig.getMaxFullFieldY() - fieldY;
 }
 
 
-void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
+void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
     std::vector<RoleAssignerResult>  comparing_player_paths = {};
-    plannerdata_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
+    role_assigner_data_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
 }
 
 // Data class for storing file parts
@@ -86,7 +86,7 @@ static bool isDirectory(const string& path)
     return false;
 }
 
-void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
+void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
     bool addInfoBox = true;
     double boxWidth = addInfoBox ? 6.0 : 0.0;
 
@@ -721,7 +721,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_
 /**
  * return true if path is a directory, otherwise return false
 */
-bool SvgUtils::doesDirectoryExists(const std::string& filename) {
+bool RoleAssignerSvg::doesDirectoryExists(const std::string& filename) {
     // split filename in fileparts (compared to matlab fileparts function)
     // split in path, name and extension
     bool is_dir = false;
@@ -743,13 +743,13 @@ bool SvgUtils::doesDirectoryExists(const std::string& filename) {
     return is_dir;
 }
 
-std::string SvgUtils::boolToString(bool b)
+std::string RoleAssignerSvg::boolToString(bool b)
 {
     return b ? "true" : "false";
 }
 
 
-void SvgUtils::toLower(std::string& r_string) {
+void RoleAssignerSvg::toLower(std::string& r_string) {
     std::locale loc;
     for (auto i=0u; i < r_string.length(); ++i) {
         r_string[i] = std::tolower(r_string[i], loc);

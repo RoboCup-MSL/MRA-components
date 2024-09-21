@@ -25,9 +25,9 @@
 
 #include "StrategyTester_generated.h" // generated
 #include "FieldConfig.hpp"
-#include "SvgUtils.hpp"
 #include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
+#include "../internals/RoleAssignerSvg.hpp"
 
 using namespace MRA;
 using namespace std;
@@ -757,7 +757,7 @@ void xmlplanner(string input_filename) {
             cerr << "<< XML: print received path " << endl << flush;
             cerr << RoleAssignerResultToString(player_paths, tpd.team) << endl << flush;
         }
-        SvgUtils::plannerdata_to_svg(player_paths, tpd, fieldConfig, run_filename);
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, fieldConfig, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

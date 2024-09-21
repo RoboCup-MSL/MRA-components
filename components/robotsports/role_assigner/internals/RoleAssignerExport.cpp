@@ -9,13 +9,13 @@
 #include "RoleAssignerExport.hpp"
 
 #include "GlobalPathPlanner.hpp"
-#include "SvgUtils.hpp"
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <sys/time.h>
 #include <cmath>
 #include "RoleAssignerParameters.hpp"
+#include "RoleAssignerSvg.hpp"
 
 namespace MRA {
 

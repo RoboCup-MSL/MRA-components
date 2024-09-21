@@ -17,11 +17,11 @@
 
 namespace MRA {
 
-class SvgUtils {
+class RoleAssignerSvg {
 public:
-    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
+    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name);
-    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
+    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths);
 
 private:

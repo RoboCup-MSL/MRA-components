@@ -7,7 +7,6 @@
 
 #include "RolePosition.hpp"
 #include "GlobalPathDynamicPlanner.hpp"
-#include "SvgUtils.hpp"
 #include "MathUtils.hpp"
 
 #include <iomanip>
@@ -17,6 +16,7 @@
 #include <climits>
 #include <algorithm>
 #include "RoleAssignerExport.hpp"
+#include "RoleAssignerSvg.hpp"
 
 using namespace std;
 using namespace MRA;
@@ -349,7 +349,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         {
             save_name = GetRoleAssignerSVGname(role_assigner_data.gamestate, "DYN_ROLE_NONE");
         }
-        SvgUtils::plannerdata_to_svg(player_paths, role_assigner_data, role_assigner_data.fieldConfig, save_name);
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, role_assigner_data, role_assigner_data.fieldConfig, save_name);
 
         // create empty path for robot with a path that ends outside the field.
         std::vector<path_piece_t> path = player_paths[role_assigner_data.this_player_idx].path;

@@ -7,13 +7,13 @@
 #define TEAMPLAY_HPP 1
 
 #include "FieldConfig.hpp"
-#include "TeamPlannerParameters.hpp"
 #include "GlobalPathPlanner.hpp"
 #include "TeamPlannerData.hpp"
-#include "TeamPlannerRobot.hpp"
 #include "TeamPlannerOpponent.hpp"
 
 #include <vector>
+#include "RoleAssignerParameters.hpp"
+#include "RoleAssignerRobot.hpp"
 
 namespace MRA {
 
@@ -23,9 +23,9 @@ public:
     void assign(const TeamPlannerInput& input,
                 TeamPlannerState& r_state,
                 TeamPlannerOutput& r_output,
-                const TeamPlannerParameters& parameters);
+                const RoleAssignerParameters& parameters);
 
-    std::vector<PlayerPlannerResult> assign(TeamPlannerData& teamplannerData);
+    std::vector<RoleAssignerResult> assign(TeamPlannerData& teamplannerData);
 
 private:
     class AssignToTargetData {
@@ -45,7 +45,7 @@ private:
     std::vector<MRA::Geometry::Position> getOpponents(const std::vector<TeamPlannerOpponent>&  Opponents);
 
     bool check_better_path_found(double& lowest_pathcost, double newPathCost, double fastestPathCost,
-                                      const PlayerPlannerResult& new_path, const PlayerPlannerResult& fastest_path,     double equality_cost_threshold );
+                                      const RoleAssignerResult& new_path, const RoleAssignerResult& fastest_path,     double equality_cost_threshold );
 
     void assignGoalie(TeamPlannerData& teamplanner_data);
 
@@ -53,9 +53,9 @@ private:
 
     planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
 
-    std::vector<TeamPlannerRobot> getTeamMates(const TeamPlannerData& teamplanner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
+    std::vector<RoleAssignerRobot> getTeamMates(const TeamPlannerData& teamplanner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
-    bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& result);
+    bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const RoleAssignerResult& result);
 
     void printAssignInputs(const TeamPlannerData& teamplanner_data);
 

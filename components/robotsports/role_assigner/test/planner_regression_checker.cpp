@@ -260,8 +260,8 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
     vector<playerSVGresult> regression_svg_results = {};
     read_svg_comment_section_and_text_lines(regression_dir + "/" + filename, regression_comment_lines, regression_svg_results);
 
-    team_planner_result_t player_paths = team_planner_result_t();
-    team_planner_result_t comparing_player_paths = team_planner_result_t();
+    RoleAssignerResults player_paths = RoleAssignerResults();
+    RoleAssignerResults comparing_player_paths = RoleAssignerResults();
 
     if (output_svg_results.size() != regression_svg_results.size()) {
         // different number of results
@@ -305,7 +305,7 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
             piece.target = static_cast<planner_target_e>(target);
             new_path.push_back(piece);
         }
-        PlayerPlannerResult playerResult = PlayerPlannerResult();
+        RoleAssignerResult playerResult = RoleAssignerResult();
         playerResult.path = new_path;
         comparing_player_paths.push_back(playerResult);
 

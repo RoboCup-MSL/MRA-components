@@ -609,7 +609,7 @@ Geometry::Position TeamPlanner_Grid::findSweeperPosition(const TeamPlannerData& 
 }
 
 Geometry::Position TeamPlanner_Grid::calculateGridValues(const std::list<Geometry::Position>& allowedTargetPositions,
-        vector<GridHeuristic*> heuristics, const TeamPlannerParameters& parameters, PlannerGridInfoData& pgid) {
+        vector<GridHeuristic*> heuristics, const RoleAssignerParameters& parameters, PlannerGridInfoData& pgid) {
 
     double lowest_value = std::numeric_limits<double>::infinity();
     double lowest_x = 0;

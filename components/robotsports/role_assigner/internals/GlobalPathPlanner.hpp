@@ -8,7 +8,6 @@
 
 #include "FieldConfig.hpp"
 #include "TeamPlannerData.hpp"
-#include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
 #include "TeamPlannerOpponent.hpp"
 
@@ -17,6 +16,7 @@
 
 #include <vector>
 #include <list>
+#include "RoleAssignerParameters.hpp"
 
 /**
  * Represents an undirected graph with nodes the important point in the field.
@@ -39,7 +39,7 @@ private:
     std::vector<MRA::Geometry::Position> m_opponents;
     std::vector<Vertex* > m_approachVertices;
     std::vector<Vertex* > m_addPoints;
-    TeamPlannerParameters m_options;
+    RoleAssignerParameters m_options;
     planner_target_e m_targetFunction;
     double m_maxFieldX;
     double m_maxFieldY;
@@ -61,12 +61,12 @@ public:
     virtual ~GlobalPathPlanner();
 
     /* set the options for the planner */
-    void setOptions(const TeamPlannerParameters& options);
+    void setOptions(const RoleAssignerParameters& options);
 
     /* create graph for the provided input */
     void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
                      const TeamPlannerBall& ball,
-                     const std::vector<TeamPlannerRobot>& teammates, /* filtered based on robot to calculate the graph for */
+                     const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                      const std::vector<TeamPlannerOpponent>& opponents,
                      const std::vector<MRA::Vertex>& targetPos,
                      planner_target_e targetFunction,

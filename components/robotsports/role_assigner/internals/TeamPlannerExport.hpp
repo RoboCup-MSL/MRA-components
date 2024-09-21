@@ -8,10 +8,9 @@
 
 #include "FieldConfig.hpp"
 #include "GlobalPathPlanner.hpp"
-#include "TeamPlannerParameters.hpp"
-
 #include <string>
 #include <vector>
+#include "RoleAssignerParameters.hpp"
 
 namespace MRA {
     std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix = "");

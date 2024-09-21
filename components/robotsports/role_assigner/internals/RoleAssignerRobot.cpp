@@ -4,7 +4,8 @@
  *  @curator Jürge van Eijck
  */
 
-#include "TeamPlannerRobot.hpp"
+#include "RoleAssignerRobot.hpp"
+
 #include "TeamPlannerData.hpp"
 
 #include <iomanip>
@@ -15,7 +16,7 @@
 using namespace std;
 using namespace MRA;
 
-std::string TeamPlannerRobot::toString() const {
+std::string RoleAssignerRobot::toString() const {
     std::stringstream buffer;
     buffer << "ID: " << robotId   << " type: " << PlayerTypeAsString(player_type) << endl
            << "Pos: " << position.toString() << " Vel: " << velocity.toString() << " control ball: " <<  controlBall << endl
@@ -60,7 +61,7 @@ std::string TeamPlannerRobot::toString() const {
 
 
 // compare function to sort vector of the class on the member robotId
-bool TeamPlannerRobot::CompareRobotId(const TeamPlannerRobot& r1, const TeamPlannerRobot& r2)
+bool RoleAssignerRobot::CompareRobotId(const RoleAssignerRobot& r1, const RoleAssignerRobot& r2)
 {
     return (r1.robotId < r2.robotId);
 }

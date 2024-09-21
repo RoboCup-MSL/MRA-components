@@ -377,14 +377,14 @@ class ShootOnGoalHeuristic : public GridHeuristic
 {
 public:
     ShootOnGoalHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team,
+            const std::vector<RoleAssignerRobot>& Team,
             const std::vector<TeamPlannerOpponent>& Opponents,
             const FieldConfig& fieldConfig,
             const ball_pickup_position_t& ball_pickup_position);
     virtual ~ShootOnGoalHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const std::vector<RoleAssignerRobot>& m_Team;
     const std::vector<TeamPlannerOpponent>& m_Opponents;
     const Geometry::Point m_opponentGoal;
     const double m_rightPole_x;
@@ -399,15 +399,15 @@ class PassHeuristic : public GridHeuristic
 {
 public:
     PassHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerRobot>& Team,
+            const std::vector<RoleAssignerRobot>& Team,
             const std::vector<TeamPlannerOpponent>& Opponents,
             const FieldConfig& fieldConfig,
             const ball_pickup_position_t& ball_pickup_position,
-            const TeamPlannerParameters& parameters);
+            const RoleAssignerParameters& parameters);
     virtual ~PassHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerRobot>& m_Team;
+    const std::vector<RoleAssignerRobot>& m_Team;
     std::vector<Geometry::Position> m_Opponents;
     const double m_robotRadius;
     ball_pickup_position_t m_ball_pickup_position;

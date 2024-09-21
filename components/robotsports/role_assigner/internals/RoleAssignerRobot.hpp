@@ -13,7 +13,7 @@
 namespace MRA {
 
 
-class TeamPlannerRobot {
+class RoleAssignerRobot {
 public:
     bool active; // participating in the game (robot may be inactive when figuring out where it is)
     bool human;
@@ -27,7 +27,7 @@ public:
     double time_in_own_penalty_area;
     double time_in_opponent_penalty_area;
 
-    static bool CompareRobotId(const TeamPlannerRobot& r1, const TeamPlannerRobot&  r2);
+    static bool CompareRobotId(const RoleAssignerRobot& r1, const RoleAssignerRobot&  r2);
     std::string toString() const;
 };
 } // namespace

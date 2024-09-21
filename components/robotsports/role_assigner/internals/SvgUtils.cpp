@@ -42,8 +42,8 @@ double SvgUtils::svgY(double fieldY) {
 }
 
 
-void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
-    std::vector<PlayerPlannerResult>  comparing_player_paths = {};
+void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
+    std::vector<RoleAssignerResult>  comparing_player_paths = {};
     plannerdata_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
 }
 
@@ -86,7 +86,7 @@ static bool isDirectory(const string& path)
     return false;
 }
 
-void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<PlayerPlannerResult>&  comparing_player_paths) {
+void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
     bool addInfoBox = true;
     double boxWidth = addInfoBox ? 6.0 : 0.0;
 
@@ -105,7 +105,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
     m_fieldConfig = fieldConfig;
 
     TeamPlannerBall ball = data.ball;
-    TeamPlannerParameters parameters = data.parameters;
+    RoleAssignerParameters parameters = data.parameters;
     std::vector<Vertex* > vertices = std::vector<Vertex* >();
     std::vector<MRA::Geometry::Point> parking_positions;
     std::vector<MRA::Geometry::Position> myTeam = {};
@@ -169,7 +169,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
 
     fprintf(fp, "\tteam:\n");
     for (unsigned int idx = 0; idx < data.team.size(); idx++) {
-        TeamPlannerRobot rbt = data.team[idx];
+        RoleAssignerRobot rbt = data.team[idx];
         auto rbt_admin = data.team_admin[idx];
         fprintf(fp, "\t\tR%02ld = %s vel: %s label: %ld type = %s (%d)\n",
                 rbt.robotId, rbt.position.toString().c_str(), rbt.velocity.toString().c_str(),

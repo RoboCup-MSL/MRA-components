@@ -9,10 +9,11 @@
 #include "FieldConfig.hpp"
 
 #include <vector>
+#include "planner_types.hpp"
 
 namespace MRA {
 
-class PlayerPlannerResult {
+class RoleAssignerResult {
 public:
     std::vector<planner_piece_t> path;
     dynamic_role_e dynamic_role;
@@ -23,7 +24,7 @@ public:
     defend_info_t defend_info;
     bool target_position_is_end_position_of_pass;
 
-    PlayerPlannerResult(const game_state_e&  gamestate = game_state_e::NONE,
+    RoleAssignerResult(const game_state_e&  gamestate = game_state_e::NONE,
                         const dynamic_role_e& dynamic_role = dynamic_role_e::dr_NONE,
                         int role_rank = -1,
                         const MRA::Geometry::Point& target = MRA::Geometry::Point(),
@@ -43,7 +44,7 @@ public:
                         }
 };
 
-typedef std::vector<PlayerPlannerResult> team_planner_result_t;
+typedef std::vector<RoleAssignerResult> RoleAssignerResults;
 
 } // namespace
 

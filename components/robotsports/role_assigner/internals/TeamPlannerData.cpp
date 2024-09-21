@@ -92,7 +92,7 @@ std::string TeamPlannerData::toString() const
 
     buffer << "\tteam:" << endl;
     for (unsigned int idx = 0; idx < this->team.size(); idx++) {
-        TeamPlannerRobot rbt = this->team[idx];
+        RoleAssignerRobot rbt = this->team[idx];
         buffer << "\t\tR" << rbt.robotId << " = " << rbt.position.toString() << " type =  ";
         buffer << PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)) << " (" << rbt.player_type << ")" << endl;
         buffer << "\t\t\tcontrol-ball: " << rbt.controlBall<< " passBall: " << rbt.passBall;

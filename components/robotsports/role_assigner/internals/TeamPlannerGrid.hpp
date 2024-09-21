@@ -55,7 +55,7 @@ private:
     static double calculate_a_penaly_factor_for_teammate(double ball_ax_sqr, double ball_c);
     static double calc_a_penalty_factor(double radius, double c);
     static MRA::Geometry::Position calculateGridValues(const std::list<MRA::Geometry::Position>& allowedTargetPositions,
-            std::vector<GridHeuristic*> heuristics, const TeamPlannerParameters& parameters, PlannerGridInfoData& pgid) ;
+            std::vector<GridHeuristic*> heuristics, const RoleAssignerParameters& parameters, PlannerGridInfoData& pgid) ;
 
     static void handle_penalty_heuristics(const TeamPlannerData& r_teamplannerData, const Geometry::Point& r_balPositionToUse, std::vector<GridHeuristic*> &heuristics, PlannerGridInfoData &pgid);
 };

@@ -612,7 +612,7 @@ double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y)
 
 // ----------------------------------------------------------------------------------------
 ShootOnGoalHeuristic::ShootOnGoalHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const std::vector<TeamPlannerRobot>& Team,
+        const std::vector<RoleAssignerRobot>& Team,
         const std::vector<TeamPlannerOpponent>& Opponents,
         const FieldConfig& fieldConfig,
         const ball_pickup_position_t& ball_pickup_position) :
@@ -671,11 +671,11 @@ double ShootOnGoalHeuristic::getValue(double x, double y) {
 
 // ----------------------------------------------------------------------------------------
 PassHeuristic::PassHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-        const std::vector<TeamPlannerRobot>& Team,
+        const std::vector<RoleAssignerRobot>& Team,
         const std::vector<TeamPlannerOpponent>& Opponents,
         const FieldConfig& fieldConfig,
         const ball_pickup_position_t& ball_pickup_position,
-        const TeamPlannerParameters& parameters) :
+        const RoleAssignerParameters& parameters) :
                                         GridHeuristic(id, weight, pgid),
                                         m_Team(Team),
                                         m_Opponents(std::vector<MRA::Geometry::Position>()),

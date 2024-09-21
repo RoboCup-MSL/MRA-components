@@ -33,7 +33,7 @@ using namespace MRA;
  * @return path
  */
 std::vector<planner_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-                                                   const std::vector<TeamPlannerRobot>& filtered_teammates, const TeamPlannerData& r_teamPlannerData,
+                                                   const std::vector<RoleAssignerRobot>& filtered_teammates, const TeamPlannerData& r_teamPlannerData,
                                                    const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
                                                    double maxSpeed, int nrIterations,  bool stayInPlayingField)
 {

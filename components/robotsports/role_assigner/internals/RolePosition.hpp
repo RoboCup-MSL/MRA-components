@@ -11,9 +11,8 @@
 #include "planner_types.hpp"
 #include "TeamPlannerData.hpp"
 #include "TeamPlannerOpponent.hpp"
-#include "TeamPlannerParameters.hpp"
-
 #include <vector>
+#include "RoleAssignerParameters.hpp"
 
 namespace MRA {
 

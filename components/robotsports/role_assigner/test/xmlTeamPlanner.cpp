@@ -35,14 +35,14 @@ using namespace robotsports;
 
 class RunData {
 public:
-    RunData(const TeamPlannerData& r_tpd, const std::vector<PlayerPlannerResult>& r_result) :
+    RunData(const TeamPlannerData& r_tpd, const std::vector<RoleAssignerResult>& r_result) :
         teamplanner_data(r_tpd),
         player_paths(r_result)
     {
 
     }
     TeamPlannerData teamplanner_data;
-    std::vector<PlayerPlannerResult> player_paths;
+    std::vector<RoleAssignerResult> player_paths;
 };
 
 #include <string>
@@ -83,7 +83,7 @@ std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(
 
 
 
-static std::string TeamPlannerResultToString(const team_planner_result_t& player_paths, const std::vector<TeamPlannerRobot>& team) {
+static std::string TeamPlannerResultToString(const RoleAssignerResults& player_paths, const std::vector<RoleAssignerRobot>& team) {
     std::stringstream buffer;
 
     for (unsigned player_idx = 0; player_idx != player_paths.size(); player_idx++) {
@@ -144,7 +144,7 @@ MRA::team_formation_e StringToFormation(const string& formation_string) {
     return formation;
 }
 
-void getRoleAssignParameters(TeamPlannerParameters & parameters, auto_ptr<robotsports::StrategyType>& c) {
+void getRoleAssignParameters(RoleAssignerParameters & parameters, auto_ptr<robotsports::StrategyType>& c) {
     parameters.calculateAllPaths = c->Options().calculateAllPaths();
     parameters.minimumEdgeLength = c->Options().minimumEdgeLength();
     parameters.maximumEdgeLength = c->Options().maximumEdgeLength();
@@ -316,13 +316,13 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
     }
 }
 
-void fillTeam(std::vector<TeamPlannerRobot>& Team, std::vector<TeamPlannerAdminTeam>& TeamAdmin,  bool& r_playerPassedBall, bool& r_team_has_ball, auto_ptr<robotsports::StrategyType>& c)
+void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<TeamPlannerAdminTeam>& TeamAdmin,  bool& r_playerPassedBall, bool& r_team_has_ball, auto_ptr<robotsports::StrategyType>& c)
 {
     long playerId = 0;
     r_playerPassedBall = false;
     for (StrategyType::Team_const_iterator team_iter = c->Team().begin(); team_iter != c->Team().end(); ++team_iter) {
         playerId++;
-        TeamPlannerRobot P;
+        RoleAssignerRobot P;
         TeamPlannerAdminTeam PA;
         PA.previous_result.present = (*team_iter).previous_result_present();
         PA.previous_result.dynamic_role = StringToDynamicRole((*team_iter).previous_result_dynamic_role());
@@ -416,7 +416,7 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
         const std::vector<int>& opponents_labels,
         bool team_controls_ball, long controlBallByPlayerId,
         const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
-        const TeamPlannerParameters& options,
+        const RoleAssignerParameters& options,
         const std::vector<Geometry::Point>& parking_positions,
         const previous_used_ball_by_planner_t& previous_ball,
         const std::vector<final_planner_result_t>& previous_planner_results,
@@ -426,10 +426,10 @@ void fillTeamPlannerData(TeamPlannerData& tdp, game_state_e gamestate,
 {
     tdp.previous_ball = previous_ball;
     // calculate assignment for the given situation
-    vector<TeamPlannerRobot> Team = vector<TeamPlannerRobot>();
+    vector<RoleAssignerRobot> Team = vector<RoleAssignerRobot>();
     vector<TeamPlannerAdminTeam> TeamAdmin = vector<TeamPlannerAdminTeam>();
     for (unsigned idx = 0; idx < myTeam.size(); idx++) {
-        TeamPlannerRobot robot = {};
+        RoleAssignerRobot robot = {};
         TeamPlannerAdminTeam robot_admin = {};
         robot.robotId = robotIds[idx];
         robot.labelId = myTeam_labels[idx];
@@ -494,7 +494,7 @@ void xmlplanner(string input_filename) {
     team_formation_e robot_strategy_parameter_defense_formation = FORMATION_013;
 
 
-    TeamPlannerParameters parameters = {};
+    RoleAssignerParameters parameters = {};
     std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>();
     std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>();
     std::vector<int> myTeam_labels = std::vector<int>();
@@ -519,7 +519,7 @@ void xmlplanner(string input_filename) {
     std::vector<final_planner_result_t> previous_planner_results = std::vector<final_planner_result_t>();
 
 
-    std::vector<TeamPlannerRobot> Team = {};
+    std::vector<RoleAssignerRobot> Team = {};
     std::vector<TeamPlannerAdminTeam> TeamAdmin = {};
 
     std::vector<TeamPlannerOpponent> Opponents = {};
@@ -659,7 +659,7 @@ void xmlplanner(string input_filename) {
     string orginal_svgOutputFileName = parameters.svgOutputFileName;
     auto start = std::chrono::system_clock::now();
 
-    std::vector<PlayerPlannerResult> player_paths = {};
+    std::vector<RoleAssignerResult> player_paths = {};
 
     char buffer[250];
     sprintf(buffer, ".svg");
@@ -714,7 +714,7 @@ void xmlplanner(string input_filename) {
 
     }
 
-    TeamPlannerParameters tp_parameters = parameters;
+    RoleAssignerParameters tp_parameters = parameters;
     TeamPlannerOutput tp_output = {};
     auto tp_state_org = tp_state;
     teamplay.assign(tp_input, tp_state, tp_output, tp_parameters);

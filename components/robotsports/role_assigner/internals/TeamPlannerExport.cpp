@@ -10,13 +10,12 @@
 
 #include "GlobalPathPlanner.hpp"
 #include "SvgUtils.hpp"
-#include "TeamPlannerParameters.hpp"
-
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <sys/time.h>
 #include <cmath>
+#include "RoleAssignerParameters.hpp"
 
 namespace MRA {
 

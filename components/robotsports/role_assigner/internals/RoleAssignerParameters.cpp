@@ -3,7 +3,7 @@
  *  @brief    Options for generating the visibility graph and the path planner
  *  @curator Jürge van Eijck
  */
-#include "TeamPlannerParameters.hpp"
+#include "RoleAssignerParameters.hpp"
 
 #include <ostream>
 #include <sstream>
@@ -13,112 +13,112 @@ using namespace std;
 
 namespace MRA {
 
-bool TeamPlannerParameters::calculateAllPaths = true;
-double TeamPlannerParameters::minimumEdgeLength = 0.30;
-double TeamPlannerParameters::maximumEdgeLength = 4.00;
-double TeamPlannerParameters::minimumDistanceToEndPoint = 3.00;
-int TeamPlannerParameters::nrVerticesFirstCircle = 6;
-double TeamPlannerParameters::firstCircleRadius = 0.80;
-int TeamPlannerParameters::nrVerticesSecondCircle = 4;
-double TeamPlannerParameters::secondCircleRadius = 1.60;
-double TeamPlannerParameters::safetyFactor = 1.00;
-bool TeamPlannerParameters::addBarierVertices = true;
-bool TeamPlannerParameters::addUniformVertices = true;
-bool TeamPlannerParameters::manDefenseBetweenBallAndPlayer = true;
-double TeamPlannerParameters::dist_before_penalty_area_for_sweeper = 0.75;
-double TeamPlannerParameters::uniform_x_interval = 2.00;
-double TeamPlannerParameters::uniform_y_interval = 2.00;
-double TeamPlannerParameters::startingVelocityPenaltyFactor = 1.00;
-double TeamPlannerParameters::distToapplyBallApproachVertices = 10.00;
-bool TeamPlannerParameters::addBallApproachVertices = false;
-double TeamPlannerParameters::ballApproachVerticesRadius = 0.6;
-int TeamPlannerParameters::ballApproachNumberOfVertices = 8;
-double TeamPlannerParameters::grid_size = 0.75;
-int TeamPlannerParameters::nrDynamicPlannerIterations = 2;
-double TeamPlannerParameters::maxPossibleLinearSpeed = 1.5;
-double TeamPlannerParameters::maxPossibleLinearAcceleration = 3.0;
-std::string TeamPlannerParameters::svgOutputFileName = "";
-std::string TeamPlannerParameters::svgDefaultTargetColor = "red";
-std::string TeamPlannerParameters::svgBallColor = "orange";
-std::string TeamPlannerParameters::svgOriginalTargetColor = "darkred";
-std::string TeamPlannerParameters::svgTeamColor = "magenta";
-std::string TeamPlannerParameters::svgOpponentColor = "cyan";
-bool TeamPlannerParameters::svgDrawVelocity = true;
-bool TeamPlannerParameters::svgDrawEdges = false;
-bool TeamPlannerParameters::saveGridDataToFile = false;
-bool TeamPlannerParameters::svgRobotPlanner = false;
-double TeamPlannerParameters::interceptionChanceStartDistance = 1.0;
-double TeamPlannerParameters::interceptionChanceIncreasePerMeter = 0.25;
-double TeamPlannerParameters::interceptionChancePenaltyFactor = 4.0;
-double TeamPlannerParameters::grid_close_to_ball_normal_penalty = 17000;
-double TeamPlannerParameters::grid_close_to_ball_normal_radius = 3.0;
-double TeamPlannerParameters::grid_close_to_ball_restart_normal_penalty = 17000;
-double TeamPlannerParameters::grid_close_to_ball_restart_normal_radius = 3.0; // default the standard MSL rules, can be overwritten in ini file
-double TeamPlannerParameters::grid_close_to_ball_restart_penalty_penalty = 17000;
-double TeamPlannerParameters::grid_close_to_ball_restart_penalty_radius = 3.25;
-double TeamPlannerParameters::grid_close_to_ball_restart_dropball_penalty = 17000;
-double TeamPlannerParameters::grid_close_to_ball_restart_dropball_radius = 1.0; // default the standard MSL rules, can be overwritten in ini file
-double TeamPlannerParameters::grid_opponent_goal_clearance_x = 7.0;
-double TeamPlannerParameters::grid_opponent_goal_clearance_y = 2.5;
-double TeamPlannerParameters::grid_own_goal_clearance_x = 3.25;
-double TeamPlannerParameters::grid_own_goal_clearance_y = 1.00;
-int  TeamPlannerParameters::nr_robots_needed_for_pass_play = 2;
-int  TeamPlannerParameters::nr_attack_support_during_defensive_period = 0;
-bool TeamPlannerParameters::wait_on_non_optimal_position_during_prepare_phase = false;
-double TeamPlannerParameters::priority_block_min_distance = 0.5;
-double TeamPlannerParameters::priority_block_max_distance = 2.0;
-double TeamPlannerParameters::priority_block_max_distance_to_defense_line = 0.25;
-double TeamPlannerParameters::priority_block_max_ball_y = 0.0;
-double TeamPlannerParameters::priority_block_max_opponent_to_ball_dist = 3.0;
-bool TeamPlannerParameters::priority_block_check_ball_in_area = true;
-bool TeamPlannerParameters::priority_block_check_opponent_close_to_ball = true;
-bool TeamPlannerParameters::man_to_man_defense_during_normal_play = true;
-double TeamPlannerParameters::attack_supporter_extra_distance_to_stay_from_sideline = 0.75;
-double TeamPlannerParameters::auto_save_svg_period = 10.0;
-double TeamPlannerParameters::restart_receiver_ball_dist = 2.5;
-double TeamPlannerParameters::restart_shooter_ball_dist = 0.8;
-double TeamPlannerParameters::equality_cost_threshold = 1.5;
-bool TeamPlannerParameters::previous_role_bonus_must_be_applied = true;
-double TeamPlannerParameters::previous_role_end_pos_threshold = 1.5;
-double TeamPlannerParameters::previous_role_bonus_end_pos_radius = 5.0;
-bool TeamPlannerParameters::use_pass_to_position_for_attack_support = true;
-bool TeamPlannerParameters::man_to_man_defense_during_setplay_against = true;
-double  TeamPlannerParameters::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
-double TeamPlannerParameters::setplay_against_dist_to_opponent = 1.5;
+bool RoleAssignerParameters::calculateAllPaths = true;
+double RoleAssignerParameters::minimumEdgeLength = 0.30;
+double RoleAssignerParameters::maximumEdgeLength = 4.00;
+double RoleAssignerParameters::minimumDistanceToEndPoint = 3.00;
+int RoleAssignerParameters::nrVerticesFirstCircle = 6;
+double RoleAssignerParameters::firstCircleRadius = 0.80;
+int RoleAssignerParameters::nrVerticesSecondCircle = 4;
+double RoleAssignerParameters::secondCircleRadius = 1.60;
+double RoleAssignerParameters::safetyFactor = 1.00;
+bool RoleAssignerParameters::addBarierVertices = true;
+bool RoleAssignerParameters::addUniformVertices = true;
+bool RoleAssignerParameters::manDefenseBetweenBallAndPlayer = true;
+double RoleAssignerParameters::dist_before_penalty_area_for_sweeper = 0.75;
+double RoleAssignerParameters::uniform_x_interval = 2.00;
+double RoleAssignerParameters::uniform_y_interval = 2.00;
+double RoleAssignerParameters::startingVelocityPenaltyFactor = 1.00;
+double RoleAssignerParameters::distToapplyBallApproachVertices = 10.00;
+bool RoleAssignerParameters::addBallApproachVertices = false;
+double RoleAssignerParameters::ballApproachVerticesRadius = 0.6;
+int RoleAssignerParameters::ballApproachNumberOfVertices = 8;
+double RoleAssignerParameters::grid_size = 0.75;
+int RoleAssignerParameters::nrDynamicPlannerIterations = 2;
+double RoleAssignerParameters::maxPossibleLinearSpeed = 1.5;
+double RoleAssignerParameters::maxPossibleLinearAcceleration = 3.0;
+std::string RoleAssignerParameters::svgOutputFileName = "";
+std::string RoleAssignerParameters::svgDefaultTargetColor = "red";
+std::string RoleAssignerParameters::svgBallColor = "orange";
+std::string RoleAssignerParameters::svgOriginalTargetColor = "darkred";
+std::string RoleAssignerParameters::svgTeamColor = "magenta";
+std::string RoleAssignerParameters::svgOpponentColor = "cyan";
+bool RoleAssignerParameters::svgDrawVelocity = true;
+bool RoleAssignerParameters::svgDrawEdges = false;
+bool RoleAssignerParameters::saveGridDataToFile = false;
+bool RoleAssignerParameters::svgRobotPlanner = false;
+double RoleAssignerParameters::interceptionChanceStartDistance = 1.0;
+double RoleAssignerParameters::interceptionChanceIncreasePerMeter = 0.25;
+double RoleAssignerParameters::interceptionChancePenaltyFactor = 4.0;
+double RoleAssignerParameters::grid_close_to_ball_normal_penalty = 17000;
+double RoleAssignerParameters::grid_close_to_ball_normal_radius = 3.0;
+double RoleAssignerParameters::grid_close_to_ball_restart_normal_penalty = 17000;
+double RoleAssignerParameters::grid_close_to_ball_restart_normal_radius = 3.0; // default the standard MSL rules, can be overwritten in ini file
+double RoleAssignerParameters::grid_close_to_ball_restart_penalty_penalty = 17000;
+double RoleAssignerParameters::grid_close_to_ball_restart_penalty_radius = 3.25;
+double RoleAssignerParameters::grid_close_to_ball_restart_dropball_penalty = 17000;
+double RoleAssignerParameters::grid_close_to_ball_restart_dropball_radius = 1.0; // default the standard MSL rules, can be overwritten in ini file
+double RoleAssignerParameters::grid_opponent_goal_clearance_x = 7.0;
+double RoleAssignerParameters::grid_opponent_goal_clearance_y = 2.5;
+double RoleAssignerParameters::grid_own_goal_clearance_x = 3.25;
+double RoleAssignerParameters::grid_own_goal_clearance_y = 1.00;
+int  RoleAssignerParameters::nr_robots_needed_for_pass_play = 2;
+int  RoleAssignerParameters::nr_attack_support_during_defensive_period = 0;
+bool RoleAssignerParameters::wait_on_non_optimal_position_during_prepare_phase = false;
+double RoleAssignerParameters::priority_block_min_distance = 0.5;
+double RoleAssignerParameters::priority_block_max_distance = 2.0;
+double RoleAssignerParameters::priority_block_max_distance_to_defense_line = 0.25;
+double RoleAssignerParameters::priority_block_max_ball_y = 0.0;
+double RoleAssignerParameters::priority_block_max_opponent_to_ball_dist = 3.0;
+bool RoleAssignerParameters::priority_block_check_ball_in_area = true;
+bool RoleAssignerParameters::priority_block_check_opponent_close_to_ball = true;
+bool RoleAssignerParameters::man_to_man_defense_during_normal_play = true;
+double RoleAssignerParameters::attack_supporter_extra_distance_to_stay_from_sideline = 0.75;
+double RoleAssignerParameters::auto_save_svg_period = 10.0;
+double RoleAssignerParameters::restart_receiver_ball_dist = 2.5;
+double RoleAssignerParameters::restart_shooter_ball_dist = 0.8;
+double RoleAssignerParameters::equality_cost_threshold = 1.5;
+bool RoleAssignerParameters::previous_role_bonus_must_be_applied = true;
+double RoleAssignerParameters::previous_role_end_pos_threshold = 1.5;
+double RoleAssignerParameters::previous_role_bonus_end_pos_radius = 5.0;
+bool RoleAssignerParameters::use_pass_to_position_for_attack_support = true;
+bool RoleAssignerParameters::man_to_man_defense_during_setplay_against = true;
+double  RoleAssignerParameters::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
+double RoleAssignerParameters::setplay_against_dist_to_opponent = 1.5;
 
-bool TeamPlannerParameters::move_to_ball_left_field_position = true;
-bool TeamPlannerParameters::select_lowest_robot_nr_for_dynamic_role = true;
-int TeamPlannerParameters::preferredSetplayKicker = 0;
-int TeamPlannerParameters::preferredSetplayReceiver = 0;
-double TeamPlannerParameters::setplay_margin_to_penalty_area_side = 0.75;
-bool TeamPlannerParameters::interceptor_assign_use_ball_velocity = true;
-double TeamPlannerParameters::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
+bool RoleAssignerParameters::move_to_ball_left_field_position = true;
+bool RoleAssignerParameters::select_lowest_robot_nr_for_dynamic_role = true;
+int RoleAssignerParameters::preferredSetplayKicker = 0;
+int RoleAssignerParameters::preferredSetplayReceiver = 0;
+double RoleAssignerParameters::setplay_margin_to_penalty_area_side = 0.75;
+bool RoleAssignerParameters::interceptor_assign_use_ball_velocity = true;
+double RoleAssignerParameters::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
 
-int TeamPlannerParameters::dedicatedSweeper = 0;
-bool TeamPlannerParameters::autoAssignGoalie = false;
-double TeamPlannerParameters::outsideFieldMargin = 0.5;
-bool TeamPlannerParameters::lobShotWhenPossible = true;
-double TeamPlannerParameters::min_y_for_lob_shot = +0.25;
-double TeamPlannerParameters::kickoff_fp1_x = -1.00;
-double TeamPlannerParameters::kickoff_fp1_y =  0.00;
-double TeamPlannerParameters::kickoff_fp2_x = +1.70;
-double TeamPlannerParameters::kickoff_fp2_y = -1.50;
-double TeamPlannerParameters::kickoff_fp3_x = -5.00;
-double TeamPlannerParameters::kickoff_fp3_y = -0.75;
-double TeamPlannerParameters::kickoff_fp4_x = +5.00;
-double TeamPlannerParameters::kickoff_fp4_y = -0.75;
+int RoleAssignerParameters::dedicatedSweeper = 0;
+bool RoleAssignerParameters::autoAssignGoalie = false;
+double RoleAssignerParameters::outsideFieldMargin = 0.5;
+bool RoleAssignerParameters::lobShotWhenPossible = true;
+double RoleAssignerParameters::min_y_for_lob_shot = +0.25;
+double RoleAssignerParameters::kickoff_fp1_x = -1.00;
+double RoleAssignerParameters::kickoff_fp1_y =  0.00;
+double RoleAssignerParameters::kickoff_fp2_x = +1.70;
+double RoleAssignerParameters::kickoff_fp2_y = -1.50;
+double RoleAssignerParameters::kickoff_fp3_x = -5.00;
+double RoleAssignerParameters::kickoff_fp3_y = -0.75;
+double RoleAssignerParameters::kickoff_fp4_x = +5.00;
+double RoleAssignerParameters::kickoff_fp4_y = -0.75;
 
 
-double TeamPlannerParameters::kickoff_against_fp1_x = 1.87;
-double TeamPlannerParameters::kickoff_against_fp1_y = -1.87;
-double TeamPlannerParameters::kickoff_against_fp2_x = -1.87;
-double TeamPlannerParameters::kickoff_against_fp2_y = -1.87;
-double TeamPlannerParameters::kickoff_against_fp3_x = 3.5;
-double TeamPlannerParameters::kickoff_against_fp3_y = -0.4;
-double TeamPlannerParameters::kickoff_against_fp4_x = -3.5;
-double TeamPlannerParameters::kickoff_against_fp4_y = -0.4;
+double RoleAssignerParameters::kickoff_against_fp1_x = 1.87;
+double RoleAssignerParameters::kickoff_against_fp1_y = -1.87;
+double RoleAssignerParameters::kickoff_against_fp2_x = -1.87;
+double RoleAssignerParameters::kickoff_against_fp2_y = -1.87;
+double RoleAssignerParameters::kickoff_against_fp3_x = 3.5;
+double RoleAssignerParameters::kickoff_against_fp3_y = -0.4;
+double RoleAssignerParameters::kickoff_against_fp4_x = -3.5;
+double RoleAssignerParameters::kickoff_against_fp4_y = -0.4;
 
-TeamPlannerParameters::TeamPlannerParameters() {
+RoleAssignerParameters::RoleAssignerParameters() {
 
 }
 
@@ -148,7 +148,7 @@ std::string FormationAsString(team_formation_e formation) {
   return formationString;
 }
 
-std::string TeamPlannerParameters::toString() const  {
+std::string RoleAssignerParameters::toString() const  {
     std::stringstream buffer;
     buffer << "calculateAllPaths = " << calculateAllPaths << std::endl;
     buffer << "minimumEdgeLength = " << minimumEdgeLength  << std::endl;

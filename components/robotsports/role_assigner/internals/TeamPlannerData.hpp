@@ -8,12 +8,12 @@
 
 #include "FieldConfig.hpp"
 #include "TeamPlannerOpponent.hpp"
-#include "TeamPlannerParameters.hpp"
 #include "TeamPlannerResult.hpp"
-#include "TeamPlannerRobot.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 
 #include <vector>
+#include "RoleAssignerParameters.hpp"
+#include "RoleAssignerRobot.hpp"
 
 namespace MRA {
 
@@ -41,19 +41,6 @@ public:
     std::string toString(bool full_details) const;
 };
 
-// class with state data (data for State.proto)
-class TeamPlannerState {
-public:
-    previous_used_ball_by_planner_t previous_ball;
-    std::vector<final_planner_result_t> previous_result;
-};
-
-// class with outputs (data for Output.proto)
-class TeamPlannerOutput {
-public:
-    std::vector<PlayerPlannerResult> player_paths;
-    std::string pathToString();
-};
 
 
 // part of  input data
@@ -74,7 +61,7 @@ class TeamPlannerAdminTeam {
 public:
     bool assigned = false;
     long robotId = -1;
-    PlayerPlannerResult result = {};
+    RoleAssignerResult result = {};
     final_planner_result_t previous_result;
     // compare function to sort vector of the class on the member robotId
     static inline bool CompareRobotId(const TeamPlannerAdminTeam& r1, const TeamPlannerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
@@ -94,7 +81,7 @@ public:
     TeamPlannerBall ball;
 
     std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
-    std::vector<TeamPlannerRobot> team;
+    std::vector<RoleAssignerRobot> team;
     std::vector<TeamPlannerOpponent> opponents;
 
     std::vector<MRA::Geometry::Point> parking_positions;
@@ -104,6 +91,20 @@ public:
     MRA::FieldConfig fieldConfig;
 };
 
+
+// class with state data (data for State.proto)
+class TeamPlannerState {
+public:
+    previous_used_ball_by_planner_t previous_ball;
+    std::vector<final_planner_result_t> previous_result;
+};
+
+// class with outputs (data for Output.proto)
+class TeamPlannerOutput {
+public:
+    std::vector<RoleAssignerResult> player_paths;
+    std::string pathToString();
+};
 
 //-----------------------------------------------------------------------
 // Internal administration classes
@@ -120,7 +121,7 @@ public:
     bool passIsRequired;
     pass_data_t pass_data;
     MRA::FieldConfig fieldConfig;
-    TeamPlannerParameters parameters;
+    RoleAssignerParameters parameters;
 
 
     // based on inputs
@@ -132,7 +133,7 @@ public:
 
     // internal administration
     game_state_e original_gamestate;
-    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
+    std::vector<RoleAssignerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
     std::vector<TeamPlannerAdminTeam> team_admin = {};
     std::vector<TeamPlannerOpponent> opponents = {};
     std::vector<TeamPlannerAdminOpponent> opponents_admin  = {};

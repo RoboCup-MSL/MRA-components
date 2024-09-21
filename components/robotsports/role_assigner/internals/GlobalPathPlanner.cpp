@@ -88,7 +88,7 @@ GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
     m_opponents(std::vector<MRA::Geometry::Position>()),
     m_approachVertices(std::vector<Vertex*>()),
     m_addPoints(std::vector<Vertex*>()),
-    m_options(TeamPlannerParameters()),
+    m_options(RoleAssignerParameters()),
     m_targetFunction(planner_target_e::GOTO_BALL),
     m_maxFieldX(0),
     m_maxFieldY(0)
@@ -121,13 +121,13 @@ void GlobalPathPlanner::clearApproachVertices() {
     m_approachVertices.clear();
 }
 
-void GlobalPathPlanner::setOptions(const TeamPlannerParameters& options) {
+void GlobalPathPlanner::setOptions(const RoleAssignerParameters& options) {
     m_options = options;
 }
 
 void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
                                     const TeamPlannerBall& ball,
-                                    const std::vector<TeamPlannerRobot>& teammates, /* filtered based on robot to calculate the graph for */
+                                    const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                                     const std::vector<TeamPlannerOpponent>& opponents,
         const std::vector<MRA::Vertex>& targetPos,
         planner_target_e targetFunction,

@@ -33,7 +33,7 @@ TeamPlay::TeamPlay() : m_gridFileNumber(0) {
 void TeamPlay::assign(const TeamPlannerInput& input,
             TeamPlannerState& r_state,
             TeamPlannerOutput& r_output,
-            const TeamPlannerParameters& parameters) {
+            const RoleAssignerParameters& parameters) {
     // convert to teamplannerData;
     TeamPlannerData teamplannerData = {};
     teamplannerData.parameters = parameters;
@@ -57,7 +57,7 @@ void TeamPlay::assign(const TeamPlannerInput& input,
         teamplannerData.team_admin.push_back(tp_admin);
     }
 
-    std::vector<PlayerPlannerResult> assign_results = assign(teamplannerData);
+    std::vector<RoleAssignerResult> assign_results = assign(teamplannerData);
     r_state.previous_ball.present = teamplannerData.ball.is_valid;
     r_state.previous_ball.x  = teamplannerData.ball.position.x;
     r_state.previous_ball.y  = teamplannerData.ball.position.y;
@@ -75,7 +75,7 @@ void TeamPlay::assign(const TeamPlannerInput& input,
  * Internally the method will based on the game-situation call an other internal method which handles the specific game situation.
  */
 
-std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerData)
+std::vector<RoleAssignerResult> TeamPlay::assign(TeamPlannerData& teamplannerData)
 {
     teamplannerData.original_gamestate = teamplannerData.gamestate;
 
@@ -102,7 +102,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
 //        teamplannerData.team_admin.push_back(ta);
     }
     // first sort TeamPlannerTeam on robotId
-    sort(teamplannerData.team.begin(),teamplannerData.team.end(), TeamPlannerRobot::CompareRobotId);
+    sort(teamplannerData.team.begin(),teamplannerData.team.end(), RoleAssignerRobot::CompareRobotId);
     sort(teamplannerData.team_admin.begin(),teamplannerData.team_admin.end(), TeamPlannerAdminTeam::CompareRobotId);
     for (auto idx = 0u; idx< teamplannerData.team.size(); idx++) {
         if (teamplannerData.team[idx].robotId == teamplannerData.this_player_robotId) {
@@ -125,7 +125,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
         }
     }
 
-    std::vector<PlayerPlannerResult> player_paths;
+    std::vector<RoleAssignerResult> player_paths;
     if (teamplannerData.gamestate != game_state_e::NONE) {
         // printAssignInputs(gamestate, ball, Team, Opponents, parameters,  parking_positions, ball_pickup_position, passIsRequired, pass_data);
     }
@@ -136,7 +136,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             (teamplannerData.gamestate == game_state_e::GOAL_AGAINST)) {
         // unhandled game situations: cards and goals are not passed to the team planner via the game state-machine
         for (unsigned idx = 0; idx < teamplannerData.team.size(); idx++) {
-            PlayerPlannerResult player_result(teamplannerData.gamestate);
+            RoleAssignerResult player_result(teamplannerData.gamestate);
             player_paths.push_back(player_result);
         }
         return player_paths; // no path will be planned if game state is NONE
@@ -308,7 +308,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     bool thisPlayerHasUnallowedPath = false;
     bool thisPlayerStartsAtUnallowedPosition = false;
     for (unsigned idx = 0; idx < teamplannerData.team.size(); idx++) {
-        PlayerPlannerResult player_result;
+        RoleAssignerResult player_result;
         if (teamplannerData.team_admin[idx].assigned) {
             bool pathOK = stayPathWithinBoundaries(teamplannerData.fieldConfig, teamplannerData.team_admin[idx].result);
             player_result = teamplannerData.team_admin[idx].result;
@@ -337,7 +337,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             robotIds.push_back(teamplannerData.team[r_idx].robotId);
             teamTypes.push_back(teamplannerData.team[r_idx].player_type);
         }
-        TeamPlannerParameters parameters = teamplannerData.parameters;
+        RoleAssignerParameters parameters = teamplannerData.parameters;
         std::string save_name = parameters.svgOutputFileName;
         if (thisPlayerHasUnallowedPath) {
             if (thisPlayerStartsAtUnallowedPosition) {
@@ -359,7 +359,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
             auto end_position = path[path.size()-1];
             if (not teamplannerData.fieldConfig.isInReachableField(end_position.x,end_position.y)) {
                 // end position is unreachable: create empty path
-                player_paths[teamplannerData.this_player_idx] = PlayerPlannerResult();
+                player_paths[teamplannerData.this_player_idx] = RoleAssignerResult();
             }
         }
     }
@@ -367,7 +367,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     // ----------------------------------------------------------
     // Put the player_paths in the same order as Team was defined by the client
     // Can be remove if client provide team in correct ordere
-    std::vector<TeamPlannerRobot> restored_order_team = {};
+    std::vector<RoleAssignerRobot> restored_order_team = {};
     std::vector<TeamPlannerAdminTeam> restored_order_team_admin = {};
 
     for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
@@ -381,7 +381,7 @@ std::vector<PlayerPlannerResult> TeamPlay::assign(TeamPlannerData& teamplannerDa
     teamplannerData.team = restored_order_team;
     teamplannerData.team_admin = restored_order_team_admin;
 
-    std::vector<PlayerPlannerResult> player_paths_in_correct_order;
+    std::vector<RoleAssignerResult> player_paths_in_correct_order;
     for (unsigned team_idx = 0; team_idx < teamplannerData.team_admin.size(); team_idx++) {
         player_paths_in_correct_order.push_back(teamplannerData.team_admin[team_idx].result);
     }
@@ -402,7 +402,7 @@ TeamPlay::calculatePathForRobot (TeamPlannerData &r_teamplannerData, unsigned id
         avoidBallPath = false;
     }
 
-    vector<TeamPlannerRobot> myTeam = getTeamMates (r_teamplannerData, idx, true);
+    vector<RoleAssignerRobot> myTeam = getTeamMates (r_teamplannerData, idx, true);
     GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_teamplannerData.fieldConfig); // create robot planner
     visibilityGraph.setOptions (r_teamplannerData.parameters);
     // create list of possible targets for robot-planner
@@ -427,7 +427,7 @@ TeamPlay::calculatePathForRobot (TeamPlannerData &r_teamplannerData, unsigned id
 
 //---------------------------------------------------------------------------------------------------------------------
 // check if the given path is always within the boundaries
-bool TeamPlay::stayPathWithinBoundaries(const FieldConfig& fieldConfig, const PlayerPlannerResult& player_path) {
+bool TeamPlay::stayPathWithinBoundaries(const FieldConfig& fieldConfig, const RoleAssignerResult& player_path) {
     bool ok = true;
     // check path-pieces
     for (auto it = player_path.path.begin(); it != player_path.path.end(); ++it ) {
@@ -556,7 +556,7 @@ bool TeamPlay::AssignAnyRobotPreferedSetPlayer(TeamPlannerData&  teamplanner_dat
 
     if (foundPlayer != -1) {
         // robot claimed role+position and that robot has lower id than this robot.
-        teamplanner_data.team_admin[foundPlayer].result = PlayerPlannerResult(
+        teamplanner_data.team_admin[foundPlayer].result = RoleAssignerResult(
             teamplanner_data.gamestate,
             dr_role,
             teamplanner_data.incrementAndGetRank(),
@@ -599,7 +599,7 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
             }
             if (teamplanner_data.team[idx].robotId == teamplanner_data.pass_data.target_id) {
                 /* this player is destination of the pass */
-                teamplanner_data.team_admin[idx].result = PlayerPlannerResult(
+                teamplanner_data.team_admin[idx].result = RoleAssignerResult(
                     teamplanner_data.gamestate,
                     dr_role,
                     teamplanner_data.incrementAndGetRank(),
@@ -696,7 +696,7 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
     found = bestPlayerIdx != BEST_PLAYER_UNASSIGNED;
     if (found) {
         // fill best robot data in planner result.
-        teamplanner_data.team_admin[bestPlayerIdx].result = PlayerPlannerResult(
+        teamplanner_data.team_admin[bestPlayerIdx].result = RoleAssignerResult(
             teamplanner_data.gamestate,
             dr_role,
             teamplanner_data.incrementAndGetRank(),
@@ -714,8 +714,8 @@ bool TeamPlay::assignAnyToPosition(TeamPlannerData&  teamplanner_data, dynamic_r
 // return true if for the new path the costs are lower than the costs of the lowest path. If lower check apply hysteresis threshold is passed.
 // update lowest_pathcost only if path is faster and newCost are lower than current lowest_pathcost. This to prevent slippery target value.
 bool TeamPlay::check_better_path_found(double& lowest_pathcost, double newPathCost,
-        double fastestPathCost, const PlayerPlannerResult& new_path,
-        const PlayerPlannerResult& fastest_path, double equality_cost_threshold)
+        double fastestPathCost, const RoleAssignerResult& new_path,
+        const RoleAssignerResult& fastest_path, double equality_cost_threshold)
 {
     bool set_new_path = false;
     if (newPathCost < (fastestPathCost - equality_cost_threshold)) {
@@ -831,7 +831,7 @@ void TeamPlay::assignGoalie(TeamPlannerData& teamplanner_data)
     if (keeperFound) {
         teamplanner_data.team_admin[keeper_idx].assigned = true;
         defend_info_t defend_info = {};
-        teamplanner_data.team_admin[keeper_idx].result = PlayerPlannerResult(
+        teamplanner_data.team_admin[keeper_idx].result = RoleAssignerResult(
             teamplanner_data.gamestate,
             teamplanner_data.gamestate == game_state_e::PARKING ? dr_PARKING : dr_GOALKEEPER,
             teamplanner_data.incrementAndGetRank(),
@@ -875,7 +875,7 @@ void TeamPlay::assignTooLongInPenaltyAreaPlayers(TeamPlannerData&  teamplanner_d
                             }
                         }
                         teamplanner_data.team_admin[idx].assigned = true;
-                        teamplanner_data.team_admin[idx].result = PlayerPlannerResult(
+                        teamplanner_data.team_admin[idx].result = RoleAssignerResult(
                             teamplanner_data.gamestate,
                             dr_DEFENDER,
                             teamplanner_data.incrementAndGetRank(),
@@ -905,7 +905,7 @@ void TeamPlay::assignTooLongInPenaltyAreaPlayers(TeamPlannerData&  teamplanner_d
                             }
                         }
                         teamplanner_data.team_admin[idx].assigned = true;
-                        teamplanner_data.team_admin[idx].result = PlayerPlannerResult(
+                        teamplanner_data.team_admin[idx].result = RoleAssignerResult(
                                                     teamplanner_data.gamestate,
                                                     dr_DEFENDER,
                                                     teamplanner_data.incrementAndGetRank(),
@@ -920,8 +920,8 @@ void TeamPlay::assignTooLongInPenaltyAreaPlayers(TeamPlannerData&  teamplanner_d
 }
 
 //----------------------------------------------------------------------------------------
-vector<TeamPlannerRobot> TeamPlay::getTeamMates(const TeamPlannerData& teamplanner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition) {
-    vector<TeamPlannerRobot> teammates = {};
+vector<RoleAssignerRobot> TeamPlay::getTeamMates(const TeamPlannerData& teamplanner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition) {
+    vector<RoleAssignerRobot> teammates = {};
     for (unsigned int idx = 0; idx < teamplanner_data.team.size(); idx++) {
         if (idx != meIdx) {
             teammates.push_back(teamplanner_data.team[idx]);
@@ -929,7 +929,7 @@ vector<TeamPlannerRobot> TeamPlay::getTeamMates(const TeamPlannerData& teamplann
                 //add target position as barrier
                 if (teamplanner_data.team_admin[idx].result.path.size() > 0) {
                     planner_piece_t last_piece = teamplanner_data.team_admin[idx].result.path[teamplanner_data.team_admin[idx].result.path.size()-1];
-                    TeamPlannerRobot barrierRobot = {};
+                    RoleAssignerRobot barrierRobot = {};
                     barrierRobot.position = Geometry::Position(last_piece.x, last_piece.y);
                     teammates.push_back(barrierRobot);
                 }
@@ -1028,7 +1028,7 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
     targetPos.push_back(Vertex(teamplanner_data.ball.position, 0));
     std::vector<planner_piece_t> path;
 
-    vector<TeamPlannerRobot> myTeam = getTeamMates(teamplanner_data, interceptorIdx, true);
+    vector<RoleAssignerRobot> myTeam = getTeamMates(teamplanner_data, interceptorIdx, true);
     bool stay_in_playing_field = stayInPlayingField (teamplanner_data.gamestate);
 
     if (nrDynamicPlannerIterations <= 0) {
@@ -1038,7 +1038,7 @@ void TeamPlay::ReplanInterceptor(unsigned interceptorIdx, TeamPlannerData&  team
         // when ball is obstacle or no iterations for dynamic planner is defined.
         GlobalPathPlanner visibilityGraph = GlobalPathPlanner(teamplanner_data.fieldConfig);
         visibilityGraph.setOptions(teamplanner_data.parameters);
-        vector<TeamPlannerRobot> myTeam = getTeamMates(teamplanner_data, interceptorIdx, false);
+        vector<RoleAssignerRobot> myTeam = getTeamMates(teamplanner_data, interceptorIdx, false);
         bool stay_in_playing_field = stayInPlayingField (teamplanner_data.gamestate);
         visibilityGraph.createGraph(teamplanner_data.team[interceptorIdx].position,
                                     teamplanner_data.team[interceptorIdx].velocity, teamplanner_data.ball, myTeam, teamplanner_data.opponents,
@@ -1099,7 +1099,7 @@ void TeamPlay::assignParkingPositions(TeamPlannerData& teamplanner_data) {
     for (auto idx = 0u; idx < teamplanner_data.team.size(); idx++) {
         if (teamplanner_data.team[idx].player_type != player_type_e::GOALIE) {
             // fill best robot data in planner result.
-            teamplanner_data.team_admin[idx].result = PlayerPlannerResult(
+            teamplanner_data.team_admin[idx].result = RoleAssignerResult(
                 teamplanner_data.gamestate,
                 dynamic_role_e::dr_PARKING,
                 teamplanner_data.incrementAndGetRank(),
@@ -1158,7 +1158,7 @@ void TeamPlay::assignBeginPositions(TeamPlannerData& teamplanner_data) {
             }
 
             // fill best robot data in planner result.
-            teamplanner_data.team_admin[idx].result = PlayerPlannerResult(
+            teamplanner_data.team_admin[idx].result = RoleAssignerResult(
                 teamplanner_data.gamestate,
                 dynamic_role_e::dr_BEGIN_POSITION,
                 teamplanner_data.incrementAndGetRank(),

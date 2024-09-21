@@ -12,7 +12,7 @@
 
 namespace MRA {
 // Constructing a new object will set the default options.
-class TeamPlannerParameters {
+class RoleAssignerParameters {
 public:
     // Calculate for all player a path, otherwise stop if own path is calculated.
     static bool calculateAllPaths;
@@ -266,7 +266,7 @@ public:
     static double kickoff_against_fp4_x;
     static double kickoff_against_fp4_y;
 
-    TeamPlannerParameters();
+    RoleAssignerParameters();
     std::string toString() const;
 };
 

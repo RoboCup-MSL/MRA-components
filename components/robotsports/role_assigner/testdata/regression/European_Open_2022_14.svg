@@ -22,18 +22,18 @@ file: output_team/European_Open_2022_14.svg
 	team:
 		R01 = x: 1.39 y: -4.72 z:0.00 rx:0.00 ry:0.00 rz:-0.86 vel: x: 1.54 y: 0.05 z:0.00 rx:0.00 ry:0.00 rz:-0.66 label: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: INTERCEPTOR end-pos x: 6.11 y: -2.43 target: Goto ball ts: 44768.70
+			prev result:  true role: INTERCEPTOR end-pos x: 6.11 y: -2.43 target: unknown target (ERROR situation) ts: 44768.70
 		R02 = x: 0.25 y: -8.69 z:0.00 rx:0.00 ry:0.00 rz:-0.23 vel: x: -0.05 y: -0.08 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = GOALIE (2)
 			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: GOALKEEPER end-pos x: 0.00 y: -8.49 target: Goto ball ts: 44769.30
+			prev result:  true role: GOALKEEPER end-pos x: 0.00 y: -8.49 target: unknown target (ERROR situation) ts: 44769.30
 		R03 = x: 0.47 y: -6.68 z:0.00 rx:0.00 ry:0.00 rz:-0.62 vel: x: 0.80 y: -0.16 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SETPLAY_KICKER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: SWEEPER end-pos x: 0.75 y: -6.75 target: Goto ball ts: 44768.80
+			prev result:  true role: SWEEPER end-pos x: 0.75 y: -6.75 target: unknown target (ERROR situation) ts: 44768.80
 		R04 = x: 0.11 y: -3.48 z:0.00 rx:0.00 ry:0.00 rz:-2.12 vel: x: -0.03 y: -0.71 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: DEFENDER end-pos x: -0.12 y: -3.59 target: Goto ball ts: 44768.90
+			prev result:  true role: DEFENDER end-pos x: -0.12 y: -3.59 target: unknown target (ERROR situation) ts: 44768.90
 	opponents:
-		player[0] = position x: 0.23 y: -0.57 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
+		player[0] = position x: 0.23 y: -0.57 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.69 y: 0.88 z:0.00 rx:0.00 ry:0.00 rz:0.00
 paths:
 
 Player 0 (id: 1) : 
@@ -278,11 +278,12 @@ PARKING_DISTANCE_TO_LINE = 0
              ball_radius="0.110" field_markings_width="0.123" parking_area_width="0.500" parking_area_length="0.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.000" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
   <tns:GameState>Throwin</tns:GameState>
+  <tns:Ball x="6.05" y="-4.14" velx="0.00" vely="0.00"/>
   <tns:Team id="1" label="1" x="1.391" y="-4.720" rz="-0.857" velx="1.544" vely="0.047" velrz="-0.661"     previous_result_present="true"  previous_result_ts="44768.7" previous_result_x="6.10937" previous_result_y="-2.42878" previous_result_dynamic_role="INTERCEPTOR"/>
   <tns:Team id="2" label="2" x="0.252" y="-8.690" rz="-0.230" velx="-0.049" vely="-0.083" velrz="0.000"  isGoalie="true"     previous_result_present="true"  previous_result_ts="44769.3" previous_result_x="0" previous_result_y="-8.49" previous_result_dynamic_role="GOALKEEPER"/>
   <tns:Team id="3" label="3" x="0.474" y="-6.685" rz="-0.624" velx="0.799" vely="-0.162" velrz="0.000"     previous_result_present="true"  previous_result_ts="44768.8" previous_result_x="0.75" previous_result_y="-6.75" previous_result_dynamic_role="SWEEPER"/>
   <tns:Team id="4" label="4" x="0.109" y="-3.483" rz="-2.119" velx="-0.025" vely="-0.706" velrz="0.000"     previous_result_present="true"  previous_result_ts="44768.9" previous_result_x="-0.123" previous_result_y="-3.59" previous_result_dynamic_role="DEFENDER"/>
-  <tns:Opponent id="1" label="1" x="0.229" y="-0.569" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="1" label="1" x="0.229" y="-0.569" rz="0.000" velx="0.685" vely="0.875" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="44768.809" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>

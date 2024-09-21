@@ -7,7 +7,7 @@
 file: output_team/reachable_position_9.svg
 
 
-	gamestate = Normal defend (3)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "FREE"
 	Ball: position: x: 0.00 y: 17.50 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
@@ -32,7 +32,7 @@ Player 0 (id: 1) :
 	Target position : x: -3.00 y: -4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140729717951744 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 139750808746664 between_ball_and_defending_pos: false dist_from_defending_id: 0.00
 Path[0]: x: 0.00 y: 0.00 cost: 0.00 target: Goto ball (0)
 Path[0]: x: -0.25 y: 2.75 cost: 3.76 target: Goto ball (0)
 Path[0]: x: -0.25 y: 4.75 cost: 5.76 target: Goto ball (0)
@@ -238,6 +238,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
+  <tns:Ball x="0.00" y="17.50" velx="0.00" vely="0.00"/>
   <tns:Team id="1" label="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="17.500" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
@@ -255,7 +256,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal defend</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: INTERCEPTOR</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: -4.50</text>

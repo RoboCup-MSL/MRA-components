@@ -23,7 +23,7 @@ file: output_team/throwin_3.svg
 	team:
 		R03 = x: 2.96 y: -3.77 z:0.00 rx:0.00 ry:0.00 rz:-0.84 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: SETPLAY_RECEIVER end-pos x: 3.60 y: -1.90 target: Goto ball ts: 77203.90
+			prev result:  true role: SETPLAY_RECEIVER end-pos x: 3.60 y: -1.90 target: unknown target (ERROR situation) ts: 77203.90
 		R01 = x: 0.22 y: -8.45 z:0.00 rx:0.00 ry:0.00 rz:1.46 vel: x: 0.18 y: 0.12 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = GOALIE (2)
 			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
@@ -31,7 +31,8 @@ file: output_team/throwin_3.svg
 			control-ball: true passBall: true role: SETPLAY_KICKER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
-		player[0] = position x: 2.62 y: -0.78 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
+		player[0] = position x: -1.39 y: -9.05 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.18 y: 0.03 z:0.00 rx:0.00 ry:0.00 rz:0.00
+		player[1] = position x: 2.62 y: -0.78 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: -0.09 y: 0.09 z:0.00 rx:0.00 ry:0.00 rz:0.00
 paths:
 
 Player 0 (id: 3) : 
@@ -265,10 +266,12 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Throwin</tns:GameState>
+  <tns:Ball x="5.80" y="-1.33" velx="-0.11" vely="0.05"/>
   <tns:Team id="3" label="3" x="2.956" y="-3.769" rz="-0.836" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="77203.9" previous_result_x="3.59525" previous_result_y="-1.89933" previous_result_dynamic_role="SETPLAY_RECEIVER"/>
   <tns:Team id="1" label="1" x="0.219" y="-8.445" rz="1.461" velx="0.184" vely="0.115" velrz="0.000"  isGoalie="true"    />
   <tns:Team id="4" label="4" x="6.081" y="-1.547" rz="0.934" velx="-0.076" vely="0.194" velrz="0.000"   controlBall="true"  passedBall="true" />
-  <tns:Opponent id="1" label="2" x="2.623" y="-0.783" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="1" label="1" x="-1.388" y="-9.050" rz="0.000" velx="0.179" vely="0.032" velrz="0.000" />
+  <tns:Opponent id="2" label="2" x="2.623" y="-0.783" rz="0.000" velx="-0.085" vely="0.086" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="77204.002" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAMMATE">
     <tns:PassData valid="true" origin_x="6.081" origin_y="-1.547" target_x="-0.002" target_y="-5.625" velocity="0.000" angle="0.000" ts="77203.985" target_id="0"/>
@@ -306,10 +309,13 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="6.50cm" y="19.50cm" width="2.00cm" height="0.50cm"  fill="powderblue" stroke="white" stroke-width="0.125cm"/>
 <text x="7.10cm" y="19.88cm" fill="darkred">OWN</text>
 <!-- Opponent -->
+<rect x="5.86cm" y="19.30cm" width="0.50cm" height="0.50cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="5.95cm" y="19.71cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
+<!-- Opponent -->
 <rect x="9.87cm" y="11.03cm" width="0.50cm" height="0.50cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
-<text x="9.96cm" y="11.45cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
+<text x="9.96cm" y="11.45cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
 <!-- ME -->
-<rect x="7.47cm" y="18.70cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<rect x="10.21cm" y="14.02cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- Teammate -->
 <rect x="7.47cm" y="18.70cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>

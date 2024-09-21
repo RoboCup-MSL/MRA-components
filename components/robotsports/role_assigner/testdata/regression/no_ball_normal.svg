@@ -7,7 +7,7 @@
 file: output_team/no_ball_normal.svg
 
 
-	gamestate = Normal defend (3)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "FREE"
 	Ball: position: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
@@ -49,7 +49,7 @@ Player 0 (id: 1) :
 	Target position : x: 3.00 y: -4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731179359488 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94708156825904 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[0]: x: 1.00 y: -3.00 cost: 0.00 target: goto target position (7)
 Path[0]: x: 3.00 y: -4.50 cost: 4.53 target: goto target position (7)
 
@@ -59,7 +59,7 @@ Player 1 (id: 2) :
 	Target position : x: 3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731179359488 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94708156825904 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[1]: x: -2.00 y: 4.00 cost: 0.00 target: goto target position (7)
 Path[1]: x: -0.25 y: 4.75 cost: 4.69 target: goto target position (7)
 Path[1]: x: 1.75 y: 4.75 cost: 8.82 target: goto target position (7)
@@ -71,7 +71,7 @@ Player 2 (id: 3) :
 	Target position : x: -3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731179359488 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94708156825904 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: 2.00 y: 1.00 cost: 0.00 target: goto target position (7)
 Path[2]: x: 1.00 y: 0.40 cost: 5.23 target: goto target position (7)
 Path[2]: x: -2.00 y: 0.40 cost: 12.85 target: goto target position (7)
@@ -86,7 +86,7 @@ Player 3 (id: 4) :
 	Target position : x: -3.00 y: -4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731179359488 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94708156825904 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -2.00 y: -3.00 cost: 0.00 target: goto target position (7)
 Path[3]: x: -2.25 y: -5.25 cost: 4.31 target: goto target position (7)
 Path[3]: x: -3.00 y: -4.50 cost: 5.78 target: goto target position (7)
@@ -326,7 +326,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal defend</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: SWEEPER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.00 y: -4.50</text>

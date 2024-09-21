@@ -7,7 +7,7 @@
 file: output_team/normal_defend_5.svg
 
 
-	gamestate = Normal defend (3)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "FREE"
 	Ball: position: x: -3.86 y: -4.62 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
@@ -22,7 +22,7 @@ file: output_team/normal_defend_5.svg
 	team:
 		R03 = x: -1.91 y: -5.39 z:0.00 rx:0.00 ry:0.00 rz:2.40 vel: x: 1.48 y: 0.23 z:0.00 rx:0.00 ry:0.00 rz:-0.64 label: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: SWEEPER end-pos x: 2.25 y: -4.50 target: Goto ball ts: 76548.20
+			prev result:  true role: SWEEPER end-pos x: 2.25 y: -4.50 target: unknown target (ERROR situation) ts: 76548.20
 		R01 = x: 0.02 y: -8.45 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.01 y: 0.01 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = GOALIE (2)
 			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
@@ -30,6 +30,8 @@ file: output_team/normal_defend_5.svg
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
+		player[0] = position x: -2.98 y: -9.02 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: -0.48 y: 0.19 z:0.00 rx:0.00 ry:0.00 rz:0.00
+		player[1] = position x: -1.76 y: -9.10 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.87 y: 0.41 z:0.00 rx:0.00 ry:0.00 rz:0.00
 paths:
 
 Player 0 (id: 3) : 
@@ -265,9 +267,12 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
+  <tns:Ball x="-3.86" y="-4.62" velx="0.00" vely="0.00"/>
   <tns:Team id="3" label="3" x="-1.906" y="-5.395" rz="2.402" velx="1.483" vely="0.234" velrz="-0.641"     previous_result_present="true"  previous_result_ts="76548.2" previous_result_x="2.25" previous_result_y="-4.5" previous_result_dynamic_role="SWEEPER"/>
   <tns:Team id="1" label="1" x="0.016" y="-8.448" rz="0.002" velx="0.015" vely="0.015" velrz="0.000"  isGoalie="true"    />
   <tns:Team id="4" label="4" x="1.630" y="1.124" rz="0.168" velx="0.967" vely="-0.118" velrz="0.000"    />
+  <tns:Opponent id="1" label="1" x="-2.976" y="-9.019" rz="0.000" velx="-0.480" vely="0.194" velrz="0.000" />
+  <tns:Opponent id="2" label="2" x="-1.761" y="-9.096" rz="0.000" velx="0.871" vely="0.415" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="76548.335" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
@@ -284,7 +289,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal defend</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: INTERCEPTOR</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.86 y: -4.62</text>
@@ -304,8 +309,14 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="6.50cm" y="1.00cm" width="2.00cm" height="0.50cm" fill="plum" stroke="white" stroke-width="0.125cm"/>
 <rect x="6.50cm" y="19.50cm" width="2.00cm" height="0.50cm"  fill="powderblue" stroke="white" stroke-width="0.125cm"/>
 <text x="7.10cm" y="19.88cm" fill="darkred">OWN</text>
+<!-- Opponent -->
+<rect x="4.27cm" y="19.27cm" width="0.50cm" height="0.50cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="4.36cm" y="19.68cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
+<!-- Opponent -->
+<rect x="5.49cm" y="19.35cm" width="0.50cm" height="0.50cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
+<text x="5.58cm" y="19.76cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
 <!-- ME -->
-<rect x="7.27cm" y="18.70cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<rect x="5.34cm" y="15.64cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- Teammate -->
 <rect x="7.27cm" y="18.70cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>

@@ -7,7 +7,7 @@
 file: output_team/issue_61.svg
 
 
-	gamestate = Normal defend (3)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "FREE"
 	Ball: position: x: 0.69 y: -3.58 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
@@ -251,6 +251,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
+  <tns:Ball x="0.69" y="-3.58" velx="0.00" vely="0.00"/>
   <tns:Team id="1" label="1" x="0.423" y="-0.382" rz="-3.066" velx="0.045" vely="-0.999" velrz="0.000"    />
   <tns:Team id="2" label="2" x="0.380" y="-2.900" rz="0.470" velx="0.045" vely="-0.999" velrz="0.000"    />
   <tns:PickupPosition x="0.690" y="-3.580" ts="0.000" valid="false" />
@@ -269,7 +270,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal defend</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: ATTACKSUPPORTER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 2.25 y: 3.75</text>

@@ -28,7 +28,7 @@ paths:
 
 Player 0 (id: 1) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false

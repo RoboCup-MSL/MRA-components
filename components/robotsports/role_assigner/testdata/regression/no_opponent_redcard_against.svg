@@ -40,7 +40,7 @@ paths:
 
 Player 0 (id: 1) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false
@@ -48,7 +48,7 @@ Player 0 (id: 1) :
 
 Player 1 (id: 2) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false
@@ -56,7 +56,7 @@ Player 1 (id: 2) :
 
 Player 2 (id: 3) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false
@@ -64,7 +64,7 @@ Player 2 (id: 3) :
 
 Player 3 (id: 4) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false
@@ -72,7 +72,7 @@ Player 3 (id: 4) :
 
 Player 4 (id: 5) : 
 	Dynamic-role: NONE
-	Game State: Red Card Against
+	Game State: NONE
 	Target position : x: 0.00 y: 0.00
 	Planner target type  Goto ball
 	Target_position_is_end_position_of_pass: false
@@ -277,6 +277,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Red Card Against</tns:GameState>
+  <tns:Ball x="0.00" y="0.00" velx="0.00" vely="0.00"/>
   <tns:Team id="1" label="1" x="1.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="2" label="2" x="-2.000" y="4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="3" label="3" x="2.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />

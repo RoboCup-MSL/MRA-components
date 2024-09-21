@@ -49,7 +49,7 @@ Player 0 (id: 1) :
 	Target position : x: 4.50 y: -7.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731802849344 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94277994877232 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[0]: x: 1.00 y: -3.00 cost: 0.00 target: goto target position (7)
 Path[0]: x: 3.75 y: -5.25 cost: 6.08 target: goto target position (7)
 Path[0]: x: 4.50 y: -7.50 cost: 9.06 target: goto target position (7)
@@ -60,7 +60,7 @@ Player 1 (id: 2) :
 	Target position : x: 3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731802849344 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94277994877232 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[1]: x: -2.00 y: 4.00 cost: 0.00 target: goto target position (7)
 Path[1]: x: -0.25 y: 4.75 cost: 4.77 target: goto target position (7)
 Path[1]: x: 1.75 y: 4.75 cost: 8.98 target: goto target position (7)
@@ -72,7 +72,7 @@ Player 2 (id: 3) :
 	Target position : x: -3.00 y: 4.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731802849344 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94277994877232 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[2]: x: 2.00 y: 1.00 cost: 0.00 target: goto target position (7)
 Path[2]: x: 1.65 y: 0.87 cost: 2.70 target: goto target position (7)
 Path[2]: x: 0.87 y: 0.87 cost: 6.24 target: goto target position (7)
@@ -89,7 +89,7 @@ Player 3 (id: 4) :
 	Target position : x: -4.50 y: -7.50
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140731802849344 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94277994877232 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: -2.00 y: -3.00 cost: 0.00 target: goto target position (7)
 Path[3]: x: -2.25 y: -5.25 cost: 4.37 target: goto target position (7)
 Path[3]: x: -4.50 y: -7.50 cost: 8.63 target: goto target position (7)

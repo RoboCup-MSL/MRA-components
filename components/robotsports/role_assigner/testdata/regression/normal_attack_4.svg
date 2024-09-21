@@ -7,14 +7,14 @@
 file: output_team/normal_attack_4.svg
 
 
-	gamestate = Normal attack (2)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "OWNED_BY_TEAMMATE"
 	Ball: position: x: -2.00 y: -3.75 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.50 y: 0.50 z:0.00 rx:0.00 ry:0.00 rz:0.00
 	previous_ball = false
 	pass_is_required: true
 	pass_data - valid false
-	pickup ball valid: true
+	pickup ball valid: false
 	pickup ball x: -2.00
 	pickup ball y: -3.75
 	pickup ball ts: 0.00
@@ -299,6 +299,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
+  <tns:Ball x="-2.00" y="-3.75" velx="0.50" vely="0.50"/>
   <tns:Team id="3" label="3" x="1.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="2" label="2" x="-2.000" y="-4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"   controlBall="true"   />
   <tns:Team id="1" label="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
@@ -309,7 +310,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
   <tns:Opponent id="3" label="3" x="-2.000" y="-1.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:Opponent id="4" label="4" x="-1.000" y="1.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:Opponent id="5" label="5" x="0.000" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:PickupPosition x="-2.000" y="-3.750" ts="0.000" valid="true" />
+  <tns:PickupPosition x="-2.000" y="-3.750" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAMMATE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
   </tns:SituationInfo>
@@ -325,7 +326,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal attack</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_teammate</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: ATTACKSUPPORTER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -4.50 y: 4.50</text>
@@ -367,7 +368,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="7.25cm" y="1.75cm" width="0.50cm" height="0.50cm" fill="cyan" stroke="cyan" stroke-width="0.125cm"/>
 <text x="7.34cm" y="2.16cm" font-size="large" font-weight-absolute="bold" fill="black">5</text>
 <!-- ME -->
-<rect x="7.25cm" y="10.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<rect x="8.25cm" y="13.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- Teammate -->
 <rect x="5.25cm" y="14.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>

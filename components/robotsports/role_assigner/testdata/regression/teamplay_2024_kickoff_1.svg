@@ -80,7 +80,7 @@ Player 3 (id: 4) :
 	Target position : x: 5.00 y: -0.75
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140730175850928 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94410750923056 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[3]: x: 5.50 y: -1.50 cost: 0.00 target: goto target position (7)
 Path[3]: x: 5.00 y: -0.75 cost: 2.34 target: goto target position (7)
 
@@ -90,7 +90,7 @@ Player 4 (id: 5) :
 	Target position : x: -5.00 y: -0.75
 	Planner target type  goto target position
 	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140730175850928 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
+	Defend info valid:  true defending_id: 94410750923056 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
 Path[4]: x: -6.25 y: -0.50 cost: 0.00 target: goto target position (7)
 Path[4]: x: -5.00 y: -0.75 cost: 3.07 target: goto target position (7)
 
@@ -293,6 +293,7 @@ PARKING_DISTANCE_TO_LINE = -0.25
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="-0.250" corner_circle_diameter="0.750" penalty_spot_to_backline="3.600" />
   <tns:GameState>Kickoff</tns:GameState>
+  <tns:Ball x="-0.05" y="-0.10" velx="0.00" vely="0.00"/>
   <tns:Team id="1" label="1" x="0.000" y="-11.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"    />
   <tns:Team id="2" label="2" x="0.100" y="-0.750" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="3" label="3" x="2.000" y="-0.250" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />

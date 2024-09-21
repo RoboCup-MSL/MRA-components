@@ -7,7 +7,7 @@
 file: output_team/normal_attack_5.svg
 
 
-	gamestate = Normal attack (2)
+	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "OWNED_BY_TEAMMATE"
 	Ball: position: x: 3.88 y: -4.79 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: -0.10 y: -0.57 z:0.00 rx:0.00 ry:0.00 rz:0.00
@@ -22,13 +22,13 @@ file: output_team/normal_attack_5.svg
 	team:
 		R01 = x: 2.35 y: -7.46 z:0.00 rx:0.00 ry:0.00 rz:-0.53 vel: x: -0.00 y: -0.05 z:0.00 rx:0.00 ry:0.00 rz:0.05 label: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: ATTACKSUPPORTER end-pos x: 2.25 y: -7.50 target: Goto ball ts: 6434.53
+			prev result:  true role: ATTACKSUPPORTER end-pos x: 2.25 y: -7.50 target: unknown target (ERROR situation) ts: 6434.53
 		R02 = x: 2.16 y: -6.04 z:0.00 rx:0.00 ry:0.00 rz:-0.95 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SWEEPER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: SWEEPER end-pos x: 2.25 y: -6.00 target: Goto ball ts: 6434.57
+			prev result:  true role: SWEEPER end-pos x: 2.25 y: -6.00 target: unknown target (ERROR situation) ts: 6434.57
 		R03 = x: 3.59 y: -4.70 z:0.00 rx:0.00 ry:0.00 rz:-2.10 vel: x: -0.40 y: -0.38 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
 			control-ball: true passBall: false role: BALLPLAYER time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: BALLPLAYER end-pos x: 3.86 y: -3.90 target: Goto ball ts: 6434.61
+			prev result:  true role: BALLPLAYER end-pos x: 3.86 y: -3.90 target: unknown target (ERROR situation) ts: 6434.61
 	opponents:
 paths:
 
@@ -266,6 +266,7 @@ PARKING_DISTANCE_TO_LINE = -0.25
              ball_radius="0.110" field_markings_width="0.135" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="-0.250" corner_circle_diameter="0.935" penalty_spot_to_backline="3.130" />
   <tns:GameState>Normal</tns:GameState>
+  <tns:Ball x="3.88" y="-4.79" velx="-0.10" vely="-0.57"/>
   <tns:PreviousBall x="3.91" y="-4.72"/>
   <tns:Team id="1" label="1" x="2.348" y="-7.458" rz="-0.526" velx="-0.000" vely="-0.050" velrz="0.049"     previous_result_present="true"  previous_result_ts="6434.53" previous_result_x="2.25" previous_result_y="-7.5" previous_result_dynamic_role="ATTACKSUPPORTER"/>
   <tns:Team id="2" label="2" x="2.159" y="-6.038" rz="-0.949" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="6434.57" previous_result_x="2.25" previous_result_y="-6" previous_result_dynamic_role="SWEEPER"/>
@@ -286,7 +287,7 @@ PARKING_DISTANCE_TO_LINE = -0.25
 -->
 <rect x="0cm" y="0cm" width="14.15cm" height="20.14cm" fill="green" stroke-width="0.02cm" />
 <rect x="14.15cm" y="0cm" width="6.00cm" height="20.14cm" fill="white" stroke-width="0.02cm" />
-<text x="14.25cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal attack</text>
+<text x="14.25cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_teammate</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: ATTACKSUPPORTER</text>
 <text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.75 y: -0.75</text>

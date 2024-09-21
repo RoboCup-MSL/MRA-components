@@ -316,7 +316,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<PlayerPlannerResult>& player
         fieldConfig.getBallRadius(), fieldConfig.getFieldMarkingsWidth(), fieldConfig.getParkingAreaWidth(), fieldConfig.getParkingAreaLength(), fieldConfig.getParkingDistanceBetweenPlayers(), fieldConfig.getParkingDistanceToLine(),
         fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
     fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(data.original_gamestate).c_str());
-    if (ball.confidence > 0.001) {
+    if (ball.is_valid) {
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
                 ball.position.x, ball.position.y, ball.velocity.x, ball.velocity.y);
     }

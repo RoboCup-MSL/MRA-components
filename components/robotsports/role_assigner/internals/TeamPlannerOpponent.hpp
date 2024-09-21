@@ -12,7 +12,7 @@ class TeamPlannerOpponent {
 public:
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
-    bool assigned;
+    bool assigned = false;
     int label;
 };
 

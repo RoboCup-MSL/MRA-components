@@ -35,9 +35,9 @@ void TeamPlay::assign(const TeamPlannerInput& input,
             TeamPlannerOutput& r_output,
             const TeamPlannerParameters& parameters) {
     // convert to teamplannerData;
-#if 1
     TeamPlannerData teamplannerData = {};
     teamplannerData.parameters = parameters;
+    teamplannerData.fieldConfig = input.fieldConfig;
     teamplannerData.input_formation = input.input_formation;
     teamplannerData.gamestate = input.gamestate;
     teamplannerData.ball = input.ball;
@@ -45,50 +45,26 @@ void TeamPlay::assign(const TeamPlannerInput& input,
     teamplannerData.ball_pickup_position = input.ball_pickup_position;
     teamplannerData.passIsRequired = input.passIsRequired;
     teamplannerData.pass_data = input.pass_data;
-    teamplannerData.fieldConfig = input.fieldConfig;
     teamplannerData.previous_ball = r_state.previous_ball;
     teamplannerData.team = input.team;
     teamplannerData.opponents = input.opponents;
 
-    // internals
-//    std::vector<TeamPlannerOpponent> original_opponents  = {};
-//    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
-//    teamplannerData.defend_info;
-
-    //    std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
-//    game_state_e gamestate;
-//    TeamPlannerBall ball;
-//    std::vector<MRA::Geometry::Point> parking_positions;
-//    ball_pickup_position_t ball_pickup_position;
-//    bool passIsRequired;
-//    pass_data_t pass_data;
-//    std::vector<dynamic_role_e> teamFormation;
-//    MRA::FieldConfig fieldConfig;
-//    ball_status_e ball_status;
-//    TeamPlannerParameters parameters;
-//
-//    // based on inputs
-//    bool ballIsObstacle;
-//    bool searchForBall;
-//    defend_info_t defend_info;
-//    previous_used_ball_by_planner_t previous_ball = {};
-//
-//    // internal administration
-//    game_state_e original_gamestate;
-//    std::vector<TeamPlannerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
-//    std::vector<TeamPlannerOpponent> opponents = {};
-//    std::vector<TeamPlannerOpponent> original_opponents  = {};
-//    int nr_players_assigned = 0;
-//
-//    unsigned this_player_idx = 0; // idex of this robot: Team will be sorted on RobotId.
-//    unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.
+    // inputs
+    teamplannerData.previous_ball = r_state.previous_ball;
+    for (auto idx = 0u; idx < r_state.previous_result.size(); ++idx) {
+        TeamPlannerAdminTeam tp_admin = {};
+        tp_admin.previous_result = r_state.previous_result[idx];
+        teamplannerData.team_admin.push_back(tp_admin);
+    }
 
     std::vector<PlayerPlannerResult> assign_results = assign(teamplannerData);
     r_state.previous_ball.present = teamplannerData.ball.is_valid;
     r_state.previous_ball.x  = teamplannerData.ball.position.x;
     r_state.previous_ball.y  = teamplannerData.ball.position.y;
+    for (auto idx = 0u; idx < teamplannerData.team_admin.size(); ++idx) {
+        r_output.player_paths.push_back(teamplannerData.team_admin[idx].result);
+    }
 
-#endif
 }
 
 //---------------------------------------------------------------------------------------------------------------------

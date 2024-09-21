@@ -36,7 +36,6 @@ public:
     ball_status_e status;
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
-    double confidence;
     bool is_valid;
 
     std::string toString(bool full_details) const;
@@ -46,6 +45,7 @@ public:
 class TeamPlannerState {
 public:
     previous_used_ball_by_planner_t previous_ball;
+    std::vector<final_planner_result_t> previous_result;
 };
 
 // class with outputs (data for Output.proto)
@@ -102,7 +102,6 @@ public:
     bool passIsRequired;
     pass_data_t pass_data;
     MRA::FieldConfig fieldConfig;
-    bool teamControlBall;   // TODO needed ?
 };
 
 
@@ -146,6 +145,8 @@ public:
     int incrementAndGetRank();
 
     bool teamControlsBall() const;
+
+    std::string toString() const;
 };
 
 } // namespace

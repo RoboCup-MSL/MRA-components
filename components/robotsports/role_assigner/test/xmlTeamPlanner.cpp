@@ -500,7 +500,7 @@ void xmlplanner(string input_filename) {
     std::vector<int> myTeam_labels = std::vector<int>();
     std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
     std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
-    Geometry::Position ball = Geometry::Position();
+    Geometry::Position ball_pos = Geometry::Position();
     Geometry::Position ball_vel = Geometry::Position();
     std::vector<Geometry::Position> opponents = std::vector<Geometry::Position>();
     std::vector<Geometry::Position> opponents_vel = std::vector<Geometry::Position>();
@@ -526,8 +526,6 @@ void xmlplanner(string input_filename) {
     vector<Geometry::Point> parking_positions = {};
 
     bool passIsRequired = false;
-    bool team_controls_ball = false;
-    long passBallByPlayer = -1; // no pass by any player is on its way
     long ownPlayerWithBall = -1;
     bool playerPassedBall = false;
     bool team_has_ball = false;
@@ -540,18 +538,13 @@ void xmlplanner(string input_filename) {
         description = c->Description();
         if (c->Ball() != 0) {
             ball_is_valid = true;
-            ball.x = *c->Ball()->x();
-            ball.y = *c->Ball()->y();
+            ball_pos.x = *c->Ball()->x();
+            ball_pos.y = *c->Ball()->y();
             ball_vel.x = c->Ball()->velx();
             ball_vel.y = c->Ball()->vely();
         }
 
         fillTeam(Team, TeamAdmin, playerPassedBall, team_has_ball, c);
-        for (auto idx = 0u; idx< TeamAdmin.size(); idx++) {
-            cout << __func__<<" : " << __LINE__<< " TeamAdmin["<<idx<<"].roboId: " << TeamAdmin[idx].robotId << endl;
-            cout << __func__<<" : " << __LINE__<<"  TeamAdmin["<<idx<<"].previous_result.present: " << TeamAdmin[idx].previous_result.present
-                 << " x: " << TeamAdmin[idx].previous_result.end_position.x << " y: " << TeamAdmin[idx].previous_result.end_position.y << endl;
-        }
 
         for (auto idx = 0u; idx< Team.size(); idx++) {
             myTeam.push_back(Team[idx].position);
@@ -562,12 +555,6 @@ void xmlplanner(string input_filename) {
             teamTypes.push_back(Team[idx].player_type);
             time_in_own_penalty_area.push_back(Team[idx].time_in_own_penalty_area);
             time_in_opponent_penalty_area.push_back(Team[idx].time_in_opponent_penalty_area);
-            if  (Team[idx].passBall) {
-                passBallByPlayer = Team[idx].robotId;
-            }
-            if  (Team[idx].controlBall) {
-                ownPlayerWithBall  = Team[idx].robotId;
-            }
             robotIds.push_back(Team[idx].robotId); // start player-id with 1, loop starts with 0.
         }
 
@@ -686,8 +673,8 @@ void xmlplanner(string input_filename) {
     }
 
     if (!pickup_pos_set) {
-        pickup_pos.x = ball.x;
-        pickup_pos.y = ball.y;
+        pickup_pos.x = ball_pos.x;
+        pickup_pos.y = ball_pos.y;
         pickup_pos.valid = ownPlayerWithBall >= 0;
         pickup_pos.ts = 0.0;
     }
@@ -697,46 +684,80 @@ void xmlplanner(string input_filename) {
     if (not print_only_errors) {
         cout <<" xmlPlanner Fill DATA" << endl;
     }
-    TeamPlannerData teamplannerData = {};
-    teamplannerData.ball.is_valid = ball_is_valid;
-    teamplannerData.fieldConfig = fieldConfig;
-
-
-    fillTeamPlannerData(teamplannerData, gameState,
-            ball,
-            ball_vel,
-            ball_status,
-            myTeam,
-            myTeam_vel,
-            myTeam_labels,
-            opponents,
-            opponents_vel,
-            opponents_labels,
-            team_controls_ball, ownPlayerWithBall,
-            teamTypes, robotIds, parameters, parking_positions, previous_ball, previous_planner_results,
-            pickup_pos, passIsRequired, passBallByPlayer, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
-
-    teamplannerData.ball.is_valid = ball_is_valid;
-    teamplannerData.fieldConfig = fieldConfig;
-
-    teamplannerData.input_formation = getListWithRoles(gameState, ball_status,
+    auto input_formation = getListWithRoles(gameState, ball_status,
                                                        robot_strategy_parameter_no_sweeper_during_setplay,
                                                        robot_strategy_parameter_attack_formation,
                                                        robot_strategy_parameter_defense_formation);
 
 
     TeamPlay teamplay = TeamPlay();
-    player_paths = teamplay.assign(teamplannerData);
+    TeamPlannerInput tp_input = {};
+    tp_input.gamestate = gameState;
+    tp_input.ball.status = ball_status;
+    tp_input.ball.position = ball_pos;
+    tp_input.ball.velocity = ball_vel;
+    tp_input.ball.is_valid = ball_is_valid;
 
-    RunData run_data (teamplannerData, player_paths);
+    tp_input.input_formation = input_formation;
+    tp_input.team = Team;
+    tp_input.opponents = Opponents;
+    tp_input.parking_positions = parking_positions;
+    tp_input.ball_pickup_position = pickup_pos;
+    tp_input.passIsRequired = passIsRequired;
+    tp_input.pass_data = pass_data;
+    tp_input.fieldConfig = fieldConfig;
+
+    TeamPlannerState tp_state;
+    tp_state.previous_ball = previous_ball;
+    for (auto idx = 0u; idx < TeamAdmin.size(); idx++) {
+        tp_state.previous_result.push_back(TeamAdmin[idx].previous_result);
+
+    }
+
+    TeamPlannerParameters tp_parameters = parameters;
+    TeamPlannerOutput tp_output = {};
+    auto tp_state_org = tp_state;
+    teamplay.assign(tp_input, tp_state, tp_output, tp_parameters);
+
+    TeamPlannerData tpd = {};
+    tpd.parameters = tp_parameters;
+    tpd.fieldConfig = tp_input.fieldConfig;
+    tpd.input_formation = tp_input.input_formation;
+    tpd.gamestate = tp_input.gamestate;
+    tpd.original_gamestate  = tp_input.gamestate;
+    tpd.ball = tp_input.ball;
+    tpd.parking_positions = tp_input.parking_positions;
+    tpd.ball_pickup_position = tp_input.ball_pickup_position;
+    tpd.passIsRequired = tp_input.passIsRequired;
+    tpd.pass_data = tp_input.pass_data;
+    tpd.previous_ball = tp_state.previous_ball;
+    tpd.team = tp_input.team;
+    tpd.opponents = tp_input.opponents;
+
+    // inputs
+    tpd.previous_ball = tp_state_org.previous_ball;
+    for (auto idx = 0u; idx < tp_state_org.previous_result.size(); ++idx) {
+        TeamPlannerAdminTeam tp_admin = {};
+        tp_admin.previous_result = tp_state_org.previous_result[idx];
+        tpd.team_admin.push_back(tp_admin);
+    }
+
+    for (auto idx = 0u; idx < tp_output.player_paths.size(); ++idx) {
+        tpd.team_admin[idx].robotId = tp_input.team[idx].robotId;
+        tpd.team_admin[idx].assigned = true;
+        tpd.team_admin[idx].result = tp_output.player_paths[idx]; //(teamplannerData.team_admin[idx].result);
+    }
+    player_paths = tp_output.player_paths;
+
+    RunData run_data (tpd, player_paths);
     run_results.push_back(run_data);
 
     if (player_paths.size() > 0) {
         if (not print_only_errors) {
             cerr << "<< XML: print received path " << endl << flush;
-            cerr << TeamPlannerResultToString(player_paths, teamplannerData.team) << endl << flush;
+            cerr << TeamPlannerResultToString(player_paths, tpd.team) << endl << flush;
         }
-        SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, fieldConfig, run_filename);
+        SvgUtils::plannerdata_to_svg(player_paths, tpd, fieldConfig, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

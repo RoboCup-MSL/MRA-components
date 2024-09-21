@@ -23,30 +23,35 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     int error_value = 0;
 
     // user implementation goes here
-    MRA::TeamPlannerInput tp_input = MRA::TeamPlannerInput();
-    MRA::TeamPlannerState tp_state;
-    MRA::TeamPlannerOutput tp__output;
-    MRA::TeamPlannerParameters tp_params;
-
-    if (tp_input.gamestate == MRA::game_state_e::NORMAL) {
-        bool playerControlBall = false;
-        bool playerPassedBall = false;
-        for (unsigned r_idx = 0; r_idx < tp_input.team.size(); r_idx++) {
-            if (tp_input.team[r_idx].controlBall) {
-                playerControlBall = true;
-            }
-        }
-        tp_input.teamControlBall = playerPassedBall || playerControlBall;
-        if (tp_input.teamControlBall) {
-            tp_input.gamestate = MRA::game_state_e::NORMAL_ATTACK;
-        }
-        else{
-            tp_input.gamestate = MRA::game_state_e::NORMAL_DEFEND;
-        }
-    }
-
-    MRA::TeamPlay team_play = MRA::TeamPlay();
-    team_play.assign(tp_input, tp_state, tp__output, tp_params);
+//    MRA::TeamPlannerInput tp_input = MRA::TeamPlannerInput();
+//    MRA::TeamPlannerState tp_state;
+//    MRA::TeamPlannerOutput tp_output;
+//    MRA::TeamPlannerParameters tp_params;
+//
+//    if (tp_input.gamestate == MRA::game_state_e::NORMAL) {
+//        bool playerControlBall = false;
+//        bool playerPassedBall = false;
+//        for (unsigned r_idx = 0; r_idx < tp_input.team.size(); r_idx++) {
+//            if (tp_input.team[r_idx].controlBall) {
+//                playerControlBall = true;
+//            }
+//        }
+//        tp_input.teamControlBall = playerPassedBall || playerControlBall;
+//        if (tp_input.teamControlBall) {
+//            tp_input.gamestate = MRA::game_state_e::NORMAL_ATTACK;
+//        }
+//        else{
+//            tp_input.gamestate = MRA::game_state_e::NORMAL_DEFEND;
+//        }
+//    }
+//
+//    MRA::TeamPlay team_play = MRA::TeamPlay();
+//    void TeamPlay::assign(const TeamPlannerInput& input,
+//                TeamPlannerState& r_state,
+//                TeamPlannerOutput& r_output,
+//                const TeamPlannerParameters& parameters) {
+//
+//    team_play.assign(tp_input, tp_state, tp_output, tp_params);
 
     return error_value;
 }

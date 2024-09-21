@@ -12,6 +12,11 @@ using namespace MRA;
 
 // custom includes, if any
 #include <cmath>
+#include "geometry.hpp"
+
+// globals
+FalconsGetballFetch::StateType g_fetch_state;
+FalconsGetballIntercept::StateType g_intercept_state;
 
 
 int FalconsGetball::FalconsGetball::tick
@@ -29,6 +34,12 @@ int FalconsGetball::FalconsGetball::tick
 
     // user implementation goes here
 
+    Geometry::Position bpos = Geometry::Position(input.worldstate().ball().position()) - Geometry::Position(input.worldstate().robot().position());
+    if (input.radius() > 0.0 && bpos.size() > input.radius()) {
+        output.set_actionresult(Datatypes::ActionResult::FAILED);
+    }
+    else {
+
     float vx = input.worldstate().ball().velocity().x();
     float vy = input.worldstate().ball().velocity().y();
     float ball_speed = sqrt(vx * vx + vy * vy);
@@ -37,20 +48,27 @@ int FalconsGetball::FalconsGetball::tick
     {
         // call component: FalconsGetballFetch
         FalconsGetballFetch::InputType subcomponent_input;
+        //subcomponent_input.MergeFrom(input); // same type
+        std::string tmpdata;
+        input.SerializeToString(&tmpdata);
+        subcomponent_input.ParseFromString(tmpdata);
         FalconsGetballFetch::OutputType subcomponent_output;
-        FalconsGetballFetch::StateType subcomponent_state;
         FalconsGetballFetch::DiagnosticsType subcomponent_diagnostics;
-        *subcomponent_input.mutable_worldstate() = input.worldstate();
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
             timestamp,
             subcomponent_input,
             params.fetch(),
-            subcomponent_state,
+            g_fetch_state,
             subcomponent_output,
             subcomponent_diagnostics
         );
         output.set_actionresult(subcomponent_output.actionresult());
-        *output.mutable_target() = subcomponent_output.target();
+        if (subcomponent_output.has_target())
+        {
+            *output.mutable_target() = subcomponent_output.target();
+        }
+    }
+
     }
 /*    else
     {
@@ -61,7 +79,7 @@ int FalconsGetball::FalconsGetball::tick
             params.fetch,
             state,
             output,
-            diagnositcs
+            local
         );
     }
 */

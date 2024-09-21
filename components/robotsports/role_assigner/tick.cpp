@@ -8,7 +8,7 @@ using namespace MRA;
 
 // custom includes, if any
 // ...
-#include "TeamPlay.hpp"
+#include "internals/RoleAssigner.hpp"
 
 int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
 (
@@ -23,10 +23,10 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     int error_value = 0;
 
     // user implementation goes here
-//    MRA::TeamPlannerInput tp_input = MRA::TeamPlannerInput();
-//    MRA::TeamPlannerState tp_state;
-//    MRA::TeamPlannerOutput tp_output;
-//    MRA::TeamPlannerParameters tp_params;
+//    MRA::RoleAssignerInput tp_input = MRA::RoleAssignerInput();
+//    MRA::RoleAssignerState tp_state;
+//    MRA::RoleAssignerOutput tp_output;
+//    MRA::RoleAssignerParameters tp_params;
 //
 //    if (tp_input.gamestate == MRA::game_state_e::NORMAL) {
 //        bool playerControlBall = false;
@@ -46,10 +46,10 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
 //    }
 //
 //    MRA::TeamPlay team_play = MRA::TeamPlay();
-//    void TeamPlay::assign(const TeamPlannerInput& input,
-//                TeamPlannerState& r_state,
-//                TeamPlannerOutput& r_output,
-//                const TeamPlannerParameters& parameters) {
+//    void TeamPlay::assign(const RoleAssignerInput& input,
+//                RoleAssignerState& r_state,
+//                RoleAssignerOutput& r_output,
+//                const RoleAssignerParameters& parameters) {
 //
 //    team_play.assign(tp_input, tp_state, tp_output, tp_params);
 

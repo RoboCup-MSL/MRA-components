@@ -6,7 +6,7 @@
 #ifndef TEAM_PLANNER_H
 #define TEAM_PLANNER_H 1
 
-#include "TeamPlannerExport.hpp"
+#include "RoleAssignerExport.hpp"
 
 #include "GlobalPathPlanner.hpp"
 #include "SvgUtils.hpp"
@@ -19,7 +19,7 @@
 
 namespace MRA {
 
-std::string GetTeamPlannerSVGname(game_state_e gamestate, std::string suffix) {
+std::string GetRoleAssignerSVGname(game_state_e gamestate, std::string suffix) {
     // get current time, and make a string from it.
     struct tm * timeinfo;
     char buffer [180];

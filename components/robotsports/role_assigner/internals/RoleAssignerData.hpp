@@ -7,12 +7,13 @@
 #define TEAM_PLANNER_DATA_HPP 1
 
 #include "FieldConfig.hpp"
-#include "TeamPlannerOpponent.hpp"
-#include "TeamPlannerResult.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 
 #include <vector>
+
+#include "RoleAssignerOpponent.hpp"
 #include "RoleAssignerParameters.hpp"
+#include "RoleAssignerResult.hpp"
 #include "RoleAssignerRobot.hpp"
 
 namespace MRA {
@@ -31,7 +32,7 @@ inline std::string PlayerTypeAsString(player_type_e player_type) {
 }
 
 
-class TeamPlannerBall {
+class RoleAssignerBall {
 public:
     ball_status_e status;
     MRA::Geometry::Position position;
@@ -57,32 +58,32 @@ typedef struct pass_data_s {
 } pass_data_t;
 
 // class with state data (data for State.proto)
-class TeamPlannerAdminTeam {
+class RoleAssignerAdminTeam {
 public:
     bool assigned = false;
     long robotId = -1;
     RoleAssignerResult result = {};
     final_planner_result_t previous_result;
     // compare function to sort vector of the class on the member robotId
-    static inline bool CompareRobotId(const TeamPlannerAdminTeam& r1, const TeamPlannerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
+    static inline bool CompareRobotId(const RoleAssignerAdminTeam& r1, const RoleAssignerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
 };
 
 // class with state data (data for State.proto)
-class TeamPlannerAdminOpponent {
+class RoleAssignerAdminOpponent {
 public:
 };
 
 
 // class with inputs (data for input.proto)
-class TeamPlannerInput {
+class RoleAssignerInput {
 public:
-    TeamPlannerInput() {};
+    RoleAssignerInput() {};
     game_state_e gamestate;
-    TeamPlannerBall ball;
+    RoleAssignerBall ball;
 
     std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
     std::vector<RoleAssignerRobot> team;
-    std::vector<TeamPlannerOpponent> opponents;
+    std::vector<RoleAssignerOpponent> opponents;
 
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;
@@ -93,14 +94,14 @@ public:
 
 
 // class with state data (data for State.proto)
-class TeamPlannerState {
+class RoleAssignerState {
 public:
     previous_used_ball_by_planner_t previous_ball;
     std::vector<final_planner_result_t> previous_result;
 };
 
 // class with outputs (data for Output.proto)
-class TeamPlannerOutput {
+class RoleAssignerOutput {
 public:
     std::vector<RoleAssignerResult> player_paths;
     std::string pathToString();
@@ -109,13 +110,13 @@ public:
 //-----------------------------------------------------------------------
 // Internal administration classes
 
-class TeamPlannerData {
+class RoleAssignerData {
 public:
-    TeamPlannerData() {};
+    RoleAssignerData() {};
     /* inputs */
     std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> input_formation;
     game_state_e gamestate;
-    TeamPlannerBall ball;
+    RoleAssignerBall ball;
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;
@@ -134,10 +135,10 @@ public:
     // internal administration
     game_state_e original_gamestate;
     std::vector<RoleAssignerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
-    std::vector<TeamPlannerAdminTeam> team_admin = {};
-    std::vector<TeamPlannerOpponent> opponents = {};
-    std::vector<TeamPlannerAdminOpponent> opponents_admin  = {};
-    std::vector<TeamPlannerOpponent> original_opponents  = {};
+    std::vector<RoleAssignerAdminTeam> team_admin = {};
+    std::vector<RoleAssignerOpponent> opponents = {};
+    std::vector<RoleAssignerAdminOpponent> opponents_admin  = {};
+    std::vector<RoleAssignerOpponent> original_opponents  = {};
     int nr_players_assigned = 0;
 
     unsigned this_player_idx = 0; // index of this robot: Team will be sorted on RobotId.

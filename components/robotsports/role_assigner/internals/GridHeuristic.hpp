@@ -8,18 +8,19 @@
 #ifndef PLANNER_GRID_GRIDHEURISTIC_HPP
 #define PLANNER_GRID_GRIDHEURISTIC_HPP 1
 
-#include "TeamPlay.hpp"
-#include "PlannerGridInfoData.hpp"
 #include "FieldConfig.hpp"
 
 #include <string>
+
+#include "RoleAssigner.hpp"
+#include "RoleAssignerGridInfoData.hpp"
 
 namespace MRA {
 
 // ----------------------------------------------------------------------------------------
 class GridHeuristic {
 public:
-    GridHeuristic(const char *  id_str, double w, PlannerGridInfoData& pgid);
+    GridHeuristic(const char *  id_str, double w, RoleAssignerGridInfoData& pgid);
     virtual ~GridHeuristic();
     virtual double getValue(double x, double y) = 0;
     std::string getId() { return id; }
@@ -35,7 +36,7 @@ private:
 class InSquareHeuristic : public GridHeuristic {
 
 public:
-    InSquareHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
+    InSquareHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
             double x_left, double y_top, double x_right, double y_bottom, bool invert = false);
     virtual ~InSquareHeuristic() {};
     double getValue(double x, double y);
@@ -52,7 +53,7 @@ private:
 class InCircleHeuristic : public GridHeuristic {
 
 public:
-    InCircleHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
+    InCircleHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
             double cx, double cy, double radius, bool invert = false);
     virtual ~InCircleHeuristic() {};
     double getValue(double x, double y);
@@ -69,7 +70,7 @@ private:
 class BallSetplayAgainstHeuristic : public GridHeuristic {
 
 public:
-    BallSetplayAgainstHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
+    BallSetplayAgainstHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
             double cx, double cy, double radius, const FieldConfig& fieldConfig);
     virtual ~BallSetplayAgainstHeuristic() {};
     double getValue(double x, double y);
@@ -87,7 +88,7 @@ private:
 class DistanceToLineHeuristic : public GridHeuristic {
 
 public:
-    DistanceToLineHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
+    DistanceToLineHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
             double x1, double y1, double x2, double y2, double scaling, bool invert = false);
     virtual ~DistanceToLineHeuristic() {};
     double getValue(double x, double y);
@@ -105,7 +106,7 @@ private:
 class InTriangleHeuristic : public GridHeuristic {
 
 public:
-    InTriangleHeuristic(const char * id, double weight, PlannerGridInfoData& pgid,
+    InTriangleHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
             double x1, double y1, double x2, double y2, double x3, double y3, bool invert = false);
     virtual ~InTriangleHeuristic() {};
     double getValue(double x, double y);
@@ -125,8 +126,8 @@ private:
 class InOppenentPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
-    InOppenentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                                   const TeamPlannerData& r_teamplanner_data);
+    InOppenentPenaltyAreaHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                                   const RoleAssignerData& r_role_assigner_data);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -134,8 +135,8 @@ public:
 class InOwnPenaltyAreaHeuristic : public InSquareHeuristic {
 
 public:
-    InOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                              const TeamPlannerData& r_teamplanner_data);
+    InOwnPenaltyAreaHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                              const RoleAssignerData& r_role_assigner_data);
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -143,8 +144,8 @@ public:
 class AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic : public GridHeuristic {
 
 public:
-    AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                                                   const TeamPlannerData& r_teamplanner_data);
+    AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                                                   const RoleAssignerData& r_role_assigner_data);
     virtual ~AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic() {};
     double getValue(double x, double y);
 private:
@@ -157,8 +158,8 @@ private:
 class AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic : public GridHeuristic {
 
 public:
-    AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                                                        const TeamPlannerData& r_teamplanner_data);
+    AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                                                        const RoleAssignerData& r_role_assigner_data);
     virtual ~AlreadyPlayerAssignedToOpponentPenaltyAreaHeuristic() {};
     double getValue(double x, double y);
 private:
@@ -171,8 +172,8 @@ private:
 class InOwnGoalAreaHeuristic : public InSquareHeuristic
 {
 public:
-    InOwnGoalAreaHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                           const TeamPlannerData& r_teamplanner_data);
+    InOwnGoalAreaHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                           const RoleAssignerData& r_role_assigner_data);
 };
 
 
@@ -180,7 +181,7 @@ public:
 class DistanceToBallHeuristic : public InCircleHeuristic
 {
 public:
-    DistanceToBallHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    DistanceToBallHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double ball_x, double ball_y, double radius);
 };
 
@@ -188,7 +189,7 @@ public:
 class InfluenceBallHeuristic  : public InCircleHeuristic
 {
 public:
-    InfluenceBallHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    InfluenceBallHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double ball_x, double ball_y, double radius);
 };
 
@@ -197,7 +198,7 @@ public:
 class InfluenceCornerHeuristic : public GridHeuristic
 {
 public:
-    InfluenceCornerHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    InfluenceCornerHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const FieldConfig& m_fieldConfig);
     virtual ~InfluenceCornerHeuristic() {};
     double getValue(double x, double y);
@@ -210,12 +211,12 @@ private:
 class CollideTeamMateHeuristic : public GridHeuristic
 {
 public:
-    CollideTeamMateHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const TeamPlannerData& r_teamplanner_data, double radius, bool assigned_attack_supporters = false);
+    CollideTeamMateHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+            const RoleAssignerData& r_role_assigner_data, double radius, bool assigned_attack_supporters = false);
     virtual ~CollideTeamMateHeuristic() {};
     double getValue(double x, double y);
 private:
-    const TeamPlannerData& m_r_teamplanner_data;
+    const RoleAssignerData& m_r_role_assigner_data;
     const double m_radius;
     bool m_assigned_attack_supporters;
 };
@@ -224,12 +225,12 @@ private:
 class InfluenceOpponentsHeuristic : public GridHeuristic
 {
 public:
-    InfluenceOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-            const std::vector<TeamPlannerOpponent>& Opponents, double radius);
+    InfluenceOpponentsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+            const std::vector<RoleAssignerOpponent>& Opponents, double radius);
     virtual ~InfluenceOpponentsHeuristic() {};
     double getValue(double x, double y);
 private:
-    const std::vector<TeamPlannerOpponent>& m_Opponents;
+    const std::vector<RoleAssignerOpponent>& m_Opponents;
     const double m_radius;
 };
 
@@ -238,14 +239,14 @@ private:
 class OutsidePlayFieldHeuristic : public InSquareHeuristic
 {
 public:
-    OutsidePlayFieldHeuristic(const char *id, double weight, PlannerGridInfoData& pgid, const FieldConfig& fieldConfig, double extra_distance_to_sideline);
+    OutsidePlayFieldHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid, const FieldConfig& fieldConfig, double extra_distance_to_sideline);
 };
 
 // ----------------------------------------------------------------------------------------
 class OnLineBetweenPointsHeuristic : public GridHeuristic
 {
 public:
-    OnLineBetweenPointsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    OnLineBetweenPointsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double x1, double y1, double x2, double y2, double maxPossibleFieldDistance);
     virtual ~OnLineBetweenPointsHeuristic() {};
     double getValue(double x, double y);
@@ -261,7 +262,7 @@ private:
 class NotOnLineBetweenBallAndOpponentGoalHeuristic : public InTriangleHeuristic
 {
 public:
-    NotOnLineBetweenBallAndOpponentGoalHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    NotOnLineBetweenBallAndOpponentGoalHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double ball_x, double ball_y, double left_pole_x, double left_pole_y, double right_pole_x, double right_pole_y);
 };
 
@@ -269,7 +270,7 @@ public:
 class DesiredY : public DistanceToLineHeuristic
 {
 public:
-    DesiredY(const char *id, double weight, PlannerGridInfoData& pgid,
+    DesiredY(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double desired_y, const FieldConfig& fieldConfig);
 };
 
@@ -277,7 +278,7 @@ public:
 class DesiredX : public DistanceToLineHeuristic
 {
 public:
-    DesiredX(const char *id, double weight, PlannerGridInfoData& pgid,
+    DesiredX(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             double desired_x, const FieldConfig& fieldConfig);
 };
 
@@ -286,7 +287,7 @@ public:
 class DistanceToHeuristic : public GridHeuristic
 {
 public:
-    DistanceToHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    DistanceToHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const Geometry::Position& pos, double dScaling);
     virtual ~DistanceToHeuristic() {};
     double getValue(double x, double y);
@@ -300,7 +301,7 @@ private:
 class DistanceToPointHeuristic : public GridHeuristic
 {
 public:
-    DistanceToPointHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    DistanceToPointHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const Geometry::Position& pos, double dScaling, double maxRange, bool inverted);
 
     virtual ~DistanceToPointHeuristic() {};
@@ -317,7 +318,7 @@ private:
 class DistanceToEnemyGoalHeuristic : public GridHeuristic
 {
 public:
-    DistanceToEnemyGoalHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    DistanceToEnemyGoalHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const double penaltyAreaY, double dScaling);
     virtual ~DistanceToEnemyGoalHeuristic() {};
     double getValue(double x, double y);
@@ -330,9 +331,9 @@ private:
 class InterceptionThreatHeuristic : public GridHeuristic
 {
 public:
-    InterceptionThreatHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    InterceptionThreatHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const Geometry::Point& ball,
-            const TeamPlannerData& r_teamplanner_data, bool skipOwnTeam = false);
+            const RoleAssignerData& r_role_assigner_data, bool skipOwnTeam = false);
     virtual ~InterceptionThreatHeuristic() {};
     double getValue(double x, double y);
 private:
@@ -347,13 +348,13 @@ private:
 class InfluenceCurrentPositionsHeuristic : public GridHeuristic
 {
 public:
-    InfluenceCurrentPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                                       const TeamPlannerData& r_teamplanner_data,
+    InfluenceCurrentPositionsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                                       const RoleAssignerData& r_role_assigner_data,
                                        double dScaling);
     virtual ~InfluenceCurrentPositionsHeuristic() {};
     double getValue(double x, double y);
 private:
-    const TeamPlannerData& m_r_teamplanner_data;
+    const RoleAssignerData& m_r_role_assigner_data;
 
     const double m_dScaling;
 };
@@ -362,12 +363,12 @@ private:
 class InfluencePreviousAssignedPositionsHeuristic : public GridHeuristic
 {
 public:
-    InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
-                                                const TeamPlannerData& r_teamplanner_data, double dScaling, dynamic_role_e dynamic_role);
+    InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
+                                                const RoleAssignerData& r_role_assigner_data, double dScaling, dynamic_role_e dynamic_role);
     virtual ~InfluencePreviousAssignedPositionsHeuristic() {};
     double getValue(double x, double y);
 private:
-    const TeamPlannerData& m_r_teamplanner_data;
+    const RoleAssignerData& m_r_role_assigner_data;
     const double m_dScaling;
     dynamic_role_e m_dynamic_role;
 };
@@ -376,16 +377,16 @@ private:
 class ShootOnGoalHeuristic : public GridHeuristic
 {
 public:
-    ShootOnGoalHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    ShootOnGoalHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const std::vector<RoleAssignerRobot>& Team,
-            const std::vector<TeamPlannerOpponent>& Opponents,
+            const std::vector<RoleAssignerOpponent>& Opponents,
             const FieldConfig& fieldConfig,
             const ball_pickup_position_t& ball_pickup_position);
     virtual ~ShootOnGoalHeuristic() {};
     double getValue(double x, double y);
 private:
     const std::vector<RoleAssignerRobot>& m_Team;
-    const std::vector<TeamPlannerOpponent>& m_Opponents;
+    const std::vector<RoleAssignerOpponent>& m_Opponents;
     const Geometry::Point m_opponentGoal;
     const double m_rightPole_x;
     const double m_leftPole_x;
@@ -398,9 +399,9 @@ private:
 class PassHeuristic : public GridHeuristic
 {
 public:
-    PassHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    PassHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const std::vector<RoleAssignerRobot>& Team,
-            const std::vector<TeamPlannerOpponent>& Opponents,
+            const std::vector<RoleAssignerOpponent>& Opponents,
             const FieldConfig& fieldConfig,
             const ball_pickup_position_t& ball_pickup_position,
             const RoleAssignerParameters& parameters);
@@ -421,17 +422,17 @@ private:
 class StayAwayFromOpponentsHeuristic : public GridHeuristic
 {
 public:
-    StayAwayFromOpponentsHeuristic(const char *id, double weight, PlannerGridInfoData& pgid,
+    StayAwayFromOpponentsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const Geometry::Position& ballPlayerPos,
             const Geometry::Position& ball,
-            const std::vector<TeamPlannerOpponent>& Opponents,
+            const std::vector<RoleAssignerOpponent>& Opponents,
             const double radius);
     virtual ~StayAwayFromOpponentsHeuristic() {};
     double getValue(double x, double y);
 private:
     const Geometry::Position& m_ballPlayerPos;
     const Geometry::Point m_ball;
-    const std::vector<TeamPlannerOpponent>& m_Opponents;
+    const std::vector<RoleAssignerOpponent>& m_Opponents;
     const double m_radius;
     double m_angle_ball_ballplayer_min;
     double m_angle_ball_ballplayer_max;

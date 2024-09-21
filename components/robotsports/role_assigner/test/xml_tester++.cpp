@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <boost/program_options.hpp>
 
-#include "xmlTeamPlanner.h"
+#include "xmlRoleAssigner.hpp"
 
 namespace po = boost::program_options;
 using namespace std;

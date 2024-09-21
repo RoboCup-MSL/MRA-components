@@ -34,7 +34,7 @@ class Dynamics {
      *            Our maximum speed. Assuming indefinite acceleration.
      * @return Intercept point, null if intercept is not possible.
      */
-    static dynamics_t interceptBall(const TeamPlannerBall& movingObject, const MRA::Geometry::Point& coordinates,
+    static dynamics_t interceptBall(const RoleAssignerBall& movingObject, const MRA::Geometry::Point& coordinates,
             double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position);
 
 
@@ -46,7 +46,7 @@ class Dynamics {
      * @param rFieldConfig field configuration
      * @return point where ball leaves the field.
      */
-    static MRA::Geometry::Position calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig);
+    static MRA::Geometry::Position calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const FieldConfig &rFieldConfig);
 
     /**
      * Calculates time necessary to traverse a path at maximum speed, assuming
@@ -59,7 +59,7 @@ class Dynamics {
      *            Maximum possible speed
      * @return Time needed to traverse the path
      */
-    static double timeOnPath(const std::vector<planner_piece_t>& path, double maxSpeed);
+    static double timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed);
 };
 
 } // namespace

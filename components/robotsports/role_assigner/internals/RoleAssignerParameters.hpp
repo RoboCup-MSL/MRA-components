@@ -6,9 +6,8 @@
 #ifndef ROLE_ASSIGNER_PARAMETERS_HPP
 #define  ROLE_ASSIGNER_PARAMETERS_HPP 1
 
-#include "planner_types.hpp" // define of planner_options_t
-
 #include <string>
+#include "RoleAssigner_types.hpp" // define of planner_options_t
 
 namespace MRA {
 // Constructing a new object will set the default options.

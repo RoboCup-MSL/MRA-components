@@ -6,12 +6,11 @@
 
 #include "RoleAssignerRobot.hpp"
 
-#include "TeamPlannerData.hpp"
-
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 #include <cmath>
+#include "RoleAssignerData.hpp"
 
 using namespace std;
 using namespace MRA;

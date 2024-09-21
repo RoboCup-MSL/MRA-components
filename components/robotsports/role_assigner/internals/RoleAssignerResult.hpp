@@ -9,13 +9,14 @@
 #include "FieldConfig.hpp"
 
 #include <vector>
-#include "planner_types.hpp"
+
+#include "RoleAssigner_types.hpp"
 
 namespace MRA {
 
 class RoleAssignerResult {
 public:
-    std::vector<planner_piece_t> path;
+    std::vector<path_piece_t> path;
     dynamic_role_e dynamic_role;
     int role_rank = -1;
     game_state_e gamestate;

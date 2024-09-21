@@ -6,9 +6,9 @@
 #ifndef TEAM_PLANNER_ROBOT_HPP
 #define TEAM_PLANNER_ROBOT_HPP 1
 
-#include "planner_types.hpp"
 #include "geometry.hpp"
-#include "TeamPlannerResult.hpp"
+#include "RoleAssigner_types.hpp"
+#include "RoleAssignerResult.hpp"
 
 namespace MRA {
 

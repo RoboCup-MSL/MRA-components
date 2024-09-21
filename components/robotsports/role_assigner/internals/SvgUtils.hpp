@@ -7,20 +7,21 @@
 #define SVGUTILS_HPP 1
 
 #include "GlobalPathPlanner.hpp"
-#include "TeamPlannerData.hpp"
 #include "FieldConfig.hpp"
 
 #include <string>
 #include <vector>
+
+#include "RoleAssignerData.hpp"
 #include "RoleAssignerParameters.hpp"
 
 namespace MRA {
 
 class SvgUtils {
 public:
-    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig,
+    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name);
-    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig,
+    static void plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths);
 
 private:

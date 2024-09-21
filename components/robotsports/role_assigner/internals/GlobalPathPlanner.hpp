@@ -7,16 +7,15 @@
 #define GlobalPathPlanner_HPP 1
 
 #include "FieldConfig.hpp"
-#include "TeamPlannerData.hpp"
-#include "TeamPlannerResult.hpp"
-#include "TeamPlannerOpponent.hpp"
-
 #include "Vertex.hpp"
-#include "planner_types.hpp"
-
 #include <vector>
 #include <list>
+
+#include "RoleAssigner_types.hpp"
+#include "RoleAssignerData.hpp"
+#include "RoleAssignerOpponent.hpp"
 #include "RoleAssignerParameters.hpp"
+#include "RoleAssignerResult.hpp"
 
 /**
  * Represents an undirected graph with nodes the important point in the field.
@@ -65,9 +64,9 @@ public:
 
     /* create graph for the provided input */
     void createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-                     const TeamPlannerBall& ball,
+                     const RoleAssignerBall& ball,
                      const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
-                     const std::vector<TeamPlannerOpponent>& opponents,
+                     const std::vector<RoleAssignerOpponent>& opponents,
                      const std::vector<MRA::Vertex>& targetPos,
                      planner_target_e targetFunction,
                      bool ballIsObstacleAndValid,
@@ -83,10 +82,10 @@ public:
      *
      * @return List of coordinates on the shortest path
      */
-    std::vector<planner_piece_t> getShortestPath(const TeamPlannerData& teamplanner_data);
+    std::vector<path_piece_t> getShortestPath(const RoleAssignerData& role_assigner_data);
 
     /* Save the current status of the graph planner to svg file (use name from options) */
-    void save_graph_as_svg(const TeamPlannerData& teamplanner_data, const std::vector<planner_piece_t>& path);
+    void save_graph_as_svg(const RoleAssignerData& role_assigner_data, const std::vector<path_piece_t>& path);
 private:
     GlobalPathPlanner(); // prevent creating class via default constructor
 
@@ -99,7 +98,7 @@ private:
 
     bool nearPath(const MRA::Geometry::Position& v);
 
-    void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const TeamPlannerBall& ball);
+    void addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const RoleAssignerBall& ball);
 
     double ballApproachPenalty(Vertex* v);
     double ownVelocityPenalty(Vertex* v);

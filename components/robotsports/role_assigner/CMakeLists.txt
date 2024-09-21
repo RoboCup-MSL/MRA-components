@@ -16,17 +16,17 @@ add_library(MRA-components-robotsports-role-assigner
     internals/GlobalPathDynamicPlanner.cpp
     internals/GridHeuristic.cpp
     internals/MathUtils.cpp
-    internals/planner_common.cpp
-    internals/PlannerGridInfoData.cpp
+    internals/RoleAssigner_common.cpp
+    internals/RoleAssignerGridInfoData.cpp
     internals/RolePosition.cpp
     internals/SvgUtils.cpp
-    internals/TeamPlannerData.cpp
-    internals/TeamPlannerExport.cpp
+    internals/RoleAssignerData.cpp
+    internals/RoleAssignerExport.cpp
     internals/RoleAssignerParameters.cpp
     internals/RoleAssignerRobot.cpp
-    internals/TeamPlay.cpp
+    internals/RoleAssigner.cpp
     internals/Vertex.cpp
-    internals/TeamPlannerGrid.cpp
+    internals/RoleAssignerGrid.cpp
 )
 
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
@@ -55,7 +55,7 @@ add_custom_command(OUTPUT ${STRATEGY_TESTER_CPP}
   # --- xml tester ---
  add_executable(xml_test
     test/xml_tester++.cpp
-    test/xmlTeamPlanner.cpp
+    test/xmlRoleAssigner.cpp
     ${STRATEGY_TESTER_CPP}
 )
 
@@ -88,7 +88,7 @@ target_link_libraries(xml_test
 add_executable(planner_regression_checker
     test/planner_regression_checker.cpp
     #test/xmlGlobalPathPlanner.cpp
-    test/xmlTeamPlanner.cpp
+    test/xmlRoleAssigner.cpp
     test/planner_regression_checker.cpp
     ${STRATEGY_TESTER_CPP}
   )
@@ -133,7 +133,7 @@ target_link_libraries(planner_regression_checker
 #  add_executable(xml_test
 #    test/xml_tester++.cpp
 #    ${STRATEGY_TESTER_CPP}
-#    test/xmlTeamPlanner.cpp
+#    test/xmlRoleAssigner.cpp
 #  )
 #
 #  target_link_libraries(xml_test
@@ -171,7 +171,7 @@ target_link_libraries(planner_regression_checker
 add_executable(
     robotsports_role_assigner_test
     test.cpp
-    test/xmlTeamPlanner.cpp
+    test/xmlRoleAssigner.cpp
     ${STRATEGY_TESTER_CPP}
 )
 target_include_directories(robotsports_role_assigner_test  PRIVATE 

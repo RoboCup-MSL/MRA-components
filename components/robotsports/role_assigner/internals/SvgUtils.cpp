@@ -42,7 +42,7 @@ double SvgUtils::svgY(double fieldY) {
 }
 
 
-void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
+void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
     std::vector<RoleAssignerResult>  comparing_player_paths = {};
     plannerdata_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
 }
@@ -86,7 +86,7 @@ static bool isDirectory(const string& path)
     return false;
 }
 
-void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const TeamPlannerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
+void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
     bool addInfoBox = true;
     double boxWidth = addInfoBox ? 6.0 : 0.0;
 
@@ -104,7 +104,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_
 
     m_fieldConfig = fieldConfig;
 
-    TeamPlannerBall ball = data.ball;
+    RoleAssignerBall ball = data.ball;
     RoleAssignerParameters parameters = data.parameters;
     std::vector<Vertex* > vertices = std::vector<Vertex* >();
     std::vector<MRA::Geometry::Point> parking_positions;
@@ -216,7 +216,7 @@ void SvgUtils::plannerdata_to_svg(const std::vector<RoleAssignerResult>& player_
         else {
             Xtext << endl;
         }
-        std::vector<planner_piece_t> path;
+        std::vector<path_piece_t> path;
         for (unsigned long idx = 0; idx < player_path.path.size(); idx++) {
             Xtext << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << player_path.path[idx].x <<
                     " y: " << player_path.path[idx].y <<

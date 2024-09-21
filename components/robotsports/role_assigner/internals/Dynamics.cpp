@@ -16,7 +16,7 @@
 using namespace MRA;
 
 // calculation position where the ball will leave the field
-Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const TeamPlannerBall& rBallObject, const FieldConfig &rFieldConfig) {
+Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const FieldConfig &rFieldConfig) {
     Geometry::Position BallPos = rBallObject.position;
     Geometry::Position BallVelocity = rBallObject.velocity;
 
@@ -71,7 +71,7 @@ Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const TeamPlannerBal
     return leavingPoint;
 }
 
-Dynamics::dynamics_t Dynamics::interceptBall(const TeamPlannerBall& rBallObject,
+Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject,
         const Geometry::Point& meCoordinates, double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position) {
     dynamics_t result = {};
 
@@ -151,7 +151,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const TeamPlannerBall& rBallObject,
     return result;
 }
 
-double Dynamics::timeOnPath(const std::vector<planner_piece_t>& path, double maxSpeed) {
+double Dynamics::timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed) {
     // Handle boundary conditions
     if (path.size() < 2) {
         return 0.0;

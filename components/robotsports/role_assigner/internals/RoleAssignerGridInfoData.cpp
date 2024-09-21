@@ -1,10 +1,11 @@
 /*
- * TeamPlannerGrid.h
+ * RoleAssignerGridInfoData.cpp
  *
- *  Created on: Jan 3, 2016
+ *  Created on: Jan 3, 2024
  *      Author: jurge
  */
-#include "PlannerGridInfoData.hpp"
+#include "RoleAssignerGridInfoData.hpp"
+
 #include "logging.hpp"
 #include "geometry.hpp"
 
@@ -15,7 +16,7 @@
 using namespace MRA;
 using namespace std;
 
-string PlannerGridInfoData::toString() {
+string RoleAssignerGridInfoData::toString() {
     std::stringstream buffer;
     buffer << "TEAM:" << endl;
     for (auto it = this->gameData.team.begin(); it != this->gameData.team.end(); ++it) {
@@ -37,7 +38,7 @@ string PlannerGridInfoData::toString() {
     return buffer.str();
 }
 
-void PlannerGridInfoData::saveToFile(const std::string& filename) {
+void RoleAssignerGridInfoData::saveToFile(const std::string& filename) {
     FILE* fp = fopen(filename.c_str(), "w");
     fprintf(fp, "# GAME-DATA\n");
     // TEAM data
@@ -73,7 +74,7 @@ void PlannerGridInfoData::saveToFile(const std::string& filename) {
     fclose(fp);
 }
 
-void PlannerGridInfoData::readFromFile(const std::string& filename) {
+void RoleAssignerGridInfoData::readFromFile(const std::string& filename) {
     std::string sLine = "";
     std::ifstream infile;
 
@@ -229,7 +230,7 @@ void PlannerGridInfoData::readFromFile(const std::string& filename) {
                 }
             }
             if (item_nr > 0) {
-                this->cells.push_back(PlannerGridCell(id, x, y, values));
+                this->cells.push_back(RoleAssignerGridCell(id, x, y, values));
             }
             else {
                 break;

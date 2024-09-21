@@ -9,8 +9,9 @@
 #define TEAMFORMATION_HPP 1
 
 #include "WmTypes.h"
-#include "planner_types.hpp"
 #include <vector>
+
+#include "RoleAssigner_types.hpp"
 #include "RoleAssignerParameters.hpp"
 
 namespace MRA {

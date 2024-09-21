@@ -33,12 +33,12 @@ typedef enum  {
     GOALKEEPER = 12
 } planner_target_e;
 
-typedef struct planner_piece {
+typedef struct path_piece {
     double x;
     double y;
     double cost;
     long target; // from enum-type planner_target_e
-} planner_piece_t;
+} path_piece_t;
 
 typedef struct defend_info {
     long valid;
@@ -51,7 +51,7 @@ typedef struct defend_info {
 typedef struct previous_planner_result  {
     long present = false;
     double ts = 0;
-    planner_piece_t end_position;
+    path_piece_t end_position;
     long dynamic_role;
 } final_planner_result_t;
 

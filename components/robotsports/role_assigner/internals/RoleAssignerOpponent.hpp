@@ -3,12 +3,12 @@
  *  @brief   Class for team planning 2017
  *  @curator Jürge van Eijck
  */
-#ifndef TeamPlannerOpponent_HPP
-#define TeamPlannerOpponent_HPP 1
+#ifndef RoleAssignerOpponent_HPP
+#define RoleAssignerOpponent_HPP 1
 
 namespace MRA {
 
-class TeamPlannerOpponent {
+class RoleAssignerOpponent {
 public:
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
@@ -18,4 +18,4 @@ public:
 
 } // namespace
 
-#endif // TeamPlannerOpponent_HPP
+#endif // RoleAssignerOpponent_HPP

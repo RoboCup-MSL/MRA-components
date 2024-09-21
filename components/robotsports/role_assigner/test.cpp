@@ -7,7 +7,7 @@
 #include "gmock/gmock.h"
 #include "test_factory.hpp"
 using namespace ::testing;
-#include "xmlTeamPlanner.h"
+#include "test/xmlRoleAssigner.hpp"
 
 // System under test:
 #include "RobotsportsRoleAssigner.hpp"

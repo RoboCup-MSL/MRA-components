@@ -8,8 +8,9 @@
 
 #include "GlobalPathPlanner.hpp"
 #include "geometry.hpp"
-#include "TeamPlannerOpponent.hpp"
 #include <vector>
+
+#include "RoleAssignerOpponent.hpp"
 #include "RoleAssignerParameters.hpp"
 #include "RoleAssignerRobot.hpp"
 
@@ -37,8 +38,8 @@ public:
      *            Number of re-planning iterations
      * @return path
      */
-    std::vector<planner_piece_t> planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-                                          const std::vector<RoleAssignerRobot>& r_teammates, const TeamPlannerData& r_teamPlannerData,
+    std::vector<path_piece_t> planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
+                                          const std::vector<RoleAssignerRobot>& r_teammates, const RoleAssignerData& r_roleAssignerData,
                                           const std::vector<MRA::Vertex>& r_targetPos, planner_target_e targetFunction, bool ballIsObstacle,
                                           double maxSpeed, int nrIterations, bool stayInPlayingField);
 

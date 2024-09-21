@@ -4,18 +4,18 @@
  *  @curator Jürge van Eijck
  */
 
-#include "TeamPlannerData.hpp"
-#include "TeamPlannerResult.hpp"
+#include "RoleAssignerData.hpp"
 
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include "RoleAssignerResult.hpp"
 
 using namespace std;
 using namespace MRA;
 
-std::string TeamPlannerBall::toString(bool print_complete) const {
+std::string RoleAssignerBall::toString(bool print_complete) const {
     std::stringstream buffer;
     buffer << std::fixed << std::setprecision(2)
             << " x: " << this->position.x
@@ -29,7 +29,7 @@ std::string TeamPlannerBall::toString(bool print_complete) const {
     return buffer.str();
 }
 
-std::string TeamPlannerData::toString() const
+std::string RoleAssignerData::toString() const
 {
     std::stringstream buffer;
 
@@ -137,7 +137,7 @@ std::string TeamPlannerData::toString() const
         else {
             buffer << endl;
         }
-        std::vector<planner_piece_t> path;
+        std::vector<path_piece_t> path;
         for (unsigned long idx = 0; idx < player_path.result.path.size(); idx++) {
             buffer << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << player_path.result.path[idx].x <<
                     " y: " << player_path.result.path[idx].y <<
@@ -154,10 +154,10 @@ std::string TeamPlannerData::toString() const
 }
 
 
-int TeamPlannerData::incrementAndGetRank() {
+int RoleAssignerData::incrementAndGetRank() {
     return ++nr_players_assigned;
 }
 
-bool TeamPlannerData::teamControlsBall() const {
+bool RoleAssignerData::teamControlsBall() const {
     return isOneOf(ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE, OWNED_BY_TEAM});
 }

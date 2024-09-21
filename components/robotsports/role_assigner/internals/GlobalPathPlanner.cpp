@@ -126,9 +126,9 @@ void GlobalPathPlanner::setOptions(const RoleAssignerParameters& options) {
 }
 
 void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
-                                    const TeamPlannerBall& ball,
+                                    const RoleAssignerBall& ball,
                                     const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
-                                    const std::vector<TeamPlannerOpponent>& opponents,
+                                    const std::vector<RoleAssignerOpponent>& opponents,
         const std::vector<MRA::Vertex>& targetPos,
         planner_target_e targetFunction,
         bool ballIsObstacleAndValid,
@@ -202,15 +202,15 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
  *
  * @return List of coordinates on the shortest path
  */
-vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData& teamplanner_data) {
+vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& role_assigner_data) {
     m_start->m_minDistance = 0.0;
     std::list<MRA::Vertex*> sortedList = std::list<MRA::Vertex*>();
     sortedList.push_back(m_start);
     // check if start is not on target location
     for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
         if (m_start->equals(*(m_target[idx]))) {
-            vector < planner_piece_t> p = vector<planner_piece_t>();
-            planner_piece_t piece;
+            vector < path_piece_t> p = vector<path_piece_t>();
+            path_piece_t piece;
             piece.x = m_target[idx]->m_coordinate.x;
             piece.y = m_target[idx]->m_coordinate.y;
             piece.cost = 0; // no costs
@@ -236,8 +236,8 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
     }
     if (nearTarget) {
         // start is near a target position.
-        vector < planner_piece_t> p = vector<planner_piece_t>();
-        planner_piece_t piece;
+        vector < path_piece_t> p = vector<path_piece_t>();
+        path_piece_t piece;
         piece.x = nearestTarget.x;
         piece.y = nearestTarget.y;
         piece.cost = 0; // no costs
@@ -292,13 +292,13 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
     }
     // only 1 target has a path.
     std::vector<Vertex>::size_type idx  = bestTarget_idx;
-    vector < planner_piece_t> path2 = vector<planner_piece_t>();
+    vector < path_piece_t> path2 = vector<path_piece_t>();
 
     if (bestTargetFound) {
         int piece_nr = 0;
         for (Vertex* vertex = m_target[idx]; vertex != 0 && piece_nr < 20; vertex = vertex->m_pPrevious) {
             piece_nr++;
-            planner_piece_t piece;
+            path_piece_t piece;
             piece.x = vertex->m_coordinate.x;
             piece.y = vertex->m_coordinate.y;
             piece.cost = vertex->m_minDistance;
@@ -320,7 +320,7 @@ vector<planner_piece_t> GlobalPathPlanner::getShortestPath(const TeamPlannerData
             filename.replace(filename.end()-4,filename.end(), buffer);
         }
         m_options.svgOutputFileName = filename;
-//        save_graph_as_svg(teamplanner_data, path2);
+//        save_graph_as_svg(role_assigner_data, path2);
         m_options.svgOutputFileName = org_svgOutputFileName; // restore svg name
     }
     return path2;
@@ -385,7 +385,7 @@ bool GlobalPathPlanner::nearPath(const MRA::Geometry::Position& v) {
  * Inserts edges in the graph between vertices. To optimize, edges that are
  * very long are not included.
  */
-void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const TeamPlannerBall& ball) {
+void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point& rBallTargetPos, const RoleAssignerBall& ball) {
     for (std::vector<Vertex>::size_type i = 0; i < m_vertices.size() - 1; i++) {
         for (std::vector<Vertex>::size_type j = i + 1; j < m_vertices.size(); j++) {
             Vertex* v1 = m_vertices[i];
@@ -694,51 +694,6 @@ void GlobalPathPlanner::addPoint(const MRA::Geometry::Position& point, bool stay
     m_addPoints.push_back(vertex);
     m_vertices.push_back(vertex);
 }
-
-//void GlobalPathPlanner::save_graph_as_svg(const TeamPlannerData& teamplanner_data, const vector<planner_piece_t>& path) {
-//    vector<player_type_e> teamTypes = vector<player_type_e>();
-//    std::vector<MovingObject> myTeam = std::vector<MovingObject>();
-//    vector<long> robotIds = vector<long>();
-//    teamTypes.push_back(player_type_e::FIELD_PLAYER);
-//    robotIds.push_back(1);
-//    myTeam.push_back(MovingObject(m_Me));
-//    for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_teammates.size(); pos_idx++) {
-//        myTeam.push_back(MovingObject(m_teammates[pos_idx].x, m_teammates[pos_idx].y, 0, 0, 0, 0, 0, true));
-//        teamTypes.push_back(player_type_e::FIELD_PLAYER);
-//        robotIds.push_back(pos_idx+1);
-//    }
-//
-//    std::vector<MovingObject> opponents = std::vector<MovingObject>();
-//    for(std::vector<MRA::Geometry::Position>::size_type pos_idx = 0; pos_idx != m_opponents.size(); pos_idx++) {
-//        opponents.push_back(MovingObject(m_opponents[pos_idx].x, m_opponents[pos_idx].y, 0, 0, 0, 0, 0, true));
-//    }
-//
-//    std::vector<PlayerPlannerResult> player_paths;
-//    PlayerPlannerResult playerResult = PlayerPlannerResult();
-//    playerResult.path = path;
-//    player_paths.push_back(playerResult);
-//
-//    game_state_e gamestate = game_state_e::NONE;
-//    int controlBallByPlayerId = -1;
-//    ball_status_t ball_status = ball_status_e::FREE;
-//    std::vector<MRA::Geometry::Position> parking_positions;
-//    previous_used_ball_by_planner_t previous_ball = {};
-//    ball_pickup_position_t ball_pickup_position = {};
-//    bool passIsRequired = false;
-//    long passBallByPlayerId = -1;
-//    pass_data_t pass_data = {};
-//    const std::vector<final_planner_result_t> previous_planner_results;
-//    const std::vector<double> time_in_own_penalty_area;
-//    const std::vector<double> time_in_opponent_penalty_area;
-//    string save_name = m_options.svgOutputFileName;
-//    TeamPlannerData teamplannerData(m_fieldConfig);
-//    teamplannerData.fillData(gamestate, m_Ball, myTeam, opponents, ball_status, controlBallByPlayerId,
-//            teamTypes, robotIds, m_options, parking_positions, previous_ball,previous_planner_results, ball_pickup_position,
-//            passIsRequired, passBallByPlayerId, pass_data, time_in_own_penalty_area, time_in_opponent_penalty_area);
-//    teamplannerData.setVertices(m_vertices);
-//    SvgUtils::plannerdata_to_svg(player_paths, teamplannerData, m_fieldConfig, save_name);
-//
-//}
 
 
 } // namespace

@@ -12,11 +12,6 @@ using namespace MRA;
 
 // custom includes, if any
 #include <cmath>
-#include "geometry.hpp"
-
-// globals
-FalconsGetballFetch::StateType g_fetch_state;
-FalconsGetballIntercept::StateType g_intercept_state;
 
 
 int FalconsGetball::FalconsGetball::tick
@@ -26,19 +21,13 @@ int FalconsGetball::FalconsGetball::tick
     ParamsType const           &params,      // configuration parameters, type generated from Params.proto
     StateType                  &state,       // state data, type generated from State.proto
     OutputType                 &output,      // output data, type generated from Output.proto
-    LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+    DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
 )
 {
     int error_value = 0;
     MRA_LOG_TICK();
 
     // user implementation goes here
-
-    Geometry::Position bpos = Geometry::Position(input.worldstate().ball().position()) - Geometry::Position(input.worldstate().robot().position());
-    if (input.radius() > 0.0 && bpos.size() > input.radius()) {
-        output.set_actionresult(Datatypes::ActionResult::FAILED);
-    }
-    else {
 
     float vx = input.worldstate().ball().velocity().x();
     float vy = input.worldstate().ball().velocity().y();
@@ -48,27 +37,18 @@ int FalconsGetball::FalconsGetball::tick
     {
         // call component: FalconsGetballFetch
         FalconsGetballFetch::InputType subcomponent_input;
-        //subcomponent_input.MergeFrom(input); // same type
-        std::string tmpdata;
-        input.SerializeToString(&tmpdata);
-        subcomponent_input.ParseFromString(tmpdata);
         FalconsGetballFetch::OutputType subcomponent_output;
-        FalconsGetballFetch::LocalType subcomponent_local;
+        //fbi.worldstate() = input.worldstate();
         error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
             timestamp,
             subcomponent_input,
             params.fetch(),
-            g_fetch_state,
+            state,
             subcomponent_output,
-            subcomponent_local
+            diagnostics
         );
-        output.set_actionresult(subcomponent_output.actionresult());
-        if (subcomponent_output.has_target())
-        {
-            *output.mutable_target() = subcomponent_output.target();
-        }
-    }
-
+        //output.set_actionresult(subcomponent_output.actionresult());
+        //output.set_target(subcomponent_output.target());
     }
 /*    else
     {

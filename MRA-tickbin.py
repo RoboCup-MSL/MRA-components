@@ -20,7 +20,7 @@ EXAMPLE_TEXT = """Example:
     output:
     {"actionresult": "RUNNING", "target": {"position": {"rz": 0.2617993877991494}}}
 
-    local:
+    diagnostics:
     {}
 """
 

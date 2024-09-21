@@ -22,7 +22,7 @@ public:
     int run();
 
     Output const &getOutput() const;
-    Local const &getDiagnostics() const;
+    Diagnostics const &getDiagnostics() const;
     State const &getState() const;
 
 private:
@@ -30,7 +30,7 @@ private:
     Params _params;
     State  _state;
     Output _output;
-    Local  _diag;
+    Diagnostics  _diagnostics;
 
     FitResult _fitResult;
 

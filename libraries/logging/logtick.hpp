@@ -17,11 +17,11 @@ typedef google::protobuf::Timestamp Tt;
 // template for use in scoped tick logging
 // see also logger ideas and requirements in https://github.com/janfeitsma/MRA-prototype/issues/10
 // TODO: there can be large (binary) data present, which probably should be automatically filtered, at least when dumping to stdout
-template <typename Ti, typename Tp, typename Ts, typename To, typename Tl>
+template <typename Ti, typename Tp, typename Ts, typename To, typename Td>
 class LogTick
 {
 public:
-    LogTick(std::string const &componentName, std::string const &componentRelPath, std::string const &fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Tl *local, int *error_value)
+    LogTick(std::string const &componentName, std::string const &componentRelPath, std::string const &fileName, int lineNumber, Tt const &timestamp, Ti const &input, Tp const &params, Ts *state, To *output, Td *diagnostics, int *error_value)
     :
         // store data for inspection later
         _componentName(componentName),
@@ -34,7 +34,7 @@ public:
         _params(params),
         _state(state),
         _output(output),
-        _local(local),
+        _diagnostics(diagnostics),
         _err(error_value)
     {
         start();
@@ -69,7 +69,7 @@ public:
             auto elapsed = google::protobuf::util::TimeUtil::GetCurrentTime() - _t0;
             double duration_sec = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsed);
             // call backend
-            backend::logTickEnd(_componentName, _componentRelPath, _fileName, _lineNumber, _cfg, _bindata, _counter, _t0, duration_sec, *_err, *_state, *_output, *_local);
+            backend::logTickEnd(_componentName, _componentRelPath, _fileName, _lineNumber, _cfg, _bindata, _counter, _t0, duration_sec, *_err, *_state, *_output, *_diagnostics);
         }
         // update counter for next tick
         _counter++;
@@ -83,7 +83,7 @@ private:
     Tp const   &_params;
     Ts         *_state;
     To         *_output;
-    Tl         *_local;
+    Td         *_diagnostics;
     int        *_err;
     static int  _counter;
     std::string _componentName;

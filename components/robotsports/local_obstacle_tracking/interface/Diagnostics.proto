@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package MRA.RobotsportsLocalObstacleTracking;
 
-message Local
+message Diagnostics
 {
 }
 

@@ -15,11 +15,11 @@ int pywrap_tick_standalone(
         ParamsType const           &params,      // configuration parameters, type generated from Params.proto
         StateType                  &state,       // state data, type generated from State.proto
         OutputType                 &output,      // output data, type generated from Output.proto
-        LocalType                  &local        // local/diagnostics data, type generated from Local.proto
+	DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
     )
 {
     MRA_TRACE_FUNCTION();
-    int result = FalconsLocalizationVision().tick(input, params, state, output, local);
+    int result = FalconsLocalizationVision().tick(input, params, state, output, diagnostics);
     return result;
 }
 
@@ -34,14 +34,14 @@ PYBIND11_MODULE(pybind_ext, m) {
             // state is an inout parameter
             // output and local are pure outputs
             OutputType out;
-            LocalType loc;
-            int error_code = pywrap_tick_standalone(input, params, state, out, loc);
+            DiagnosticsType diag;
+            int error_code = pywrap_tick_standalone(input, params, state, out, diag);
             pybind11::tuple result_tuple = pybind11::tuple(4);
             result_tuple[0] = error_code;
             result_tuple[1] = state;
             result_tuple[2] = out;
-            result_tuple[3] = loc;
-            MRA_TRACE_FUNCTION_OUTPUTS(error_code, out, loc, state);
+            result_tuple[3] = diag;
+            MRA_TRACE_FUNCTION_OUTPUTS(error_code, out, diag, state);
             return result_tuple;
         },
         //pybind11::call_guard<pybind11::gil_scoped_release>(),
@@ -49,7 +49,7 @@ PYBIND11_MODULE(pybind_ext, m) {
         pybind11::arg("params"),
         pybind11::arg("state"), pybind11::return_value_policy::reference//,
         //pybind11::arg("output"),// pybind11::return_value_policy::copy,
-        //pybind11::arg("local")//, pybind11::return_value_policy::copy
+        //pybind11::arg("diagnostics")//, pybind11::return_value_policy::copy
     );
 }
 

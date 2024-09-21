@@ -51,7 +51,7 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     auto input = FalconsLocalizationVision::Input();
     auto output = FalconsLocalizationVision::Output();
     auto state = FalconsLocalizationVision::State();
-    auto local = FalconsLocalizationVision::Local();
+    auto diagnostics = FalconsLocalizationVision::Diagnostics();
     auto params = m.defaultParams(); // official MSL field definition, should not change too often ;)
     // use high resolution
     params.mutable_solver()->set_pixelspermeter(80);
@@ -61,7 +61,7 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     params.set_debug(exportForPlot);
 
     // Act
-    int error_value = m.tick(input, params, state, output, local);
+    int error_value = m.tick(input, params, state, output, diagnostics);
 
     // Inspect the resulting floor
     cv::Mat referenceFloor;
@@ -72,7 +72,7 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
     if (exportForPlot)
     {
         std::ofstream dump(dumpFileName);
-        local.floor().SerializeToOstream(&dump);
+        diagnostics.floor().SerializeToOstream(&dump);
         dump.close();
         std::cout << "referenceFloor written to dump file " << dumpFileName << std::endl;
     }
@@ -240,7 +240,7 @@ TEST(FalconsLocalizationVisionTest, perfectFit)
     auto input = FalconsLocalizationVision::Input();
     auto output = FalconsLocalizationVision::Output();
     auto state = FalconsLocalizationVision::State();
-    auto local = FalconsLocalizationVision::Local();
+    auto local = FalconsLocalizationVision::Diagnostics();
     auto params = m.defaultParams();
 
     // Act - part 1: get reference floor

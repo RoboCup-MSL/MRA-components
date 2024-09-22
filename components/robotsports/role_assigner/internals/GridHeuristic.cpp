@@ -12,7 +12,6 @@
 #include <limits>
 #include <iostream>
 
-#include "RoleAssigner_common.hpp"
 using namespace MRA;
 
 double grid_eps = 1e-3; // 1 mm
@@ -548,15 +547,11 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
 }
 
 double InterceptionThreatHeuristic::getValue(double x, double y) {
-    //// Improves standing free by looking at the intercept by enemy thread
-
-    // player with ball
-    Geometry::Position ballPos(m_ball.x, m_ball.y);
+   // Improves standing free by looking at the intercept by enemy thread
 
     // receiving position
-    Geometry::Position receivingPos = Geometry::Position(x, y);
-
-    return chance_of_intercept(ballPos, receivingPos, m_Opponents,
+    Geometry::Point receivingPos = Geometry::Position(x, y);
+    return chance_of_intercept(m_ball, receivingPos, m_Opponents,
             m_interceptionChanceStartDistance, m_interceptionChanceIncreasePerMeter, m_interceptionChancePenaltyFactor);
 }
 
@@ -701,7 +696,7 @@ PassHeuristic::PassHeuristic(const char *id, double weight, RoleAssignerGridInfo
 double PassHeuristic::getValue(double x, double y) {
     double value = 0.0;
 
-    Geometry::Position dribbelPos = Geometry::Position(x, y);
+    Geometry::Point dribbelPos = Geometry::Point(x, y);
     if (m_numberOfFieldPlayers == 0) {
         // no team mate; So give all positions same value
         return 1.0;
@@ -712,7 +707,7 @@ double PassHeuristic::getValue(double x, double y) {
         if (m_Team[team_idx].player_type != FIELD_PLAYER) {
             continue; // skip this player; not a field player.
         }
-        Geometry::Position teamMatePos = m_Team[team_idx].position;
+        Geometry::Point teamMatePos = Geometry::Point(m_Team[team_idx].position.x, m_Team[team_idx].position.y);
 
         // calculate interception chance (default algorithm used to make pass by ball player and attack supporter for finding position.
         double interChange = chance_of_intercept(dribbelPos, teamMatePos, m_Opponents,
@@ -783,4 +778,68 @@ double StayAwayFromOpponentsHeuristic::getValue(double x, double y) {
 }
 
 
+double MRA::chance_of_intercept(const Geometry::Point& pass_begin_vec, const Geometry::Point& pass_end_vec,
+        const std::vector<Geometry::Position>& Opponents,
+        double interceptionChanceStartDistance,
+        double interceptionChanceIncreasePerMeter,
+        double interceptionDistancePenaltyFactor)
+{
+    // Calculates the intercept by enemy threat
+    double interceptionPenalty = 0;
+
+    // check chance of intercept from begin to end position of the pass.
+    // Check if in a trapezoid (smallest parallel side at begin of pass and largest parallel side at end of the pass.
+    // Trapezoid is constructed with X meter from begin and X meter + pass-distance * increase_per_meter
+    // Check for each opponent if the opponent is in the trapezoid. (divide trapezoid area in two triangle and
+    // check if opponent is not in one of the triangles.
+    // if opponent is  the trapezoid, the penalty is related to to distance of the pass-line
+
+    double start_width = interceptionChanceStartDistance; // starting with for interception
+    double increase_per_meter = interceptionChanceIncreasePerMeter;
+    double dist_from_to = pass_end_vec.distanceTo(pass_begin_vec); // distance from pass begin to pass end point
+
+
+    double angle_begin_to_end_pass = pass_end_vec.angle(pass_begin_vec); // angle from begin pass to end pass point
+    double end_width = start_width + dist_from_to * increase_per_meter; // calculate size of largest parallel side of trapezoid
+
+    // calculate largest parallel side of trapezoid
+    double EndXp = pass_end_vec.x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
+    double EndYp = pass_end_vec.y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * end_width);
+    double EndXm = pass_end_vec.x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
+    double EndYm = pass_end_vec.y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * end_width);
+
+
+    // calculate smallest parallel side of trapezoid
+    double BeginXp = pass_begin_vec.x + (cos(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
+    double BeginYp = pass_begin_vec.y + (sin(angle_begin_to_end_pass + 0.5 * M_PI) * start_width);
+    double BeginXm = pass_begin_vec.x  + (cos(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
+    double BeginYm = pass_begin_vec.y  + (sin(angle_begin_to_end_pass - 0.5 * M_PI) * start_width);
+
+    // loop for calculating angles between receiving positions and opponents
+    for(Geometry::Position opponent : Opponents)
+    {
+        // return true if point (x,y) is in polygon defined by the points  else return false
+        if (inTriangle(BeginXp, BeginYp, EndXm, EndYm, BeginXm, BeginYm, opponent.x , opponent.y) ||
+                inTriangle(EndXm, EndYm, BeginXp, BeginYp, EndXp, EndYp, opponent.x , opponent.y) )
+        {
+            // Opponent is in the Trapezoid
+            // calculate intercept point of the perpendicular from Opponent to the pass-line (shortest line to pass line for the opponent)
+            Geometry::Point Per;
+            intersectPerpendicular(Per.x, Per.y, pass_begin_vec.x, pass_begin_vec.y, pass_end_vec.x, pass_end_vec.y, opponent.x, opponent.y);
+            // calculate distance from opponent intercept point (Vector Per) to pass begin point
+            double distPer = pass_begin_vec.distanceTo(Per); //
+            double ext_at_Per = start_width + distPer * increase_per_meter;
+            double distOppToPer = opponent.distanceTo(Per); // distance opponent to  pass-line
+
+            // penalty per opponent:
+            // relative to distance to pass-line (divide by max distance to side of trapezoid at that distance
+            double enemyPenalty = interceptionDistancePenaltyFactor * ((ext_at_Per-distOppToPer)/ext_at_Per);
+
+            // sum all penalties, a point with a lot of intercept possibilities gets a high penalty
+            interceptionPenalty = std::max(enemyPenalty, interceptionPenalty);
+        }
+    }
+
+    return interceptionPenalty;
+}
 

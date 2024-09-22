@@ -16,7 +16,6 @@ add_library(MRA-components-robotsports-role-assigner
     internals/GlobalPathDynamicPlanner.cpp
     internals/GridHeuristic.cpp
     internals/MathUtils.cpp
-    internals/RoleAssigner_common.cpp
     internals/RoleAssignerGridInfoData.cpp
     internals/RolePosition.cpp
     internals/RoleAssignerSvg.cpp

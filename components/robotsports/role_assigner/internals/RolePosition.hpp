@@ -6,17 +6,14 @@
 #ifndef ROLE_POSITION_HPP
 #define ROLE_POSITION_HPP 1
 
-#include "FieldConfig.hpp"
-#include "GlobalPathPlanner.hpp"
-#include <vector>
-
 #include "RoleAssigner_types.hpp"
-#include "RoleAssignerData.hpp"
-#include "RoleAssignerOpponent.hpp"
-#include "RoleAssignerParameters.hpp"
+#include "geometry.hpp"
+
+#include <vector>
 
 namespace MRA {
 
+class RoleAssignerData;
 
 class RolePosition {
 public:

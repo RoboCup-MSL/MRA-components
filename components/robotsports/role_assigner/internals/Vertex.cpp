@@ -59,21 +59,12 @@ std::string Vertex::toString() {
 
 bool Vertex::equals(const Vertex& v) const {
     bool c = m_coordinate.equals(v.m_coordinate);
-//    bool d = fabs(straightLineToTarget - v.straightLineToTarget) < eps;
-//    if ( (fabs(minDistance - v.minDistance) < eps) && (coordinate.equals(v.coordinate))
-//            && (fabs(straightLineToTarget - v.straightLineToTarget) < eps) ){
-//            //&& (v.previous == 0 && previous == 0) && (v.previous != 0 && v.previous.equals(previous))
-//        return true;
-//    }
     return c;
 }
 
 double Vertex::totalCosts() const {
     return m_minDistance + m_extraCost;
 }
-
-//    public Vertex previous;
-//
 
 bool VertexCompareFunction (Vertex* t1, Vertex* t2)
 {

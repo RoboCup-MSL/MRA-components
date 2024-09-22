@@ -8,11 +8,11 @@
 #define DYNAMICS_HPP 1
 
 #include "geometry.hpp"
-#include "GlobalPathPlanner.hpp" // for planner_piece_t
-
-#include <vector>
 
 namespace MRA {
+
+class RoleAssignerBall;
+class FieldConfig;
 
 class Dynamics {
     public:
@@ -47,19 +47,6 @@ class Dynamics {
      * @return point where ball leaves the field.
      */
     static MRA::Geometry::Position calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const FieldConfig &rFieldConfig);
-
-    /**
-     * Calculates time necessary to traverse a path at maximum speed, assuming
-     * indefinite acceleration. If a path has 0 or 1 point, the time is 0.0,
-     * otherwise, if the maximum speed is very low, the time returned is NaN.
-     * 
-     * @param path
-     *            Path to travel
-     * @param maxSpeed
-     *            Maximum possible speed
-     * @return Time needed to traverse the path
-     */
-    static double timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed);
 };
 
 } // namespace

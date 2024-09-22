@@ -1,21 +1,19 @@
 /**
  *  @file
- *  @brief   Utility class for plotting planner to svg file
+ *  @brief   Utility class for plotting role assigner data to svg file
  *  @curator Jürge van Eijck
  */
-#ifndef SVGUTILS_HPP
-#define SVGUTILS_HPP 1
-
-#include "GlobalPathPlanner.hpp"
-#include "FieldConfig.hpp"
+#ifndef ROLE_ASSIGNER_SVG_HPP
+#define ROLE_ASSIGNER_SVG_HPP 1
 
 #include <string>
 #include <vector>
-
-#include "RoleAssignerData.hpp"
-#include "RoleAssignerParameters.hpp"
+#include "FieldConfig.hpp"
 
 namespace MRA {
+
+class RoleAssignerResult;
+class RoleAssignerData;
 
 class RoleAssignerSvg {
 public:
@@ -42,4 +40,4 @@ private:
 
 } // namespace
 
-#endif // SVGUTILS_HPP
+#endif // ROLE_ASSIGNER_SVG_HPP

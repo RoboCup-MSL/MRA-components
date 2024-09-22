@@ -6,11 +6,8 @@
 #ifndef ROLE_ASSIGNER_EXPORT_HPP
 #define ROLE_ASSIGNER_EXPORT_HPP 1
 
-#include "FieldConfig.hpp"
-#include "GlobalPathPlanner.hpp"
 #include <string>
-#include <vector>
-#include "RoleAssignerParameters.hpp"
+#include "RoleAssigner_types.hpp"
 
 namespace MRA {
     std::string GetRoleAssignerSVGname(game_state_e gamestate, std::string suffix = "");

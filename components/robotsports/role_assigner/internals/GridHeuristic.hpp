@@ -1,21 +1,22 @@
 /*
- * GridHeuristic.h
- *
- *  Created on: Sep 12, 2016
- *      Author: jurge
+ * GridHeuristic.hpp
  */
 
-#ifndef PLANNER_GRID_GRIDHEURISTIC_HPP
-#define PLANNER_GRID_GRIDHEURISTIC_HPP 1
-
-#include "FieldConfig.hpp"
+#ifndef ROLE_ASSIGNER_GRID_GRIDHEURISTIC_HPP
+#define ROLE_ASSIGNER_GRID_GRIDHEURISTIC_HPP 1
 
 #include <string>
-
-#include "RoleAssigner.hpp"
-#include "RoleAssignerGridInfoData.hpp"
+#include "geometry.hpp"
+#include "RoleAssigner_types.hpp"
 
 namespace MRA {
+
+class FieldConfig;
+class RoleAssignerData;
+class RoleAssignerGridInfoData;
+class RoleAssignerOpponent;
+class RoleAssignerRobot;
+class RoleAssignerParameters;
 
 double chance_of_intercept(const MRA::Geometry::Point& from,
                            const MRA::Geometry::Point& to,
@@ -85,7 +86,7 @@ private:
     const double m_cx;
     const double m_cy;
     const double m_radius;
-    const FieldConfig m_fieldConfig;
+    const FieldConfig& m_fieldConfig;
 };
 
 
@@ -450,4 +451,4 @@ private:
 } // namespace trs
 
 
-#endif // PLANNER_GRID_GRIDHEURISTIC_HPP
+#endif // ROLE_ASSIGNER_GRID_GRIDHEURISTIC_HPP

@@ -17,6 +17,9 @@
 #include <algorithm>
 #include "RoleAssignerExport.hpp"
 #include "RoleAssignerSvg.hpp"
+#include "Vertex.hpp"
+#include "RoleAssignerData.hpp"
+#include "GlobalPathPlanner.hpp"
 
 using namespace std;
 using namespace MRA;

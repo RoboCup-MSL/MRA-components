@@ -48,18 +48,18 @@ typedef struct defend_info {
 } defend_info_t;
 
 
-typedef struct previous_planner_result  {
+typedef struct previous_role_assigner_result  {
     long present = false;
     double ts = 0;
     path_piece_t end_position;
     long dynamic_role;
-} final_planner_result_t;
+} previous_role_assigner_result_t;
 
-typedef struct previous_used_ball_by_planner  {
+typedef struct  previous_used_ball_by_role_assinger  {
     bool   present;
     double x;
     double y;
-} previous_used_ball_by_planner_t;
+} previous_used_ball_by_role_assinger_t;
 
 
 typedef enum  {

@@ -7,6 +7,9 @@
 
 #include "GridHeuristic.hpp"
 #include "MathUtils.hpp"
+#include "FieldConfig.hpp"
+#include "RoleAssignerData.hpp"
+#include "RoleAssignerGridInfoData.hpp"
 
 #include <cmath>
 #include <limits>

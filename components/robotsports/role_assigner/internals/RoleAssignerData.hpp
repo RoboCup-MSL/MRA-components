@@ -1,13 +1,14 @@
 /**
  *  @file
- *  @brief   Class for team planning
+ *  @brief   Data Class for Role assigner
  *  @curator Jürge van Eijck
  */
-#ifndef TEAM_PLANNER_DATA_HPP
-#define TEAM_PLANNER_DATA_HPP 1
+#ifndef ROLE_ASSIGNER_DATA_HPP
+#define ROLE_ASSIGNER_DATA_HPP 1
 
 #include "FieldConfig.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
+#include "RoleAssigner_types.hpp"
 
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "RoleAssignerRobot.hpp"
 
 namespace MRA {
-
 
 inline std::string PlayerTypeAsString(player_type_e player_type) {
     std::string player_type_string = "";
@@ -63,7 +63,7 @@ public:
     bool assigned = false;
     long robotId = -1;
     RoleAssignerResult result = {};
-    final_planner_result_t previous_result;
+    previous_role_assigner_result_t previous_result;
     // compare function to sort vector of the class on the member robotId
     static inline bool CompareRobotId(const RoleAssignerAdminTeam& r1, const RoleAssignerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
 };
@@ -96,8 +96,8 @@ public:
 // class with state data (data for State.proto)
 class RoleAssignerState {
 public:
-    previous_used_ball_by_planner_t previous_ball;
-    std::vector<final_planner_result_t> previous_result;
+    previous_used_ball_by_role_assinger_t previous_ball;
+    std::vector<previous_role_assigner_result_t> previous_result;
 };
 
 // class with outputs (data for Output.proto)
@@ -130,7 +130,7 @@ public:
     bool ballIsObstacle;
     bool searchForBall;
     defend_info_t defend_info;
-    previous_used_ball_by_planner_t previous_ball = {};
+    previous_used_ball_by_role_assinger_t previous_ball = {};
 
     // internal administration
     game_state_e original_gamestate;
@@ -153,4 +153,4 @@ public:
 
 } // namespace
 
-#endif // TEAM_PLANNER_DATA_HPP
+#endif // ROLE_ASSIGNER_DATA_HPP

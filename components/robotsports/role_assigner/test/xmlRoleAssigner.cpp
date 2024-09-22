@@ -28,6 +28,7 @@
 #include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
 #include "../internals/RoleAssignerSvg.hpp"
+#include "../internals/RoleAssignerData.hpp"
 
 using namespace MRA;
 using namespace std;
@@ -418,8 +419,8 @@ void fillRoleAssignerData(RoleAssignerData& tdp, game_state_e gamestate,
         const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
         const RoleAssignerParameters& options,
         const std::vector<Geometry::Point>& parking_positions,
-        const previous_used_ball_by_planner_t& previous_ball,
-        const std::vector<final_planner_result_t>& previous_planner_results,
+        const previous_used_ball_by_role_assinger_t& previous_ball,
+        const std::vector<previous_role_assigner_result_t>& previous_planner_results,
         const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
         long passBallByPlayerId, const pass_data_t& pass_data,
         const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area)
@@ -516,7 +517,7 @@ void xmlplanner(string input_filename) {
 
     std::vector<long> robotIds = std::vector<long>();
     std::vector<long> opponentIds = std::vector<long>();
-    std::vector<final_planner_result_t> previous_planner_results = std::vector<final_planner_result_t>();
+    std::vector<previous_role_assigner_result_t> previous_planner_results = std::vector<previous_role_assigner_result_t>();
 
 
     std::vector<RoleAssignerRobot> Team = {};
@@ -531,7 +532,7 @@ void xmlplanner(string input_filename) {
     bool team_has_ball = false;
     bool ball_is_valid = false;
     pass_data_t pass_data = {.target_id=-1};
-    previous_used_ball_by_planner_t previous_ball = {};
+    previous_used_ball_by_role_assinger_t previous_ball = {};
     ball_status_e ball_status = ball_status_e::FREE;
     try {
         auto_ptr<robotsports::StrategyType> c(robotsports::Situation(filename));

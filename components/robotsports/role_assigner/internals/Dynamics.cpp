@@ -6,8 +6,9 @@
 #include "Dynamics.hpp"
 
 #include "MathUtils.hpp"
-
 #include "geometry.hpp"
+#include "FieldConfig.hpp"
+#include "RoleAssignerData.hpp"
 
 #include <cmath>
 #include <limits>
@@ -90,9 +91,6 @@ Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject
     point1 -= ball;
     double distance = meCoordinates.distanceTo(ball);
     double cosBeta = point1.inproduct(ballVelocity)/ (distance * ballSpeed);
-//
-//    double cosBeta = meCoordinates.subtract(ball).inproduct(ballVelocity)
-//                        / (distance * ballSpeed);
 
     double relativeSpeed = fabs(ballSpeed - maxSpeed);
     double time;
@@ -151,20 +149,4 @@ Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject
     return result;
 }
 
-double Dynamics::timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed) {
-    // Handle boundary conditions
-    if (path.size() < 2) {
-        return 0.0;
-    } else if (maxSpeed < 0.000001) {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
-    // Get total length of path
-    double length = 0.0;
-    for (unsigned int index = 1; index < path.size(); ++index) {
-        Geometry::Position current = Geometry::Position(path[index].x, path[index].y);
-        Geometry::Position previous = Geometry::Position(path[index-1].x, path[index-1].y);
-        length += current.distanceTo(previous);
-    }
-    return length / maxSpeed;
-}
 

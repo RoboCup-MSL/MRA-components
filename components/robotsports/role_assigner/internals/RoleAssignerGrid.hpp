@@ -10,12 +10,13 @@
 
 #include "geometry.hpp"
 #include <string>
-#include "RoleAssigner.hpp"
 
 namespace MRA {
 
 class RoleAssignerGridInfoData;
 class GridHeuristic;
+class RoleAssignerData;
+class RoleAssignerParameters;
 
 class RoleAssignerGrid {
 public:

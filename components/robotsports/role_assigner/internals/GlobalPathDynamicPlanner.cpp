@@ -7,6 +7,8 @@
 #include "Dynamics.hpp"
 #include "Vertex.hpp"
 #include "GlobalPathPlanner.hpp"
+#include "RoleAssignerRobot.hpp"
+#include "RoleAssignerData.hpp"
 
 #include "logging.hpp"
 
@@ -81,7 +83,7 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
     while ((nrIterations - iteration > 0) && (!intercept_data.move_to_ball_leave_field_pos)) {
         // See how long it takes to get to intercept point
         // add extra 300 milliseconds (default delay, due to vision processing and role assigner execution frequency
-        double time = Dynamics::timeOnPath(path, maxSpeed) + 0.300;
+        double time = timeOnPath(path, maxSpeed) + 0.300;
         if (logDynamicPlanner) {
             MRA_LOG_INFO("Path takes %f seconds. Recalculating.", time);
         }
@@ -116,5 +118,22 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
         iteration++;
     }
     return path;
+}
+
+double GlobalPathDynamicPlanner::timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed) {
+    // Handle boundary conditions
+    if (path.size() < 2) {
+        return 0.0;
+    } else if (maxSpeed < 0.000001) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    // Get total length of path
+    double length = 0.0;
+    for (unsigned int index = 1; index < path.size(); ++index) {
+        Geometry::Position current = Geometry::Position(path[index].x, path[index].y);
+        Geometry::Position previous = Geometry::Position(path[index-1].x, path[index-1].y);
+        length += current.distanceTo(previous);
+    }
+    return length / maxSpeed;
 }
 

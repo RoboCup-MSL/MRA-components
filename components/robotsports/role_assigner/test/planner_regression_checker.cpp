@@ -18,6 +18,7 @@
 #include <cmath>
 #include <boost/filesystem.hpp>
 #include "../internals/RoleAssignerSvg.hpp"
+#include "../internals/RoleAssignerResult.hpp"
 
 using namespace std;
 using namespace boost::filesystem;

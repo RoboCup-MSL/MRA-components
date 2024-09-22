@@ -21,6 +21,7 @@
 
 #include "RoleAssigner.hpp"
 #include "RoleAssignerGridInfoData.hpp"
+#include "RoleAssignerData.hpp"
 
 using namespace std;
 

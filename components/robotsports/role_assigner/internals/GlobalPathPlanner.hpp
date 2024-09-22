@@ -7,15 +7,11 @@
 #define GlobalPathPlanner_HPP 1
 
 #include "FieldConfig.hpp"
-#include "Vertex.hpp"
 #include <vector>
 #include <list>
 
 #include "RoleAssigner_types.hpp"
-#include "RoleAssignerData.hpp"
-#include "RoleAssignerOpponent.hpp"
 #include "RoleAssignerParameters.hpp"
-#include "RoleAssignerResult.hpp"
 
 /**
  * Represents an undirected graph with nodes the important point in the field.
@@ -25,6 +21,13 @@
  */
 
 namespace MRA {
+
+class Vertex;
+class RoleAssignerBall;
+class RoleAssignerRobot;
+class RoleAssignerOpponent;
+class RoleAssignerData;
+
 
 class GlobalPathPlanner {
 

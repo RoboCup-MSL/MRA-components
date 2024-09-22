@@ -6,16 +6,24 @@
 #ifndef ROLEASSIGNER_HPP
 #define ROLEASSIGNER_HPP 1
 
-#include "FieldConfig.hpp"
-#include "GlobalPathPlanner.hpp"
-#include "RoleAssignerData.hpp"
+#include "RoleAssigner_types.hpp"
+#include "geometry.hpp"
 #include <vector>
 
-#include "RoleAssignerOpponent.hpp"
-#include "RoleAssignerParameters.hpp"
-#include "RoleAssignerRobot.hpp"
 
 namespace MRA {
+
+class FieldConfig;
+class GlobalPathPlanner;
+class RoleAssignerData;
+
+class RoleAssignerOpponent;
+class RoleAssignerParameters;
+class RoleAssignerRobot;
+class RoleAssignerInput;
+class RoleAssignerState;
+class RoleAssignerOutput;
+class RoleAssignerResult;
 
 class RoleAssigner {
 public:

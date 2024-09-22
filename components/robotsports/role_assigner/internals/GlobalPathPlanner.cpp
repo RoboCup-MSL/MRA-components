@@ -8,6 +8,9 @@
 #include "MathUtils.hpp"
 #include "Vertex.hpp"
 #include "logging.hpp"
+#include "RoleAssignerSvg.hpp"
+#include "RoleAssignerData.hpp"
+#include "GlobalPathPlanner.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -20,7 +23,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "RoleAssignerSvg.hpp"
 
 using namespace std;
 

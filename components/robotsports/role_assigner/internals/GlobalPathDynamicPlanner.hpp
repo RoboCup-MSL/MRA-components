@@ -6,15 +6,16 @@
 #ifndef GlobalPathDynamicPlanner_HPP
 #define GlobalPathDynamicPlanner_HPP 1
 
-#include "GlobalPathPlanner.hpp"
 #include "geometry.hpp"
 #include <vector>
-
-#include "RoleAssignerOpponent.hpp"
-#include "RoleAssignerParameters.hpp"
-#include "RoleAssignerRobot.hpp"
+#include "RoleAssigner_types.hpp"
 
 namespace MRA {
+
+class RoleAssignerRobot;
+class RoleAssignerData;
+class Vertex;
+
 /**
  * A planner that takes into account the movement of the start and target locations (assuming constant velocity), and
  * stationary barrier objects that must be avoided.
@@ -44,6 +45,19 @@ public:
                                           double maxSpeed, int nrIterations, bool stayInPlayingField);
 
 private:
+    /**
+     * Calculates time necessary to traverse a path at maximum speed, assuming
+     * indefinite acceleration. If a path has 0 or 1 point, the time is 0.0,
+     * otherwise, if the maximum speed is very low, the time returned is NaN.
+     *
+     * @param path
+     *            Path to travel
+     * @param maxSpeed
+     *            Maximum possible speed
+     * @return Time needed to traverse the path
+     */
+    double timeOnPath(const std::vector<path_piece_t>& path, double maxSpeed);
+
 
 };
 

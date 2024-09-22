@@ -3,10 +3,9 @@
  *  @brief   Class for team planning
  *  @curator Jürge van Eijck
  */
-#ifndef TEAM_PLANNER_RESULT_HPP
-#define TEAM_PLANNER_RESULT_HPP 1
+#ifndef ROLE_ASSIGNGER_RESULT_HPP
+#define ROLE_ASSIGNGER_RESULT_HPP 1
 
-#include "FieldConfig.hpp"
 
 #include <vector>
 
@@ -49,4 +48,4 @@ typedef std::vector<RoleAssignerResult> RoleAssignerResults;
 
 } // namespace
 
-#endif // TEAM_PLANNER_RESULT_HPP
+#endif // ROLE_ASSIGNGER_RESULT_HPP

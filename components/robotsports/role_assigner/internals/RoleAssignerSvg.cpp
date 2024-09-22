@@ -6,6 +6,9 @@
 #include "FieldConfig.hpp"
 #include "MathUtils.hpp"
 #include "logging.hpp"
+#include "Vertex.hpp"
+#include "RoleAssignerData.hpp"
+//class RoleAssignerResult;
 
 #include <cmath>
 #include <iostream>

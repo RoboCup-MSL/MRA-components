@@ -4,7 +4,7 @@
  *  @curator Jürge van Eijck
  */
 #ifndef ROLE_ASSIGNER_PARAMETERS_HPP
-#define  ROLE_ASSIGNER_PARAMETERS_HPP 1
+#define ROLE_ASSIGNER_PARAMETERS_HPP 1
 
 #include <string>
 #include "RoleAssigner_types.hpp" // define of planner_options_t

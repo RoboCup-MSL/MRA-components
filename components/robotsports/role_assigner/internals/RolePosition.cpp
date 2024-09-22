@@ -17,6 +17,11 @@
 
 #include "RoleAssigner_types.hpp"
 #include "RoleAssignerGrid.hpp"  // grid related role assigner functions
+//#include "FieldConfig.hpp"
+//#include "GlobalPathPlanner.hpp"
+#include "RoleAssignerData.hpp"
+//#include "RoleAssignerOpponent.hpp"
+//#include "RoleAssignerParameters.hpp"
 
 
 using namespace std;

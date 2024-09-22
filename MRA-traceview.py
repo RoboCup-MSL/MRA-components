@@ -54,7 +54,12 @@ def determine_filenames(folder, newest=1):
 
 def pid_tid_handler(filename, jsondata):
     for j in jsondata:
-        j['pid'] = os.path.basename(filename)
+        try:
+            int(j['pid'])
+            # only replace pids
+            j['pid'] = os.path.basename(filename)
+        except:
+            pass
 
 
 def main(**kwargs):

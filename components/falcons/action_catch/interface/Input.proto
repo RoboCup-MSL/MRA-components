@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package MRA.FalconsActionCatch;
+
+import "datatypes/WorldState.proto";
+
+message Input
+{
+    MRA.Datatypes.WorldState worldstate = 1;
+}

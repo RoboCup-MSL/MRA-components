@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package MRA.FalconsActionCatch;
+
+message Diagnostics
+{
+    bool ballMovingTowardsRobot = 1;
+    bool ballMovingFastEnough = 2;
+    bool ballMovingWithinCaptureRange = 3;
+    float timeToCatch = 4;
+}

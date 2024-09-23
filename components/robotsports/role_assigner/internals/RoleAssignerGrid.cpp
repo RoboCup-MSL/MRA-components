@@ -812,7 +812,7 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // Determine if this is the first attack supporter or not (second/third/etc)
     bool first_attack_supporter = true;
     for (unsigned idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
-        if (r_role_assigner_data.team_admin[idx].assigned  && r_role_assigner_data.team_admin[idx].result.dynamic_role == dynamic_role_e::dr_ATTACKSUPPORTER) {
+        if (r_role_assigner_data.team_admin[idx].assigned  && r_role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_GENERIC) {
             first_attack_supporter= false;
         }
     };

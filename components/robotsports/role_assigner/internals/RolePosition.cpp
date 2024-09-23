@@ -1102,7 +1102,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
     // calculate number of field players
     auto nr_field_players = r_role_assigner_data.team.size();
     for (unsigned idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
-        if (r_role_assigner_data.team[idx].player_type == GOALIE or r_role_assigner_data.team_admin[idx].result.dynamic_role == dynamic_role_e::dr_GOALKEEPER) {
+        if (r_role_assigner_data.team[idx].player_type == GOALIE or r_role_assigner_data.team_admin[idx].result.role == role_e::role_GOALKEEPER) {
             nr_field_players--;
         }
     }

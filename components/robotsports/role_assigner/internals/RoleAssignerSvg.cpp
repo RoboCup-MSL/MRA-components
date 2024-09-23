@@ -179,8 +179,9 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
                 rbt.labelId,
                 PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
                 rbt.player_type );
+        auto dr_role = RoleToDynamicRole(rbt_admin.result.role, data.gamestate, data.ball.status);
         fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
-                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(rbt_admin.result.dynamic_role).c_str(),
+                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(dr_role).c_str(),
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
         auto prev_res = rbt_admin.previous_result;
         fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
@@ -205,7 +206,8 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         long robotId = data.team[p_idx].robotId;
         auto player_path = player_paths[p_idx];
         Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
-        Xtext << "\tDynamic-role: " << DynamicRoleAsString(player_path.dynamic_role) << endl;
+        auto dr_role = RoleToDynamicRole(player_path.role, data.gamestate, data.ball.status);
+        Xtext << "\trole: " << DynamicRoleAsString(dr_role) << endl;
         Xtext << "\tGame State: " << GameStateAsString(player_path.gamestate) << endl;
         Xtext << "\tTarget position : " << player_path.target.toString() << endl;
         Xtext << "\tPlanner target type  " << PlannerTargetAsString(player_path.planner_target) << endl;
@@ -460,11 +462,11 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         for (unsigned int idx = 0; idx < player_paths.size(); idx++) {
             auto player_path = player_paths[idx];
             auto rbt = data.team[idx];
-
+            auto dr_role = RoleToDynamicRole(player_path.role, data.gamestate, data.ball.status);
             fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                     "R%02ld: %s</text>\n",
                     totalFieldWidth+boxTextOffset, robot_block_start + (idx*LINES_PER_ROBOT) * boxLineOffset, boxTextSize,
-                    rbt.robotId, DynamicRoleAsString(player_path.dynamic_role).c_str());
+                    rbt.robotId, DynamicRoleAsString(dr_role).c_str());
 
             fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" font-size=\"%u\" font-weight-absolute=\"bold\" fill=\"black\">"
                     "target-pos: %s</text>\n",

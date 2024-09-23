@@ -46,7 +46,8 @@ private:
     };
 
     bool assignAnyToPosition(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
-            const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass);
+            const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass,
+            role_e org_role);
 
     void calculatePathForRobot(RoleAssignerData&  r_role_assigner_data, unsigned idx);
 
@@ -72,7 +73,7 @@ private:
     void ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData&  role_assigner_data);
 
     bool AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
-                                         planner_target_e planner_target, const MRA::Geometry::Point& targetPos);
+                                         planner_target_e planner_target, const MRA::Geometry::Point& targetPos, role_e org_role);
 
     void assignParkingPositions(RoleAssignerData& role_assigner_data);
 
@@ -80,7 +81,7 @@ private:
 
     bool searchForBallBehaviorNeeded(RoleAssignerData& role_assigner_data);
 
-    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, dynamic_role_e dr_role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
+    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
 
     bool stayInPlayingField(game_state_e gamestate) const;
 

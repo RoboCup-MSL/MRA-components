@@ -96,7 +96,7 @@ std::string RoleAssignerData::toString() const
         buffer << "\t\tR" << rbt.robotId << " = " << rbt.position.toString() << " type =  ";
         buffer << PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)) << " (" << rbt.player_type << ")" << endl;
         buffer << "\t\t\tcontrol-ball: " << rbt.controlBall<< " passBall: " << rbt.passBall;
-        buffer <<" role: " << DynamicRoleAsString(this->team_admin[idx].result.dynamic_role);
+        buffer <<" role: " << RoleAsString(this->team_admin[idx].result.role);
         buffer << "time-own-PA: " << rbt.time_in_own_penalty_area;
         buffer << "time-opp-PA: " << rbt.time_in_opponent_penalty_area << endl;
         auto prev_res = this->team_admin[idx].previous_result;
@@ -123,7 +123,7 @@ std::string RoleAssignerData::toString() const
         long robotId = this->team_admin[p_idx].robotId;
         auto player_path = this->team_admin[p_idx];
         buffer << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
-        buffer << "\tDynamic-role: " << DynamicRoleAsString(player_path.result.dynamic_role) << endl;
+        buffer << "\tRole: " << RoleAsString(player_path.result.role) << endl;
         buffer << "\tGame State: " << GameStateAsString(player_path.result.gamestate) << endl;
         buffer << "\tTarget position : " << player_path.result.target.toString() << endl;
         buffer << "\tPlanner target type  " << PlannerTargetAsString(player_path.result.planner_target) << endl;

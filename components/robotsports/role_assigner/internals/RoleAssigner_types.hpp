@@ -81,6 +81,17 @@ typedef enum  {
     dr_IS_ALIVE = 15
 } dynamic_role_e;
 
+typedef enum  {
+    role_UNDEFINED = 0,
+    role_GOALKEEPER = 1,
+    role_ATTACKER_MAIN = 2,
+    role_ATTACKER_ASSIST = 3,
+    role_ATTACKER_GENERIC = 4,
+    role_DEFENDER_MAIN = 5,
+    role_DEFENDER_GENERIC = 6,
+    role_DISABLED_OUT = 7,
+    role_DISABLED_IN = 8
+} role_e;   // matching with MRA::RobotsportsRobotStrategy::Output_DynamicRole
 
 typedef enum  {
     FORMATION_112 = 0,
@@ -246,6 +257,24 @@ inline std::string DynamicRoleAsString(dynamic_role_e dynamic_role) {
     return dynamic_role_string;
 }
 
+inline std::string RoleAsString(role_e role) {
+    std::string role_string = "";
+    switch (role) {
+        case role_UNDEFINED: role_string = "UNDEFINED"; break;
+        case role_GOALKEEPER: role_string = "GOALKEEPER"; break;
+        case role_ATTACKER_MAIN: role_string = "ATTACKER_MAIN"; break;
+        case role_ATTACKER_ASSIST: role_string = "ATTACKER_ASSIST"; break;
+        case role_ATTACKER_GENERIC: role_string = "ATTACKER_GENERIC"; break;
+        case role_DEFENDER_MAIN: role_string = "DEFENDER_MAIN"; break;
+        case role_DEFENDER_GENERIC: role_string = "DEFENDER_GENERIC"; break;
+        case role_DISABLED_OUT: role_string = "DISABLED_OUT"; break;
+        case role_DISABLED_IN: role_string = "DISABLED_IN"; break;
+    default:
+        role_string = "unknown role (ERROR situation)";
+    }
+    return role_string;
+}
+
 inline dynamic_role_e StringToDynamicRole(std::string dynamic_role_str) {
     dynamic_role_e dynamic_role = dynamic_role_e::dr_NONE;
 
@@ -309,6 +338,7 @@ inline std::string ballStatusAsString(ball_status_e ball_status) {
     return result;
 }
 
+
 // function checks whether value is one of the given values.
 // function can be use to check against enum values e.g. isOneOf(myFruit, {APPLE, PEAR})
 template <typename T>
@@ -320,6 +350,89 @@ bool isOneOf(T value, std::initializer_list<T> values) {
     }
     return false;
 }
+
+
+inline role_e DynamicRoleToRole(dynamic_role_e dr_role, role_e org_role) {
+    role_e role = role_UNDEFINED;
+    switch (dr_role) {
+        case dr_NONE: role = role_UNDEFINED; break;
+        case dr_GOALKEEPER: role = role_GOALKEEPER; break;
+        case dr_ATTACKSUPPORTER: role = role_ATTACKER_GENERIC; break;
+        case dr_DEFENDER: role = role_DEFENDER_GENERIC; break;
+        case dr_INTERCEPTOR: role = role_ATTACKER_MAIN; break;
+        case dr_SWEEPER: role = role_DEFENDER_MAIN; break;
+        case dr_SETPLAY_RECEIVER: role = role_ATTACKER_ASSIST; break;
+        case dr_SETPLAY_KICKER: role = role_ATTACKER_MAIN; break;
+        case dr_BALLPLAYER: role = role_ATTACKER_MAIN; break;
+        case dr_SEARCH_FOR_BALL: role = org_role; break;
+        case dr_BEGIN_POSITION: role = org_role; break;
+        case dr_PARKING: role = org_role; break;
+        case dr_PENALTY_KICKER: role = org_role; break;
+        case dr_LOB_CALIBRATION: role = org_role; break;
+        case dr_PENALTY_DEFENDER: role = org_role; break;
+        case dr_IS_ALIVE: role = org_role; break;
+    } ;
+    return role;
+}
+
+inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, ball_status_e ball_status) {
+    dynamic_role_e dr_role = dr_NONE;
+    if (gamestate == BEGIN_POSITION and role != role_GOALKEEPER) {
+        dr_role = dr_BEGIN_POSITION;
+    }
+    else if (gamestate == PARKING) {
+        dr_role = dr_PARKING;
+    }
+    else {
+        switch (role) {
+            case role_UNDEFINED: dr_role = dr_NONE; break;
+            case role_GOALKEEPER: dr_role = dr_GOALKEEPER; break;
+            case role_ATTACKER_GENERIC: dr_role = dr_ATTACKSUPPORTER; break;
+            case role_DEFENDER_GENERIC:
+                if (isOneOf(gamestate, {PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST})) {
+                    dr_role = dr_PENALTY_DEFENDER;
+                }
+                else {
+                    dr_role = dr_DEFENDER;
+                }
+                break;
+            case role_ATTACKER_MAIN:
+                if (isOneOf(gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN})) {
+                    dr_role = dr_SETPLAY_KICKER;
+                }
+                else if (isOneOf(gamestate, {PENALTY, PENALTY_SHOOTOUT})) {
+                    dr_role = dr_PENALTY_KICKER;
+                }
+                else {
+                    if (isOneOf(ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
+                        dr_role = dr_BALLPLAYER;
+                    }
+                    else {
+                        dr_role = dr_INTERCEPTOR;
+                    }
+                }
+                break;
+            case role_DEFENDER_MAIN: dr_role = dr_SWEEPER; break;
+            case role_ATTACKER_ASSIST: dr_role = dr_SETPLAY_RECEIVER; break;
+            case role_DISABLED_OUT: dr_role = dr_NONE; break; // not supported
+            case role_DISABLED_IN: dr_role = dr_NONE; break;  // not supported
+
+            //        case dr_role = dr_SETPLAY_KICKER: dr_role = role_ATTACKER_MAIN; break;
+            //        case dr_role = dr_BALLPLAYER: dr_role = role_ATTACKER_MAIN; break;
+            //        case dr_role = dr_SEARCH_FOR_BALL: dr_role = org_role; break;
+            //        case dr_role = dr_BEGIN_POSITION: dr_role = org_role; break;
+            //        case dr_role = dr_PARKING: dr_role = org_role; break;
+            //        case dr_role = dr_PENALTY_KICKER: dr_role = org_role; break;
+            //        case dr_role = dr_LOB_CALIBRATION: dr_role = org_role; break;
+            //        case dr_role = dr_PENALTY_DEFENDER: dr_role = org_role; break;
+            //        case dr_role = dr_IS_ALIVE: dr_role = org_role; break;
+        } ;
+    }
+
+    return dr_role;
+}
+
+
 
 } // end namespace MRA
 

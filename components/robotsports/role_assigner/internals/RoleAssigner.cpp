@@ -161,7 +161,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
 
     for (unsigned r_idx = 0; r_idx < role_assigner_data.team_admin.size(); r_idx++) {
         role_assigner_data.team_admin[r_idx].result.gamestate = role_assigner_data.gamestate;
-        role_assigner_data.team_admin[r_idx].result.dynamic_role = dynamic_role_e::dr_NONE;
+        role_assigner_data.team_admin[r_idx].result.role = role_e::role_UNDEFINED;
         role_assigner_data.team_admin[r_idx].result.defend_info.valid = false;
     }
 
@@ -200,7 +200,8 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
                     role_assigner_data, playerPassedBall, role_position_is_end_position_of_pass);
 
             //  Determine path for assigned role
-            assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition, planner_target, role_position_is_end_position_of_pass);
+            assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition,
+                                planner_target, role_position_is_end_position_of_pass, role_assigner_data.input_formation[dr_idx]);
 
             // stop if this player is assigne and not all paths must be calculated.
             if (role_assigner_data.team_admin[role_assigner_data.this_player_idx].assigned && role_assigner_data.parameters.calculateAllPaths == false) {
@@ -236,7 +237,8 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
 
 
             //  Determine path for assigned role
-            assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition, planner_target, role_position_is_end_position_of_pass);
+            assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition, planner_target,
+                                role_position_is_end_position_of_pass, role_assigner_data.input_formation[dr_idx]);
 
             //cerr << dr_idx <<": DR: " << DynamicRoleAsString(role_assigner_data.teamFormation[dr_idx]) << " pos: " << rolePosition.toString() << endl;
 
@@ -261,7 +263,8 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
                 MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(role_assigner_data.defend_info, planner_target, m_gridFileNumber, dynamic_role_e::dr_DEFENDER,
                         role_assigner_data, playerPassedBall, role_position_is_end_position_of_pass);
 
-                assignAnyToPosition(role_assigner_data, dynamic_role_e::dr_DEFENDER, rolePosition, planner_target, role_position_is_end_position_of_pass);
+                assignAnyToPosition(role_assigner_data, dynamic_role_e::dr_DEFENDER, rolePosition, planner_target, role_position_is_end_position_of_pass,
+                                    role_assigner_data.input_formation[ap_idx]);
             }
         }
     }
@@ -287,7 +290,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         int interceptorIdx = -1;
         for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
             if (role_assigner_data.team_admin[idx].assigned)  {
-                if (role_assigner_data.team_admin[idx].result.dynamic_role == dr_INTERCEPTOR) {
+                if (role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_MAIN) {
                     interceptorIdx = idx;
                 }
 
@@ -314,7 +317,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
             bool pathOK = stayPathWithinBoundaries(role_assigner_data.fieldConfig, role_assigner_data.team_admin[idx].result);
             player_result = role_assigner_data.team_admin[idx].result;
             player_result.gamestate = role_assigner_data.team_admin[idx].result.gamestate;
-            player_result.dynamic_role = role_assigner_data.team_admin[idx].result.dynamic_role;
+            player_result.role = role_assigner_data.team_admin[idx].result.role;
             if (not pathOK && idx == role_assigner_data.this_player_idx) { // CHECK Only this robot
                 thisPlayerHasUnallowedPath = true; // this robot has wrong path
 
@@ -322,11 +325,11 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
                 auto currentPos = role_assigner_data.team[idx].position;
                 thisPlayerStartsAtUnallowedPosition = !role_assigner_data.fieldConfig.isInReachableField(currentPos.x, currentPos.y);
             }
+            player_paths.push_back(player_result);
         }
-        player_paths.push_back(player_result);
     }
 
-    bool dynamicRoleNoneAssigned =  role_assigner_data.team_admin[role_assigner_data.this_player_idx].result.dynamic_role == dr_NONE;
+    bool dynamicRoleNoneAssigned =  role_assigner_data.team_admin[role_assigner_data.this_player_idx].result.role == role_e::role_UNDEFINED;
     // Dump diagnostics if any robot moves outside the allowed field (safety border + field)
     if (thisPlayerHasUnallowedPath || role_assigner_data.parameters.svgOutputFileName.length() > 0 || dynamicRoleNoneAssigned) {
         // Create diagnostics file (.svg with comments).
@@ -411,7 +414,7 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     // check if role position is in allowed, if not allowed update position to an allowed positions
     r_role_assigner_data.team_admin[idx].result.target = updatePositionIfNotAllowed (
-                    r_role_assigner_data.team[idx].position, r_role_assigner_data.team_admin[idx].result.dynamic_role,
+                    r_role_assigner_data.team[idx].position, r_role_assigner_data.team_admin[idx].result.role,
                     r_role_assigner_data.team_admin[idx].result.target, r_role_assigner_data.fieldConfig);
 
     bool stay_in_playing_field = stayInPlayingField (r_role_assigner_data.gamestate);
@@ -500,7 +503,7 @@ vector<MRA::Geometry::Position> RoleAssigner::getOpponents(const std::vector<Rol
 }
 
 bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
-                                               planner_target_e planner_target, const MRA::Geometry::Point& targetPos) {
+                                               planner_target_e planner_target, const MRA::Geometry::Point& targetPos, role_e org_role) {
     // RoleAssigner will first select the receiver during set-play.
     // Planner will look to all available (unassigned) field-players.
     // If preferred receiver is available, then it will selected. Else it will select the lowest player-id which is not the kicker.
@@ -559,7 +562,7 @@ bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assig
         // robot claimed role+position and that robot has lower id than this robot.
         role_assigner_data.team_admin[foundPlayer].result = RoleAssignerResult(
             role_assigner_data.gamestate,
-            dr_role,
+            DynamicRoleToRole(dr_role, org_role),
             role_assigner_data.incrementAndGetRank(),
             targetPos,
             planner_target);
@@ -577,7 +580,8 @@ bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assig
  * assign the fast player to the position and update the unassigned player list.
  * */
 bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
-            const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass)
+            const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass,
+            role_e org_role)
 {
     bool found = false; // return value
     vector<MRA::Geometry::Point> targets = vector<MRA::Geometry::Point>();
@@ -586,7 +590,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, dy
     // ------------------------------------------------------------
 
     // assign Preferred set player roles if applicable
-    if (AssignAnyRobotPreferedSetPlayer(role_assigner_data, dr_role, planner_target, target)) {
+    if (AssignAnyRobotPreferedSetPlayer(role_assigner_data, dr_role, planner_target, target, org_role)) {
         return true; // preferred set player found and assigned
     }
 
@@ -602,7 +606,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, dy
                 /* this player is destination of the pass */
                 role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                     role_assigner_data.gamestate,
-                    dr_role,
+                    DynamicRoleToRole(dr_role, org_role),
                     role_assigner_data.incrementAndGetRank(),
                     target,
                     planner_target,
@@ -699,7 +703,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, dy
         // fill best robot data in planner result.
         role_assigner_data.team_admin[bestPlayerIdx].result = RoleAssignerResult(
             role_assigner_data.gamestate,
-            dr_role,
+            DynamicRoleToRole(dr_role, org_role),
             role_assigner_data.incrementAndGetRank(),
             target,
             planner_target,
@@ -834,7 +838,7 @@ void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
         defend_info_t defend_info = {};
         role_assigner_data.team_admin[keeper_idx].result = RoleAssignerResult(
             role_assigner_data.gamestate,
-            role_assigner_data.gamestate == game_state_e::PARKING ? dr_PARKING : dr_GOALKEEPER,
+            role_assigner_data.gamestate == game_state_e::PARKING ? DynamicRoleToRole(dr_PARKING, role_GOALKEEPER) : DynamicRoleToRole(dr_GOALKEEPER, role_GOALKEEPER),
             role_assigner_data.incrementAndGetRank(),
             goaliePosition,
             role_assigner_data.gamestate == game_state_e::PARKING ? planner_target_e::GOTO_TARGET_POSITION_SLOW : planner_target_e::GOALKEEPER,
@@ -878,7 +882,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                             role_assigner_data.gamestate,
-                            dr_DEFENDER,
+                            DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                             role_assigner_data.incrementAndGetRank(),
                             targetPos,
                             planner_target_e::SUPPORT_DEFENSE,
@@ -908,7 +912,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                                                     role_assigner_data.gamestate,
-                                                    dr_DEFENDER,
+                                                    DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                                                     role_assigner_data.incrementAndGetRank(),
                                                     targetPos,
                                                     planner_target_e::SUPPORT_DEFENSE,
@@ -1058,7 +1062,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         MRA::Geometry::Point original_role_position(path[path.size()-1].x, path[path.size()-1].y);
         // check if role position is in allowed, if not allowed update position to an allowed positions
         MRA::Geometry::Point role_position = updatePositionIfNotAllowed(role_assigner_data.team[interceptorIdx].position,
-                                                            role_assigner_data.team_admin[interceptorIdx].result.dynamic_role,
+                                                            role_assigner_data.team_admin[interceptorIdx].result.role,
                                                             original_role_position, role_assigner_data.fieldConfig);
 
         vector<MRA::Vertex> roleTargetPos = vector<MRA::Vertex>();
@@ -1102,7 +1106,7 @@ void RoleAssigner::assignParkingPositions(RoleAssignerData& role_assigner_data) 
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                 role_assigner_data.gamestate,
-                dynamic_role_e::dr_PARKING,
+                DynamicRoleToRole(dynamic_role_e::dr_PARKING, role_assigner_data.input_formation[idx]),
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
                 planner_target_e::GOTO_TARGET_POSITION_SLOW,
@@ -1161,7 +1165,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                 role_assigner_data.gamestate,
-                dynamic_role_e::dr_BEGIN_POSITION,
+                DynamicRoleToRole(dynamic_role_e::dr_BEGIN_POSITION, role_assigner_data.input_formation[idx]),
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
                 planner_target_e::GOTO_TARGET_POSITION,
@@ -1173,7 +1177,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
 }
 
 //--------------------------------------------------------------------------
-MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, dynamic_role_e dr_role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig) {
+MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig) {
     //  Updated the role position when it is unreachable into a reachable position, the role position is not updated if the original position was reachable.
     //
     //  background info: using role calculation of another role was considered: use defender position when ball was on own half
@@ -1235,7 +1239,7 @@ MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometr
     // if new_position (can be updated by previous step) is not within a goal-area. If not then update target position into position not in a goal area.
     if (        (fabs(new_position.x) < goal_area_x)
             and (fabs(new_position.y) > goal_area_top_y)
-            and (dr_role != dynamic_role_e::dr_GOALKEEPER))
+            and (role != role_e::role_GOALKEEPER))
     {
         // original_target_position is in own or opponent goal area.
         // check where a line-segment intersects with the line-segment player-target_pos.
@@ -1326,14 +1330,14 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
 
     std::vector<dynamic_role_e> roles_to_assign = {};
     for (auto idx = 0u; idx < role_assigner_data.input_formation.size(); idx++) {
-        MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = role_assigner_data.input_formation[idx];
+        auto odr = role_assigner_data.input_formation[idx];
         dynamic_role_e dr = dr_NONE;
 
         switch (odr) {
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_GOALKEEPER:
+            case role_GOALKEEPER:
                 dr = dr_GOALKEEPER;
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_MAIN:
+            case role_ATTACKER_MAIN:
                 if (isOneOf(role_assigner_data.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
                     dr = dr_SETPLAY_KICKER;
                 }
@@ -1356,7 +1360,7 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
                     dr = dr_INTERCEPTOR;
                 }
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_ASSIST:
+            case role_ATTACKER_ASSIST:
                 if (isOneOf(role_assigner_data.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
                     dr = dr_SETPLAY_RECEIVER;
                 }
@@ -1364,10 +1368,10 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
                     dr = dr_ATTACKSUPPORTER;
                 }
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_ATTACKER_GENERIC:
+            case role_ATTACKER_GENERIC:
                 dr = dr_ATTACKSUPPORTER;
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_MAIN:
+            case role_DEFENDER_MAIN:
                 if (isOneOf(role_assigner_data.gamestate, { FREEKICK, GOALKICK, CORNER, KICKOFF, THROWIN})) {
                     dr = dr_ATTACKSUPPORTER;
                 }
@@ -1375,7 +1379,7 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
                     dr = dr_SWEEPER;
                 }
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DEFENDER_GENERIC:
+            case role_DEFENDER_GENERIC:
                 if (isOneOf(role_assigner_data.gamestate, { PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST})) {
                     dr = dr_PENALTY_DEFENDER;
                 }
@@ -1383,10 +1387,10 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
                     dr = dr_DEFENDER;
                 }
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_OUT:
+            case role_DISABLED_OUT:
                 dr = dr_PARKING;
                 break;
-            case MRA::RobotsportsRobotStrategy::Output_DynamicRole_DISABLED_IN:
+            case role_DISABLED_IN:
                 dr = dr_BEGIN_POSITION;
                 break;
             default:

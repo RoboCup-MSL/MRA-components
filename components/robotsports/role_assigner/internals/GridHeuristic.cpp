@@ -328,7 +328,7 @@ double CollideTeamMateHeuristic::getValue(double x, double y) {
     double value = 0.0;
     for (unsigned idx = 0; idx < m_r_role_assigner_data.team_admin.size(); idx++) {
         if (m_r_role_assigner_data.team_admin[idx].assigned) {
-            if (m_assigned_attack_supporters and  m_r_role_assigner_data.team_admin[idx].result.dynamic_role != dynamic_role_e::dr_ATTACKSUPPORTER)
+            if (m_assigned_attack_supporters and  m_r_role_assigner_data.team_admin[idx].result.role != role_e::role_ATTACKER_GENERIC)
             {
                 // role is not attack supporter
             }
@@ -542,7 +542,7 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
     if (not skipOwnTeam) {
         for (unsigned idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
             if (r_role_assigner_data.team_admin[idx].assigned and
-                r_role_assigner_data.team_admin[idx].result.dynamic_role == dr_ATTACKSUPPORTER) {
+                r_role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_GENERIC) {
                 m_Opponents.push_back(r_role_assigner_data.team[idx].position);
             }
         }

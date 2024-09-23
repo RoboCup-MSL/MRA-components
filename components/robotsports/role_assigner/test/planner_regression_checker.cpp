@@ -169,8 +169,8 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
     vector<playerSVGresult> regression_svg_results = {};
     read_svg_comment_section_and_text_lines(regression_dir + "/" + filename, regression_comment_lines, regression_svg_results);
 
-    RoleAssignerResults player_paths = RoleAssignerResults();
-    RoleAssignerResults comparing_player_paths = RoleAssignerResults();
+    std::vector<RoleAssignerResult> player_paths = {};
+    std::vector<RoleAssignerResult> comparing_player_paths = {};
 
     if (output_svg_results.size() != regression_svg_results.size()) {
         // different number of results

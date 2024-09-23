@@ -50,10 +50,10 @@ public:
 #include <sstream>
 #include <vector>
 
-std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
-                                                                                bool no_sweeper_during_setplay,
-                                                                                team_formation_e attack_formation,
-                                                                                team_formation_e defense_formation ) {
+std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
+                                     bool no_sweeper_during_setplay,
+                                     team_formation_e attack_formation,
+                                     team_formation_e defense_formation ) {
 
     auto robot_strategy = RobotsportsRobotStrategy::RobotsportsRobotStrategy();
     auto robot_strategy_input = RobotsportsRobotStrategy::Input();
@@ -73,10 +73,10 @@ std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(
         exit(1);
     }
 
-    std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> roles_to_assign = {};
+    std::vector<role_e> roles_to_assign = {};
     for (auto idx = 0; idx < robot_strategy_output.dynamic_roles_size(); idx++) {
         MRA::RobotsportsRobotStrategy::Output_DynamicRole odr = robot_strategy_output.dynamic_roles(idx);
-        roles_to_assign.push_back(odr);
+        roles_to_assign.push_back(static_cast<role_e>(odr));
     }
 
     return roles_to_assign;
@@ -84,11 +84,11 @@ std::vector<MRA::RobotsportsRobotStrategy::Output_DynamicRole> getListWithRoles(
 
 
 
-static std::string RoleAssignerResultToString(const RoleAssignerResults& player_paths, const std::vector<RoleAssignerRobot>& team) {
+static std::string RoleAssignerResultToString(const std::vector<RoleAssignerResult>& player_paths, const std::vector<RoleAssignerRobot>& team) {
     std::stringstream buffer;
 
     for (unsigned player_idx = 0; player_idx != player_paths.size(); player_idx++) {
-        buffer << "path for player  " << player_idx <<  " id: " << team[player_idx].robotId <<  " -> " << DynamicRoleAsString(player_paths[player_idx].dynamic_role) <<  endl;
+        buffer << "path for player  " << player_idx <<  " id: " << team[player_idx].robotId <<  " -> " << RoleAsString(player_paths[player_idx].role) <<  endl;
         if (player_paths[player_idx].defend_info.valid) {
             buffer << " Defend info: valid: true id: "<< player_paths[player_idx].defend_info.defending_id;
             buffer << " dist to id: " << player_paths[player_idx].defend_info.dist_from_defending_id;

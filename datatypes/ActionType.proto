@@ -16,5 +16,6 @@ enum ActionType
     ACTION_KEEPER = 9;
     ACTION_INTERCEPT = 10;
     ACTION_PARK = 11;
+    ACTION_CATCHBALL = 12; // "catch" is a reserved word in C++ and causes protoc to add magic underscores
 }
 

@@ -41,8 +41,6 @@
        minimumEdgeLength="0.300"
        move_to_ball_left_field_position="true"
        no_sweeper_during_setplay="true"
-       nr_attack_support_during_defensive_period="0"
-       nr_robots_needed_for_pass_play="2"
        nrDynamicPlannerIterations="2"
        nrVerticesFirstCircle="6"
        nrVerticesSecondCircle="8"

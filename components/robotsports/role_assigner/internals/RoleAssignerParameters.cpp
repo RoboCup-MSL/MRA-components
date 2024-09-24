@@ -62,16 +62,10 @@ double RoleAssignerParameters::grid_opponent_goal_clearance_x = 7.0;
 double RoleAssignerParameters::grid_opponent_goal_clearance_y = 2.5;
 double RoleAssignerParameters::grid_own_goal_clearance_x = 3.25;
 double RoleAssignerParameters::grid_own_goal_clearance_y = 1.00;
-int  RoleAssignerParameters::nr_robots_needed_for_pass_play = 2;
-int  RoleAssignerParameters::nr_attack_support_during_defensive_period = 0;
 bool RoleAssignerParameters::wait_on_non_optimal_position_during_prepare_phase = false;
 double RoleAssignerParameters::priority_block_min_distance = 0.5;
 double RoleAssignerParameters::priority_block_max_distance = 2.0;
 double RoleAssignerParameters::priority_block_max_distance_to_defense_line = 0.25;
-double RoleAssignerParameters::priority_block_max_ball_y = 0.0;
-double RoleAssignerParameters::priority_block_max_opponent_to_ball_dist = 3.0;
-bool RoleAssignerParameters::priority_block_check_ball_in_area = true;
-bool RoleAssignerParameters::priority_block_check_opponent_close_to_ball = true;
 bool RoleAssignerParameters::man_to_man_defense_during_normal_play = true;
 double RoleAssignerParameters::attack_supporter_extra_distance_to_stay_from_sideline = 0.75;
 double RoleAssignerParameters::auto_save_svg_period = 10.0;
@@ -87,17 +81,14 @@ double  RoleAssignerParameters::dist_to_goal_to_mark_opponent_as_goalie = 1.5;
 double RoleAssignerParameters::setplay_against_dist_to_opponent = 1.5;
 
 bool RoleAssignerParameters::move_to_ball_left_field_position = true;
-bool RoleAssignerParameters::select_lowest_robot_nr_for_dynamic_role = true;
 int RoleAssignerParameters::preferredSetplayKicker = 0;
 int RoleAssignerParameters::preferredSetplayReceiver = 0;
 double RoleAssignerParameters::setplay_margin_to_penalty_area_side = 0.75;
 bool RoleAssignerParameters::interceptor_assign_use_ball_velocity = true;
 double RoleAssignerParameters::interceptor_assign_min_velocity_for_calculate_interception_position = 0.5;
 
-int RoleAssignerParameters::dedicatedSweeper = 0;
 bool RoleAssignerParameters::autoAssignGoalie = false;
 double RoleAssignerParameters::outsideFieldMargin = 0.5;
-bool RoleAssignerParameters::lobShotWhenPossible = true;
 double RoleAssignerParameters::min_y_for_lob_shot = +0.25;
 double RoleAssignerParameters::kickoff_fp1_x = -1.00;
 double RoleAssignerParameters::kickoff_fp1_y =  0.00;
@@ -107,7 +98,6 @@ double RoleAssignerParameters::kickoff_fp3_x = -5.00;
 double RoleAssignerParameters::kickoff_fp3_y = -0.75;
 double RoleAssignerParameters::kickoff_fp4_x = +5.00;
 double RoleAssignerParameters::kickoff_fp4_y = -0.75;
-
 
 double RoleAssignerParameters::kickoff_against_fp1_x = 1.87;
 double RoleAssignerParameters::kickoff_against_fp1_y = -1.87;
@@ -190,13 +180,7 @@ std::string RoleAssignerParameters::toString() const  {
     buffer << "grid_opponent_goal_clearance_y = "<< grid_opponent_goal_clearance_y << endl;
     buffer << "grid_own_goal_clearance_x = " << grid_own_goal_clearance_x << endl;
     buffer << "grid_own_goal_clearance_y = "<< grid_own_goal_clearance_y << endl;
-    buffer << "nr_robots_needed_for_pass_play = " << nr_robots_needed_for_pass_play << endl;
-    buffer << "nr_attack_support_during_defensive_period = " << nr_attack_support_during_defensive_period << endl;
     buffer << "wait_on_non_optimal_position_during_prepare_phase = " << wait_on_non_optimal_position_during_prepare_phase << endl;
-    buffer << "priority_block_max_ball_y = "<< priority_block_max_ball_y << endl;
-    buffer << "priority_block_max_opponent_to_ball_dist = " << priority_block_max_opponent_to_ball_dist << endl;
-    buffer << "priority_block_check_ball_in_area = " << priority_block_check_ball_in_area << endl;
-    buffer << "priority_block_check_opponent_close_to_ball = " << priority_block_check_opponent_close_to_ball << endl;
     buffer << "priority_block_min_distance = "<< priority_block_min_distance << endl;
     buffer << "priority_block_max_distance = "<< priority_block_max_distance << endl;
     buffer << "priority_block_max_distance_to_defense_line = "<< priority_block_max_distance_to_defense_line << endl;
@@ -204,7 +188,6 @@ std::string RoleAssignerParameters::toString() const  {
     buffer << "restart_receiver_ball_dist = " <<  restart_receiver_ball_dist << endl;
     buffer << "restart_shooter_ball_dist = " <<  restart_shooter_ball_dist << endl;
     buffer << "equality_cost_threshold = " <<  equality_cost_threshold << endl;
-    buffer << "select_lowest_robot_nr_for_dynamic_role = " << select_lowest_robot_nr_for_dynamic_role << endl;
     buffer << "previous_role_bonus_must_be_applied = " << previous_role_bonus_must_be_applied << endl;
     buffer << "previous_role_end_pos_threshold = " << previous_role_end_pos_threshold << endl;
     buffer << "previous_role_bonus_end_pos_radius = " << previous_role_bonus_end_pos_radius << endl;
@@ -233,7 +216,6 @@ std::string RoleAssignerParameters::toString() const  {
     buffer << "preferredSetplayKicker = " << preferredSetplayKicker << std::endl;
     buffer << "preferredSetplayReceiver = " << preferredSetplayReceiver << std::endl;
     buffer << "setplay_margin_to_penalty_area_side = " << setplay_margin_to_penalty_area_side << std::endl;
-    buffer << "lobShotWhenPossible = " << this->lobShotWhenPossible << std::endl;
     buffer << "min_y_for_lob_shot = " <<  this->min_y_for_lob_shot << std::endl;
     buffer << "outsideFieldMargin = " <<  this->outsideFieldMargin << std::endl;
     buffer << "kickoff_fp1 x = " << this->kickoff_fp1_x << std::endl;
@@ -253,7 +235,6 @@ std::string RoleAssignerParameters::toString() const  {
     buffer << "kickoff_against_fp4 x = " << this->kickoff_against_fp4_x << std::endl;
     buffer << "kickoff_against_fp4 y = " << this->kickoff_against_fp4_y << std::endl;
 
-    buffer << "dedicatedSweeper = " << dedicatedSweeper << std::endl;
     buffer << "autoAssignGoalie = "<< autoAssignGoalie << std::endl;
     return buffer.str();
 }

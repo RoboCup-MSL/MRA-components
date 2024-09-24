@@ -283,8 +283,6 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     fprintf(fp, "   minimumDistanceToEndPoint=\"%4.3f\"\n", data.parameters.minimumDistanceToEndPoint);
     fprintf(fp, "   minimumEdgeLength=\"%4.3f\"\n", data.parameters.minimumEdgeLength);
     fprintf(fp, "   move_to_ball_left_field_position=\"%s\"\n", boolToString(data.parameters.move_to_ball_left_field_position).c_str());
-    fprintf(fp, "   nr_attack_support_during_defensive_period=\"%d\"\n", data.parameters.nr_attack_support_during_defensive_period);
-    fprintf(fp, "   nr_robots_needed_for_pass_play=\"%d\"\n", data.parameters.nr_robots_needed_for_pass_play);
     fprintf(fp, "   nrDynamicPlannerIterations=\"%d\"\n", data.parameters.nrDynamicPlannerIterations);
     fprintf(fp, "   nrVerticesFirstCircle=\"%d\"\n", data.parameters.nrVerticesFirstCircle);
     fprintf(fp, "   nrVerticesSecondCircle=\"%d\"\n", data.parameters.nrVerticesSecondCircle);

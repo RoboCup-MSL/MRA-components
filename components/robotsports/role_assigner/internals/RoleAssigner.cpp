@@ -24,10 +24,6 @@
 using namespace std;
 using namespace MRA;
 
-const bool SETPLAY_2024 = true;
-
-
-
 //---------------------------------------------------------------------------------------------------------------------
 RoleAssigner::RoleAssigner() : m_gridFileNumber(0) {
 

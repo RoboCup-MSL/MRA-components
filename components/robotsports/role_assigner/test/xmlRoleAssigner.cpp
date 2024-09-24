@@ -185,8 +185,6 @@ void getRoleAssignParameters(RoleAssignerParameters & parameters, auto_ptr<robot
     parameters.nrDynamicPlannerIterations = c->Options().nrDynamicPlannerIterations();
     parameters.maxPossibleLinearSpeed = c->Options().maxPossibleLinearSpeed();
     parameters.maxPossibleLinearAcceleration = c->Options().maxPossibleLinearAcceleration();
-    parameters.nr_robots_needed_for_pass_play = c->Options().nr_robots_needed_for_pass_play();
-    parameters.nr_attack_support_during_defensive_period = c->Options().nr_attack_support_during_defensive_period();
     parameters.wait_on_non_optimal_position_during_prepare_phase = c->Options().wait_on_non_optimal_position_during_prepare_phase();
     // plannerOptions.auto_save_svg_period not handled for xml only when RoleAssigner skill is used
     parameters.autoAssignGoalie = c->Options().autoAssignGoalie();

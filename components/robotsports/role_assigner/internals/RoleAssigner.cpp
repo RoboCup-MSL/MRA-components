@@ -654,7 +654,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
 
             player.distToPreviousTarget = 0.0;
             // calculate previous target position distance-threshold.
-            if (role_assigner_data.team_admin[idx].previous_result.present == 1 && role_assigner_data.team_admin[idx].previous_result.role == role)
+            if (role_assigner_data.team_admin[idx].previous_result.present and role_assigner_data.team_admin[idx].previous_result.role == role)
             {
                 Geometry::Point previousEndPos = Geometry::Point(role_assigner_data.team_admin[idx].previous_result.end_position.x,
                                                                  role_assigner_data.team_admin[idx].previous_result.end_position.y);

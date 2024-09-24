@@ -33,37 +33,6 @@ typedef enum  {
     GOALKEEPER = 12
 } planner_target_e;
 
-typedef struct path_piece {
-    double x;
-    double y;
-    double cost;
-    long target; // from enum-type planner_target_e
-} path_piece_t;
-
-typedef struct defend_info {
-    long valid;
-    long defending_id;
-    double dist_from_defending_id;
-    long between_ball_and_defending_pos; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
-} defend_info_t;
-
-
-typedef struct previous_role_assigner_result  {
-    long present = false;
-    double ts = 0;
-    path_piece_t end_position;
-    long role;
-    long ball_status;
-    long game_state;
-} previous_role_assigner_result_t;
-
-typedef struct  previous_used_ball_by_role_assinger  {
-    bool   present;
-    double x;
-    double y;
-} previous_used_ball_by_role_assinger_t;
-
-
 typedef enum  {
     dr_NONE = 0,
     dr_GOALKEEPER = 1,
@@ -114,27 +83,6 @@ typedef enum  {
     FORMATION_PENALTY_SHOOTOUT = 15
 } team_formation_e;
 
-typedef struct moving_object_s {
-    double x;
-    double y;
-    double rz;
-    double velx;
-    double vely;
-    double velrz;
-    long label;
-    long valid;
-} moving_object_t;
-
-
-typedef struct ball_pickup_position_s {
-    double x;
-    double y;
-    long valid;
-    double ts;
-} ball_pickup_position_t;
-
-
-
 typedef enum {
     NONE = 0,
     NORMAL = 1,
@@ -172,6 +120,52 @@ typedef enum {
     OWNED_BY_TEAM = 3,
     OWNED_BY_OPPONENT = 4
 } ball_status_e;
+
+typedef struct path_piece {
+    double x;
+    double y;
+    double cost;
+    long target; // from enum-type planner_target_e
+} path_piece_t;
+
+typedef struct defend_info {
+    long valid;
+    long defending_id;
+    double dist_from_defending_id;
+    long between_ball_and_defending_pos; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
+} defend_info_t;
+
+
+typedef struct previous_role_assigner_result  {
+    bool present = false;
+    double ts = 0;
+    path_piece_t end_position;
+    role_e role;
+} previous_role_assigner_result_t;
+
+typedef struct  previous_used_ball_by_role_assinger  {
+    bool   present;
+    double x;
+    double y;
+} previous_used_ball_by_role_assinger_t;
+
+typedef struct moving_object_s {
+    double x;
+    double y;
+    double rz;
+    double velx;
+    double vely;
+    double velrz;
+    long label;
+    long valid;
+} moving_object_t;
+
+typedef struct ball_pickup_position_s {
+    double x;
+    double y;
+    long valid;
+    double ts;
+} ball_pickup_position_t;
 
 
 inline std::string GameStateAsString(game_state_e gamestate)

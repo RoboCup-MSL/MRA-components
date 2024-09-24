@@ -103,7 +103,7 @@ std::string RoleAssignerData::toString() const
         buffer << "\t\t\tprev result:  " << prev_res.present;
         if (prev_res.present)
         {
-            buffer << " role: " << RoleAsString(static_cast<role_e>(prev_res.role))
+            buffer << " role: " << RoleAsString(prev_res.role)
                    << " end-pos x: " << prev_res.end_position.x
                    << " y:  " << prev_res.end_position.y
                    << "target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target))

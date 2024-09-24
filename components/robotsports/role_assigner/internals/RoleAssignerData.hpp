@@ -126,7 +126,7 @@ public:
 
 
     // based on inputs
-    std::vector<dynamic_role_e> teamFormation;
+    std::vector<role_e> teamFormation;
     bool ballIsObstacle;
     bool searchForBall;
     defend_info_t defend_info;

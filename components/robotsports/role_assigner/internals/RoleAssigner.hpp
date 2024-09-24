@@ -45,7 +45,7 @@ private:
         double distToPreviousTarget;
     };
 
-    bool assignAnyToPosition(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
+    bool assignAnyToPosition(RoleAssignerData&  role_assigner_data, role_e dr_role,
             const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass,
             role_e org_role);
 
@@ -60,7 +60,7 @@ private:
 
     void assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_assigner_data );
 
-    planner_target_e determine_planner_target(dynamic_role_e dynamic_role, game_state_e gamestate);
+    planner_target_e determine_planner_target(role_e role, const RoleAssignerData& role_assigner_data);
 
     std::vector<RoleAssignerRobot> getTeamMates(const RoleAssignerData& role_assigner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
@@ -72,7 +72,7 @@ private:
 
     void ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData&  role_assigner_data);
 
-    bool AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, dynamic_role_e dr_role,
+    bool AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, role_e dr_role,
                                          planner_target_e planner_target, const MRA::Geometry::Point& targetPos, role_e org_role);
 
     void assignParkingPositions(RoleAssignerData& role_assigner_data);

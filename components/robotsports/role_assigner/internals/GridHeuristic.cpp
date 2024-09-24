@@ -585,11 +585,11 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
 // ----------------------------------------------------------------------------------------
 InfluencePreviousAssignedPositionsHeuristic::InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
                                                                                          const RoleAssignerData& r_role_assigner_data,
-                                                                double maxPossibleFieldDistance, dynamic_role_e dynamic_role) :
+                                                                double maxPossibleFieldDistance, role_e role) :
                                                                         GridHeuristic(id, weight, pgid),
                                                                         m_r_role_assigner_data(r_role_assigner_data),
                                                                         m_dScaling(maxPossibleFieldDistance),
-                                                                        m_dynamic_role(dynamic_role){
+                                                                        m_role(role){
 }
 
 double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y) {
@@ -597,7 +597,7 @@ double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y)
     double value = 0.0;
     for (unsigned idx = 0; idx < m_r_role_assigner_data.team_admin.size(); idx++) {
         if (m_r_role_assigner_data.team_admin[idx].previous_result.present) {
-            if (m_r_role_assigner_data.team_admin[idx].previous_result.dynamic_role == m_dynamic_role) {
+            if (m_r_role_assigner_data.team_admin[idx].previous_result.role == m_role) {
                 Geometry::Position prevPos = Geometry::Position(m_r_role_assigner_data.team_admin[idx].previous_result.end_position.x,
                                                                 m_r_role_assigner_data.team_admin[idx].previous_result.end_position.y);
                 // check if previous assigned

@@ -326,7 +326,7 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
         RoleAssignerRobot P;
         RoleAssignerAdminTeam PA;
         PA.previous_result.present = (*team_iter).previous_result_present();
-        PA.previous_result.dynamic_role = StringToDynamicRole((*team_iter).previous_result_dynamic_role());
+        PA.previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), role_UNDEFINED);
         PA.previous_result.end_position.x = (*team_iter).previous_result_x();
         PA.previous_result.end_position.y = (*team_iter).previous_result_y();
         PA.previous_result.ts = (*team_iter).previous_result_ts();

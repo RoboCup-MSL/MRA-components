@@ -17,18 +17,14 @@
 
 #include "RoleAssigner_types.hpp"
 #include "RoleAssignerGrid.hpp"  // grid related role assigner functions
-//#include "FieldConfig.hpp"
-//#include "GlobalPathPlanner.hpp"
 #include "RoleAssignerData.hpp"
-//#include "RoleAssignerOpponent.hpp"
-//#include "RoleAssignerParameters.hpp"
 
 
 using namespace std;
 using namespace MRA;
 
 
-MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, dynamic_role_e dynamic_role,
+MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber, role_e role,
         RoleAssignerData& r_role_assigner_data, bool playerPassedBall, bool& r_role_position_is_end_position_of_pass) {
     MRA::Geometry::Point rolePosition = MRA::Geometry::Point(0,0);
     rDefend_info.defending_id = -1;    // no item to defend
@@ -40,13 +36,13 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
                 r_role_assigner_data.gamestate == game_state_e::FREEKICK_AGAINST || r_role_assigner_data.gamestate == game_state_e::THROWIN_AGAINST     ) )
     {
         // Setplay against: man coverage for all opponents
-        rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, r_role_assigner_data, r_gridFileNumber, true /* setplay active */);
+        rolePosition = calculateManToManDefensePosition(rDefend_info, role, r_role_assigner_data, r_gridFileNumber, true /* setplay active */);
         return rolePosition;
     }
 
 
-    switch (dynamic_role) {
-    case dr_PENALTY_KICKER: {
+    if ((role == role_ATTACKER_MAIN) and isOneOf(r_role_assigner_data.gamestate, {PENALTY, PENALTY_SHOOTOUT})) {
+        // Penalty kicker:
         //        In RoboCup, the following modification apply:
         //        • The defending goal keeper stays within his own goal area until the ball
         //        is even slightly moved.
@@ -82,8 +78,8 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
             }
         }
     }
-    break;
-    case dr_SETPLAY_KICKER: {
+    else if (role == role_ATTACKER_MAIN and isOneOf(r_role_assigner_data.gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN})) {
+        // SETPLAY_KICKER:
         // CODE only valid for set-play !!!
         // calculation assume that no opponent or team mate is at calculated position. This is only true for restart.
         // Known issues with algorithm
@@ -95,8 +91,8 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         calculateSetPlayPosition(shooterPosition, receiverPosition, r_role_assigner_data);
         rolePosition = shooterPosition;  // right of field, just middle of opponent half in Y
     }
-    break;
-    case dr_SETPLAY_RECEIVER: {
+    else if (role == role_ATTACKER_ASSIST) {
+        // SETPLAY_RECEIVER: {
         // CODE only valid for set-play
         // put setplay-receiver at a location for the specific setplay, e.g. freekick at own half put it at opponent half
         // calculation assume that no opponent or team mate is at calculated position. This is only true for restart.
@@ -108,24 +104,22 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         calculateSetPlayPosition(shooterPosition, receiverPosition, r_role_assigner_data);
         rolePosition = receiverPosition;  // right of field, just middle of opponent half in Y
     }
-    break;
-    case dr_PENALTY_DEFENDER:
-    {
-            rolePosition = RoleAssignerGrid::findDefensivePositionDuringPenaltyShootOut(r_role_assigner_data, r_gridFileNumber++);
+    else if (role ==  role_DEFENDER_GENERIC and isOneOf(r_role_assigner_data.gamestate, {PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST})) {
+        //dr_PENALTY_DEFENDER:
+        rolePosition = RoleAssignerGrid::findDefensivePositionDuringPenaltyShootOut(r_role_assigner_data, r_gridFileNumber++);
     }
-    break;
-    case dr_DEFENDER:
-    {
+    else if (role ==  role_DEFENDER_GENERIC) {
+        // dr_DEFENDER
         if (r_role_assigner_data.parameters.man_to_man_defense_during_normal_play) {
             // man coverage
-            rolePosition = calculateManToManDefensePosition(rDefend_info, dynamic_role, r_role_assigner_data, r_gridFileNumber, false /* normal-play */);
+            rolePosition = calculateManToManDefensePosition(rDefend_info, role, r_role_assigner_data, r_gridFileNumber, false /* normal-play */);
         }
         else {
             rolePosition = RoleAssignerGrid::findDefensivePosition(r_role_assigner_data, r_gridFileNumber++);
         }
     }
-    break;
-    case dr_ATTACKSUPPORTER: {
+    else if (role == role_ATTACKER_GENERIC) {
+        // dr_ATTACKSUPPORTER:
         bool position_close_to_ball = false;
         if (r_role_assigner_data.gamestate == game_state_e::GOALKICK) {
             position_close_to_ball = true;
@@ -145,8 +139,8 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
             }
         }
         if ((r_role_assigner_data.pass_data.valid) &&
-            (r_role_assigner_data.pass_data.target_id != 0 /* not shot on goal */) &&
-            (! target_player_for_pass_is_present)) {
+                        (r_role_assigner_data.pass_data.target_id != 0 /* not shot on goal */) &&
+                        (! target_player_for_pass_is_present)) {
             // ball passed and no other player moves to the ball, go to ball target position
             rolePosition = MRA::Geometry::Point(r_role_assigner_data.pass_data.target_pos.x, r_role_assigner_data.pass_data.target_pos.y);
             r_role_position_is_end_position_of_pass = true;
@@ -154,13 +148,13 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
             RoleAssignerGrid::findAttackSupportPosition(rolePosition, r_role_assigner_data, ballPositionToUse, r_gridFileNumber++, position_close_to_ball);
         }
     }
-    break;
-    case dr_SWEEPER: {
+    else if (role == role_DEFENDER_MAIN) {
+        // SWEEPER:
         rolePosition = RoleAssignerGrid::findSweeperPosition(r_role_assigner_data, r_gridFileNumber++);
     }
-    break;
-    case dr_INTERCEPTOR: {
 
+    else if ((role == role_ATTACKER_MAIN) and not isOneOf(r_role_assigner_data.ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) { // setplay handled before there
+        // dr_INTERCEPTOR
         if (r_role_assigner_data.gamestate == game_state_e::GOALKICK_AGAINST || r_role_assigner_data.gamestate == game_state_e::CORNER_AGAINST ||
             r_role_assigner_data.gamestate == game_state_e::DROPPED_BALL || r_role_assigner_data.gamestate == game_state_e::FREEKICK_AGAINST ||
             r_role_assigner_data.gamestate == game_state_e::PENALTY_AGAINST || r_role_assigner_data.gamestate == game_state_e::PENALTY_SHOOTOUT_AGAINST ||
@@ -201,22 +195,10 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
             }
         }
     }
-    break;
-    case dr_BALLPLAYER: {
+    else if ((role == role_ATTACKER_MAIN) and isOneOf(r_role_assigner_data.ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})) {
+        //    case dr_BALLPLAYER: {
         MRA::Geometry::Point shootPos = RoleAssignerGrid::findBallPlayerPosition(r_role_assigner_data, r_gridFileNumber++);
         rolePosition = shootPos;
-    }
-    break;
-    case dr_GOALKEEPER: // empty
-    case dr_SEARCH_FOR_BALL: // empty: only used for diagnostics
-    case dr_BEGIN_POSITION: // empty: only used for diagnostics
-    case dr_PARKING: // empty: only used for diagnostics
-    case dr_IS_ALIVE:
-    case dr_LOB_CALIBRATION:
-    case dr_NONE: {
-
-    }
-    break;
     }
     return rolePosition;
 }
@@ -572,7 +554,7 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
 
     MRA::Geometry::Point previousEndPos;
     for (unsigned int idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
-        if (r_role_assigner_data.team_admin[idx].previous_result.present == 1 && static_cast<dynamic_role_e>(r_role_assigner_data.team_admin[idx].previous_result.dynamic_role) == dr_SETPLAY_RECEIVER) {
+        if (r_role_assigner_data.team_admin[idx].previous_result.present == 1 && r_role_assigner_data.team_admin[idx].previous_result.role == role_ATTACKER_ASSIST) {
             MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(r_role_assigner_data.team_admin[idx].previous_result.end_position.x, r_role_assigner_data.team_admin[idx].previous_result.end_position.y);
             MRA::Geometry::Point previousBall = MRA::Geometry::Point(r_role_assigner_data.previous_ball.x, r_role_assigner_data.previous_ball.y);
 
@@ -1065,7 +1047,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(const MRA::Geomet
 
 //--------------------------------------------------------------------------
 MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
-        defend_info_t& rDefend_info, dynamic_role_e dynamic_role,
+        defend_info_t& rDefend_info, role_e role,
         RoleAssignerData& r_role_assigner_data, int& r_gridFileNumber, bool setPlayActive) {
     // man coverage for all opponents
     MRA::Geometry::Point rolePosition = MRA::Geometry::Point();
@@ -1075,7 +1057,7 @@ MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
     if (closest_to_ball_idx >= 0) {
         // Found opponent closest to the ball. Apply man defense for this opponent
         r_role_assigner_data.opponents[closest_to_ball_idx].assigned = true;
-        rolePosition = RoleAssignerGrid::findManToManDefensivePosition(dynamic_role,
+        rolePosition = RoleAssignerGrid::findManToManDefensivePosition(role,
                 r_role_assigner_data.opponents[closest_to_ball_idx].position, r_role_assigner_data, r_gridFileNumber++, setPlayActive);
         rDefend_info.valid = true;
         rDefend_info.defending_id = r_role_assigner_data.opponents[closest_to_ball_idx].label;
@@ -1090,7 +1072,7 @@ MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
 }
 
 MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignment_nr, defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
-                                                         dynamic_role_e dynamic_role,  RoleAssignerData& r_role_assigner_data,
+                                                         role_e role,  RoleAssignerData& r_role_assigner_data,
                                                          bool playerPassedBall, bool& r_role_position_is_end_position_of_pass) {
     MRA::Geometry::Point rolePosition = MRA::Geometry::Point(0,0);
     rDefend_info.defending_id = -1; // no item to defend
@@ -1107,8 +1089,10 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
         }
     }
 
-    switch (dynamic_role) {
-    case dr_SETPLAY_KICKER: {
+
+
+
+    if (role == role_ATTACKER_MAIN and isOneOf(r_role_assigner_data.gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN})) {
         if (ballPos.y < 0 and nr_field_players  > 2) {
             // ball at own side and more than 2 field players, aim kicker to center of opponent half
             auto aimPoint = MRA::Geometry::Point(0.0, r_role_assigner_data.fieldConfig.getMaxFieldY() * 0.5);
@@ -1121,19 +1105,11 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
             rolePosition =  calculateSetPlayerKickerPosition(receiverPosition, r_role_assigner_data);
         }
     }
-    break;
-    case dr_SETPLAY_RECEIVER: {
+    else if (role == role_ATTACKER_ASSIST)  {
         // look up position if possible
         rolePosition = calculateSetPlayReceiverPosition(r_role_assigner_data);
     }
-    break;
-    case dr_PENALTY_DEFENDER:
-    case dr_DEFENDER:
-    case dr_ATTACKSUPPORTER:
-    case dr_PENALTY_KICKER:
-    case dr_INTERCEPTOR:
-    case dr_BALLPLAYER:
-    case dr_SWEEPER:
+    else
     {
         // all situations: normal set-play kicker and receiver.
         // --> robot-planner should choose long pass if ball is at own half, to set-play receiver at opponent half
@@ -1185,7 +1161,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
                 // clip y position if too close to opponent goal
                 optimal_role_pos.y = std::min(optimal_role_pos.y, MAX_Y_WHEN_BALL_ON_OWN_HALF);
 
-                rolePosition = RoleAssignerGrid::findSetPlayPosition(dynamic_role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, true);
+                rolePosition = RoleAssignerGrid::findSetPlayPosition(role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, true);
             }
             else {
                 // ball at opponent half: setplay receiver is at best possible shooting position
@@ -1195,7 +1171,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
                 optimal_role_pos.y = fc.getMaxFieldY() - fc.getPenaltySpotToBackline();
 
                 // calculate position with as target the optimal position : stronger preference for Y location than X, ready for rebound (no ready for pass needed)
-                rolePosition = RoleAssignerGrid::findSetPlayPosition(dynamic_role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, false);
+                rolePosition = RoleAssignerGrid::findSetPlayPosition(role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, false);
             }
         }
         else if (assignment_nr == 4) {
@@ -1224,39 +1200,22 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
                 // clip y position if too close to opponent goal
                 optimal_role_pos.y = std::min(optimal_role_pos.y, MAX_Y_WHEN_BALL_ON_OWN_HALF);
 
-                rolePosition = RoleAssignerGrid::findSetPlayPosition(dynamic_role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, true);
+                rolePosition = RoleAssignerGrid::findSetPlayPosition(role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, false, true, true);
             }
             else {
                 auto best_x = max_field_x - 2.5; // X meter from side
                 MRA::Geometry::Point optimal_role_pos;
                 optimal_role_pos.x = (ballPos.x < 0) ? best_x : -best_x;
                 optimal_role_pos.y = r_role_assigner_data.fieldConfig.getTopPenaltyAreaY() - 2.0;  // 2 meter from top of opponent penalty area
-                rolePosition = RoleAssignerGrid::findSetPlayPosition(dynamic_role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, true, false, true);
+                rolePosition = RoleAssignerGrid::findSetPlayPosition(role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, true, false, true);
             }
         }
         else
         {
             // use original role position
-            rolePosition = determineDynamicRolePosition(rDefend_info, planner_target, r_gridFileNumber, dynamic_role,
+            rolePosition = determineDynamicRolePosition(rDefend_info, planner_target, r_gridFileNumber, role,
                                                         r_role_assigner_data, playerPassedBall, r_role_position_is_end_position_of_pass);
         }
-
-    }
-    break;
-    // not supported roles: use default position
-    case dr_GOALKEEPER: // empty
-    case dr_SEARCH_FOR_BALL: // empty: only used for diagnostics
-    case dr_BEGIN_POSITION: // empty: only used for diagnostics
-    case dr_PARKING: // empty: only used for diagnostics
-    case dr_IS_ALIVE:
-    case dr_LOB_CALIBRATION:
-    case dr_NONE:
-    {
-        // use original role position
-        rolePosition = determineDynamicRolePosition(rDefend_info, planner_target, r_gridFileNumber, dynamic_role,
-                r_role_assigner_data, playerPassedBall, r_role_position_is_end_position_of_pass);
-    }
-    break;
     }
     return rolePosition;
 }

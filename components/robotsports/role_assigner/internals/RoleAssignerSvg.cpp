@@ -188,7 +188,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         if (prev_res.present)
         {
             fprintf(fp, " role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
-                    DynamicRoleAsString(static_cast<dynamic_role_e>(prev_res.dynamic_role)).c_str(), prev_res.end_position.x, prev_res.end_position.y,
+                    RoleAsString(static_cast<role_e>(prev_res.role)).c_str(), prev_res.end_position.x, prev_res.end_position.y,
                     PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)).c_str(), prev_res.ts);
         }
         fprintf(fp, "\n");
@@ -362,8 +362,8 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
                     <<" previous_result_ts=\""  << previous_result.ts << "\""
                     <<" previous_result_x=\""   << previous_result.end_position.x << "\""
                     <<" previous_result_y=\""   << previous_result.end_position.y << "\""
-                    <<" previous_result_dynamic_role=\""
-                    << DynamicRoleAsString(static_cast<dynamic_role_e>(previous_result.dynamic_role))
+                    <<" previous_result_role=\""
+                    << RoleAsString(static_cast<role_e>(previous_result.role))
                     <<"\"";
 
             previous_result_string= previous_result_Xtext.str();;

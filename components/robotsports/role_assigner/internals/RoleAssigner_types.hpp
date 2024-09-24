@@ -52,7 +52,9 @@ typedef struct previous_role_assigner_result  {
     long present = false;
     double ts = 0;
     path_piece_t end_position;
-    long dynamic_role;
+    long role;
+    long ball_status;
+    long game_state;
 } previous_role_assigner_result_t;
 
 typedef struct  previous_used_ball_by_role_assinger  {
@@ -432,6 +434,16 @@ inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, bal
     return dr_role;
 }
 
+// dr_PENALTY_DEFENDER: role_DEFENDER_GENERIC and isOneOf(gamestate, {PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST}
+// dr_DEFENDER : role_DEFENDER_GENERIC and NOT isOneOf(gamestate, {PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST}
+// dr_ATTACKSUPPORTER role_ATTACKER_GENERIC
+// dr_SETPLAY_RECEIVER role_ATTACKER_ASSIST
+// dr_SWEEPER role_DEFENDER_MAIN
+// dr_GOALKEEPER = role_GOALKEEPER
+// dr_SETPLAY_KICKER role_ATTACKER_MAIN and isOneOf(gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN}
+// dr_PENALTY_KICKER role_ATTACKER_MAIN and isOneOf(gamestate, {PENALTY, PENALTY_SHOOTOUT})
+// dr_BALLPLAYER: role_ATTACKER_MAIN not isOneOf(gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN, PENALTY, PENALTY_SHOOTOUT} and isOneOf(ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})
+// dr_INTERCEPTOR: role_ATTACKER_MAIN not isOneOf(gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN, PENALTY, PENALTY_SHOOTOUT} and not isOneOf(ball_status, {OWNED_BY_PLAYER, OWNED_BY_TEAMMATE})
 
 
 } // end namespace MRA

@@ -30,7 +30,7 @@ public:
     static MRA::Geometry::Position findBallPlayerPosition(const RoleAssignerData& r_role_assigner_data, int gridFileNumber);
 
 
-    static MRA::Geometry::Position findManToManDefensivePosition(dynamic_role_e dynamic_role, const MRA::Geometry::Point& oppentToDefend, const RoleAssignerData& r_role_assigner_data,
+    static MRA::Geometry::Position findManToManDefensivePosition(role_e role, const MRA::Geometry::Point& oppentToDefend, const RoleAssignerData& r_role_assigner_data,
             int gridFileNumber, bool setPlayActive);
 
     static MRA::Geometry::Position findDefensivePosition(const RoleAssignerData& r_role_assigner_data, int gridFileNumber);
@@ -43,7 +43,7 @@ public:
 
     static MRA::Geometry::Position findDefensivePositionDuringPenaltyShootOut(const RoleAssignerData& r_role_assigner_data, int gridFileNumber);
 
-    static MRA::Geometry::Position findSetPlayPosition(dynamic_role_e dynamic_role, const RoleAssignerData& r_role_assigner_data,
+    static MRA::Geometry::Position findSetPlayPosition(role_e dynamic_role, const RoleAssignerData& r_role_assigner_data,
                                                    const MRA::Geometry::Point& preferred_position, int gridFileNumber,
                                                    bool strongDesiredX, bool strongDesiredY, bool beAvailableForPass);
 

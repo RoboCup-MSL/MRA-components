@@ -2,7 +2,7 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "FalconsActionCatch.hpp"
+#include "FalconsActionCatchBall.hpp"
 
 using namespace MRA;
 
@@ -10,7 +10,7 @@ using namespace MRA;
 #include "geometry.hpp"
 
 
-int FalconsActionCatch::FalconsActionCatch::tick
+int FalconsActionCatchBall::FalconsActionCatchBall::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto
@@ -28,45 +28,6 @@ int FalconsActionCatch::FalconsActionCatch::tick
 
     // user implementation goes here
 
-/*
-
-these are the protobuf parameters in Params.proto
-
-
-package MRA.FalconsActionCatch;
-
-message Params
-{
-    // only respond to ball trajectory if it is expected to come close enough
-    // if too far, then action will return FAILED
-    float captureRadius = 1; // [m]
-
-    // only respond to balls which are coming sufficiently fast
-    // if too slow, then action will return FAILED
-    float ballSpeedThreshold = 2; // [m/s]
-
-    // default/legacy behavior is to move sideways ("strafe")
-    // proactive mode will optimize, which leads to forward movemement when ball is approaching slow, which is useful when opponent is nearby
-    bool proactive = 3;
-
-    // assumed robot speed to use when calculation ball interception point
-    // only used in proactive mode
-    // (roadmap: get this configuration from some other config file or even runtime, using trajectory generator?)
-    float robotCatchSpeed = 4; // [m/s]
-
-    // extrapolate ball vector with this duration, similar to 'getBallOnVector'
-    // only used in proactive mode
-    float ballVectorExtrapolation = 5; // [s]
-}
-
-for now, do not implement proactive mode, just the basic functionality
-
-*/
-/* 
-    fix these errors and remove them from this comment
-
-
-*/
     try
     {
         // Always enable ballhandlers

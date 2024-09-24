@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsActionCatch;
+package MRA.FalconsActionCatchBall;
 
 message Params
 {

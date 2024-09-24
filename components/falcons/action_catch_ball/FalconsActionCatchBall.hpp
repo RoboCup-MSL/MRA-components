@@ -1,17 +1,17 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_FALCONS_ACTION_CATCH_HPP
-#define _MRA_FALCONS_ACTION_CATCH_HPP
+#ifndef _MRA_FALCONS_ACTION_CATCH_BALL_HPP
+#define _MRA_FALCONS_ACTION_CATCH_BALL_HPP
 
 
 // component name definition goes on top
 // (when logging.hpp is used internally in a component, then component name may resolve to "unknown")
 #ifndef MRA_COMPONENT_NAME
-#define MRA_COMPONENT_NAME "FalconsActionCatch"
+#define MRA_COMPONENT_NAME "FalconsActionCatchBall"
 #endif
 #ifndef MRA_COMPONENT_FOLDER
-#define MRA_COMPONENT_FOLDER "falcons/action_catch"
+#define MRA_COMPONENT_FOLDER "falcons/action_catch_ball"
 #endif
 
 
@@ -21,26 +21,26 @@
 #include "logging.hpp"
 
 // generated protobuf types from interface of this component
-#include "FalconsActionCatch_datatypes.hpp"
+#include "FalconsActionCatchBall_datatypes.hpp"
 
 
 
 
-namespace MRA::FalconsActionCatch
+namespace MRA::FalconsActionCatchBall
 {
 
-typedef MRA::FalconsActionCatch::Input InputType;
-typedef MRA::FalconsActionCatch::Params ParamsType;
-typedef MRA::FalconsActionCatch::State StateType;
-typedef MRA::FalconsActionCatch::Output OutputType;
-typedef MRA::FalconsActionCatch::Diagnostics DiagnosticsType;
+typedef MRA::FalconsActionCatchBall::Input InputType;
+typedef MRA::FalconsActionCatchBall::Params ParamsType;
+typedef MRA::FalconsActionCatchBall::State StateType;
+typedef MRA::FalconsActionCatchBall::Output OutputType;
+typedef MRA::FalconsActionCatchBall::Diagnostics DiagnosticsType;
 
 
-class FalconsActionCatch: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>
+class FalconsActionCatchBall: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>
 {
 public:
-    FalconsActionCatch() {};
-    ~FalconsActionCatch() {};
+    FalconsActionCatchBall() {};
+    ~FalconsActionCatchBall() {};
 
     // user implementation
     int tick(
@@ -55,7 +55,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_catch/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_catch_ball/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity
@@ -99,20 +99,20 @@ public:
         return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, diagnostics);
     };
 
-}; // class FalconsActionCatch
+}; // class FalconsActionCatchBall
 
 
 // configuration handling
 inline ParamsType defaultParams()
 {
-    return FalconsActionCatch().defaultParams();
+    return FalconsActionCatchBall().defaultParams();
 }
 inline ParamsType loadParams(std::string configFile)
 {
     return MRA::LoadDefaultParams<ParamsType>(configFile);
 }
 
-} // namespace MRA::FalconsActionCatch
+} // namespace MRA::FalconsActionCatchBall
 
 
 #endif

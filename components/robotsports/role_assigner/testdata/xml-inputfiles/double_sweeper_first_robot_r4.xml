@@ -75,8 +75,8 @@
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="0.0" y="0.0" velx="0.0" vely="0.0"/>
   <tns:PreviousBall x="1.14" y="1.97"/>
-  <tns:Team id="4" label="4" x="-1.0" y="-1.01"/>
-  <tns:Team id="2" label="2" x="1.0" y="-1.0"/>
+  <tns:Team id="4" trackingId="4" x="-1.0" y="-1.01"/>
+  <tns:Team id="2" trackingId="2" x="1.0" y="-1.0"/>
   <tns:PickupPosition x="0.0" y="0.0" ts="80550.734" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" />

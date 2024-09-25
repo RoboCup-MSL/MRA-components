@@ -156,7 +156,7 @@ typedef struct moving_object_s {
     double velx;
     double vely;
     double velrz;
-    long label;
+    long trackingId;
     long valid;
 } moving_object_t;
 

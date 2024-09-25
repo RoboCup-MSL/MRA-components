@@ -65,6 +65,9 @@ message PassData {
    google.protobuf.Timestamp eta = 9; // estimated time of arrival at target
 };
 
+message RoleAssignPlayer {
+
+}
 
 // class with inp
 
@@ -99,19 +102,22 @@ message Input
         GOAL_AGAINST = 24;
     }
 
-    Player robot = 1; // self
     GameState gamestate = 2;
     repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
-    repeated Player teammates = 4;
-    repeated Player opponents = 5;
+
+    // TODO repeat role_e formation;
+
+    repeated RoleAssignPlayer team = 4;
+    repeated RoleAssignPlayer opponents = 5;
     repeated PickUpPosition pickup = 6; // pickup position
     bool passIsRequired = 7;
-    repeated PassData pass_data = 8;
-//    std::vector<dynamic_role_e> teamFormation;
-//    std::vector<MRA::Geometry::Point> parking_positions;  // config
+    repeated MRA.Datatypes.Pose parking_positions = 8;
+    PickUpPosition ball_pickup_position = 9;
+    PassData pass_data = 10;
+    // TODO MRA::FieldConfig fieldConfig;
 //    MRA::FieldConfig fieldConfig;
+};
     
     
-}
 
 

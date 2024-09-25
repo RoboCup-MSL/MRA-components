@@ -174,9 +174,9 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     for (unsigned int idx = 0; idx < data.team.size(); idx++) {
         RoleAssignerRobot rbt = data.team[idx];
         auto rbt_admin = data.team_admin[idx];
-        fprintf(fp, "\t\tR%02ld = %s vel: %s label: %ld type = %s (%d)\n",
+        fprintf(fp, "\t\tR%02ld = %s vel: %s trackingId: %ld type = %s (%d)\n",
                 rbt.robotId, rbt.position.toString().c_str(), rbt.velocity.toString().c_str(),
-                rbt.labelId,
+                rbt.trackingId,
                 PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
                 rbt.player_type );
         auto dr_role = RoleToDynamicRole(rbt_admin.result.role, data.gamestate, data.ball.status);
@@ -334,12 +334,12 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
 
         string idString = "id=\""+ std::to_string(data.team[idx].robotId) + "\"";
 
-        // set label for this player: use label if define (> 0), otherwise make label-id same as robot-id.
-        auto label_id = data.team[idx].labelId;
-        if (label_id <= 0) {
-            label_id = data.team[idx].robotId;
+        // set trackingId for this player: use tracking if define (> 0), otherwise make tracking-id same as robot-id.
+        auto tracking_id = data.team[idx].trackingId;
+        if (tracking_id <= 0) {
+            tracking_id = data.team[idx].robotId;
         }
-        string labelString = "label=\""+ std::to_string(label_id) + "\"";
+        string trackingString = "tracking=\""+ std::to_string(tracking_id) + "\"";
 
         string controlBallString = "";
         if (data.team[idx].controlBall)
@@ -368,7 +368,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
 
         }
         fprintf(fp, "  <tns:Team %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
-                idString.c_str(), labelString.c_str(),
+                idString.c_str(), trackingString.c_str(),
                 data.team[idx].position.x, data.team[idx].position.y, data.team[idx].position.rz,
                 data.team[idx].velocity.x, data.team[idx].velocity.y, data.team[idx].velocity.rz,
                 goalieString.c_str(), controlBallString.c_str(), passedBallString.c_str(), previous_result_string.c_str());
@@ -376,9 +376,9 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     }
     for (unsigned int idx = 0; idx < data.opponents.size(); idx++) {
         string idString = "id=\""+ std::to_string(idx+1) + "\"";
-        string labelString = "label=\""+ std::to_string(data.opponents[idx].label) + "\"";
+        string trackingString = "trackingId=\""+ std::to_string(data.opponents[idx].trackingId) + "\"";
         fprintf(fp, "  <tns:Opponent %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" />\n",
-                idString.c_str(), labelString.c_str(),
+                idString.c_str(), trackingString.c_str(),
                 data.opponents[idx].position.x, data.opponents[idx].position.y, data.opponents[idx].position.rz,
                 data.opponents[idx].velocity.x, data.opponents[idx].velocity.y, data.opponents[idx].velocity.rz);
 

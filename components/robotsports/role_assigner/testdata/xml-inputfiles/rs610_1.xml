@@ -6,12 +6,12 @@
 	<tns:AttackFormation>FORMATION_112</tns:AttackFormation>
 	<tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
 	<tns:Ball x="1.69" y="1.73" velx="0.00" vely="0.00"/>
-	<tns:Team id="1" label="1" x="0.559" y="0.508" rz="-1.325" velx="0.651" vely="0.542" velrz="0.262"    />
-	<tns:Team id="2" label="2" x="0.763" y="-4.491" rz="-0.224" velx="0.000" vely="0.000" velrz="0.000"    />
-	<tns:Team id="3" label="3" x="1.974" y="0.542" rz="0.247" velx="-0.021" vely="0.151" velrz="0.000"   hasBall="true"   />
-	<tns:Team id="4" label="4" x="-2.975" y="4.498" rz="-2.223" velx="0.000" vely="0.000" velrz="0.000"    />
-	<tns:Opponent label="11" x="1.613" y="2.152" rz="0.000" velx="0.158" vely="-0.146" velrz="0.000" />
-	<tns:Opponent label="12" x="1.002" y="6.003" rz="0.000" velx="0.492" vely="0.810" velrz="0.000" />
+	<tns:Team id="1" trackingId="1" x="0.559" y="0.508" rz="-1.325" velx="0.651" vely="0.542" velrz="0.262"    />
+	<tns:Team id="2" trackingId="2" x="0.763" y="-4.491" rz="-0.224" velx="0.000" vely="0.000" velrz="0.000"    />
+	<tns:Team id="3" trackingId="3" x="1.974" y="0.542" rz="0.247" velx="-0.021" vely="0.151" velrz="0.000"   hasBall="true"   />
+	<tns:Team id="4" trackingId="4" x="-2.975" y="4.498" rz="-2.223" velx="0.000" vely="0.000" velrz="0.000"    />
+	<tns:Opponent trackingId="11" x="1.613" y="2.152" rz="0.000" velx="0.158" vely="-0.146" velrz="0.000" />
+	<tns:Opponent trackingId="12" x="1.002" y="6.003" rz="0.000" velx="0.492" vely="0.810" velrz="0.000" />
 	<tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAMMATE">
 		<tns:PassData valid="false"/>
 	</tns:SituationInfo>

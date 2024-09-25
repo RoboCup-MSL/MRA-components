@@ -8,10 +8,10 @@
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="-0.97" y="-8.00" velx="0.00" vely="0.00"/>
-  <tns:Team id="3" label="3" x="-0.434" y="-6.327" rz="0.056" velx="-0.097" vely="-0.112" velrz="-0.209"     previous_result_present="true"  previous_result_ts="76969.8" previous_result_x="0" previous_result_y="-6.75" previous_result_dynamic_role="SWEEPER"/>
-  <tns:Team id="1" label="1" x="0.020" y="-8.435" rz="0.007" velx="-0.124" vely="0.130" velrz="0.000"  isGoalie="true"    />
-  <tns:Team id="4" label="4" x="-0.630" y="-1.229" rz="-0.248" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Opponent label="11" id="13" x="-1.804" y="-9.097" rz="0.000" velx="0.268" vely="0.415" velrz="0.000" />
+  <tns:Team id="3" trackingId="3" x="-0.434" y="-6.327" rz="0.056" velx="-0.097" vely="-0.112" velrz="-0.209"     previous_result_present="true"  previous_result_ts="76969.8" previous_result_x="0" previous_result_y="-6.75" previous_result_dynamic_role="SWEEPER"/>
+  <tns:Team id="1" trackingId="1" x="0.020" y="-8.435" rz="0.007" velx="-0.124" vely="0.130" velrz="0.000"  isGoalie="true"    />
+  <tns:Team id="4" trackingId="4" x="-0.630" y="-1.229" rz="-0.248" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Opponent trackingId="11" id="13" x="-1.804" y="-9.097" rz="0.000" velx="0.268" vely="0.415" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="76969.892" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false"/>

@@ -6,16 +6,16 @@
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="3.0" y="6.0" velx="0.0" vely="0.0"/>
-  <tns:Team id="1" label="1" x="1.0" y="-3.0"/>
-  <tns:Team id="2" label="2" x="-2.0" y="4.0"/>
-  <tns:Team id="3" label="3" x="2.0" y="1.0"/>
-  <tns:Team id="4" label="4" x="-2.0" y="-3.0"/>
-  <tns:Team id="5" label="5" x="0.0" y="-8.0" isGoalie="true"/>
-  <tns:Opponent label="11" x="3.5" y="6.5"/>
-  <tns:Opponent label="12" x="1.0" y="6.0"/>
-  <tns:Opponent label="13" x="5.0" y="-2.5"/>
-  <tns:Opponent label="14" x="-3.0" y="-2.0"/>
-  <tns:Opponent label="15" x="0.25" y="8.5" isGoalie="true"/>
+  <tns:Team id="1" trackingId="1" x="1.0" y="-3.0"/>
+  <tns:Team id="2" trackingId="2" x="-2.0" y="4.0"/>
+  <tns:Team id="3" trackingId="3" x="2.0" y="1.0"/>
+  <tns:Team id="4" trackingId="4" x="-2.0" y="-3.0"/>
+  <tns:Team id="5" trackingId="5" x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Opponent trackingId="11" x="3.5" y="6.5"/>
+  <tns:Opponent trackingId="12" x="1.0" y="6.0"/>
+  <tns:Opponent trackingId="13" x="5.0" y="-2.5"/>
+  <tns:Opponent trackingId="14" x="-3.0" y="-2.0"/>
+  <tns:Opponent trackingId="15" x="0.25" y="8.5" isGoalie="true"/>
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT" />
 </tns:Situation>
 

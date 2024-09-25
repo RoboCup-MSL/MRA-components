@@ -6,11 +6,11 @@
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="2.62618" y="0.004218" velx="-0.921862" vely="-0.40396"/>
-  <tns:Team id="1" label="1" x="-6.46358" y="-6.92918" rz="-1.42959" velx="0.745363" vely="1.3017" velrz="0.961922"/>
-  <tns:Team id="2" label="2" x="-6.411" y="-2.051" rz="-1.534" velx="0.5" vely="-0.5" velrz="0" isGoalie="true"/>
-  <tns:Team id="3" label="3" x="-6.494" y="-2.977" rz="-1.571" velx="0" vely="0" velrz="0"/>
-  <tns:Team id="4" label="4" x="-6.424" y="-3.958" rz="-1.574" velx="1.407" vely="0.519" velrz="0"/>
-  <tns:Team id="5" label="5" x="-6.543" y="-6.031" rz="-1.567" velx="0.477" vely="0.579" velrz="0"/>
+  <tns:Team id="1" trackingId="1" x="-6.46358" y="-6.92918" rz="-1.42959" velx="0.745363" vely="1.3017" velrz="0.961922"/>
+  <tns:Team id="2" trackingId="2" x="-6.411" y="-2.051" rz="-1.534" velx="0.5" vely="-0.5" velrz="0" isGoalie="true"/>
+  <tns:Team id="3" trackingId="3" x="-6.494" y="-2.977" rz="-1.571" velx="0" vely="0" velrz="0"/>
+  <tns:Team id="4" trackingId="4" x="-6.424" y="-3.958" rz="-1.574" velx="1.407" vely="0.519" velrz="0"/>
+  <tns:Team id="5" trackingId="5" x="-6.543" y="-6.031" rz="-1.567" velx="0.477" vely="0.579" velrz="0"/>
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false"/>
   </tns:SituationInfo>

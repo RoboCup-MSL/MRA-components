@@ -44,18 +44,18 @@ void xmlGlobalPathPlanner(char * input_filename) {
 
         me.set(*(c->Me().x()), *(c->Me().y()), 0.0, (c->Me().velx()), (c->Me().vely()), 0.0, -1, true);
 
-        int label = 1;
+        int trackingId = 1;
         for (GlobalPathPlannerType::Team_const_iterator team_iter = c->Team().begin(); team_iter != c->Team().end(); ++team_iter) {
             teammates.push_back(trs::MovingObject(*(*team_iter).x(), *(*team_iter).y(), (*team_iter).rz(),
-                    (*team_iter).velx(), (*team_iter).vely(), (*team_iter).velrz(), label, true));
-            label ++;
+                    (*team_iter).velx(), (*team_iter).vely(), (*team_iter).velrz(), trackingId, true));
+            trackingId++;
         }
 
-        label = 11;
+        trackingId = 11;
         for (GlobalPathPlannerType::Opponent_const_iterator opponent_iter = c->Opponent().begin(); opponent_iter != c->Opponent().end(); ++opponent_iter) {
             opponents.push_back(trs::MovingObject(*(*opponent_iter).x(), *(*opponent_iter).y(), (*opponent_iter).rz(),
-                    (*opponent_iter).velx(), (*opponent_iter).vely(), (*opponent_iter).velrz(), label, true));
-            label ++;
+                    (*opponent_iter).velx(), (*opponent_iter).vely(), (*opponent_iter).velrz(), trackingId, true));
+            trackingId++;
         }
 
         for (GlobalPathPlannerType::Target_const_iterator target_iter = c->Target().begin(); target_iter != c->Target().end(); ++target_iter) {

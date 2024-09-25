@@ -41,7 +41,7 @@
         <attribute name="velrz" type="double" default="0.0"> <annotation> <documentation>velocity rz</documentation> </annotation></attribute>
         <attribute name="isGoalie" type="boolean" default="false"> <annotation> <documentation>indicator that the player has the goalie role</documentation> </annotation> </attribute>
         <attribute name="id" type="integer"> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
-        <attribute name="label" type="integer"> <annotation> <documentation>player-id (unique id for the player)</documentation> </annotation> </attribute>
+        <attribute name="trackingId" type="integer"> <annotation> <documentation>trackingId for object (unique id for the player)</documentation> </annotation> </attribute>
         <attribute name="time_in_own_penalty_area" type="double" default="0.0"> <annotation> <documentation>time player in own penalty area</documentation> </annotation> </attribute>
         <attribute name="time_in_enemy_penalty_area" type="double" default="0.0"> <annotation> <documentation>time player in enemy penalty area</documentation> </annotation> </attribute>
         <attribute name="hasBall" type="boolean" default="false"> <annotation> <documentation>indicator that the player control the ball</documentation> </annotation> </attribute>

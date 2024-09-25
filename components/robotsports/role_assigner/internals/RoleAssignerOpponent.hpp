@@ -13,7 +13,7 @@ public:
     MRA::Geometry::Position position;
     MRA::Geometry::Position velocity;
     bool assigned = false;
-    int label;
+    int trackingId;
 };
 
 } // namespace

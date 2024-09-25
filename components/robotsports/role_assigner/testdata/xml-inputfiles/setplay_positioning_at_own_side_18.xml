@@ -6,9 +6,9 @@
   <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="-2.5" y="-6.25"/>
-  <tns:Team id="1" label="1" x="2.0" y="3.0"/>
-  <tns:Team id="2" label="2" x="-2.0" y="2.0"/>
-  <tns:Team id="3" label="3" x="0.0" y="-8.0" isGoalie="true"/>
+  <tns:Team id="1" trackingId="1" x="2.0" y="3.0"/>
+  <tns:Team id="2" trackingId="2" x="-2.0" y="2.0"/>
+  <tns:Team id="3" trackingId="3" x="0.0" y="-8.0" isGoalie="true"/>
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_TEAM">
   	<tns:PassData valid="false"/>
   </tns:SituationInfo>

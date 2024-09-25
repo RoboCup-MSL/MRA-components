@@ -75,10 +75,10 @@
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="1.38" y="0.27" velx="1.01" vely="0.54"/>
   <tns:PreviousBall x="-1.23" y="-0.18"/>
-  <tns:Team id="4" label="4" x="0.816" y="-0.977" rz="-0.413" velx="1.001" vely="0.015" velrz="-0.137"    />
-  <tns:Opponent id="1" label="11" x="-4.385" y="2.392" rz="0.000" velx="0.069" vely="0.644" velrz="0.000" />
-  <tns:Opponent id="2" label="12" x="0.625" y="-6.640" rz="0.000" velx="1.022" vely="0.560" velrz="0.000" />
-  <tns:Opponent id="3" label="13" x="1.720" y="0.076" rz="0.000" velx="1.087" vely="0.290" velrz="0.000" />
+  <tns:Team id="4" trackingId="4" x="0.816" y="-0.977" rz="-0.413" velx="1.001" vely="0.015" velrz="-0.137"    />
+  <tns:Opponent id="1" trackingId="11" x="-4.385" y="2.392" rz="0.000" velx="0.069" vely="0.644" velrz="0.000" />
+  <tns:Opponent id="2" trackingId="12" x="0.625" y="-6.640" rz="0.000" velx="1.022" vely="0.560" velrz="0.000" />
+  <tns:Opponent id="3" trackingId="13" x="1.720" y="0.076" rz="0.000" velx="1.087" vely="0.290" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="72578.426" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
     <tns:PassData valid="false"/>

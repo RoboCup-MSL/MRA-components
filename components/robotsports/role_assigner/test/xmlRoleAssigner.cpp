@@ -352,12 +352,12 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
         }
          P.robotId = (*team_iter).id().get();
 
-        // label of robot must be defined in xml-file
-        if (not (*team_iter).label()) {
-            cout << "label-id not defined for an own player" << endl;
+        // trackingId of robot must be defined in xml-file
+        if (not (*team_iter).trackingId()) {
+            cout << "trackingId not defined for an own player" << endl;
             exit(1);
         }
-        P.labelId = (*team_iter).label().get();
+        P.trackingId = (*team_iter).trackingId().get();
 
 
         P.controlBall = (*team_iter).hasBall();
@@ -378,108 +378,28 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
 
 void fillOpponents(std::vector<RoleAssignerOpponent>& Opponents, auto_ptr<robotsports::StrategyType>& c)
 {
-    // const int ENEMY_LABEL_OFFSET = 10;
     long playerId = 0;
     for (StrategyType::Opponent_const_iterator opponent_iter =
             c->Opponent().begin(); opponent_iter != c->Opponent().end();
             ++opponent_iter) {
         playerId++;
-        if (not (*opponent_iter).label()) {
-            cout << "label-id not defined for a player of the opponents" << endl;
+        if (not (*opponent_iter).trackingId()) {
+            cout << "trackingId not defined for a player of the opponents" << endl;
             exit(1);
         }
-        long labelId = (*opponent_iter).label().get();
-        if (labelId < 10) {
-            labelId = playerId + 10;
-            cout <<  " labe-id must be above 10 for an opponent." << endl;
+        long trackingId = (*opponent_iter).trackingId().get();
+        if (trackingId < 10) {
+            trackingId = playerId + 10;
+            cout <<  " trackingId must be above 10 for an opponent." << endl;
             exit(1);
         }
         RoleAssignerOpponent opponent;
         opponent.position = Geometry::Position(*opponent_iter->x(), *opponent_iter->y(), 0.0, 0.0, 0.0, opponent_iter->rz());
         opponent.velocity= Geometry::Position(opponent_iter->velx(), opponent_iter->vely(), 0.0, 0.0, 0.0, opponent_iter->velrz());
-        opponent.label = playerId;
+        opponent.trackingId = playerId;
         Opponents.push_back(opponent);
     }
-
 }
-
-void fillRoleAssignerData(RoleAssignerData& tdp, game_state_e gamestate,
-        const Geometry::Position& ball_position,
-        const Geometry::Position& ball_velocity,
-        ball_status_e ball_status,
-        const std::vector<Geometry::Position>& myTeam,
-        const std::vector<Geometry::Position>& myTeam_vel,
-        const std::vector<int>& myTeam_labels,
-        const std::vector<Geometry::Position>& opponents,
-        const std::vector<Geometry::Position>& opponents_vel,
-        const std::vector<int>& opponents_labels,
-        bool team_controls_ball, long controlBallByPlayerId,
-        const std::vector<player_type_e>& teamTypes, const std::vector<long>& robotIds,
-        const RoleAssignerParameters& options,
-        const std::vector<Geometry::Point>& parking_positions,
-        const previous_used_ball_by_role_assinger_t& previous_ball,
-        const std::vector<previous_role_assigner_result_t>& previous_planner_results,
-        const ball_pickup_position_t& ball_pickup_position, bool passIsRequired,
-        long passBallByPlayerId, const pass_data_t& pass_data,
-        const std::vector<double>& time_in_own_penalty_area, const std::vector<double>& time_in_opponent_penalty_area)
-{
-    tdp.previous_ball = previous_ball;
-    // calculate assignment for the given situation
-    vector<RoleAssignerRobot> Team = vector<RoleAssignerRobot>();
-    vector<RoleAssignerAdminTeam> TeamAdmin = vector<RoleAssignerAdminTeam>();
-    for (unsigned idx = 0; idx < myTeam.size(); idx++) {
-        RoleAssignerRobot robot = {};
-        RoleAssignerAdminTeam robot_admin = {};
-        robot.robotId = robotIds[idx];
-        robot.labelId = myTeam_labels[idx];
-        robot.position = myTeam[idx];
-        robot.velocity = myTeam_vel[idx];
-        if (controlBallByPlayerId >= 0 && robotIds[idx] == static_cast<unsigned>(controlBallByPlayerId)) {
-            robot.controlBall = true;
-        }
-        else {
-            robot.controlBall = false;
-        }
-        robot.passBall = robot.robotId == static_cast<unsigned>(passBallByPlayerId);
-        robot.player_type = teamTypes[idx];
-        robot_admin.assigned = false;
-        robot_admin.result = {};
-        robot_admin.robotId = robot.robotId;
-        if (idx < previous_planner_results.size()) {
-            robot_admin.previous_result = previous_planner_results[idx];
-        }
-        if (idx < time_in_own_penalty_area.size()) {
-            robot.time_in_own_penalty_area = time_in_own_penalty_area[idx];
-        }
-        if (idx < time_in_opponent_penalty_area.size()) {
-            robot.time_in_opponent_penalty_area = time_in_opponent_penalty_area[idx];
-        }
-        Team.push_back(robot);
-        TeamAdmin.push_back(robot_admin);
-    }
-    std::vector<RoleAssignerOpponent> Opponents = std::vector<RoleAssignerOpponent>();
-    for (unsigned idx = 0; idx < opponents.size(); idx++) {
-        RoleAssignerOpponent opponent = {};
-        opponent.position = opponents[idx];
-        opponent.label = opponents_labels[idx];
-        opponent.assigned = false;
-        Opponents.push_back(opponent);
-    }
-
-    tdp.gamestate = gamestate;
-    tdp.ball.position = ball_position;
-    tdp.ball.velocity = ball_velocity;
-    tdp.ball.status = ball_status;
-    tdp.team = Team;
-    tdp.team_admin = TeamAdmin;
-    tdp.opponents = Opponents;
-    tdp.parameters = options;
-    tdp.parking_positions = parking_positions;
-    tdp.ball_pickup_position = ball_pickup_position;
-    tdp.passIsRequired = passIsRequired;
-    tdp.pass_data = pass_data;
-};
-
 
 void xmlplanner(string input_filename) {
     string filename = input_filename;
@@ -492,31 +412,14 @@ void xmlplanner(string input_filename) {
     team_formation_e robot_strategy_parameter_attack_formation = FORMATION_013;
     team_formation_e robot_strategy_parameter_defense_formation = FORMATION_013;
 
-
     RoleAssignerParameters parameters = {};
-    std::vector<Geometry::Position> myTeam = std::vector<Geometry::Position>();
-    std::vector<Geometry::Position> myTeam_vel = std::vector<Geometry::Position>();
-    std::vector<int> myTeam_labels = std::vector<int>();
-    std::vector<MRA::player_type_e> teamTypes = std::vector<MRA::player_type_e>();
-    std::vector<MRA::player_type_e> opponentTypes = std::vector<MRA::player_type_e>();
     Geometry::Position ball_pos = Geometry::Position();
     Geometry::Position ball_vel = Geometry::Position();
-    std::vector<Geometry::Position> opponents = std::vector<Geometry::Position>();
-    std::vector<Geometry::Position> opponents_vel = std::vector<Geometry::Position>();
-    std::vector<int> opponents_labels = std::vector<int>();
     game_state_e gameState;
     std::string description = "";
     MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
-
-    std::vector<double> time_in_own_penalty_area = std::vector<double>();
-    std::vector<double> time_in_opponent_penalty_area = std::vector<double>();
-
-    std::vector<long> robotIds = std::vector<long>();
-    std::vector<long> opponentIds = std::vector<long>();
-    std::vector<previous_role_assigner_result_t> previous_planner_results = std::vector<previous_role_assigner_result_t>();
-
 
     std::vector<RoleAssignerRobot> Team = {};
     std::vector<RoleAssignerAdminTeam> TeamAdmin = {};
@@ -544,26 +447,7 @@ void xmlplanner(string input_filename) {
         }
 
         fillTeam(Team, TeamAdmin, playerPassedBall, team_has_ball, c);
-
-        for (auto idx = 0u; idx< Team.size(); idx++) {
-            myTeam.push_back(Team[idx].position);
-            myTeam_vel.push_back(Team[idx].velocity);
-            myTeam_labels.push_back(Team[idx].labelId);
-
-            previous_planner_results.push_back(TeamAdmin[idx].previous_result);
-            teamTypes.push_back(Team[idx].player_type);
-            time_in_own_penalty_area.push_back(Team[idx].time_in_own_penalty_area);
-            time_in_opponent_penalty_area.push_back(Team[idx].time_in_opponent_penalty_area);
-            robotIds.push_back(Team[idx].robotId); // start player-id with 1, loop starts with 0.
-        }
-
         fillOpponents(Opponents, c);
-        for (auto idx = 0u; idx< Opponents.size(); idx++) {
-            opponents.push_back(Opponents[idx].position);
-            opponents_vel.push_back(Opponents[idx].velocity);
-            opponents_labels.push_back(Opponents[idx].label);
-            opponentTypes.push_back(player_type_e::FIELD_PLAYER);
-        }
 
         gameState = gamestate_string_to_enum(c->GameState());
         fillFieldConfig(fieldConfig, c);
@@ -571,8 +455,6 @@ void xmlplanner(string input_filename) {
         robot_strategy_parameter_no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
         robot_strategy_parameter_attack_formation =  StringToFormation(c->AttackFormation());
         robot_strategy_parameter_defense_formation = StringToFormation(c->DefenseFormation());
-
-
 
         string svgOutputFileName = parameters.svgOutputFileName;
         std::size_t found = svgOutputFileName.find_last_of("/");

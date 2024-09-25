@@ -1060,7 +1060,7 @@ MRA::Geometry::Point RolePosition::calculateManToManDefensePosition(
         rolePosition = RoleAssignerGrid::findManToManDefensivePosition(role,
                 r_role_assigner_data.opponents[closest_to_ball_idx].position, r_role_assigner_data, r_gridFileNumber++, setPlayActive);
         rDefend_info.valid = true;
-        rDefend_info.defending_id = r_role_assigner_data.opponents[closest_to_ball_idx].label;
+        rDefend_info.defending_id = r_role_assigner_data.opponents[closest_to_ball_idx].trackingId;
         rDefend_info.dist_from_defending_id = r_role_assigner_data.opponents[closest_to_ball_idx].position.distanceTo(rolePosition);
         rDefend_info.between_ball_and_defending_pos = r_role_assigner_data.parameters.manDefenseBetweenBallAndPlayer;
 

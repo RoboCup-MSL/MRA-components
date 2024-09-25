@@ -11,12 +11,12 @@
   <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
   <tns:Ball x="2.12" y="-3.19" velx="0.00" vely="0.00"/>
   <tns:PreviousBall x="2.12" y="-3.19"/>
-  <tns:Team id="1" label="1" x="-0.243" y="0.419" rz="-2.527" velx="1.397" vely="0.825" velrz="-0.315"     previous_result_present="false"  previous_result_ts="48890.9" previous_result_x="2.25" previous_result_y="1.5" previous_result_dynamic_role="ATTACKSUPPORTER"/>
-  <tns:Team id="2" label="2" x="4.499" y="-3.085" rz="1.615" velx="0.000" vely="-0.000" velrz="0.000"     previous_result_present="false"  previous_result_ts="48891" previous_result_x="4.65963" previous_result_y="-3.18101" previous_result_dynamic_role="SETPLAY_RECEIVER"/>
-  <tns:Team id="3" label="3" x="1.125" y="-3.212" rz="-1.540" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="false"  previous_result_ts="48890.9" previous_result_x="1.35937" previous_result_y="-3.18454" previous_result_dynamic_role="SETPLAY_KICKER"/>
-  <tns:Team id="4" label="4" x="-3.970" y="-1.430" rz="-1.843" velx="-0.653" vely="0.730" velrz="0.000"     previous_result_present="false"  previous_result_ts="48891" previous_result_x="3" previous_result_y="0.75" previous_result_dynamic_role="ATTACKSUPPORTER"/>
-  <tns:Opponent id="1" label="11" x="-0.512" y="-2.200" rz="0.000" velx="-1.223" vely="-0.671" velrz="0.000" />
-  <tns:Opponent id="2" label="12" x="-0.477" y="-1.176" rz="0.000" velx="0.080" vely="0.063" velrz="0.000" />
+  <tns:Team id="1" trackingId="1" x="-0.243" y="0.419" rz="-2.527" velx="1.397" vely="0.825" velrz="-0.315"     previous_result_present="false"  previous_result_ts="48890.9" previous_result_x="2.25" previous_result_y="1.5" previous_result_dynamic_role="ATTACKSUPPORTER"/>
+  <tns:Team id="2" trackingId="2" x="4.499" y="-3.085" rz="1.615" velx="0.000" vely="-0.000" velrz="0.000"     previous_result_present="false"  previous_result_ts="48891" previous_result_x="4.65963" previous_result_y="-3.18101" previous_result_dynamic_role="SETPLAY_RECEIVER"/>
+  <tns:Team id="3" trackingId="3" x="1.125" y="-3.212" rz="-1.540" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="false"  previous_result_ts="48890.9" previous_result_x="1.35937" previous_result_y="-3.18454" previous_result_dynamic_role="SETPLAY_KICKER"/>
+  <tns:Team id="4" trackingId="4" x="-3.970" y="-1.430" rz="-1.843" velx="-0.653" vely="0.730" velrz="0.000"     previous_result_present="false"  previous_result_ts="48891" previous_result_x="3" previous_result_y="0.75" previous_result_dynamic_role="ATTACKSUPPORTER"/>
+  <tns:Opponent id="1" trackingId="11" x="-0.512" y="-2.200" rz="0.000" velx="-1.223" vely="-0.671" velrz="0.000" />
+  <tns:Opponent id="2" trackingId="12" x="-0.477" y="-1.176" rz="0.000" velx="0.080" vely="0.063" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="48890.986" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_TEAM">
     <tns:PassData valid="false"/>

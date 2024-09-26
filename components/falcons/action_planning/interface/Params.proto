@@ -7,6 +7,7 @@ import "components/falcons/action_stop/interface/Params.proto";
 import "components/falcons/action_move/interface/Params.proto";
 import "components/falcons/action_aimed_kick/interface/Params.proto";
 import "components/falcons/action_park/interface/Params.proto";
+import "components/falcons/action_catch_ball/interface/Params.proto";
 
 message ActionParams
 {
@@ -17,6 +18,7 @@ message ActionParams
     MRA.FalconsActionAimedKick.Params shoot = 6;
     MRA.FalconsGetball.Params getball = 8;
     MRA.FalconsActionPark.Params park = 12;
+    MRA.FalconsActionCatchBall.Params catchball = 13;
 }
 
 message Params

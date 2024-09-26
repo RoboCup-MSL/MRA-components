@@ -14,6 +14,7 @@ using namespace MRA;
 #include "FalconsActionMove.hpp"
 #include "FalconsActionAimedKick.hpp"
 #include "FalconsActionPark.hpp"
+#include "FalconsActionCatchBall.hpp"
 
 
 using namespace MRA::FalconsActionPlanning;
@@ -133,6 +134,12 @@ void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actio
     setpoints->mutable_bh()->set_enabled(false);
 }
 
+void outputToSetpointsActionCatchBall(MRA::FalconsActionCatchBall::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
+}
+
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, DiagnosticsType &diagnostics)
 {
     // TODO: memorize previousActionType, if different, wipe state
@@ -178,6 +185,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         error_value = handleAction<MRA::FalconsActionPark::FalconsActionPark>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionPark, "park"
+        );
+    }
+    else if (currentActionType == MRA::Datatypes::ACTION_CATCHBALL)
+    {
+        error_value = handleAction<MRA::FalconsActionCatchBall::FalconsActionCatchBall>(
+            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionCatchBall, "catchball"
         );
     }
     // TODO other actions

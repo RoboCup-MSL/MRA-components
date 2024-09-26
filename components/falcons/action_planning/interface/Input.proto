@@ -11,6 +11,7 @@ import "components/falcons/action_stop/interface/Input.proto";
 import "components/falcons/action_move/interface/Input.proto";
 import "components/falcons/action_aimed_kick/interface/Input.proto";
 import "components/falcons/action_park/interface/Input.proto";
+import "components/falcons/action_catch_ball/interface/Input.proto";
 
 message ActionKickInputs
 {
@@ -52,6 +53,7 @@ message ActionInputs
         ActionKeeperInputs keeper = 10;
         ActionInterceptInputs intercept = 11;
         MRA.FalconsActionPark.Input park = 12;
+        MRA.FalconsActionCatchBall.Input catchball = 13;
     }
 }
 

@@ -7,6 +7,7 @@ import "components/falcons/action_stop/interface/Diagnostics.proto";
 import "components/falcons/action_move/interface/Diagnostics.proto";
 import "components/falcons/action_aimed_kick/interface/Diagnostics.proto";
 import "components/falcons/action_park/interface/Diagnostics.proto";
+import "components/falcons/action_catch_ball/interface/Diagnostics.proto";
 
 message ActionDiagnostics
 {
@@ -19,6 +20,7 @@ message ActionDiagnostics
         MRA.FalconsActionAimedKick.Diagnostics shoot = 6;
         MRA.FalconsGetball.Diagnostics getball = 8;
         MRA.FalconsActionPark.Diagnostics park = 12;
+        MRA.FalconsActionCatchBall.Diagnostics catchball = 13;
     }
 }
 

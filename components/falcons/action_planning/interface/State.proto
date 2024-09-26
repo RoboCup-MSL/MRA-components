@@ -7,6 +7,7 @@ import "components/falcons/action_stop/interface/State.proto";
 import "components/falcons/action_move/interface/State.proto";
 import "components/falcons/action_aimed_kick/interface/State.proto";
 import "components/falcons/action_park/interface/State.proto";
+import "components/falcons/action_catch_ball/interface/State.proto";
 
 message ActionState
 {
@@ -19,6 +20,7 @@ message ActionState
         MRA.FalconsActionAimedKick.State shoot = 6;
         MRA.FalconsGetball.State getball = 8;
         MRA.FalconsActionPark.State park = 12;
+        MRA.FalconsActionCatchBall.State catchball = 13;
     }
 }
 

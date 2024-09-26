@@ -89,7 +89,6 @@ public:
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;
     pass_data_t pass_data;
-    MRA::FieldConfig fieldConfig;
 };
 
 

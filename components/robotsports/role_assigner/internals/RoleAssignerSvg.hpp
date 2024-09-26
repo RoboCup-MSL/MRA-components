@@ -24,8 +24,8 @@ public:
 
 private:
 
-
-    static FieldConfig m_fieldConfig;
+    static double m_MaxFullFieldX;
+    static double m_MaxFullFieldY;
 
     /*  Get svg x coordinate for given field X */
     static double svgX(double fieldX);

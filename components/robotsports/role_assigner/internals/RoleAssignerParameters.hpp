@@ -8,11 +8,16 @@
 
 #include <string>
 #include "RoleAssigner_types.hpp" // define of planner_options_t
+#include "FieldParameters.hpp"
 
 namespace MRA {
 // Constructing a new object will set the default options.
+
+
 class RoleAssignerParameters {
 public:
+    FieldParameters field_parameters;
+
     // Calculate for all player a path, otherwise stop if own path is calculated.
     static bool calculateAllPaths;
 

@@ -28,20 +28,21 @@
 using namespace std;
 using namespace MRA;
 
-FieldConfig RoleAssignerSvg::m_fieldConfig(FillDefaultFieldConfig());
+double RoleAssignerSvg::m_MaxFullFieldX = 0.0;
+double RoleAssignerSvg::m_MaxFullFieldY = 0.0;
 
 /**
  * Get svg x coordinate for given field X
  */
 double RoleAssignerSvg::svgX(double fieldX) {
-    return m_fieldConfig.getMaxFullFieldX() + fieldX;
+    return m_MaxFullFieldX + fieldX;
 }
 
 /**
  * Get svg x coordinate for given field Y
  */
 double RoleAssignerSvg::svgY(double fieldY) {
-    return m_fieldConfig.getMaxFullFieldY() - fieldY;
+    return m_MaxFullFieldY - fieldY;
 }
 
 
@@ -105,7 +106,8 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         }
     }
 
-    m_fieldConfig = fieldConfig;
+    m_MaxFullFieldX = fieldConfig.getMaxFullFieldX();
+    m_MaxFullFieldY = fieldConfig.getMaxFullFieldY();
 
     RoleAssignerBall ball = data.ball;
     RoleAssignerParameters parameters = data.parameters;
@@ -208,7 +210,6 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
         auto dr_role = RoleToDynamicRole(player_path.role, data.gamestate, data.ball.status);
         Xtext << "\trole: " << DynamicRoleAsString(dr_role) << endl;
-        Xtext << "\tGame State: " << GameStateAsString(player_path.gamestate) << endl;
         Xtext << "\tTarget position : " << player_path.target.toString() << endl;
         Xtext << "\tPlanner target type  " << PlannerTargetAsString(player_path.planner_target) << endl;
         Xtext << "\tTarget_position_is_end_position_of_pass: " << boolToString(player_path.target_position_is_end_position_of_pass) << endl;

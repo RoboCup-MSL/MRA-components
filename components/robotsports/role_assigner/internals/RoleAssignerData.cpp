@@ -124,7 +124,6 @@ std::string RoleAssignerData::toString() const
         auto player_path = this->team_admin[p_idx];
         buffer << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
         buffer << "\tRole: " << RoleAsString(player_path.result.role) << endl;
-        buffer << "\tGame State: " << GameStateAsString(player_path.result.gamestate) << endl;
         buffer << "\tTarget position : " << player_path.result.target.toString() << endl;
         buffer << "\tPlanner target type  " << PlannerTargetAsString(player_path.result.planner_target) << endl;
         buffer << "\tTarget_position_is_end_position_of_pass: " << player_path.result.target_position_is_end_position_of_pass << endl;

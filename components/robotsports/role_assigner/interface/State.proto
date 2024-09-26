@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRobotStrategy;
+
+import "datatypes/WorldState.proto";
+
+//  - current dynamic role.
+// part of robot_strategy/interface/Output.proto + Input.proto
+enum DynamicRole {
+    UNDEFINED = 0;
+    GOALKEEPER = 1;
+    ATTACKER_MAIN = 2;
+    ATTACKER_ASSIST = 3;
+    ATTACKER_GENERIC = 4;
+    DEFENDER_MAIN = 5;
+    DEFENDER_GENERIC = 6;
+    DISABLED_OUT = 7;
+    DISABLED_IN = 8;
+};
+
+message PathPiece {
+    double x = 1;
+    double y = 2;
+    double cost = 3;
+    int32 target = 4; // from enum-type planner_target_e
+};
+
+message PreviousResult {
+    bool present = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    PathPiece end_position = 3;
+    DynamicRole role = 4;
+};
+
+message PreviousBall {
+    bool   present = 1;
+    double x = 2;
+    double y = 3;
+};
+
+message State
+{
+    PreviousBall previous_ball = 1;
+    repeated PreviousResult previous_result = 2;
+};
+
+//    previous_used_ball_by_role_assinger_t previous_ball;
+//    std::vector<previous_role_assigner_result_t> previous_result

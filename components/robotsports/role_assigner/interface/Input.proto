@@ -11,19 +11,15 @@ import "datatypes/Obstacle.proto";
 //  - current dynamic role. 
 // part of robot_strategy/interface/Output.proto
 enum DynamicRole {
-    NONE = 0;
+    UNDEFINED = 0;
     GOALKEEPER = 1;
-    ATTACKSUPPORTER = 2;
-    DEFENDER = 3;
-    INTERCEPTOR = 4;
-    SWEEPER = 5;
-    SETPLAY_RECEIVER = 6;
-    SETPLAY_KICKER = 7;
-    BALLPLAYER = 8;
-    SEARCH_FOR_BALL = 9;
-    BEGIN_POSITION = 10;
-    PARKING = 11;
-    PENALTY_KICKER = 12;
+    ATTACKER_MAIN = 2;
+    ATTACKER_ASSIST = 3;
+    ATTACKER_GENERIC = 4;
+    DEFENDER_MAIN = 5;
+    DEFENDER_GENERIC = 6;
+    DISABLED_OUT = 7;
+    DISABLED_IN = 8;
 };
 
 
@@ -43,6 +39,7 @@ message Player
     // double energy, competence? Reasoning should take it account when choosing player to pass to
     // radius?
     DynamicRole dynamic_role = 11;
+    int32 trackingId = 12; // id of object tracking
 }
 
 message PickUpPosition
@@ -65,8 +62,10 @@ message PassData {
    google.protobuf.Timestamp eta = 9; // estimated time of arrival at target
 };
 
-message RoleAssignPlayer {
-
+message Opponent {
+    MRA.Datatypes.Pose position = 1;
+    MRA.Datatypes.Pose velocity = 2;
+    int32 trackingId = 3;
 }
 
 // class with inp
@@ -105,17 +104,15 @@ message Input
     GameState gamestate = 2;
     repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
 
-    // TODO repeat role_e formation;
+    repeated DynamicRole formation = 11;
 
-    repeated RoleAssignPlayer team = 4;
-    repeated RoleAssignPlayer opponents = 5;
+    repeated Player team = 4;
+    repeated Opponent opponents = 5;
     repeated PickUpPosition pickup = 6; // pickup position
     bool passIsRequired = 7;
     repeated MRA.Datatypes.Pose parking_positions = 8;
     PickUpPosition ball_pickup_position = 9;
     PassData pass_data = 10;
-    // TODO MRA::FieldConfig fieldConfig;
-//    MRA::FieldConfig fieldConfig;
 };
     
     

@@ -10,6 +10,8 @@
 #include <istream>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <vector>
 #include <cstdio>
 #include <chrono>
 #include <unistd.h>
@@ -46,9 +48,6 @@ public:
     std::vector<RoleAssignerResult> player_paths;
 };
 
-#include <string>
-#include <sstream>
-#include <vector>
 
 std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
                                      bool no_sweeper_during_setplay,
@@ -290,27 +289,35 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
 {
     if (c->Field() != 0) {
         // If field info is present then overwrite the defaults with values from the xml file
-        FieldConfig fc = FillDefaultFieldConfig();
-        fc.setConfig(c->Field()->field_length(),
-                     c->Field()->field_width(),
-                     c->Field()->field_margin(),
-                     c->Field()->goal_width(),
-                     c->Field()->goal_length(),
-                     c->Field()->center_circle_diameter(),
-                    c->Field()->goal_area_width(),
-                    c->Field()->goal_area_length(),
-                    c->Field()->penalty_area_present(),
-                    c->Field()->penalty_area_width(),
-                    c->Field()->penalty_area_length(),
-                    c->Field()->parking_area_width(),
-                    c->Field()->parking_area_length(),
-                    c->Field()->parking_distance_between_robots(),
-                    c->Field()->parking_distance_to_line(),
-                    c->Field()->robot_size(),
-                    c->Field()->ball_radius(),
-                    c->Field()->field_markings_width(),
-                    c->Field()->corner_circle_diameter(),
-                    c->Field()->penalty_spot_to_backline());
+        FieldParameters fp;
+        fp.SLM.A = c->Field()->field_length();
+        fp.SLM.B = c->Field()->field_width();
+        fp.SLM.L = c->Field()->field_margin();
+        fp.SLM.G = c->Field()->corner_circle_diameter();
+        fp.SLM.Q = c->Field()->penalty_spot_to_backline();
+        fp.SLM.K = c->Field()->field_markings_width();
+
+
+        fp.SLM.H = c->Field()->center_circle_diameter();
+        fp.SLM.D = c->Field()->goal_area_width();
+        fp.SLM.G = c->Field()->goal_area_length();
+        fp.SLM.C = c->Field()->penalty_area_width();
+        fp.SLM.E = c->Field()->penalty_area_length();
+        fp.penalty_area_present = c->Field()->penalty_area_present();
+        // TODO fp.technical_team_area_present = true;
+        fp.goal_width = c->Field()->goal_width();
+        fp.goal_length = c->Field()->goal_length();
+
+	// TODO for publish in MRA
+        //                    c->Field()->parking_area_width(),
+        //                    c->Field()->parking_area_length(),
+        //                    c->Field()->parking_distance_between_robots(),
+        //                    c->Field()->parking_distance_to_line(),
+        //                    c->Field()->robot_size(),
+        //                    c->Field()->ball_radius(),
+
+
+        FieldConfig fc = FieldConfig(fp);
         fieldConfig = fc;
     }
 }
@@ -417,7 +424,7 @@ void xmlplanner(string input_filename) {
     Geometry::Position ball_vel = Geometry::Position();
     game_state_e gameState;
     std::string description = "";
-    MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
+    MRA::FieldConfig fieldConfig = {};
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
 
@@ -586,7 +593,6 @@ void xmlplanner(string input_filename) {
     tp_input.ball_pickup_position = pickup_pos;
     tp_input.passIsRequired = passIsRequired;
     tp_input.pass_data = pass_data;
-    tp_input.fieldConfig = fieldConfig;
 
     RoleAssignerState tp_state;
     tp_state.previous_ball = previous_ball;
@@ -602,7 +608,7 @@ void xmlplanner(string input_filename) {
 
     RoleAssignerData tpd = {};
     tpd.parameters = tp_parameters;
-    tpd.fieldConfig = tp_input.fieldConfig;
+    tpd.fieldConfig = FieldConfig(tp_parameters.field_parameters);
     tpd.input_formation = tp_input.input_formation;
     tpd.gamestate = tp_input.gamestate;
     tpd.original_gamestate  = tp_input.gamestate;

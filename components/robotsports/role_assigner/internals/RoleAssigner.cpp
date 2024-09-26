@@ -36,7 +36,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     // convert to role_assigner_data;
     RoleAssignerData role_assigner_data = {};
     role_assigner_data.parameters = parameters;
-    role_assigner_data.fieldConfig = input.fieldConfig;
+    role_assigner_data.fieldConfig = FieldConfig(parameters.field_parameters);
     role_assigner_data.input_formation = input.input_formation;
     role_assigner_data.gamestate = input.gamestate;
     role_assigner_data.ball = input.ball;
@@ -133,7 +133,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
             (role_assigner_data.gamestate == game_state_e::GOAL_AGAINST)) {
         // unhandled game situations: cards and goals are not passed to the team planner via the game state-machine
         for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
-            RoleAssignerResult player_result(role_assigner_data.gamestate);
+            RoleAssignerResult player_result = {};
             player_paths.push_back(player_result);
         }
         return player_paths; // no path will be planned if game state is NONE
@@ -156,7 +156,6 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     }
 
     for (unsigned r_idx = 0; r_idx < role_assigner_data.team_admin.size(); r_idx++) {
-        role_assigner_data.team_admin[r_idx].result.gamestate = role_assigner_data.gamestate;
         role_assigner_data.team_admin[r_idx].result.role = role_e::role_UNDEFINED;
         role_assigner_data.team_admin[r_idx].result.defend_info.valid = false;
     }
@@ -312,7 +311,6 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         if (role_assigner_data.team_admin[idx].assigned) {
             bool pathOK = stayPathWithinBoundaries(role_assigner_data.fieldConfig, role_assigner_data.team_admin[idx].result);
             player_result = role_assigner_data.team_admin[idx].result;
-            player_result.gamestate = role_assigner_data.team_admin[idx].result.gamestate;
             player_result.role = role_assigner_data.team_admin[idx].result.role;
             if (not pathOK && idx == role_assigner_data.this_player_idx) { // CHECK Only this robot
                 thisPlayerHasUnallowedPath = true; // this robot has wrong path
@@ -554,7 +552,6 @@ bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assig
     if (foundPlayer != -1) {
         // robot claimed role+position and that robot has lower id than this robot.
         role_assigner_data.team_admin[foundPlayer].result = RoleAssignerResult(
-            role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
             targetPos,
@@ -598,7 +595,6 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
             if (role_assigner_data.team[idx].robotId == role_assigner_data.pass_data.target_id) {
                 /* this player is destination of the pass */
                 role_assigner_data.team_admin[idx].result = RoleAssignerResult(
-                    role_assigner_data.gamestate,
                     role,
                     role_assigner_data.incrementAndGetRank(),
                     target,
@@ -695,7 +691,6 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
     if (found) {
         // fill best robot data in planner result.
         role_assigner_data.team_admin[bestPlayerIdx].result = RoleAssignerResult(
-            role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
             target,
@@ -830,7 +825,6 @@ void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
         role_assigner_data.team_admin[keeper_idx].assigned = true;
         defend_info_t defend_info = {};
         role_assigner_data.team_admin[keeper_idx].result = RoleAssignerResult(
-            role_assigner_data.gamestate,
             role_assigner_data.gamestate == game_state_e::PARKING ? DynamicRoleToRole(dr_PARKING, role_GOALKEEPER) : DynamicRoleToRole(dr_GOALKEEPER, role_GOALKEEPER),
             role_assigner_data.incrementAndGetRank(),
             goaliePosition,
@@ -874,7 +868,6 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
-                            role_assigner_data.gamestate,
                             DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                             role_assigner_data.incrementAndGetRank(),
                             targetPos,
@@ -904,7 +897,6 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
-                                                    role_assigner_data.gamestate,
                                                     DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                                                     role_assigner_data.incrementAndGetRank(),
                                                     targetPos,
@@ -1098,7 +1090,6 @@ void RoleAssigner::assignParkingPositions(RoleAssignerData& role_assigner_data) 
         if (role_assigner_data.team[idx].player_type != player_type_e::GOALIE) {
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
-                role_assigner_data.gamestate,
                 role_assigner_data.input_formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
@@ -1157,7 +1148,6 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
 
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
-                role_assigner_data.gamestate,
                 role_assigner_data.input_formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],

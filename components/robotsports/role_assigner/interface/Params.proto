@@ -4,8 +4,35 @@ package MRA.RobotsportsRoleAssigner;
 
 //    static bool lobShotWhenPossible;
 
+// see https://msl.robocup.org/wp-content/uploads/2023/01/Rulebook_MSL2023_v24.1.pdf#section.1.1
+// for a picture with the letters included
+// defaults in [brackets] in meters according to official WorldCup size (large field)
+message StandardLetterModel
+{
+    double A = 1;  // [22.0]   field length including lines (y)
+    double B = 2;  // [14.0]   field width including lines (x)
+    double C = 3;  // [ 6.9]   penalty area width including lines (x)
+    double D = 4;  // [ 3.9]   goal area width including lines (x)
+    double E = 5;  // [ 2.25]  penalty area length including lines (y)
+    double F = 6;  // [ 0.75]  goal area length including lines (y)
+    double G = 7;  // [ 0.75]  corner circle radius including lines
+    double H = 8;  // [ 4.0]   inner circle diameter including lines
+    double I = 9;  // [ 3.6]   penalty mark distance (y) including line to mark center (?)
+    double J = 10; // [ 0.15]  penalty- and center mark diameter
+    double K = 11; // [ 0.125] line width
+    double L = 12; // [ 1.0]   field border (x) (between outer line and black safety border)
+    double M = 13; // [ 1.0]   TTA width (x)
+    double N = 14; // [ 7.5]   TTA length (y) (between safety borders)
+    double O = 15; // [ 1.0]   TTA ramp length (y)
+    double P = 16; // [ 0.5]   TTA ramp width (x)
+    double Q = 17; // [ 3.5]   off-center distance to restart spots (x)
+}
+
+
 message Params
 {
+    StandardLetterModel model = 103; // optional MSL standard model of the field using letters, where A=22, B=14, etc, leading to a set of shapes
+
     // Calculate for all player a path, otherwise stop if own path is calculated.
     bool calculateAllPaths = 1;
 

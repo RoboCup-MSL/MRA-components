@@ -4,167 +4,161 @@
  *  @curator Jürge van Eijck
  */
 
-#include "FieldConfig.hpp"
-
 #include <cmath>
 #include <iostream>
 #include <ostream>
 #include <sstream>
+#include "Environment.hpp"
 
 using namespace std;
 const int NRPLAYERS = 5; // max players per team
 
 namespace MRA {
 
-FieldConfig::FieldConfig(const FieldParameters& fp) : m_fp(fp) {
+Environment::Environment(const EnvironmentParameters& env_params) : m_env_params(env_params) {
 }
 
-FieldParameters FieldConfig::getFieldParameters() const {
-    return m_fp;
+double Environment::getBallRadius() const {
+    return m_env_params.ball_radius;
 }
 
-double FieldConfig::getBallRadius() const {
-    return m_ball_radius;
+double Environment::getRobotSize()  const {
+    return m_env_params.robot_size;
 }
 
-double FieldConfig::getRobotSize()  const {
-    return m_robot_size;
-}
-
-double FieldConfig::getRobotRadius()  const {
-    return m_robot_size * 0.5;
+double Environment::getRobotRadius()  const {
+    return m_env_params.robot_size * 0.5;
 }
 
 
-bool FieldConfig::isPenaltyAreaPresent() const {
-    return m_penalty_area_present;
+bool Environment::isPenaltyAreaPresent() const {
+    return m_env_params.penalty_area_present;
 }
 
 
-double FieldConfig::getFieldLength() const {
-    return m_fp.SLM.A;
+double Environment::getFieldLength() const {
+    return m_env_params.SLM.A;
 }
 
-double FieldConfig::getFieldWidth()  const {
-    return m_fp.SLM.B;
+double Environment::getFieldWidth()  const {
+    return m_env_params.SLM.B;
 }
 
-double FieldConfig::getFieldMargin()  const {
-    return m_fp.SLM.L;
+double Environment::getFieldMargin()  const {
+    return m_env_params.SLM.L;
 }
 
-double FieldConfig::getPenaltySpotToBackline() const {
-    return m_fp.SLM.Q;
+double Environment::getPenaltySpotToBackline() const {
+    return m_env_params.SLM.Q;
 }
 
-double FieldConfig::getFieldMarkingsWidth() const {
-    return m_fp.SLM.K;
+double Environment::getFieldMarkingsWidth() const {
+    return m_env_params.SLM.K;
 }
 
-double FieldConfig::getCornerCircleDiameter() const {
-    return m_fp.SLM.G;
+double Environment::getCornerCircleDiameter() const {
+    return m_env_params.SLM.G;
 }
 
-double FieldConfig::getCenterCirleDiameter()  const {
-    return m_fp.SLM.H;
+double Environment::getCenterCirleDiameter()  const {
+    return m_env_params.SLM.H;
 }
 
-double FieldConfig::getGoalAreaWidth() const {
-    return m_fp.SLM.D;
+double Environment::getGoalAreaWidth() const {
+    return m_env_params.SLM.D;
 }
 
-double FieldConfig::getGoalAreaLength() const {
-    return m_fp.SLM.F;
+double Environment::getGoalAreaLength() const {
+    return m_env_params.SLM.F;
 }
 
-double FieldConfig::getPenaltyAreaWidth() const {
-    return m_fp.SLM.C;
+double Environment::getPenaltyAreaWidth() const {
+    return m_env_params.SLM.C;
 }
 
-double FieldConfig::getPenaltyAreaLength() const {
-    return m_fp.SLM.E;
+double Environment::getPenaltyAreaLength() const {
+    return m_env_params.SLM.E;
 }
 
-double FieldConfig::getGoalLength() const {
-    return m_fp.goal_length;
+double Environment::getGoalLength() const {
+    return m_env_params.goal_length;
 }
 
-double FieldConfig::getGoalWidth() const {
-    return m_fp.goal_width;
+double Environment::getGoalWidth() const {
+    return m_env_params.goal_width;
 }
 
-double FieldConfig::getParkingAreaWidth() const {
-    return m_parking_area_width;
+double Environment::getParkingAreaWidth() const {
+    return m_env_params.parking_area_width;
 }
 
-double FieldConfig::getParkingAreaLength() const {
-    return m_parking_area_length;
+double Environment::getParkingAreaLength() const {
+    return m_env_params.parking_area_length;
 }
 
-double FieldConfig::getParkingDistanceBetweenPlayers() const {
-    return m_parking_distance_between_robots;
+double Environment::getParkingDistanceBetweenPlayers() const {
+    return m_env_params.parking_distance_between_robots;
 }
 
-double FieldConfig::getParkingDistanceToLine() const {
-    return m_parking_distance_to_line;
+double Environment::getParkingDistanceToLine() const {
+    return m_env_params.parking_distance_to_line;
 }
 
-
-double FieldConfig::getFullFieldLength() const {
+double Environment::getFullFieldLength() const {
     return getFieldLength() + 2 * getFieldMargin();
 }
 
-double FieldConfig::getFullFieldWidth()  const {
+double Environment::getFullFieldWidth()  const {
     return getFieldWidth()  + 2 * getFieldMargin();
 }
 
 
 
-double FieldConfig::getCenterCirleRadius()  const {
+double Environment::getCenterCirleRadius()  const {
     return getCenterCirleDiameter() * 0.5;
 }
 
 
-double FieldConfig::getMaxFullFieldX() const  {
+double Environment::getMaxFullFieldX() const  {
     return getMaxFieldX() + getFieldMargin();
 }
 
-double FieldConfig::getMaxReachableFieldX() const {
+double Environment::getMaxReachableFieldX() const {
     return max(getMaxFullFieldX() - getRobotRadius(), getMaxFieldX()); // max allowed position in field
 }
 
-double FieldConfig::getMaxFieldX()  const {
+double Environment::getMaxFieldX()  const {
     return getFieldWidth() * 0.5;
 }
 
-double FieldConfig::getMaxFullFieldY()  const {
+double Environment::getMaxFullFieldY()  const {
     return getMaxFieldY() + getFieldMargin();
 }
 
-double FieldConfig::getMaxReachableFieldY() const  {
+double Environment::getMaxReachableFieldY() const  {
     return max(getMaxFullFieldY() - getRobotRadius(), getMaxFieldY()); // max allowed position in field
 }
 
-double FieldConfig::getMaxFieldY()  const {
+double Environment::getMaxFieldY()  const {
     return getFieldLength() * 0.5;
 }
 
-double FieldConfig::getTopPenaltyAreaY()  const {
+double Environment::getTopPenaltyAreaY()  const {
     return getMaxFieldY() - getPenaltyAreaLength();
 }
 
-double FieldConfig::getMaxPossibleFieldDistance() const {
+double Environment::getMaxPossibleFieldDistance() const {
     return hypot(getFullFieldWidth(),getFullFieldLength());
 }
 
 
 
-MRA::Geometry::Point FieldConfig::getOpponentGoal() const {
+MRA::Geometry::Point Environment::getOpponentGoal() const {
     MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, getMaxFieldY());
     return opponentGoal;
 }
 
-MRA::Geometry::Point FieldConfig::getOwnGoal() const {
+MRA::Geometry::Point Environment::getOwnGoal() const {
     MRA::Geometry::Point ownGoal = MRA::Geometry::Point(0, -getMaxFieldY());
     return ownGoal;
 }
@@ -172,21 +166,21 @@ MRA::Geometry::Point FieldConfig::getOwnGoal() const {
 
 
 
-bool FieldConfig::isInField(const MRA::Geometry::Point& r_pos, double margin) const {
-    return FieldConfig::isInField(r_pos.x, r_pos.y, margin);
+bool Environment::isInField(const MRA::Geometry::Point& r_pos, double margin) const {
+    return Environment::isInField(r_pos.x, r_pos.y, margin);
 }
 
-bool FieldConfig::isInField(double x, double y, double margin) const {
+bool Environment::isInField(double x, double y, double margin) const {
     /* check if point is in the field */
     bool inField = (fabs(y) <= (0.5*getFieldLength())-margin) && (fabs(x) <= (0.5*getFieldWidth())-margin);
     return inField;
 }
 
-bool FieldConfig::isInReachableField(const MRA::Geometry::Point& r_pos) const {
+bool Environment::isInReachableField(const MRA::Geometry::Point& r_pos) const {
     return isInReachableField(r_pos.x, r_pos.y);
 }
 
-bool FieldConfig::isInReachableField(double x, double y) const {
+bool Environment::isInReachableField(double x, double y) const {
     /* check if point is in the reachable part of the  field */
     const double PLAYER_TO_BORDER_MARGIN = 0.05; // 5 cm space for turning etc.
     bool inField = (fabs(y) <= getMaxReachableFieldY() - PLAYER_TO_BORDER_MARGIN) && (fabs(x) <= getMaxReachableFieldX() - PLAYER_TO_BORDER_MARGIN);
@@ -201,15 +195,16 @@ bool FieldConfig::isInReachableField(double x, double y) const {
 }
 
 
-bool FieldConfig::isInOpponentGoalArea(double x, double y) const {
+bool Environment::isInOpponentGoalArea(double x, double y) const {
     bool inGoalArea = isInOwnGoalArea(x, -y); // should not be in own goal if y is inverted. (prevent double formula)
     return inGoalArea;
 }
 
-bool FieldConfig::isInOwnGoalArea(double x, double y)  const {
+bool Environment::isInOwnGoalArea(double x, double y)  const {
     bool inGoalArea = false;
     /* check if point is in the goal */
     double field_length = getFieldWidth();
+    const double m_minimum_distance_to_goal_area = 0.25; // TODO make parameter
     if ((y <= -(field_length/2)) && (y >= -(field_length/2) - (getGoalLength() + m_minimum_distance_to_goal_area)) &&
         (fabs(x) <= (getGoalWidth()/2 + m_minimum_distance_to_goal_area))) {
         inGoalArea = true;
@@ -224,7 +219,7 @@ bool FieldConfig::isInOwnGoalArea(double x, double y)  const {
 }
 
 
-bool FieldConfig::isInOpponentPenaltyArea(double x, double y) const {
+bool Environment::isInOpponentPenaltyArea(double x, double y) const {
     bool inPenaltyArea = false;
     double field_length = getFieldWidth();
     /* check if point is in the penalty-area */
@@ -237,7 +232,7 @@ bool FieldConfig::isInOpponentPenaltyArea(double x, double y) const {
 }
 
 
-bool FieldConfig::isInOwnPenaltyArea(double x, double y, double margin) const {
+bool Environment::isInOwnPenaltyArea(double x, double y, double margin) const {
     bool inPenaltyArea = false;
     /* check if point is in the penalty-area */
     double field_length = getFieldWidth();
@@ -249,12 +244,12 @@ bool FieldConfig::isInOwnPenaltyArea(double x, double y, double margin) const {
     return inPenaltyArea;
 }
 
-bool FieldConfig::isInOwnPenaltyArea(double x, double y) const {
-    return FieldConfig::isInOwnPenaltyArea(x, y, 0.0);
+bool Environment::isInOwnPenaltyArea(double x, double y) const {
+    return Environment::isInOwnPenaltyArea(x, y, 0.0);
 }
 
 
-string FieldConfig::toString() const {
+string Environment::toString() const {
     std::stringstream buffer;
     buffer << "FIELD_LENGTH = " << getFieldLength() << endl;
     buffer << "FIELD_WIDTH = " << getFieldWidth() << endl;

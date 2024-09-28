@@ -49,7 +49,7 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
     // Find initial intercept point
     Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(r_role_assigner_data.ball,
                                                  start_pose, maxSpeed,
-                                                 r_role_assigner_data.fieldConfig, r_role_assigner_data.parameters.move_to_ball_left_field_position);
+                                                 r_role_assigner_data.environment, r_role_assigner_data.parameters.move_to_ball_left_field_position);
     if (intercept_data.intercept_position.x == std::numeric_limits<double>::has_quiet_NaN) {
         // No intercept possible, return empty list
         if (logDynamicPlanner) {
@@ -61,7 +61,7 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
         MRA_LOG_INFO("calculate interception point %s", intercept_data.intercept_position.toString().c_str());
     }
 
-    GlobalPathPlanner visibilityGraph = GlobalPathPlanner(r_role_assigner_data.fieldConfig);
+    GlobalPathPlanner visibilityGraph = GlobalPathPlanner(r_role_assigner_data.environment);
     visibilityGraph.setOptions(r_role_assigner_data.parameters);
 
     bool avoidBallPath = false; // Not need to avoid the ball. This function is only used for the interceptor
@@ -97,16 +97,16 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
             return path;
         }
 
-        auto newInterceptInField = r_role_assigner_data.fieldConfig.isInField(newInterceptPosition, 0.0);
+        auto newInterceptInField = r_role_assigner_data.environment.isInField(newInterceptPosition, 0.0);
         if (!newInterceptInField) {
-            auto interceptPoint = Dynamics::calculateBallLeavingFieldPoint(r_role_assigner_data.ball, r_role_assigner_data.fieldConfig);
+            auto interceptPoint = Dynamics::calculateBallLeavingFieldPoint(r_role_assigner_data.ball, r_role_assigner_data.environment);
             newInterceptPosition.x = interceptPoint.x;
             newInterceptPosition.y = interceptPoint.y;
         }
 
         target_vect.clear();
         target_vect.push_back(Vertex(newInterceptPosition, 0));
-        GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(r_role_assigner_data.fieldConfig); // create new visibility-graph to avoid dynamic memory issues
+        GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(r_role_assigner_data.environment); // create new visibility-graph to avoid dynamic memory issues
         visibilityGraph2.setOptions(r_role_assigner_data.parameters);
         visibilityGraph2.createGraph(start_pose, start_vel, r_role_assigner_data.ball, filtered_teammates, r_role_assigner_data.opponents,
                                      target_vect, targetFunction, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);

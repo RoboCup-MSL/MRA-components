@@ -7,16 +7,16 @@
 #ifndef FIELD_CONFIG_HPP
 #define FIELD_CONFIG_HPP 1
 #include "geometry.hpp"
-#include "FieldParameters.hpp"
 #include <string>
+#include "EnvironmentParameters.hpp"
 
 namespace MRA {
 
-class FieldConfig {
+class Environment {
 
 public:
-    FieldConfig() {};
-    FieldConfig(const FieldParameters& fp);
+    Environment() {};
+    Environment(const EnvironmentParameters& env);
 
     /* check if point is in the playing field and is minimal the given margin from the edge of the playing field. A positive margin is within the playing field.  */
     bool isInField(const MRA::Geometry::Point& r_pos, double margin) const;
@@ -79,17 +79,8 @@ public:
     double getPenaltySpotToBackline() const;
     double getCornerCircleDiameter() const;
 
-    FieldParameters getFieldParameters() const;
 private:
-    FieldParameters m_fp;
-    double m_robot_size = 0.52; // max size of a player
-    double m_ball_radius = 0.11; // radius of the ball
-    double m_penalty_area_present = true;
-    double m_parking_area_width = 4.0;
-    double m_parking_area_length = 0.5;
-    double m_parking_distance_between_robots = 0.75;
-    double m_parking_distance_to_line = 0.0;
-    double m_minimum_distance_to_goal_area = 0.5;
+    EnvironmentParameters m_env_params;
 };
 
 } //namespace

@@ -6,12 +6,12 @@
 #ifndef ROLE_ASSIGNER_DATA_HPP
 #define ROLE_ASSIGNER_DATA_HPP 1
 
-#include "FieldConfig.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 #include "RoleAssigner_types.hpp"
 
 #include <vector>
 
+#include "Environment.hpp"
 #include "RoleAssignerOpponent.hpp"
 #include "RoleAssignerParameters.hpp"
 #include "RoleAssignerResult.hpp"
@@ -120,7 +120,7 @@ public:
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;
     pass_data_t pass_data;
-    MRA::FieldConfig fieldConfig;
+    MRA::Environment environment;
     RoleAssignerParameters parameters;
 
 

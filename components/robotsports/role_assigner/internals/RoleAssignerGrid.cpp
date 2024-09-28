@@ -5,7 +5,6 @@
  *      Author: jurge
  */
 
-#include "FieldConfig.hpp"
 #include "GridHeuristic.hpp"
 #include "MathUtils.hpp"
 #include "logging.hpp"
@@ -19,6 +18,7 @@
 
 #include "RoleAssignerGrid.hpp"
 
+#include "Environment.hpp"
 #include "RoleAssigner.hpp"
 #include "RoleAssignerGridInfoData.hpp"
 #include "RoleAssignerData.hpp"
@@ -59,7 +59,7 @@ Geometry::Position RoleAssignerGrid::findBallPlayerPosition(const RoleAssignerDa
         double angle = i * 2.0 * M_PI / static_cast<double>(nr_positions_first_circle);
         double xx = xc + dist_first_circle * cos(angle);
         double yy = yc + dist_first_circle * sin(angle);
-        if (r_role_assigner_data.fieldConfig.isInField(xx,yy,infield_margin)) {
+        if (r_role_assigner_data.environment.isInField(xx,yy,infield_margin)) {
             allowedTargetPositions.push_back(Geometry::Position(xx, yy));
         }
 
@@ -68,7 +68,7 @@ Geometry::Position RoleAssignerGrid::findBallPlayerPosition(const RoleAssignerDa
         double angle = i * 2.0 * M_PI / static_cast<double>(nr_positions_second_circle);
         double xx = xc + dist_second_circle * cos(angle);
         double yy = yc + dist_second_circle * sin(angle);
-        if (r_role_assigner_data.fieldConfig.isInField(xx,yy,infield_margin)) {
+        if (r_role_assigner_data.environment.isInField(xx,yy,infield_margin)) {
             allowedTargetPositions.push_back(Geometry::Position(xx, yy));
         }
     }
@@ -80,11 +80,11 @@ Geometry::Position RoleAssignerGrid::findBallPlayerPosition(const RoleAssignerDa
     //  - 1 circle is better than 2nd circle
     //
 
-    Geometry::Position bestPosForGoal = Geometry::Position(0, (r_role_assigner_data.fieldConfig.getMaxFieldY())-2.0); // 2 meters before goal
+    Geometry::Position bestPosForGoal = Geometry::Position(0, (r_role_assigner_data.environment.getMaxFieldY())-2.0); // 2 meters before goal
     RoleAssignerGridInfoData pgid = RoleAssignerGridInfoData();
     vector<GridHeuristic *> heuristics = vector<GridHeuristic *>();
     if (false) {
-        heuristics.push_back(new DistanceToHeuristic("Distance to best pos before goal", 1.0, pgid, bestPosForGoal, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+        heuristics.push_back(new DistanceToHeuristic("Distance to best pos before goal", 1.0, pgid, bestPosForGoal, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 20.0, pgid, r_role_assigner_data.opponents, 0.7));
     }
     else {
@@ -104,9 +104,9 @@ Geometry::Position RoleAssignerGrid::findBallPlayerPosition(const RoleAssignerDa
                     ballPlayerPos, 1.0 /*scaling*/, 5.0 /* max range*/, false /*inverted*/));
         }
         heuristics.push_back(new ShootOnGoalHeuristic("Shoot on goal", shootOnGoalFactor, pgid,
-                r_role_assigner_data.team, r_role_assigner_data.opponents, r_role_assigner_data.fieldConfig, r_role_assigner_data.ball_pickup_position));
+                r_role_assigner_data.team, r_role_assigner_data.opponents, r_role_assigner_data.environment, r_role_assigner_data.ball_pickup_position));
         heuristics.push_back(new PassHeuristic("passing", passFactor, pgid,
-                r_role_assigner_data.team, r_role_assigner_data.opponents, r_role_assigner_data.fieldConfig, r_role_assigner_data.ball_pickup_position, r_role_assigner_data.parameters));
+                r_role_assigner_data.team, r_role_assigner_data.opponents, r_role_assigner_data.environment, r_role_assigner_data.ball_pickup_position, r_role_assigner_data.parameters));
         // prefer keep 2 meter distance from opponent
         heuristics.push_back(new StayAwayFromOpponentsHeuristic("Stay away from opponents",100,
                 pgid, ballPlayerPos, r_role_assigner_data.ball.position, r_role_assigner_data.opponents, 2.0));
@@ -139,16 +139,16 @@ void RoleAssignerGrid::handle_penalty_heuristics(const RoleAssignerData& r_role_
         heuristics.push_back(new InOwnPenaltyAreaHeuristic("InOwnPenalyArea", 100000, pgid, r_role_assigner_data));
 
         // prefer position close to the backline: Y halfway between goal area en penalty area
-        auto desired_y = -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getGoalAreaLength() + 0.5 * (r_role_assigner_data.fieldConfig.getPenaltyAreaLength() - r_role_assigner_data.fieldConfig.getGoalAreaLength());
+        auto desired_y = -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getGoalAreaLength() + 0.5 * (r_role_assigner_data.environment.getPenaltyAreaLength() - r_role_assigner_data.environment.getGoalAreaLength());
         heuristics.push_back(new DistanceToLineHeuristic("DesiredY", 20, pgid,
-                -r_role_assigner_data.fieldConfig.getMaxFullFieldX(), desired_y, r_role_assigner_data.fieldConfig.getMaxFullFieldX(), desired_y, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                -r_role_assigner_data.environment.getMaxFullFieldX(), desired_y, r_role_assigner_data.environment.getMaxFullFieldX(), desired_y, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
         // Do not position close to already assigned team-mate position: avoid to be close to eachother
         heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 2000.0, pgid, r_role_assigner_data, 1.5));
 
         // Prefer position close too the ball
         heuristics.push_back(new DistanceToPointHeuristic("Close to ball", 200, pgid,
-                                                          Geometry::Position(r_ballPositionToUse.x, r_ballPositionToUse.y), 8.0, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), false));
+                                                          Geometry::Position(r_ballPositionToUse.x, r_ballPositionToUse.y), 8.0, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), false));
 
     }
     if (r_role_assigner_data.gamestate == game_state_e::PENALTY) {
@@ -180,7 +180,7 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
     if (oppentToDefend.distanceTo(ballPos) < r_role_assigner_data.parameters.setplay_against_dist_to_opponent + 0.25) {
         // player can not be positioned between ball and opponent.
         // prefer place between opponent and own goal.
-        alfa = oppentToDefend.angle(r_role_assigner_data.fieldConfig.getOwnGoal());
+        alfa = oppentToDefend.angle(r_role_assigner_data.environment.getOwnGoal());
     }
 
     double preferred_x = oppentToDefend.x - (cos(alfa) * r_role_assigner_data.parameters.setplay_against_dist_to_opponent);
@@ -192,7 +192,7 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
     //heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0, pgid, oppentToDefend.x, oppentToDefend.y, 1.5, true)); // invert=true, so in circle attracts
 
     // Positioned on the line between opponent and ball (so opponent cannot be reached)
-    heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 500.0, pgid, x_pos_ball, y_pos_ball, preferred_x, preferred_y, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 500.0, pgid, x_pos_ball, y_pos_ball, preferred_x, preferred_y, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
     // Play close to any opponent but not on exactly on top of it
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponents", 800, pgid, r_role_assigner_data.opponents, 1.0));
@@ -213,10 +213,10 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
     heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_role_assigner_data));
 
     // This still needed?
-    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.fieldConfig, 0.0));
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.environment, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 150.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 150.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role));
 
     /*
      * Additional defender position heuristics in set-play (various)
@@ -233,7 +233,7 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
     {
         ball_penalty = r_role_assigner_data.parameters.grid_close_to_ball_restart_penalty_penalty; // default
         ball_radius = r_role_assigner_data.parameters.grid_close_to_ball_restart_penalty_radius;
-        heuristics.push_back(new BallSetplayAgainstHeuristic("InfluenceBallSetplayAgainst", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new BallSetplayAgainstHeuristic("InfluenceBallSetplayAgainst", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius, r_role_assigner_data.environment));
 
         double dist_ball_to_opponent = oppentToDefend.distanceTo(ballPos);
         if (dist_ball_to_opponent <= ball_radius && y_pos_ball < 0) {
@@ -247,7 +247,7 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
                 desired_y += dist_ball_to_opponent * 0.5; // add the offset wrt ball-y
             }
             heuristics.push_back(new DistanceToLineHeuristic("DesiredY", 2000, pgid,
-                    -r_role_assigner_data.fieldConfig.getMaxFullFieldX(), desired_y, r_role_assigner_data.fieldConfig.getMaxFullFieldX(), desired_y, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                    -r_role_assigner_data.environment.getMaxFullFieldX(), desired_y, r_role_assigner_data.environment.getMaxFullFieldX(), desired_y, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
     }
 
@@ -275,7 +275,7 @@ Geometry::Position RoleAssignerGrid::findManToManDefensivePosition(role_e role, 
     // create x,y grid for calculation. with prefered x , y in center of grid !!
     for (double x = min_x; x <= (max_x + 0.01); x += grid_size) {
         for (double y = min_y; y <= (max_y + 0.01); y += grid_size) {
-            if (r_role_assigner_data.fieldConfig.isInField(x, y, 0))
+            if (r_role_assigner_data.environment.isInField(x, y, 0))
             { // only position where player is inside the field
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
@@ -310,8 +310,8 @@ Geometry::Position RoleAssignerGrid::findDefensivePosition(const RoleAssignerDat
 
     // define grid of 50 cm, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + 2 * y_grid_half;
 
@@ -337,7 +337,7 @@ Geometry::Position RoleAssignerGrid::findDefensivePosition(const RoleAssignerDat
             heuristics.push_back(new InCircleHeuristic("ShieldOpponent", 100.0 - (opponentPos.y * 2) , pgid, opponentPos.x, opponentPos.y, 1.5, true)); // invert=true, so in circle attracts
 
             // Positioned on the line between opponent and ball (so opponent cannot be reached)
-            heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 30.0, pgid, x_pos_ball, y_pos_ball, opponentPos.x, opponentPos.y, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+            heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOpponent", 30.0, pgid, x_pos_ball, y_pos_ball, opponentPos.x, opponentPos.y, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
 
     }
@@ -349,12 +349,12 @@ Geometry::Position RoleAssignerGrid::findDefensivePosition(const RoleAssignerDat
     heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 50.0, pgid, r_role_assigner_data, 2.5));
 
     // Defend on -4.5 M line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
-    heuristics.push_back(new DesiredY("DesiredYDefender", 20.0, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5, r_role_assigner_data.fieldConfig));
+    heuristics.push_back(new DesiredY("DesiredYDefender", 20.0, pgid, -r_role_assigner_data.environment.getMaxFieldY()*0.5, r_role_assigner_data.environment));
 
     // Stay away out of corners of the field, not the best defensive position
-    heuristics.push_back(new InfluenceCornerHeuristic("InfluenceCorner", 10.0, pgid, r_role_assigner_data.fieldConfig));
+    heuristics.push_back(new InfluenceCornerHeuristic("InfluenceCorner", 10.0, pgid, r_role_assigner_data.environment));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_e::role_DEFENDER_GENERIC));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_e::role_DEFENDER_GENERIC));
 
 
     // Do not plan in opponent penalty area
@@ -367,10 +367,10 @@ Geometry::Position RoleAssignerGrid::findDefensivePosition(const RoleAssignerDat
     heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_role_assigner_data));
 
     // This still needed?
-    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.fieldConfig, 0.0));
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.environment, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
     /*
      * Additional defender position heuristics in set-play (various)
@@ -401,7 +401,7 @@ Geometry::Position RoleAssignerGrid::findDefensivePosition(const RoleAssignerDat
         for (int y_idx  = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -439,8 +439,8 @@ Geometry::Position RoleAssignerGrid::findDefensivePositionDuringPenaltyShootOut(
 
     // define grid of 50 cm, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + 2 * y_grid_half;
 
@@ -456,17 +456,17 @@ Geometry::Position RoleAssignerGrid::findDefensivePositionDuringPenaltyShootOut(
     heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 200.0, pgid, r_role_assigner_data, 1.0));
 
     // stay on  1 meter from center line (halfway own half), lower priority so it only takes as the position if there are no opponents to defend
-    heuristics.push_back(new DesiredY("DesiredYDefender", 200.0, pgid, field_direction * 1.0, r_role_assigner_data.fieldConfig));
+    heuristics.push_back(new DesiredY("DesiredYDefender", 200.0, pgid, field_direction * 1.0, r_role_assigner_data.environment));
 
-    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 100.0, pgid, r_role_assigner_data.fieldConfig, 0.0));
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 100.0, pgid, r_role_assigner_data.environment, 0.0));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_e::role_DEFENDER_GENERIC));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_e::role_DEFENDER_GENERIC));
 
     //stay out of 3 meter zone around center of the field
-    heuristics.push_back(new InfluenceBallHeuristic("Influence Center Circle", 1000.0, pgid, 0, 0, r_role_assigner_data.fieldConfig.getCenterCirleDiameter() + 0.5));
+    heuristics.push_back(new InfluenceBallHeuristic("Influence Center Circle", 1000.0, pgid, 0, 0, r_role_assigner_data.environment.getCenterCirleDiameter() + 0.5));
 
     std::list<Geometry::Position> allowedTargetPositions = list<Geometry::Position>();
 
@@ -475,7 +475,7 @@ Geometry::Position RoleAssignerGrid::findDefensivePositionDuringPenaltyShootOut(
         for (int y_idx  = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -516,8 +516,8 @@ Geometry::Position RoleAssignerGrid::findSweeperPosition(const RoleAssignerData&
 
     // define grid, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + y_grid_half;  // only half field;
 
@@ -534,32 +534,32 @@ Geometry::Position RoleAssignerGrid::findSweeperPosition(const RoleAssignerData&
     // on line between ball and own goal
     heuristics.push_back(new OnLineBetweenPointsHeuristic("OnLineBetweenBallAndOwnGoal", 100.0, pgid,
                 x_pos_ball, y_pos_ball,
-                0.0, -r_role_assigner_data.fieldConfig.getMaxFieldY(),
-                r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                0.0, -r_role_assigner_data.environment.getMaxFieldY(),
+                r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
     // The preferred Y location of the sweeper on the field
-    double topOwnPenaltyAreaY = -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getPenaltyAreaLength() + r_role_assigner_data.fieldConfig.getRobotRadius();
-    double besidePenaltyAreaX = r_role_assigner_data.fieldConfig.getPenaltyAreaWidth()*0.5 + r_role_assigner_data.fieldConfig.getRobotRadius();
-    double topOwnGoalAreaY = -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getGoalAreaLength() + r_role_assigner_data.fieldConfig.getRobotRadius();
+    double topOwnPenaltyAreaY = -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getPenaltyAreaLength() + r_role_assigner_data.environment.getRobotRadius();
+    double besidePenaltyAreaX = r_role_assigner_data.environment.getPenaltyAreaWidth()*0.5 + r_role_assigner_data.environment.getRobotRadius();
+    double topOwnGoalAreaY = -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getGoalAreaLength() + r_role_assigner_data.environment.getRobotRadius();
     if (y_pos_ball >= 0) {
-        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, -r_role_assigner_data.environment.getMaxFieldY()*0.5, r_role_assigner_data.environment));
     }
     else if (y_pos_ball >= topOwnPenaltyAreaY) {
-        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnPenaltyAreaY, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnPenaltyAreaY, r_role_assigner_data.environment));
     }
     else if (x_pos_ball >= besidePenaltyAreaX) {
-        heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, besidePenaltyAreaX, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, besidePenaltyAreaX, r_role_assigner_data.environment));
     }
     else if (x_pos_ball <= -besidePenaltyAreaX) {
-        heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, -besidePenaltyAreaX, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new DesiredX("DesiredXSweeper", 20.0, pgid, -besidePenaltyAreaX, r_role_assigner_data.environment));
     }
     else {
         // ball in penalty area, put sweeper just above goal area
-        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnGoalAreaY, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new DesiredY("DesiredYSweeper", 20.0, pgid, topOwnGoalAreaY, r_role_assigner_data.environment));
 
     }
     // Do not position on top off team-mate
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getRobotSize()*2));
 
     // Only one player is allowed in the penalty area
     heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 100000, pgid, r_role_assigner_data)); // Do not enter the outer goal area if already an another player is in.
@@ -568,9 +568,9 @@ Geometry::Position RoleAssignerGrid::findSweeperPosition(const RoleAssignerData&
     heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_role_assigner_data)); // Do not enter the inner Goal area
 
     // Stability heuristic: 5 weight
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_DEFENDER_MAIN));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_DEFENDER_MAIN));
 
     /*
      * Additional sweeper position heuristics in set-play (various)
@@ -588,7 +588,7 @@ Geometry::Position RoleAssignerGrid::findSweeperPosition(const RoleAssignerData&
     if (isOneOf(r_role_assigner_data.gamestate, {FREEKICK_AGAINST, GOALKICK_AGAINST, GOALKICK, FREEKICK, CORNER_AGAINST, THROWIN_AGAINST}) ) {
         ball_penalty = r_role_assigner_data.parameters.grid_close_to_ball_restart_penalty_penalty; // default
         ball_radius = r_role_assigner_data.parameters.grid_close_to_ball_restart_penalty_radius;
-        heuristics.push_back(new BallSetplayAgainstHeuristic("InfluenceBall", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius, r_role_assigner_data.fieldConfig));
+        heuristics.push_back(new BallSetplayAgainstHeuristic("InfluenceBall", ball_penalty, pgid, x_pos_ball, y_pos_ball, ball_radius, r_role_assigner_data.environment));
     }
 
     // apply penalty heuristics if needed
@@ -600,7 +600,7 @@ Geometry::Position RoleAssignerGrid::findSweeperPosition(const RoleAssignerData&
         for (int y_idx  = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -677,8 +677,8 @@ Geometry::Position RoleAssignerGrid::findInterceptorPositionDuringRestart(const 
 
     // define grid of 50 cm, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + 2 * y_grid_half;
 
@@ -715,10 +715,10 @@ Geometry::Position RoleAssignerGrid::findInterceptorPositionDuringRestart(const 
 
 
     // Position interceptor on the 3 M circle around the ball (as close as allowed to the ball)
-    heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, r_role_assigner_data.ball.position, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new DistanceToHeuristic("Distance to ball", 100.0, pgid, r_role_assigner_data.ball.position, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
     // Position interceptor as close as possible to opponent interceptor (located within the 3 meter circle)
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_ATTACKER_MAIN));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_ATTACKER_MAIN));
 
 
     // Position interceptor/sweeper optimized when defending on own half (both leave room for each other)
@@ -726,24 +726,24 @@ Geometry::Position RoleAssignerGrid::findInterceptorPositionDuringRestart(const 
         heuristics.push_back(new OnLineBetweenPointsHeuristic("NotOnLineBetweenBallAndOwnGoal", 20.0, pgid,
                         x_pos_ball, y_pos_ball,
                         0.0, 0.0,
-                        r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                        r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
         else  {
             heuristics.push_back(new OnLineBetweenPointsHeuristic("NotOnLineBetweenBallAndOwnGoal", 20.0, pgid,
                                     x_pos_ball, y_pos_ball,
                                     0.0, -3.0,
-                                    r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                                    r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
 
 
     // Do not position on top off team-mate
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getRobotSize()*2));
 
     // Do not plan outside playing field or in goal area
     heuristics.push_back(new InOwnGoalAreaHeuristic("InOwnGoalArea", 1000.0, pgid, r_role_assigner_data)); // Do not enter the inner Goal area
 
     // Stability heuristic: 5 weight
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 5, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
     // DO not plan on top of opponent
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 5.0, pgid, r_role_assigner_data.opponents, 0.7));
@@ -760,7 +760,7 @@ Geometry::Position RoleAssignerGrid::findInterceptorPositionDuringRestart(const 
         for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -798,8 +798,8 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
 
     // define grid of 50 cm, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + 2 * y_grid_half;
 
@@ -824,7 +824,7 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     if (r_role_assigner_data.gamestate != game_state_e::PENALTY && r_role_assigner_data.gamestate != game_state_e::PENALTY_AGAINST) {
         // Do not block goal shot on opponent goal
         heuristics.push_back(new NotOnLineBetweenBallAndOpponentGoalHeuristic("Not between ball and opponent goal", 100.0, pgid,
-                x_pos_ball, y_pos_ball, -r_role_assigner_data.fieldConfig.getGoalAreaWidth()*0.5, r_role_assigner_data.fieldConfig.getMaxFieldY(), +r_role_assigner_data.fieldConfig.getGoalAreaWidth()*0.5, r_role_assigner_data.fieldConfig.getMaxFieldY()));
+                x_pos_ball, y_pos_ball, -r_role_assigner_data.environment.getGoalAreaWidth()*0.5, r_role_assigner_data.environment.getMaxFieldY(), +r_role_assigner_data.environment.getGoalAreaWidth()*0.5, r_role_assigner_data.environment.getMaxFieldY()));
 
           // Avoid difficult collaboration, not to close to the ball
         heuristics.push_back(new InfluenceBallHeuristic("InfluenceBall", 80.0, pgid, x_pos_ball, y_pos_ball, 4));
@@ -837,23 +837,23 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // Avoid difficult collaboration, do not position close to opponents
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", 50.0, pgid, r_role_assigner_data.opponents, 1));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_ATTACKER_GENERIC));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", 100.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_ATTACKER_GENERIC));
 
     // stay in front of the ball on own half, so play forward on own half
     if (y_pos_ball < 0) {
-        heuristics.push_back(new InSquareHeuristic("Play forward on own half", 50.0, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldX(), y_pos_ball+1, r_role_assigner_data.fieldConfig.getMaxFieldX(), -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+        heuristics.push_back(new InSquareHeuristic("Play forward on own half", 50.0, pgid, -r_role_assigner_data.environment.getMaxFieldX(), y_pos_ball+1, r_role_assigner_data.environment.getMaxFieldX(), -r_role_assigner_data.environment.getMaxFieldY()) );
     }
     else {
-        heuristics.push_back(new InSquareHeuristic("Play on opponent half", 50.0, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldX(), 1, r_role_assigner_data.fieldConfig.getMaxFieldX(), -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+        heuristics.push_back(new InSquareHeuristic("Play on opponent half", 50.0, pgid, -r_role_assigner_data.environment.getMaxFieldX(), 1, r_role_assigner_data.environment.getMaxFieldX(), -r_role_assigner_data.environment.getMaxFieldY()) );
     }
 
     // if we control the ball make yourself available to receive a pass, especially for the first attack supporter
     if (r_role_assigner_data.teamControlsBall()) {
         if (first_attack_supporter) {
-            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 80.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 80.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
         else {
-            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+            heuristics.push_back(new InfluenceCurrentPositionsHeuristic("Receive pass when control ball", 40.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
         }
     }
 
@@ -861,11 +861,11 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
         //  position attack_support approx halfway on opponent half
         if (r_role_assigner_data.gamestate != game_state_e::KICKOFF && r_role_assigner_data.gamestate != game_state_e::KICKOFF_AGAINST) {
             // normally try to position on opponent half on a nice position to lob at the goal
-            heuristics.push_back(new DesiredY("DesiredYAttackSupport", 30.0, pgid, (r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)-1, r_role_assigner_data.fieldConfig));
+            heuristics.push_back(new DesiredY("DesiredYAttackSupport", 30.0, pgid, (r_role_assigner_data.environment.getMaxFieldY()*0.5)-1, r_role_assigner_data.environment));
         }
         else {
             // in case of kick-off place robot at our own half
-            heuristics.push_back(new DesiredY("DesiredYAttacksupport", 30.0, pgid, -1, r_role_assigner_data.fieldConfig));
+            heuristics.push_back(new DesiredY("DesiredYAttacksupport", 30.0, pgid, -1, r_role_assigner_data.environment));
         }
 
         // Avoid difficult collaboration, not behind opponent (from ball position)
@@ -878,16 +878,16 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     // else move to opposite side (left/right) to create room
     if (y_pos_ball < -1) {
         if (x_pos_ball < 0) {
-            heuristics.push_back(new InSquareHeuristic("Left preference", 15.0, pgid, -2, r_role_assigner_data.fieldConfig.getMaxFieldY(), r_role_assigner_data.fieldConfig.getMaxFieldX(), -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+            heuristics.push_back(new InSquareHeuristic("Left preference", 15.0, pgid, -2, r_role_assigner_data.environment.getMaxFieldY(), r_role_assigner_data.environment.getMaxFieldX(), -r_role_assigner_data.environment.getMaxFieldY()) );
         }
         else {
-            heuristics.push_back(new InSquareHeuristic("Right preference", 15.0, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldX(), r_role_assigner_data.fieldConfig.getMaxFieldY(), 2, -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+            heuristics.push_back(new InSquareHeuristic("Right preference", 15.0, pgid, -r_role_assigner_data.environment.getMaxFieldX(), r_role_assigner_data.environment.getMaxFieldY(), 2, -r_role_assigner_data.environment.getMaxFieldY()) );
         }
     }
 
 
     // Do not position close to team-mate path position
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 10.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", 10.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getRobotSize()*2));
 
     heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, r_role_assigner_data, 4.0, true));
 
@@ -903,10 +903,10 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
     heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", 1000.0, pgid, r_role_assigner_data));
 
     // This still needed?
-    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.fieldConfig, r_role_assigner_data.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", 1000.0, pgid, r_role_assigner_data.environment, r_role_assigner_data.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
 
     // Stability heuristic
-    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+    heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", 8.0, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
 
     /*
@@ -921,7 +921,7 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
         for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -947,7 +947,7 @@ bool RoleAssignerGrid::findAttackSupportPosition(Geometry::Point& bestPosition, 
             double angle = i * 2.0 * M_PI / static_cast<double>(nr_wait_positions);
             double xx = bestPosition.x + radius_non_opt_wait * cos(angle);
             double yy = bestPosition.y + radius_non_opt_wait * sin(angle);
-            if (r_role_assigner_data.fieldConfig.isInField(xx,yy, infield_margin)) {
+            if (r_role_assigner_data.environment.isInField(xx,yy, infield_margin)) {
                 // only check positions in the field
                 double val = InterceptionThreat.getValue(xx, yy);
                   if (val < lowestValue) {
@@ -1055,8 +1055,8 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
 
     // define grid of 50 cm, only in field not outside the border
     double grid_size = r_role_assigner_data.parameters.grid_size; //[m]
-    double x_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldX()/grid_size);
-    double y_grid_half = floor(r_role_assigner_data.fieldConfig.getMaxFieldY()/grid_size);
+    double x_grid_half = floor(r_role_assigner_data.environment.getMaxFieldX()/grid_size);
+    double y_grid_half = floor(r_role_assigner_data.environment.getMaxFieldY()/grid_size);
     int x_grid_points = 1 + 2 * x_grid_half;
     int y_grid_points = 1 + 2 * y_grid_half;
 
@@ -1072,23 +1072,23 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
     // Avoid difficult collaboration, do not position close to opponents
     heuristics.push_back(new InfluenceOpponentsHeuristic("Influence Opponent", WEIGHT_INFLUENCE_OPPONENTS, pgid, r_role_assigner_data.opponents, 2.0));
 
-    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", WEIGHT_PREVIOUS_ASSIGN_POSITION, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance(), role_ATTACKER_GENERIC));
+    heuristics.push_back(new InfluencePreviousAssignedPositionsHeuristic("previous assigned position", WEIGHT_PREVIOUS_ASSIGN_POSITION, pgid, r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance(), role_ATTACKER_GENERIC));
 
     // stay in front of the ball on own half, so play forward on own half
     if (y_pos_ball < 0) {
-        heuristics.push_back(new InSquareHeuristic("Play forward on own half", WEIGHT_PLAY_ON_OWN_HALF, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldX(), y_pos_ball+1, r_role_assigner_data.fieldConfig.getMaxFieldX(), -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+        heuristics.push_back(new InSquareHeuristic("Play forward on own half", WEIGHT_PLAY_ON_OWN_HALF, pgid, -r_role_assigner_data.environment.getMaxFieldX(), y_pos_ball+1, r_role_assigner_data.environment.getMaxFieldX(), -r_role_assigner_data.environment.getMaxFieldY()) );
     }
     else {
-        heuristics.push_back(new InSquareHeuristic("Play on opponent half", WEIGHT_PLAY_ON_OPPONENT_HALF, pgid, -r_role_assigner_data.fieldConfig.getMaxFieldX(), 1, r_role_assigner_data.fieldConfig.getMaxFieldX(), -r_role_assigner_data.fieldConfig.getMaxFieldY()) );
+        heuristics.push_back(new InSquareHeuristic("Play on opponent half", WEIGHT_PLAY_ON_OPPONENT_HALF, pgid, -r_role_assigner_data.environment.getMaxFieldX(), 1, r_role_assigner_data.environment.getMaxFieldX(), -r_role_assigner_data.environment.getMaxFieldY()) );
     }
 
     // y position of desired position
     double ydesired_weight = strongDesiredY ? WEIGHT_STRONG_DESIRED_LINE : WEIGHT_DESIRED_LINE;
-    heuristics.push_back(new DesiredY("Desired-Y", ydesired_weight, pgid, preferred_position.y, r_role_assigner_data.fieldConfig));
+    heuristics.push_back(new DesiredY("Desired-Y", ydesired_weight, pgid, preferred_position.y, r_role_assigner_data.environment));
 
     // x position of desired position
     double xdesired_weight = strongDesiredX ? WEIGHT_STRONG_DESIRED_LINE : WEIGHT_DESIRED_LINE;
-    heuristics.push_back(new DesiredX("Desired-X", xdesired_weight, pgid, preferred_position.x, r_role_assigner_data.fieldConfig));
+    heuristics.push_back(new DesiredX("Desired-X", xdesired_weight, pgid, preferred_position.x, r_role_assigner_data.environment));
 
     if (beAvailableForPass) {
         // Avoid difficult collaboration, not behind opponent (from ball position)
@@ -1100,7 +1100,7 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
     heuristics.push_back(new CollideTeamMateHeuristic("Distance to AttackSupporters", 50.0, pgid, r_role_assigner_data, 4.0, true));
 
     // Do not position close to team-mate path position
-    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", WEIGHT_COLLIDE_TEAM_MATE, pgid, r_role_assigner_data, r_role_assigner_data.fieldConfig.getRobotSize()*2));
+    heuristics.push_back(new CollideTeamMateHeuristic("CollideTeamMate", WEIGHT_COLLIDE_TEAM_MATE, pgid, r_role_assigner_data, r_role_assigner_data.environment.getRobotSize()*2));
 
 
     // Do not plan in opponent penalty area
@@ -1113,11 +1113,11 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
     heuristics.push_back(new AlreadyPlayerAssignedToOwnPenaltyAreaHeuristic("Already player assigned to own penalty area", WEIGHT_NOT_AREA, pgid, r_role_assigner_data));
 
     // Not outside the playing field
-    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", WEIGHT_NOT_AREA, pgid, r_role_assigner_data.fieldConfig, r_role_assigner_data.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
+    heuristics.push_back(new OutsidePlayFieldHeuristic("OutsidePlayField", WEIGHT_NOT_AREA, pgid, r_role_assigner_data.environment, r_role_assigner_data.parameters.attack_supporter_extra_distance_to_stay_from_sideline));
 
     // Stability heuristic
     heuristics.push_back(new InfluenceCurrentPositionsHeuristic("InfluenceCurrentPositions", WEIGHT_INFLUENCE_CURRENT_POSITION, pgid,
-                                                                r_role_assigner_data, r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance()));
+                                                                r_role_assigner_data, r_role_assigner_data.environment.getMaxPossibleFieldDistance()));
 
 
     /*
@@ -1132,7 +1132,7 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
         for (int y_idx = 0; y_idx < y_grid_points; y_idx++) {
             double x = (x_idx * grid_size) - (x_grid_half * grid_size);
             double y = (y_idx * grid_size) - (y_grid_half * grid_size);
-            if (y > -r_role_assigner_data.fieldConfig.getMaxFieldY() + r_role_assigner_data.fieldConfig.getRobotRadius()) { // only position where player is not over own backline
+            if (y > -r_role_assigner_data.environment.getMaxFieldY() + r_role_assigner_data.environment.getRobotRadius()) { // only position where player is not over own backline
                 allowedTargetPositions.push_back(Geometry::Position(x, y));
             }
         }
@@ -1161,7 +1161,7 @@ Geometry::Position RoleAssignerGrid::findSetPlayPosition(role_e role, const Role
             double angle = i * 2.0 * M_PI / static_cast<double>(nr_wait_positions);
             double xx = rolePosition.x + radius_non_opt_wait * cos(angle);
             double yy = rolePosition.y + radius_non_opt_wait * sin(angle);
-            if (r_role_assigner_data.fieldConfig.isInField(xx,yy, infield_margin)) {
+            if (r_role_assigner_data.environment.isInField(xx,yy, infield_margin)) {
                 // only check positions in the field
                 double val = InterceptionThreat.getValue(xx, yy);
                  if (val < lowestValue) {

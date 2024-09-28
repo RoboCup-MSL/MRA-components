@@ -26,9 +26,10 @@
 
 
 #include "StrategyTester_generated.h" // generated
-#include "FieldConfig.hpp"
 #include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
+
+#include "../internals/Environment.hpp"
 #include "../internals/RoleAssignerSvg.hpp"
 #include "../internals/RoleAssignerData.hpp"
 
@@ -285,40 +286,33 @@ ball_status_e ball_status_to_enum(const xsd::cxx::tree::optional<robotsports::Ba
     return ball_status_e::FREE;
 }
 
-void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyType>& c)
+void fillEnvironmentParameters(EnvironmentParameters& env, auto_ptr<robotsports::StrategyType>& c)
 {
     if (c->Field() != 0) {
-        // If field info is present then overwrite the defaults with values from the xml file
-        FieldParameters fp;
-        fp.SLM.A = c->Field()->field_length();
-        fp.SLM.B = c->Field()->field_width();
-        fp.SLM.L = c->Field()->field_margin();
-        fp.SLM.G = c->Field()->corner_circle_diameter();
-        fp.SLM.Q = c->Field()->penalty_spot_to_backline();
-        fp.SLM.K = c->Field()->field_markings_width();
+        // If environment info is present then overwrite the defaults with values from the xml file
+        env.SLM.A = c->Field()->field_length();
+        env.SLM.B = c->Field()->field_width();
+        env.SLM.L = c->Field()->field_margin();
+        env.SLM.G = c->Field()->corner_circle_diameter();
+        env.SLM.Q = c->Field()->penalty_spot_to_backline();
+        env.SLM.K = c->Field()->field_markings_width();
 
+        env.SLM.H = c->Field()->center_circle_diameter();
+        env.SLM.D = c->Field()->goal_area_width();
+        env.SLM.G = c->Field()->goal_area_length();
+        env.SLM.C = c->Field()->penalty_area_width();
+        env.SLM.E = c->Field()->penalty_area_length();
+        env.penalty_area_present = c->Field()->penalty_area_present();
+        // TODO env.technical_team_area_present = true;
+        env.goal_width = c->Field()->goal_width();
+        env.goal_length = c->Field()->goal_length();
 
-        fp.SLM.H = c->Field()->center_circle_diameter();
-        fp.SLM.D = c->Field()->goal_area_width();
-        fp.SLM.G = c->Field()->goal_area_length();
-        fp.SLM.C = c->Field()->penalty_area_width();
-        fp.SLM.E = c->Field()->penalty_area_length();
-        fp.penalty_area_present = c->Field()->penalty_area_present();
-        // TODO fp.technical_team_area_present = true;
-        fp.goal_width = c->Field()->goal_width();
-        fp.goal_length = c->Field()->goal_length();
-
-	// TODO for publish in MRA
-        //                    c->Field()->parking_area_width(),
-        //                    c->Field()->parking_area_length(),
-        //                    c->Field()->parking_distance_between_robots(),
-        //                    c->Field()->parking_distance_to_line(),
-        //                    c->Field()->robot_size(),
-        //                    c->Field()->ball_radius(),
-
-
-        FieldConfig fc = FieldConfig(fp);
-        fieldConfig = fc;
+        env.parking_area_width = c->Field()->parking_area_width();
+        env.parking_area_length = c->Field()->parking_area_length();
+        env.parking_distance_between_robots = c->Field()->parking_distance_between_robots();
+        env.parking_distance_to_line = c->Field()->parking_distance_to_line();
+        env.robot_size = c->Field()->robot_size();
+        env.ball_radius = c->Field()->ball_radius();
     }
 }
 
@@ -424,7 +418,6 @@ void xmlplanner(string input_filename) {
     Geometry::Position ball_vel = Geometry::Position();
     game_state_e gameState;
     std::string description = "";
-    MRA::FieldConfig fieldConfig = {};
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
 
@@ -457,8 +450,8 @@ void xmlplanner(string input_filename) {
         fillOpponents(Opponents, c);
 
         gameState = gamestate_string_to_enum(c->GameState());
-        fillFieldConfig(fieldConfig, c);
         getRoleAssignParameters(parameters, c);
+        fillEnvironmentParameters(parameters.environment_parameters, c);
         robot_strategy_parameter_no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
         robot_strategy_parameter_attack_formation =  StringToFormation(c->AttackFormation());
         robot_strategy_parameter_defense_formation = StringToFormation(c->DefenseFormation());
@@ -602,13 +595,14 @@ void xmlplanner(string input_filename) {
     }
 
     RoleAssignerParameters tp_parameters = parameters;
+
     RoleAssignerOutput tp_output = {};
     auto tp_state_org = tp_state;
     teamplay.assign(tp_input, tp_state, tp_output, tp_parameters);
 
     RoleAssignerData tpd = {};
     tpd.parameters = tp_parameters;
-    tpd.fieldConfig = FieldConfig(tp_parameters.field_parameters);
+    tpd.environment = Environment(tp_parameters.environment_parameters);
     tpd.input_formation = tp_input.input_formation;
     tpd.gamestate = tp_input.gamestate;
     tpd.original_gamestate  = tp_input.gamestate;
@@ -644,7 +638,7 @@ void xmlplanner(string input_filename) {
             cerr << "<< XML: print received path " << endl << flush;
             cerr << RoleAssignerResultToString(player_paths, tpd.team) << endl << flush;
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, fieldConfig, run_filename);
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, tpd.environment, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

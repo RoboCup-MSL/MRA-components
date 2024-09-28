@@ -21,7 +21,6 @@ public:
     MRA::Geometry::Point target;
     planner_target_e planner_target;
     defend_info_t defend_info;
-    bool target_position_is_end_position_of_pass;
 
     RoleAssignerResult(const role_e& role = role_e::role_UNDEFINED,
                        int role_rank = -1,
@@ -34,8 +33,7 @@ public:
                             role_rank(role_rank),
                             target(target),
                             planner_target(planner_target),
-                            defend_info(defend_info),
-                            target_position_is_end_position_of_pass(target_position_is_end_position_of_pass)
+                            defend_info(defend_info)
                         {
 
                         }

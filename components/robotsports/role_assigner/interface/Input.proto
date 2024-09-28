@@ -115,6 +115,8 @@ message Input
     PassData pass_data = 10;
 };
     
-    
-
+// TODO add game info to allow decision based on score and time remaining etc.
+// Usage of MRA vector class
+// Opponents is same as Player, but has different attributes
+// NoOpponentObstacles
 

@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package MRA.RobotsportsRobotStrategy;
 
+import "google/protobuf/timestamp.proto";
 import "datatypes/WorldState.proto";
+
 
 //  - current dynamic role.
 // part of robot_strategy/interface/Output.proto + Input.proto
@@ -22,7 +24,7 @@ message PathPiece {
     double x = 1;
     double y = 2;
     double cost = 3;
-    int32 target = 4; // from enum-type planner_target_e
+    int32 target = 4; // from enum-type planner_target_e TODO
 };
 
 message PreviousResult {
@@ -43,6 +45,3 @@ message State
     PreviousBall previous_ball = 1;
     repeated PreviousResult previous_result = 2;
 };
-
-//    previous_used_ball_by_role_assinger_t previous_ball;
-//    std::vector<previous_role_assigner_result_t> previous_result

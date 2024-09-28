@@ -126,7 +126,6 @@ std::string RoleAssignerData::toString() const
         buffer << "\tRole: " << RoleAsString(player_path.result.role) << endl;
         buffer << "\tTarget position : " << player_path.result.target.toString() << endl;
         buffer << "\tPlanner target type  " << PlannerTargetAsString(player_path.result.planner_target) << endl;
-        buffer << "\tTarget_position_is_end_position_of_pass: " << player_path.result.target_position_is_end_position_of_pass << endl;
         buffer << "\tDefend info valid:  " << player_path.result.defend_info.valid;
         if (player_path.result.defend_info.valid) {
             buffer << " defending_id: " << player_path.result.defend_info.defending_id;

@@ -2,28 +2,48 @@ syntax = "proto3";
 
 package MRA.RobotsportsRoleAssigner;
 
-import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
+import "datatypes/Point.proto";
+
+message PathPiece {
+    double x = 1;
+    double y = 2;
+    double cost = 3;
+    int32 target = 4; // from enum-type planner_target_e
+};
+
+message DefendInfo {
+    bool valid = 1;
+    int32 trackingId = 2;
+    double dist_from_defending_id = 3;
+    bool between_ball_and_defending_pos = 4; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
+};
+
+
+message Assignment {
+    enum DynamicRole {
+        UNDEFINED = 0;
+        GOALKEEPER = 1;
+        ATTACKER_MAIN = 2;
+        ATTACKER_ASSIST = 3;
+        ATTACKER_GENERIC = 4;
+        DEFENDER_MAIN = 5;
+        DEFENDER_GENERIC = 6;
+        DISABLED_OUT = 7;
+        DISABLED_IN = 8;
+    };
+
+    repeated PathPiece path = 1;
+    DynamicRole role = 2;
+    int32 role_rank = 3;
+    MRA.Datatypes.Point target = 4;
+    int32 planner_target = 5;
+    DefendInfo defend_info = 6;
+};
 
 message Output
 {
-    enum DynamicRole {
-        NONE = 0;
-        GOALKEEPER = 1;
-        ATTACKSUPPORTER = 2;
-        DEFENDER = 3;
-        INTERCEPTOR = 4;
-        SWEEPER = 5;
-        SETPLAY_RECEIVER = 6;
-        SETPLAY_KICKER = 7;
-        BALLPLAYER = 8;
-        SEARCH_FOR_BALL = 9;
-        BEGIN_POSITION = 10;
-        PARKING = 11;
-        PENALTY_KICKER = 12;
-        LOB_CALIBRATION = 13;
-        PENALTY_DEFENDER = 14;
-    };
-    repeated DynamicRole dynamic_roles = 1;
+    repeated Assignment assignments = 1;
 }
+
 

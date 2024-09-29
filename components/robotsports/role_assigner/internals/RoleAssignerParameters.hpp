@@ -7,18 +7,12 @@
 #define ROLE_ASSIGNER_PARAMETERS_HPP 1
 
 #include <string>
-
-#include "EnvironmentParameters.hpp"
 #include "RoleAssigner_types.hpp" // define of planner_options_t
 
 namespace MRA {
 // Constructing a new object will set the default options.
-
-
 class RoleAssignerParameters {
 public:
-    EnvironmentParameters environment_parameters;
-
     // Calculate for all player a path, otherwise stop if own path is calculated.
     static bool calculateAllPaths;
 

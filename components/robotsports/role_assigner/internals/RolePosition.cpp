@@ -59,13 +59,13 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
         //        from the penalty spot and not in the penalty area.
         if (r_role_assigner_data.gamestate == PENALTY_SHOOTOUT) {
             // position in top of center circle
-            rolePosition = MRA::Geometry::Point(0, r_role_assigner_data.environment.getCenterCirleRadius() - r_role_assigner_data.environment.getRobotSize() );
+            rolePosition = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getCenterCirleRadius() - r_role_assigner_data.fieldConfig.getRobotSize() );
         }
         else
         {
-            MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY());
+            MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY());
             MRA::Geometry::Point ballPos = r_role_assigner_data.ball.position;
-            if (r_role_assigner_data.environment.isInField(ballPos.x, ballPos.y, r_role_assigner_data.parameters.outsideFieldMargin))
+            if (r_role_assigner_data.fieldConfig.isInField(ballPos.x, ballPos.y, r_role_assigner_data.parameters.outsideFieldMargin))
             {
                 double alfa = ballPos.angle(goalPos);
                 double behind_ball_x = ballPos.x + (cos(alfa) * 1.0);
@@ -74,7 +74,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
             }
             else
             {
-                rolePosition = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY() - r_role_assigner_data.environment.getPenaltySpotToBackline() - 1.0);
+                rolePosition = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY() - r_role_assigner_data.fieldConfig.getPenaltySpotToBackline() - 1.0);
             }
         }
     }
@@ -175,7 +175,7 @@ MRA::Geometry::Point RolePosition::determineDynamicRolePosition(defend_info_t& r
                         // Find initial intercept point
                         MRA::Geometry::Point player_pos = r_role_assigner_data.team[idx].position;
                         Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(r_role_assigner_data.ball, player_pos, maxSpeed,
-                                r_role_assigner_data.environment, r_role_assigner_data.parameters.move_to_ball_left_field_position);
+                                r_role_assigner_data.fieldConfig, r_role_assigner_data.parameters.move_to_ball_left_field_position);
                         if (player_pos.distanceTo(intercept_data.intercept_position) < bestIntercept_distance) {
                             bestIntercept_distance = player_pos.distanceTo(intercept_data.intercept_position);
                             intercept_position = intercept_data.intercept_position;
@@ -208,7 +208,7 @@ MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(
     // select position 90 degrees to the line between the ball and the opponent goal
     MRA::Geometry::Point receiverPosition;
     double distBallReceiver = r_role_assigner_data.parameters.restart_receiver_ball_dist; // distance between receiver and ball
-    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY());
+    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY());
     double alfa = MRA::Geometry::Point(r_role_assigner_data.ball.position.x, r_role_assigner_data.ball.position.y).angle(goalPos);
 
     double outsideFieldMargin = r_role_assigner_data.parameters.outsideFieldMargin; // distance to stay from side of field
@@ -216,8 +216,8 @@ MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(
     double recieveY_plus_90deg = r_role_assigner_data.ball.position.y + (sin(alfa + 0.5 * M_PI) * distBallReceiver);
     double recieveX_min_90deg = r_role_assigner_data.ball.position.x  + (cos(alfa - 0.5 * M_PI) * distBallReceiver);
     double recieveY_min_90deg = r_role_assigner_data.ball.position.y  + (sin(alfa - 0.5 * M_PI) * distBallReceiver);
-    bool min90_inField = r_role_assigner_data.environment.isInField(recieveX_min_90deg, recieveY_min_90deg, outsideFieldMargin);
-    bool plus90_inField = r_role_assigner_data.environment.isInField(recieveX_plus_90deg, recieveY_plus_90deg, outsideFieldMargin);
+    bool min90_inField = r_role_assigner_data.fieldConfig.isInField(recieveX_min_90deg, recieveY_min_90deg, outsideFieldMargin);
+    bool plus90_inField = r_role_assigner_data.fieldConfig.isInField(recieveX_plus_90deg, recieveY_plus_90deg, outsideFieldMargin);
     if (min90_inField && plus90_inField) {
         // both positions are in the field, select the one closest to opponent goal.
         if (recieveY_min_90deg > recieveY_plus_90deg) {
@@ -233,8 +233,8 @@ MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(
     }
 
     // in corner area it might go wrong and a Y position outside the field is selected.
-    if (!r_role_assigner_data.environment.isInField(receiverPosition.x, receiverPosition.y, outsideFieldMargin)) {
-        if (!r_role_assigner_data.environment.isInField(0, receiverPosition.y,    outsideFieldMargin)) {
+    if (!r_role_assigner_data.fieldConfig.isInField(receiverPosition.x, receiverPosition.y, outsideFieldMargin)) {
+        if (!r_role_assigner_data.fieldConfig.isInField(0, receiverPosition.y,    outsideFieldMargin)) {
             // y-location is outside the field.
             if (recieveY_min_90deg > recieveY_plus_90deg) {
                 receiverPosition = MRA::Geometry::Point(recieveX_plus_90deg,
@@ -245,11 +245,11 @@ MRA::Geometry::Point RolePosition::setplay_receiver_position_90deg_to_ball_goal(
             }
         }
         // x-position can be field
-        if (receiverPosition.x < -(r_role_assigner_data.environment.getMaxFieldX() - outsideFieldMargin)) {
-            receiverPosition.x = -(r_role_assigner_data.environment.getMaxFieldX()    - outsideFieldMargin);
+        if (receiverPosition.x < -(r_role_assigner_data.fieldConfig.getMaxFieldX() - outsideFieldMargin)) {
+            receiverPosition.x = -(r_role_assigner_data.fieldConfig.getMaxFieldX()    - outsideFieldMargin);
         }
-        if (receiverPosition.x > (r_role_assigner_data.environment.getMaxFieldX() - outsideFieldMargin)) {
-            receiverPosition.x = (r_role_assigner_data.environment.getMaxFieldX() - outsideFieldMargin);
+        if (receiverPosition.x > (r_role_assigner_data.fieldConfig.getMaxFieldX() - outsideFieldMargin)) {
+            receiverPosition.x = (r_role_assigner_data.fieldConfig.getMaxFieldX() - outsideFieldMargin);
         }
     }
 
@@ -264,10 +264,10 @@ bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const RoleAssignerDat
     double outsideFieldMargin = r_role_assigner_data.parameters.outsideFieldMargin; // distance to stay from side of field
     double distBallReceiver = r_role_assigner_data.parameters.restart_receiver_ball_dist; // distance between receiver and ball
     double sol1_x, sol1_y, sol2_x, sol2_y = 0;
-    double maxFieldX = r_role_assigner_data.environment.getMaxFieldX();
-    double maxFieldY = r_role_assigner_data.environment.getMaxFieldY();
+    double maxFieldX = r_role_assigner_data.fieldConfig.getMaxFieldX();
+    double maxFieldY = r_role_assigner_data.fieldConfig.getMaxFieldY();
     int nr_crossings = 0;
-    double backline_y = -r_role_assigner_data.environment.getMaxFieldY() + outsideFieldMargin;
+    double backline_y = -r_role_assigner_data.fieldConfig.getMaxFieldY() + outsideFieldMargin;
     // check crossings with last y-line where receiver putting back is allowed.
     nr_crossings = findLineCircleIntersections(r_role_assigner_data.ball.position.x,
             r_role_assigner_data.ball.position.y, distBallReceiver, -maxFieldX, backline_y,
@@ -275,18 +275,18 @@ bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const RoleAssignerDat
     if (nr_crossings > 0) {
         // at least 1 intersection found the last line
         if (nr_crossings == 1) {
-            if (r_role_assigner_data.environment.isInField(sol1_x, sol1_y, outsideFieldMargin)) {
+            if (r_role_assigner_data.fieldConfig.isInField(sol1_x, sol1_y, outsideFieldMargin)) {
                 receiverPosition = MRA::Geometry::Point(sol1_x, sol1_y);
                 found = true;
             }
         } else {
             // check if both intersections are in the field
-            bool sol1_inField = r_role_assigner_data.environment.isInField(sol1_x, sol1_y,
+            bool sol1_inField = r_role_assigner_data.fieldConfig.isInField(sol1_x, sol1_y,
                     outsideFieldMargin)
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol1_x, sol1_y);
-            bool sol2_inField = r_role_assigner_data.environment.isInField(sol2_x, sol2_y,
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol1_x, sol1_y);
+            bool sol2_inField = r_role_assigner_data.fieldConfig.isInField(sol2_x, sol2_y,
                     outsideFieldMargin)
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y);
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y);
             if (sol1_inField && sol2_inField) {
                 // both intersections are in field, select position closes to the side-line
                 if (fabs(sol1_x) < fabs(sol2_x)) {
@@ -325,8 +325,8 @@ bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const RoleAssignerDat
                 distBallReceiver, closest_sidelineX, -maxFieldY,
                 closest_sidelineX, maxFieldY, side_sol1_x, side_sol1_y,
                 side_sol2_x, side_sol2_y);
-        double paw = r_role_assigner_data.environment.getPenaltyAreaWidth();
-        double pal = r_role_assigner_data.environment.getPenaltyAreaLength();
+        double paw = r_role_assigner_data.fieldConfig.getPenaltyAreaWidth();
+        double pal = r_role_assigner_data.fieldConfig.getPenaltyAreaLength();
         double dist_to_side_penalty_area = 0.5 * paw
                 + r_role_assigner_data.parameters.setplay_margin_to_penalty_area_side;
         // find intersection with penalty area. side and top
@@ -344,54 +344,54 @@ bool RolePosition::calculateSetPlayReceiverMinTurnPosition(const RoleAssignerDat
         double best_X = maxFieldX;
         double best_Y = maxFieldY;
         if (nr_crossings_side > 0) {
-            if (r_role_assigner_data.environment.isInField(side_sol1_x, side_sol1_y,
+            if (r_role_assigner_data.fieldConfig.isInField(side_sol1_x, side_sol1_y,
                     outsideFieldMargin) && side_sol1_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol1_x, sol1_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol1_x, sol1_y)) {
                 best_X = side_sol1_x;
                 best_Y = side_sol1_y;
                 found = true;
             }
         }
         if (nr_crossings_side > 1) {
-            if (r_role_assigner_data.environment.isInField(side_sol2_x, side_sol2_y,
+            if (r_role_assigner_data.fieldConfig.isInField(side_sol2_x, side_sol2_y,
                     outsideFieldMargin) && side_sol2_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y)) {
                 best_X = side_sol2_x;
                 best_Y = side_sol2_y;
                 found = true;
             }
         }
         if (nr_crossings_penalty > 0) {
-            if (r_role_assigner_data.environment.isInField(penalty_sol1_x, penalty_sol1_y, 0)
+            if (r_role_assigner_data.fieldConfig.isInField(penalty_sol1_x, penalty_sol1_y, 0)
                     && penalty_sol1_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol1_x, sol1_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol1_x, sol1_y)) {
                 best_X = penalty_sol1_x;
                 best_Y = penalty_sol1_y;
                 found = true;
             }
         }
         if (nr_crossings_penalty > 1) {
-            if (r_role_assigner_data.environment.isInField(penalty_sol2_x, penalty_sol2_y, 0)
+            if (r_role_assigner_data.fieldConfig.isInField(penalty_sol2_x, penalty_sol2_y, 0)
                     && penalty_sol2_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y)) {
                 best_X = penalty_sol2_x;
                 best_Y = penalty_sol2_y;
                 found = true;
             }
         }
         if (nr_crossings_penalty2 > 0) {
-            if (r_role_assigner_data.environment.isInField(penalty2_sol1_x, penalty2_sol1_y, 0)
+            if (r_role_assigner_data.fieldConfig.isInField(penalty2_sol1_x, penalty2_sol1_y, 0)
                     && penalty2_sol1_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y)) {
                 best_X = penalty2_sol1_x;
                 best_Y = penalty2_sol1_y;
                 found = true;
             }
         }
         if (nr_crossings_penalty2 > 1) {
-            if (r_role_assigner_data.environment.isInField(penalty2_sol2_x, penalty2_sol2_y, 0)
+            if (r_role_assigner_data.fieldConfig.isInField(penalty2_sol2_x, penalty2_sol2_y, 0)
                     && penalty2_sol2_y < best_Y
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y)) {
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y)) {
                 best_X = penalty2_sol2_x;
                 best_Y = penalty2_sol2_y;
                 found = true;
@@ -412,7 +412,7 @@ bool RolePosition::calculateSetPlayReceiverOnLobShotLinePosition(const RoleAssig
     double outsideFieldMargin = r_role_assigner_data.parameters.outsideFieldMargin; // distance to stay from side of field
     double distBallReceiver = r_role_assigner_data.parameters.restart_receiver_ball_dist; // distance between receiver and ball
     double sol1_x, sol1_y, sol2_x, sol2_y = 0;
-    double maxFieldX = r_role_assigner_data.environment.getMaxFieldX();
+    double maxFieldX = r_role_assigner_data.fieldConfig.getMaxFieldX();
     int nr_crossings = 0;
     double lobshot_line = r_role_assigner_data.parameters.min_y_for_lob_shot;
     // check crossings with lobshot line where receiver putting back is allowed.
@@ -422,18 +422,18 @@ bool RolePosition::calculateSetPlayReceiverOnLobShotLinePosition(const RoleAssig
     if (nr_crossings > 0) {
         // at least 1 intersection found the lobshot line
         if (nr_crossings == 1) {
-            if (r_role_assigner_data.environment.isInField(sol1_x, sol1_y, outsideFieldMargin)) {
+            if (r_role_assigner_data.fieldConfig.isInField(sol1_x, sol1_y, outsideFieldMargin)) {
                 receiverPosition = MRA::Geometry::Point(sol1_x, sol1_y);
                 found = true;
             }
         } else {
             // check if both intersections are in the field
-            bool sol1_inField = r_role_assigner_data.environment.isInField(sol1_x, sol1_y,
+            bool sol1_inField = r_role_assigner_data.fieldConfig.isInField(sol1_x, sol1_y,
                     outsideFieldMargin)
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol1_x, sol1_y);
-            bool sol2_inField = r_role_assigner_data.environment.isInField(sol2_x, sol2_y,
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol1_x, sol1_y);
+            bool sol2_inField = r_role_assigner_data.fieldConfig.isInField(sol2_x, sol2_y,
                     outsideFieldMargin)
-                    && !r_role_assigner_data.environment.isInOwnGoalArea(sol2_x, sol2_y);
+                    && !r_role_assigner_data.fieldConfig.isInOwnGoalArea(sol2_x, sol2_y);
             if (sol1_inField && sol2_inField) {
                 // both intersections are in field, select position closes to the side-line
                 if (fabs(sol1_x) < fabs(sol2_x)) {
@@ -470,7 +470,7 @@ bool RolePosition::calculateSetPlayReceiverConservativePosition(const RoleAssign
         closest_direction = -closest_direction; // ball is left on the field
     }
     double closest_sidelineX = r_role_assigner_data.ball.position.x + (closest_direction * distBallReceiver);
-    if (r_role_assigner_data.environment.isInField(closest_sidelineX, r_role_assigner_data.ball.position.y, outsideFieldMargin)) {
+    if (r_role_assigner_data.fieldConfig.isInField(closest_sidelineX, r_role_assigner_data.ball.position.y, outsideFieldMargin)) {
         // place receiver towards sideline
         receiverPosition = MRA::Geometry::Point(r_role_assigner_data.ball.position.x + (closest_direction * distBallReceiver), r_role_assigner_data.ball.position.y);
     }
@@ -506,7 +506,7 @@ MRA::Geometry::Point RolePosition::calculateSetPlayerKickerPosition(const MRA::G
         double distShooterReceiver = actualDistBallShooter + distBallReceiver;
         shootX = receiverPosition.x + (cos(alfaKicker) * distShooterReceiver);
         shootY = receiverPosition.y + (sin(alfaKicker) * distShooterReceiver);
-        if (r_role_assigner_data.environment.isInReachableField(shootX, shootY)) {
+        if (r_role_assigner_data.fieldConfig.isInReachableField(shootX, shootY)) {
             // shooter position is reachable for player
             shootPositionValid = true;
         }
@@ -515,11 +515,11 @@ MRA::Geometry::Point RolePosition::calculateSetPlayerKickerPosition(const MRA::G
             // adjust position for the shooter
 
             actualDistBallShooter = actualDistBallShooter - 0.10; // try again with distance to ball 10 cm shorter.
-            if (actualDistBallShooter < (r_role_assigner_data.environment.getRobotRadius() + 0.10) ) {
+            if (actualDistBallShooter < (r_role_assigner_data.fieldConfig.getRobotRadius() + 0.10) ) {
                 // can not move close to ball then 10 cm from the front of the robot.
                 // use same x position as ball and position the front of the player cm from the ball
                 shootX = r_role_assigner_data.ball.position.x;
-                shootY = r_role_assigner_data.ball.position.y - r_role_assigner_data.environment.getRobotSize();
+                shootY = r_role_assigner_data.ball.position.y - r_role_assigner_data.fieldConfig.getRobotSize();
                 shootPositionValid = true;
             }
         }
@@ -545,8 +545,8 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
 
     const double margin_to_side_line = 0.5;
     double distBallReceiver = r_role_assigner_data.parameters.restart_receiver_ball_dist; // distance between receiver and ball
-    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY());
-    double topPenaltyAreaY = r_role_assigner_data.environment.getMaxFieldY()- (r_role_assigner_data.environment.getPenaltyAreaLength() + r_role_assigner_data.environment.getRobotRadius());
+    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY());
+    double topPenaltyAreaY = r_role_assigner_data.fieldConfig.getMaxFieldY()- (r_role_assigner_data.fieldConfig.getPenaltyAreaLength() + r_role_assigner_data.fieldConfig.getRobotRadius());
     // create situation for lob shot: receiver on line between ball and goal x meter behind ball facing to goal.
     // This only when the ball is more then x meter on opponent half (otherwise lob shot on goal is not allowed).
     // if location is outside the field, then the player will be located inside the field.
@@ -562,7 +562,7 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
                 receiverPosition = previousEndPos;
                 receiverPosition.x = receiverPosition.x - (r_role_assigner_data.ball.position.x - r_role_assigner_data.previous_ball.x);
                 receiverPosition.y = receiverPosition.y - (r_role_assigner_data.ball.position.y - r_role_assigner_data.previous_ball.y);
-                if (r_role_assigner_data.environment.isInField(receiverPosition, margin_to_side_line)) {
+                if (r_role_assigner_data.fieldConfig.isInField(receiverPosition, margin_to_side_line)) {
                     return receiverPosition;
                 }
             }
@@ -576,8 +576,8 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
     double behind_ball_y = r_role_assigner_data.ball.position.y + (sin(alfa) * distBallReceiver);
     double min_y_for_default_position = r_role_assigner_data.parameters.min_y_for_lob_shot;
     bool found = false;
-    bool default_in_field = r_role_assigner_data.environment.isInField(behind_ball_x, behind_ball_y, outsideFieldMargin);
-    bool default_in_own_penalty_area = r_role_assigner_data.environment.isInOwnPenaltyArea(behind_ball_x, behind_ball_y, outsideFieldMargin);
+    bool default_in_field = r_role_assigner_data.fieldConfig.isInField(behind_ball_x, behind_ball_y, outsideFieldMargin);
+    bool default_in_own_penalty_area = r_role_assigner_data.fieldConfig.isInOwnPenaltyArea(behind_ball_x, behind_ball_y, outsideFieldMargin);
 
     if (default_in_field && !default_in_own_penalty_area && behind_ball_y > min_y_for_default_position) {
         // lob-shot: receiver will be located at opponent half and within the field
@@ -624,8 +624,8 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
     // If the setplay receiver position is in front of own goal then calculate a safer position for the setplay receiver.
     // The setplay receiver should not be position in area between side of penalty area and middle circle at own half.
     // Then position the setplay receiver to nearest side-line.
-    if (((fabs(receiverPosition.x) < (r_role_assigner_data.environment.getPenaltyAreaWidth() * 0.5)) &&
-         (receiverPosition.y < -(r_role_assigner_data.environment.getCenterCirleDiameter()*0.5))))
+    if (((fabs(receiverPosition.x) < (r_role_assigner_data.fieldConfig.getPenaltyAreaWidth() * 0.5)) &&
+         (receiverPosition.y < -(r_role_assigner_data.fieldConfig.getCenterCirleDiameter()*0.5))))
     {
         // Update receiver location because it is in front of own goal
 
@@ -634,37 +634,37 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
         if (r_role_assigner_data.ball.position.x < 0) {
             closest_direction = -closest_direction; // ball is left on the field
         }
-        double closest_sidelineX = closest_direction * (r_role_assigner_data.environment.getMaxFieldX() - margin_to_side_line);
+        double closest_sidelineX = closest_direction * (r_role_assigner_data.fieldConfig.getMaxFieldX() - margin_to_side_line);
 
         // calculate intersection points of the nearest side-line with circle with radius distBallReceiver with ball as center
         // use one of the intersection points as new position (position must be in the field)
         double intersection1x, intersection1y, intersection2x, intersection2y = 0.0;
         int nr_intersections_with_sideline = findLineCircleIntersections(
                 r_role_assigner_data.ball.position.x, r_role_assigner_data.ball.position.y,distBallReceiver,
-                closest_sidelineX, r_role_assigner_data.environment.getMaxFieldY(),
-                closest_sidelineX, -r_role_assigner_data.environment.getMaxFieldY(),
+                closest_sidelineX, r_role_assigner_data.fieldConfig.getMaxFieldY(),
+                closest_sidelineX, -r_role_assigner_data.fieldConfig.getMaxFieldY(),
                 intersection1x, intersection1y, intersection2x, intersection2y);
         // if no intersections are found: then keep original result, but this should not occur
 
         if (nr_intersections_with_sideline == 1) {
-            if (r_role_assigner_data.environment.isInField(intersection1x, intersection1y, margin_to_side_line)) {
+            if (r_role_assigner_data.fieldConfig.isInField(intersection1x, intersection1y, margin_to_side_line)) {
                 receiverPosition = MRA::Geometry::Point(intersection1x, intersection1y); // select the only intersection
             }
         }
         else if (nr_intersections_with_sideline == 2) {
             // two intersections: select the intersection closest to the middle line (check if position is in the field).
-            if ((intersection2y < intersection1y) && r_role_assigner_data.environment.isInField(intersection1x, intersection1y, margin_to_side_line)){
+            if ((intersection2y < intersection1y) && r_role_assigner_data.fieldConfig.isInField(intersection1x, intersection1y, margin_to_side_line)){
                 receiverPosition = MRA::Geometry::Point(intersection1x, intersection1y);
             }
             else{
-                if (r_role_assigner_data.environment.isInField(intersection2x, intersection2y, margin_to_side_line)) {
+                if (r_role_assigner_data.fieldConfig.isInField(intersection2x, intersection2y, margin_to_side_line)) {
                     receiverPosition = MRA::Geometry::Point(intersection2x, intersection2y);
                 }
             }
         }
     }
 
-    if (r_role_assigner_data.environment.isInOpponentPenaltyArea(receiverPosition.x, receiverPosition.y) ) {
+    if (r_role_assigner_data.fieldConfig.isInOpponentPenaltyArea(receiverPosition.x, receiverPosition.y) ) {
         // receiver position is in Opponent Goal area AND game-state is not penalty
         // Then place the receiver on the line on top of the opponent penalty area
         double preffered_Y_receiver = topPenaltyAreaY;
@@ -712,18 +712,18 @@ void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPo
         //   - goalie position  in case their is not goalie set but team have 5 players
 
         // define forward positions based on parking location.
-        MRA::Geometry::Point fordwardRight = MRA::Geometry::Point( 1.0, -(r_role_assigner_data.environment.getCenterCirleRadius() + r_role_assigner_data.environment.getRobotRadius())-1);
-        MRA::Geometry::Point fordwardLeft  = MRA::Geometry::Point(-1.0, -(r_role_assigner_data.environment.getCenterCirleRadius() + r_role_assigner_data.environment.getRobotRadius())-1);
+        MRA::Geometry::Point fordwardRight = MRA::Geometry::Point( 1.0, -(r_role_assigner_data.fieldConfig.getCenterCirleRadius() + r_role_assigner_data.fieldConfig.getRobotRadius())-1);
+        MRA::Geometry::Point fordwardLeft  = MRA::Geometry::Point(-1.0, -(r_role_assigner_data.fieldConfig.getCenterCirleRadius() + r_role_assigner_data.fieldConfig.getRobotRadius())-1);
         playerPositions.push_back(fordwardRight);
         playerPositions.push_back(fordwardLeft);
         // define back position based on parking position
-        MRA::Geometry::Point backRight = MRA::Geometry::Point(  (r_role_assigner_data.environment.getMaxFieldX()*0.5) + 0.5, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)-0.3);
-        MRA::Geometry::Point backLeft  = MRA::Geometry::Point( -(r_role_assigner_data.environment.getMaxFieldX()*0.5) - 0.5, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)-0.3);
+        MRA::Geometry::Point backRight = MRA::Geometry::Point(  (r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5) + 0.5, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)-0.3);
+        MRA::Geometry::Point backLeft  = MRA::Geometry::Point( -(r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5) - 0.5, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)-0.3);
         playerPositions.push_back(backRight);
         playerPositions.push_back(backLeft);
 
         // add goalie begin position for the case there is no goalie present
-        double goalieYPosition = -r_role_assigner_data.environment.getMaxFieldY()+0.5;
+        double goalieYPosition = -r_role_assigner_data.fieldConfig.getMaxFieldY()+0.5;
         MRA::Geometry::Point goaliePosition = MRA::Geometry::Point(0, goalieYPosition); // center of the goal;
         playerPositions.push_back(goaliePosition);
     }
@@ -731,7 +731,7 @@ void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPo
         // provide list for fixed positions in case of PARKING
 
         // select position closest to default goalie position as parking position for the goalie
-        MRA::Geometry::Point goalieDefaultPosition = MRA::Geometry::Point(0, -r_role_assigner_data.environment.getMaxFieldY());
+        MRA::Geometry::Point goalieDefaultPosition = MRA::Geometry::Point(0, -r_role_assigner_data.fieldConfig.getMaxFieldY());
         MRA::Geometry::Point goalieParkingPosition = closestTo(goalieDefaultPosition, r_role_assigner_data.parking_positions);
 
         // provide list for fixed positions in case of PARKING for the field-players
@@ -787,46 +787,46 @@ void RolePosition::GetFixedPositions(std::vector<MRA::Geometry::Point>& playerPo
 
 void RolePosition::getSearchForBallPositions(std::vector<Geometry::Point>& playerPositions, const RoleAssignerData& r_role_assigner_data)
 {
-    double topPenaltyAreaSearchPos = r_role_assigner_data.environment.getMaxFieldY()-(r_role_assigner_data.environment.getPenaltyAreaLength()+0.5);
+    double topPenaltyAreaSearchPos = r_role_assigner_data.fieldConfig.getMaxFieldY()-(r_role_assigner_data.fieldConfig.getPenaltyAreaLength()+0.5);
 
     if (r_role_assigner_data.gamestate == game_state_e::CORNER) {
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()+1.0, +r_role_assigner_data.environment.getMaxFieldY()-1.0));  // left near opponent corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()-1.0, +r_role_assigner_data.environment.getMaxFieldY()-1.0));  // right near opponent corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, -r_role_assigner_data.environment.getMaxFieldY()*0.5));  // right of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, -r_role_assigner_data.environment.getMaxFieldY()*0.5));  // left of field just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()+1.0, +r_role_assigner_data.fieldConfig.getMaxFieldY()-1.0));  // left near opponent corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()-1.0, +r_role_assigner_data.fieldConfig.getMaxFieldY()-1.0));  // right near opponent corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // right of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // left of field just middle of own half in Y
     }
     else if (r_role_assigner_data.gamestate == game_state_e::CORNER_AGAINST) {
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()+1.5, -r_role_assigner_data.environment.getMaxFieldY()+1.5));  // left near own corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()-1.5, -r_role_assigner_data.environment.getMaxFieldY()+1.5));  // right near own corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, +r_role_assigner_data.environment.getMaxFieldY()*0.5));  // right of field, just middle of opponent half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, +r_role_assigner_data.environment.getMaxFieldY()*0.5));  // left of field just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()+1.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()+1.5));  // left near own corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()-1.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()+1.5));  // right near own corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // right of field, just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // left of field just middle of opponent half in Y
     }
     else if ((r_role_assigner_data.gamestate == game_state_e::GOALKICK) || (r_role_assigner_data.gamestate == game_state_e::PENALTY_AGAINST) || (r_role_assigner_data.gamestate == game_state_e::PENALTY_SHOOTOUT_AGAINST)) {
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, -topPenaltyAreaSearchPos));  // left near top own penalty area
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, -topPenaltyAreaSearchPos));  // right near top own penalty area
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, +r_role_assigner_data.environment.getMaxFieldY()*0.5));  // right of field, just middle of opponent half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, +r_role_assigner_data.environment.getMaxFieldY()*0.5));  // left of field just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -topPenaltyAreaSearchPos));  // left near top own penalty area
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -topPenaltyAreaSearchPos));  // right near top own penalty area
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // right of field, just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // left of field just middle of opponent half in Y
     }
     else if ((r_role_assigner_data.gamestate == game_state_e::GOALKICK_AGAINST) || (r_role_assigner_data.gamestate == game_state_e::PENALTY) || (r_role_assigner_data.gamestate == game_state_e::PENALTY_SHOOTOUT)) {
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, +topPenaltyAreaSearchPos));  // left near top opponent corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, +topPenaltyAreaSearchPos));  // right near top opponent corner
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, -r_role_assigner_data.environment.getMaxFieldY()*0.5));  // right of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, -r_role_assigner_data.environment.getMaxFieldY()*0.5));  // left of field just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +topPenaltyAreaSearchPos));  // left near top opponent corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +topPenaltyAreaSearchPos));  // right near top opponent corner
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // right of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5));  // left of field just middle of own half in Y
 
     }
     else if ((r_role_assigner_data.gamestate == game_state_e::THROWIN) || (r_role_assigner_data.gamestate == game_state_e::THROWIN_AGAINST)) {
-        double x_dist = r_role_assigner_data.environment.getMaxFieldX()-1.5;
-        playerPositions.push_back(MRA::Geometry::Point(-x_dist, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // left of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point( x_dist, +(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // right of field, just middle of opponent half in Y
-        playerPositions.push_back(MRA::Geometry::Point( x_dist, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // right of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-x_dist, +(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // left of field, just middle of opponent half in Y
+        double x_dist = r_role_assigner_data.fieldConfig.getMaxFieldX()-1.5;
+        playerPositions.push_back(MRA::Geometry::Point(-x_dist, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // left of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point( x_dist, +(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // right of field, just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point( x_dist, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // right of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-x_dist, +(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // left of field, just middle of opponent half in Y
     }
     else {
         // any other situation
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // left of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, +(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // right of field, just middle of opponent half in Y
-        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.environment.getMaxFieldX()*0.5, -(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // right of field, just middle of own half in Y
-        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.environment.getMaxFieldX()*0.5, +(r_role_assigner_data.environment.getMaxFieldY()*0.5)));  // left of field, just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // left of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // right of field, just middle of opponent half in Y
+        playerPositions.push_back(MRA::Geometry::Point( r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, -(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // right of field, just middle of own half in Y
+        playerPositions.push_back(MRA::Geometry::Point(-r_role_assigner_data.fieldConfig.getMaxFieldX()*0.5, +(r_role_assigner_data.fieldConfig.getMaxFieldY()*0.5)));  // left of field, just middle of opponent half in Y
     }
 }
 
@@ -866,7 +866,7 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
     if (r_role_assigner_data.ball.status == ball_status_e::OWNED_BY_OPPONENT) {
         // determine the smallest distance from any opponent to the ball
         MRA::Geometry::Point opponent_with_ball_pos = ballPos;
-        double smallestDistOpponentToBall = r_role_assigner_data.environment.getMaxPossibleFieldDistance ();
+        double smallestDistOpponentToBall = r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance ();
 
         for (auto idx = 0u; idx < r_role_assigner_data.opponents.size (); idx++) {
             auto opponent_pos = r_role_assigner_data.opponents[idx].position;
@@ -877,8 +877,8 @@ MRA::Geometry::Point RolePosition::InterceptorNormalPlayPosition(planner_target_
             }
         }
 
-        MRA::Geometry::Point goalPos = MRA::Geometry::Point (0.0, -r_role_assigner_data.environment.getMaxFieldY ());
-        double smallestDistToBallOnTheDefenseLine = r_role_assigner_data.environment.getMaxPossibleFieldDistance ();
+        MRA::Geometry::Point goalPos = MRA::Geometry::Point (0.0, -r_role_assigner_data.fieldConfig.getMaxFieldY ());
+        double smallestDistToBallOnTheDefenseLine = r_role_assigner_data.fieldConfig.getMaxPossibleFieldDistance ();
         MRA::Geometry::Point posOfInterest = opponent_with_ball_pos;  // center of opponent with ball.(for now)
         double distPosOfInterest2Goal = goalPos.distanceTo (posOfInterest);
         double maxDistanceToPOI = r_role_assigner_data.parameters.priority_block_max_distance; // safe distance to ball (used to prevent players move around ball).
@@ -985,7 +985,7 @@ int RolePosition::FindMostDangerousOpponentAndNotAssigned(const RoleAssignerData
     vector<double> oppenent_to_ball_dist = vector<double>();
     vector<double> oppenent_to_goal_dist = vector<double>();
     MRA::Geometry::Point ballPos = r_role_assigner_data.ball.position;
-    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -r_role_assigner_data.environment.getMaxFieldY());
+    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -r_role_assigner_data.fieldConfig.getMaxFieldY());
     // get distances for each opponent to ball and our goal.
     for (unsigned idx = 0; idx < r_role_assigner_data.opponents.size(); idx++) {
         MRA::Geometry::Point opponent_position = r_role_assigner_data.opponents[idx].position;
@@ -994,7 +994,7 @@ int RolePosition::FindMostDangerousOpponentAndNotAssigned(const RoleAssignerData
     }
 
     // assume opponent closest to our goal is most dangerous
-    MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY());
+    MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY());
     double closest_dist_to = std::numeric_limits<double>::infinity();
     for (unsigned idx = 0; idx < r_role_assigner_data.opponents.size(); idx++) {
         if (r_role_assigner_data.opponents[idx].position.distanceTo(opponentGoal) > r_role_assigner_data.parameters.dist_to_goal_to_mark_opponent_as_goalie) {
@@ -1021,7 +1021,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(const MRA::Geomet
     // find closest to ball
     vector<double> oppenent_to_ball_dist = vector<double>();
     vector<double> oppenent_to_goal_dist = vector<double>();
-    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -r_role_assigner_data.environment.getMaxFieldY());
+    MRA::Geometry::Point goalPos = MRA::Geometry::Point(0, -r_role_assigner_data.fieldConfig.getMaxFieldY());
     // get distances for each opponent to ball and our goal.
     for (unsigned idx = 0; idx < r_role_assigner_data.opponents.size(); idx++) {
         MRA::Geometry::Point opponent_position = r_role_assigner_data.opponents[idx].position;
@@ -1029,7 +1029,7 @@ int RolePosition::FindOpponentClostestToPositionAndNotAssigned(const MRA::Geomet
         oppenent_to_goal_dist.push_back(goalPos.distanceTo(opponent_position));
     }
 
-    MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, r_role_assigner_data.environment.getMaxFieldY());
+    MRA::Geometry::Point opponentGoal = MRA::Geometry::Point(0, r_role_assigner_data.fieldConfig.getMaxFieldY());
     double closest_dist_to = std::numeric_limits<double>::infinity();
     for (unsigned idx = 0; idx < r_role_assigner_data.opponents.size(); idx++) {
         if (r_role_assigner_data.opponents[idx].position.distanceTo(opponentGoal) > r_role_assigner_data.parameters.dist_to_goal_to_mark_opponent_as_goalie) {
@@ -1095,7 +1095,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
     if (role == role_ATTACKER_MAIN and isOneOf(r_role_assigner_data.gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN})) {
         if (ballPos.y < 0 and nr_field_players  > 2) {
             // ball at own side and more than 2 field players, aim kicker to center of opponent half
-            auto aimPoint = MRA::Geometry::Point(0.0, r_role_assigner_data.environment.getMaxFieldY() * 0.5);
+            auto aimPoint = MRA::Geometry::Point(0.0, r_role_assigner_data.fieldConfig.getMaxFieldY() * 0.5);
             rolePosition =  calculateSetPlayerKickerPosition(aimPoint, r_role_assigner_data);
         }
         else {
@@ -1130,10 +1130,10 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
         const double MIN_Y_WHEN_BALL_ON_OWN_HALF = 1.0;  // minimum y for player if ball is at own half (y > 0 is at opponent half)
 
         // maximum y for player if ball is at own half (y > 0 is at opponent half)
-        const double MAX_Y_WHEN_BALL_ON_OWN_HALF = r_role_assigner_data.environment.getTopPenaltyAreaY() - 1.0;
+        const double MAX_Y_WHEN_BALL_ON_OWN_HALF = r_role_assigner_data.fieldConfig.getTopPenaltyAreaY() - 1.0;
 
 
-        double max_field_x = r_role_assigner_data.environment.getMaxFieldX();
+        double max_field_x = r_role_assigner_data.fieldConfig.getMaxFieldX();
         MRA::Geometry::Point optimal_role_pos;
         if (assignment_nr == 3) {
             if (ballPos.y <= 0) {
@@ -1167,7 +1167,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
                 // ball at opponent half: setplay receiver is at best possible shooting position
                 // Player must be ready to pickup rebounced ball: locate near opponent goal
                 optimal_role_pos.x = 0.0;
-                auto fc = r_role_assigner_data.environment;
+                auto fc = r_role_assigner_data.fieldConfig;
                 optimal_role_pos.y = fc.getMaxFieldY() - fc.getPenaltySpotToBackline();
 
                 // calculate position with as target the optimal position : stronger preference for Y location than X, ready for rebound (no ready for pass needed)
@@ -1206,7 +1206,7 @@ MRA::Geometry::Point RolePosition::determineSetplayRolePosition_2024(int assignm
                 auto best_x = max_field_x - 2.5; // X meter from side
                 MRA::Geometry::Point optimal_role_pos;
                 optimal_role_pos.x = (ballPos.x < 0) ? best_x : -best_x;
-                optimal_role_pos.y = r_role_assigner_data.environment.getTopPenaltyAreaY() - 2.0;  // 2 meter from top of opponent penalty area
+                optimal_role_pos.y = r_role_assigner_data.fieldConfig.getTopPenaltyAreaY() - 2.0;  // 2 meter from top of opponent penalty area
                 rolePosition = RoleAssignerGrid::findSetPlayPosition(role, r_role_assigner_data, optimal_role_pos, r_gridFileNumber, true, false, true);
             }
         }

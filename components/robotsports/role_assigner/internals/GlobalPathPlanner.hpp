@@ -6,10 +6,10 @@
 #ifndef GlobalPathPlanner_HPP
 #define GlobalPathPlanner_HPP 1
 
+#include "FieldConfig.hpp"
 #include <vector>
 #include <list>
 
-#include "Environment.hpp"
 #include "RoleAssigner_types.hpp"
 #include "RoleAssignerParameters.hpp"
 
@@ -32,7 +32,7 @@ class RoleAssignerData;
 class GlobalPathPlanner {
 
 private:
-    const Environment& m_Environment;
+    FieldConfig m_fieldConfig;
     Vertex * m_start;
     MRA::Geometry::Position m_startVelocity;
     std::vector<Vertex *> m_target;
@@ -59,7 +59,7 @@ public:
      *            Position of objects in the field to avoid. All objects are
      *            assumed to be 60x60 cm.
      */
-    explicit GlobalPathPlanner(const Environment& environment);
+    explicit GlobalPathPlanner(FieldConfig fieldConfig);
     virtual ~GlobalPathPlanner();
 
     /* set the options for the planner */

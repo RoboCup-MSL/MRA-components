@@ -18,11 +18,14 @@ public:
     std::vector<path_piece_t> path;
     role_e role;
     int role_rank = -1;
+    game_state_e gamestate;
     MRA::Geometry::Point target;
     planner_target_e planner_target;
     defend_info_t defend_info;
+    bool target_position_is_end_position_of_pass;
 
-    RoleAssignerResult(const role_e& role = role_e::role_UNDEFINED,
+    RoleAssignerResult(const game_state_e&  gamestate = game_state_e::NONE,
+                       const role_e& role = role_e::role_UNDEFINED,
                        int role_rank = -1,
                        const MRA::Geometry::Point& target = MRA::Geometry::Point(),
                        const planner_target_e& planner_target = planner_target_e::GOTO_BALL,
@@ -31,9 +34,11 @@ public:
                             path(),
                             role(role),
                             role_rank(role_rank),
+                            gamestate(gamestate),
                             target(target),
                             planner_target(planner_target),
-                            defend_info(defend_info)
+                            defend_info(defend_info),
+                            target_position_is_end_position_of_pass(target_position_is_end_position_of_pass)
                         {
 
                         }

@@ -36,7 +36,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     // convert to role_assigner_data;
     RoleAssignerData role_assigner_data = {};
     role_assigner_data.parameters = parameters;
-    role_assigner_data.environment = Environment(parameters.environment_parameters);
+    role_assigner_data.fieldConfig = input.fieldConfig;
     role_assigner_data.input_formation = input.input_formation;
     role_assigner_data.gamestate = input.gamestate;
     role_assigner_data.ball = input.ball;
@@ -115,9 +115,9 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     role_assigner_data.opponents = {};
     for (unsigned idx = 0; idx < role_assigner_data.original_opponents.size(); idx++) {
         MRA::Geometry::Point opponent_pos = role_assigner_data.original_opponents[idx].position;
-        bool behind_own_backline = (fabs(opponent_pos.x) < role_assigner_data.environment.getMaxFieldX()-1)  // 1 meter from side
-                        and opponent_pos.y < -role_assigner_data.environment.getMaxFieldY(); // behind backline
-        if (role_assigner_data.environment.isInReachableField(opponent_pos) and not behind_own_backline) {
+        bool behind_own_backline = (fabs(opponent_pos.x) < role_assigner_data.fieldConfig.getMaxFieldX()-1)  // 1 meter from side
+                        and opponent_pos.y < -role_assigner_data.fieldConfig.getMaxFieldY(); // behind backline
+        if (role_assigner_data.fieldConfig.isInReachableField(opponent_pos) and not behind_own_backline) {
             role_assigner_data.opponents.push_back(role_assigner_data.original_opponents[idx]);
         }
     }
@@ -133,7 +133,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
             (role_assigner_data.gamestate == game_state_e::GOAL_AGAINST)) {
         // unhandled game situations: cards and goals are not passed to the team planner via the game state-machine
         for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
-            RoleAssignerResult player_result = {};
+            RoleAssignerResult player_result(role_assigner_data.gamestate);
             player_paths.push_back(player_result);
         }
         return player_paths; // no path will be planned if game state is NONE
@@ -156,6 +156,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     }
 
     for (unsigned r_idx = 0; r_idx < role_assigner_data.team_admin.size(); r_idx++) {
+        role_assigner_data.team_admin[r_idx].result.gamestate = role_assigner_data.gamestate;
         role_assigner_data.team_admin[r_idx].result.role = role_e::role_UNDEFINED;
         role_assigner_data.team_admin[r_idx].result.defend_info.valid = false;
     }
@@ -309,15 +310,16 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
         RoleAssignerResult player_result;
         if (role_assigner_data.team_admin[idx].assigned) {
-            bool pathOK = stayPathWithinBoundaries(role_assigner_data.environment, role_assigner_data.team_admin[idx].result);
+            bool pathOK = stayPathWithinBoundaries(role_assigner_data.fieldConfig, role_assigner_data.team_admin[idx].result);
             player_result = role_assigner_data.team_admin[idx].result;
+            player_result.gamestate = role_assigner_data.team_admin[idx].result.gamestate;
             player_result.role = role_assigner_data.team_admin[idx].result.role;
             if (not pathOK && idx == role_assigner_data.this_player_idx) { // CHECK Only this robot
                 thisPlayerHasUnallowedPath = true; // this robot has wrong path
 
                 // check if player starts at position in the field
                 auto currentPos = role_assigner_data.team[idx].position;
-                thisPlayerStartsAtUnallowedPosition = !role_assigner_data.environment.isInReachableField(currentPos.x, currentPos.y);
+                thisPlayerStartsAtUnallowedPosition = !role_assigner_data.fieldConfig.isInReachableField(currentPos.x, currentPos.y);
             }
             player_paths.push_back(player_result);
         }
@@ -349,13 +351,13 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         {
             save_name = GetRoleAssignerSVGname(role_assigner_data.gamestate, "DYN_ROLE_NONE");
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, role_assigner_data, role_assigner_data.environment, save_name);
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, role_assigner_data, role_assigner_data.fieldConfig, save_name);
 
         // create empty path for robot with a path that ends outside the field.
         std::vector<path_piece_t> path = player_paths[role_assigner_data.this_player_idx].path;
         if (not path.empty()) {
             auto end_position = path[path.size()-1];
-            if (not role_assigner_data.environment.isInReachableField(end_position.x,end_position.y)) {
+            if (not role_assigner_data.fieldConfig.isInReachableField(end_position.x,end_position.y)) {
                 // end position is unreachable: create empty path
                 player_paths[role_assigner_data.this_player_idx] = RoleAssignerResult();
             }
@@ -395,13 +397,13 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     bool avoidBallPath = (r_role_assigner_data.gamestate == game_state_e::NORMAL_ATTACK)
                     and r_role_assigner_data.pass_data.valid; // avoid ball path only if pass made (or shot on goal) during normal play (normal_attack)
-//    if (r_role_assigner_data.team_admin[idx].result.target_position_is_end_position_of_pass) {
-//        // in case of pass, don't avoid ball path if player is destination of the pass
-//        avoidBallPath = false;
-//    }
+    if (r_role_assigner_data.team_admin[idx].result.target_position_is_end_position_of_pass) {
+        // in case of pass, don't avoid ball path if player is destination of the pass
+        avoidBallPath = false;
+    }
 
     vector<RoleAssignerRobot> myTeam = getTeamMates (r_role_assigner_data, idx, true);
-    GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_role_assigner_data.environment); // create robot planner
+    GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_role_assigner_data.fieldConfig); // create robot planner
     visibilityGraph.setOptions (r_role_assigner_data.parameters);
     // create list of possible targets for robot-planner
     std::vector<MRA::Vertex> targetPos = vector<MRA::Vertex> ();
@@ -409,7 +411,7 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
     // check if role position is in allowed, if not allowed update position to an allowed positions
     r_role_assigner_data.team_admin[idx].result.target = updatePositionIfNotAllowed (
                     r_role_assigner_data.team[idx].position, r_role_assigner_data.team_admin[idx].result.role,
-                    r_role_assigner_data.team_admin[idx].result.target, r_role_assigner_data.environment);
+                    r_role_assigner_data.team_admin[idx].result.target, r_role_assigner_data.fieldConfig);
 
     bool stay_in_playing_field = stayInPlayingField (r_role_assigner_data.gamestate);
 
@@ -425,12 +427,12 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
 //---------------------------------------------------------------------------------------------------------------------
 // check if the given path is always within the boundaries
-bool RoleAssigner::stayPathWithinBoundaries(const Environment& rEnvironment, const RoleAssignerResult& player_path) {
+bool RoleAssigner::stayPathWithinBoundaries(const FieldConfig& fieldConfig, const RoleAssignerResult& player_path) {
     bool ok = true;
     // check path-pieces
     for (auto it = player_path.path.begin(); it != player_path.path.end(); ++it ) {
         // abs(x) < allowed-x
-        if (not rEnvironment.isInReachableField(it->x, it->y)) {
+        if (not fieldConfig.isInReachableField(it->x, it->y)) {
             ok = false;
         }
     }
@@ -552,6 +554,7 @@ bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assig
     if (foundPlayer != -1) {
         // robot claimed role+position and that robot has lower id than this robot.
         role_assigner_data.team_admin[foundPlayer].result = RoleAssignerResult(
+            role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
             targetPos,
@@ -595,6 +598,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
             if (role_assigner_data.team[idx].robotId == role_assigner_data.pass_data.target_id) {
                 /* this player is destination of the pass */
                 role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                    role_assigner_data.gamestate,
                     role,
                     role_assigner_data.incrementAndGetRank(),
                     target,
@@ -691,6 +695,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
     if (found) {
         // fill best robot data in planner result.
         role_assigner_data.team_admin[bestPlayerIdx].result = RoleAssignerResult(
+            role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
             target,
@@ -736,23 +741,23 @@ bool RoleAssigner::check_better_path_found(double& lowest_pathcost, double newPa
  */
 void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
 {
-    double goalieYPosition = -role_assigner_data.environment.getMaxFieldY()+0.5;
+    double goalieYPosition = -role_assigner_data.fieldConfig.getMaxFieldY()+0.5;
     Geometry::Point goaliePosition = Geometry::Point(0, goalieYPosition); // center of the goal;
     if (role_assigner_data.gamestate == game_state_e::PARKING) {
         // select position closest to default goalie position as parking position for the goalie
-        Geometry::Point startPost = Geometry::Point(0, -role_assigner_data.environment.getMaxFieldY());
+        Geometry::Point startPost = Geometry::Point(0, -role_assigner_data.fieldConfig.getMaxFieldY());
         goaliePosition = RolePosition::closestTo(startPost, role_assigner_data.parking_positions);
     }
     else {
         if (role_assigner_data.ball.is_valid) {
             MRA::Geometry::Point ballPos = role_assigner_data.ball.position;
-            double penalty_area_half_width = role_assigner_data.environment.getPenaltyAreaWidth() * 0.5;
+            double penalty_area_half_width = role_assigner_data.fieldConfig.getPenaltyAreaWidth() * 0.5;
             if (ballPos.x < -penalty_area_half_width) {
                 //            if (global) ball is to the left of the field (left from outer line penalty area) position keeper to the left.
-                goaliePosition = MRA::Geometry::Point(-role_assigner_data.environment.getGoalWidth()*0.25, goalieYPosition); // left half of the goal;
+                goaliePosition = MRA::Geometry::Point(-role_assigner_data.fieldConfig.getGoalWidth()*0.25, goalieYPosition); // left half of the goal;
             }
             else if (ballPos.x > penalty_area_half_width) {
-                goaliePosition = MRA::Geometry::Point(+role_assigner_data.environment.getGoalWidth()*0.25, goalieYPosition); // right half of the goal;
+                goaliePosition = MRA::Geometry::Point(+role_assigner_data.fieldConfig.getGoalWidth()*0.25, goalieYPosition); // right half of the goal;
             }
         }
     }
@@ -825,6 +830,7 @@ void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
         role_assigner_data.team_admin[keeper_idx].assigned = true;
         defend_info_t defend_info = {};
         role_assigner_data.team_admin[keeper_idx].result = RoleAssignerResult(
+            role_assigner_data.gamestate,
             role_assigner_data.gamestate == game_state_e::PARKING ? DynamicRoleToRole(dr_PARKING, role_GOALKEEPER) : DynamicRoleToRole(dr_GOALKEEPER, role_GOALKEEPER),
             role_assigner_data.incrementAndGetRank(),
             goaliePosition,
@@ -841,24 +847,24 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
     // max allowed time in penalty area in 2019: 10 seconds (attack and defense)
     const double TIME_TOO_LONG_IN_PENALTY_AREA_THRESHOLD = 8.0;  // 2 seconds to move outside the penalty area
     if (role_assigner_data.gamestate != NONE && role_assigner_data.gamestate != PARKING) {
-        double d_x = role_assigner_data.environment.getPenaltyAreaWidth() * 0.5;
-        double d_y = -(role_assigner_data.environment.getFieldLength()/2) + role_assigner_data.environment.getPenaltyAreaLength();
+        double d_x = role_assigner_data.fieldConfig.getPenaltyAreaWidth() * 0.5;
+        double d_y = -(role_assigner_data.fieldConfig.getFieldLength()/2) + role_assigner_data.fieldConfig.getPenaltyAreaLength();
         for (unsigned int idx = 0; idx < role_assigner_data.team.size(); idx++) {
             if (not role_assigner_data.team_admin[idx].assigned) {
 
                 if (role_assigner_data.team[idx].time_in_own_penalty_area > TIME_TOO_LONG_IN_PENALTY_AREA_THRESHOLD) {
                     // player not assigned and too long in penalty area
                     MRA::Geometry::Point pos = role_assigner_data.team[idx].position;
-                    if (role_assigner_data.environment.isInOwnPenaltyArea(pos.x, pos.y)) {
-                        double d_y = -(role_assigner_data.environment.getFieldLength()/2) + role_assigner_data.environment.getPenaltyAreaLength();
+                    if (role_assigner_data.fieldConfig.isInOwnPenaltyArea(pos.x, pos.y)) {
+                        double d_y = -(role_assigner_data.fieldConfig.getFieldLength()/2) + role_assigner_data.fieldConfig.getPenaltyAreaLength();
                         MRA::Geometry::Point targetPos = pos;
                         if (fabs(d_y - pos.y) < fabs(d_x - fabs(pos.x))) {
                             // closest to Y line
-                            targetPos.y = d_y + role_assigner_data.environment.getRobotRadius();
+                            targetPos.y = d_y + role_assigner_data.fieldConfig.getRobotRadius();
                         }
                         else {
                             // closest to side of penalty area
-                            double safe_x_pos = d_x + role_assigner_data.environment.getRobotRadius();
+                            double safe_x_pos = d_x + role_assigner_data.fieldConfig.getRobotRadius();
                             if (pos.x > 0) {
                                 targetPos.x = safe_x_pos;
                             }
@@ -868,6 +874,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                            role_assigner_data.gamestate,
                             DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                             role_assigner_data.incrementAndGetRank(),
                             targetPos,
@@ -878,16 +885,16 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                 if (role_assigner_data.team[idx].time_in_opponent_penalty_area > TIME_TOO_LONG_IN_PENALTY_AREA_THRESHOLD) { // TODO
                     // player not assigned and too long in penalty area
                     MRA::Geometry::Point pos = role_assigner_data.team[idx].position;
-                    if (role_assigner_data.environment.isInOpponentPenaltyArea(pos.x, pos.y)) {
+                    if (role_assigner_data.fieldConfig.isInOpponentPenaltyArea(pos.x, pos.y)) {
                         double d_y2 = -d_y;
                         MRA::Geometry::Point targetPos = pos;
                         if (fabs(d_y2 - pos.y) < fabs(d_x - fabs(pos.x))) {
                             // closest to Y line
-                            targetPos.y = d_y2 - role_assigner_data.environment.getRobotRadius();
+                            targetPos.y = d_y2 - role_assigner_data.fieldConfig.getRobotRadius();
                         }
                         else {
                             // closest to side of penalty area
-                            double safe_x_pos = d_x + role_assigner_data.environment.getRobotRadius();
+                            double safe_x_pos = d_x + role_assigner_data.fieldConfig.getRobotRadius();
                             if (pos.x > 0) {
                                 targetPos.x = safe_x_pos;
                             }
@@ -897,6 +904,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                                                    role_assigner_data.gamestate,
                                                     DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                                                     role_assigner_data.incrementAndGetRank(),
                                                     targetPos,
@@ -940,7 +948,7 @@ bool RoleAssigner::searchForBallBehaviorNeeded(RoleAssignerData& role_assigner_d
     }
     else {
         // ball is valid, check if ball position is with the possible area during a game.
-        if (not role_assigner_data.environment.isInReachableField(role_assigner_data.ball.position.x, role_assigner_data.ball.position.y)    ) {
+        if (not role_assigner_data.fieldConfig.isInReachableField(role_assigner_data.ball.position.x, role_assigner_data.ball.position.y)    ) {
             // ball is outside field (not in field and not in safety area)
             searchForBall = true; // state requires search for ball
         }
@@ -1008,7 +1016,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
     if (distRobotToBall < shortestDistanceOpponentToBall + 1.0) {
         // always approach from outside when the robot is closer to the ball than any opponent + 1.0 meter
         role_assigner_data.parameters.addBallApproachVertices = true;
-        role_assigner_data.parameters.distToapplyBallApproachVertices = role_assigner_data.environment.getFieldWidth();
+        role_assigner_data.parameters.distToapplyBallApproachVertices = role_assigner_data.fieldConfig.getFieldWidth();
     } else {
         // go straight to the ball
         role_assigner_data.parameters.addBallApproachVertices = false;
@@ -1026,7 +1034,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         MRA::Geometry::Point BallTargetPos;
         // use normal planner
         // when ball is obstacle or no iterations for dynamic planner is defined.
-        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.environment);
+        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.fieldConfig);
         visibilityGraph.setOptions(role_assigner_data.parameters);
         vector<RoleAssignerRobot> myTeam = getTeamMates(role_assigner_data, interceptorIdx, false);
         bool stay_in_playing_field = stayInPlayingField (role_assigner_data.gamestate);
@@ -1048,14 +1056,14 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         // check if role position is in allowed, if not allowed update position to an allowed positions
         MRA::Geometry::Point role_position = updatePositionIfNotAllowed(role_assigner_data.team[interceptorIdx].position,
                                                             role_assigner_data.team_admin[interceptorIdx].result.role,
-                                                            original_role_position, role_assigner_data.environment);
+                                                            original_role_position, role_assigner_data.fieldConfig);
 
         vector<MRA::Vertex> roleTargetPos = vector<MRA::Vertex>();
         roleTargetPos.push_back(Vertex(role_position, 0));
 
         bool avoidBallPath = false; // intercept should never avoid a passing ball.
         MRA::Geometry::Point BallTargetPos;
-        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.environment);
+        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.fieldConfig);
         visibilityGraph.setOptions(role_assigner_data.parameters);
         visibilityGraph.createGraph(role_assigner_data.team[interceptorIdx].position, role_assigner_data.team[interceptorIdx].velocity,
                                     role_assigner_data.ball, myTeam, role_assigner_data.opponents,
@@ -1090,6 +1098,7 @@ void RoleAssigner::assignParkingPositions(RoleAssignerData& role_assigner_data) 
         if (role_assigner_data.team[idx].player_type != player_type_e::GOALIE) {
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                role_assigner_data.gamestate,
                 role_assigner_data.input_formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
@@ -1148,6 +1157,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
 
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                role_assigner_data.gamestate,
                 role_assigner_data.input_formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
@@ -1160,7 +1170,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
 }
 
 //--------------------------------------------------------------------------
-MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const Environment& rEnvironment) {
+MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig) {
     //  Updated the role position when it is unreachable into a reachable position, the role position is not updated if the original position was reachable.
     //
     //  background info: using role calculation of another role was considered: use defender position when ball was on own half
@@ -1168,12 +1178,12 @@ MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometr
     //  (which is typical the ball for the interceptor). Using interceptor role position during restart does also take certain distance to ball.
 
     auto new_position = original_target_position;
-    auto robot_offset = rEnvironment.getRobotRadius();
-    auto goal_area_x = 0.5 * rEnvironment.getGoalAreaWidth() + robot_offset;  // max x of goal-area
-    auto goal_area_top_y = (0.5 * rEnvironment.getFieldLength()) - rEnvironment.getGoalAreaLength() - robot_offset; // top y of goal-area
+    auto robot_offset = fieldConfig.getRobotRadius();
+    auto goal_area_x = 0.5 * fieldConfig.getGoalAreaWidth() + robot_offset;  // max x of goal-area
+    auto goal_area_top_y = (0.5 * fieldConfig.getFieldLength()) - fieldConfig.getGoalAreaLength() - robot_offset; // top y of goal-area
     const double PLAYER_TO_BORDER_MARGIN = 0.05; // 5 cm space for turning etc.
-    auto max_reach_x = rEnvironment.getMaxReachableFieldX() - PLAYER_TO_BORDER_MARGIN;
-    auto max_reach_y = rEnvironment.getMaxReachableFieldY() - PLAYER_TO_BORDER_MARGIN;
+    auto max_reach_x = fieldConfig.getMaxReachableFieldX() - PLAYER_TO_BORDER_MARGIN;
+    auto max_reach_y = fieldConfig.getMaxReachableFieldY() - PLAYER_TO_BORDER_MARGIN;
 
     // First check if target is within reachable field. If not then update target position into position in the reachable field.
     if ((fabs(new_position.x) > max_reach_x) or fabs(new_position.y) > max_reach_y) {
@@ -1228,7 +1238,7 @@ MRA::Geometry::Point RoleAssigner::updatePositionIfNotAllowed(const MRA::Geometr
         // check where a line-segment intersects with the line-segment player-target_pos.
         double intercept_x = 0.0;
         double intercept_y = 0.0;
-        auto max_field_y = 0.5 * rEnvironment.getFieldLength();
+        auto max_field_y = 0.5 * fieldConfig.getFieldLength();
 
         // To ensure that intersection positions are in the field.
         // the abs y target position must be <= max_reach_y

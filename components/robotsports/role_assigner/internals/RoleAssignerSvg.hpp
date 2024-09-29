@@ -8,8 +8,7 @@
 
 #include <string>
 #include <vector>
-
-#include "Environment.hpp"
+#include "FieldConfig.hpp"
 
 namespace MRA {
 
@@ -18,15 +17,15 @@ class RoleAssignerData;
 
 class RoleAssignerSvg {
 public:
-    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  rEnvironment,
+    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name);
-    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  rEnvironment,
+    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig,
                                     const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths);
 
 private:
 
-    static double m_MaxFullFieldX;
-    static double m_MaxFullFieldY;
+
+    static FieldConfig m_fieldConfig;
 
     /*  Get svg x coordinate for given field X */
     static double svgX(double fieldX);

@@ -3,6 +3,8 @@
  *  @brief   main file for testing the xml planner
  *  @curator Jürge van Eijck
  */
+#include "FieldConfig.hpp"
+
 #include <iostream>
 #include <signal.h>
 #include <fstream>
@@ -15,8 +17,6 @@
 #include <cstdio>
 #include <cmath>
 #include <boost/filesystem.hpp>
-
-#include "../internals/Environment.hpp"
 #include "../internals/RoleAssignerSvg.hpp"
 #include "../internals/RoleAssignerResult.hpp"
 

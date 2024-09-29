@@ -12,7 +12,7 @@
 namespace MRA {
 
 class RoleAssignerBall;
-class Environment;
+class FieldConfig;
 
 class Dynamics {
     public:
@@ -35,7 +35,7 @@ class Dynamics {
      * @return Intercept point, null if intercept is not possible.
      */
     static dynamics_t interceptBall(const RoleAssignerBall& movingObject, const MRA::Geometry::Point& coordinates,
-            double maxSpeed, const Environment& rEnvironment, bool move_to_ball_left_field_position);
+            double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position);
 
 
     /**
@@ -43,10 +43,10 @@ class Dynamics {
      *
      * @param rBall  position of the ball
      * @param rBallVelocity velocity of the ball
-     * @param rEnvironment field configuration
+     * @param rFieldConfig field configuration
      * @return point where ball leaves the field.
      */
-    static MRA::Geometry::Position calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const Environment &rEnvironment);
+    static MRA::Geometry::Position calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const FieldConfig &rFieldConfig);
 };
 
 } // namespace

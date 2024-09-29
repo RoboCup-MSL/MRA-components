@@ -111,7 +111,7 @@ public:
 
 class RoleAssignerData {
 public:
-    RoleAssignerData() {};
+//    RoleAssignerData() {};
     /* inputs */
     std::vector<role_e> input_formation;
     game_state_e gamestate;
@@ -120,7 +120,7 @@ public:
     ball_pickup_position_t ball_pickup_position;
     bool passIsRequired;
     pass_data_t pass_data;
-    MRA::Environment environment;
+    MRA::Environment environment = {};
     RoleAssignerParameters parameters;
 
 

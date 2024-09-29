@@ -147,7 +147,7 @@
     <complexType name="FieldType"> <annotation>    <documentation>Field data</documentation> </annotation>
         <attribute name="field_length" type="double" default="18.0"> <annotation> <documentation>length of the field</documentation> </annotation> </attribute>
         <attribute name="field_width" type="double" default="12.0"> <annotation> <documentation>width of the field</documentation> </annotation> </attribute>
-        <attribute name="field_margin" type="double" default="1.0"> <annotation> <documentation>margin between field and border</documentation> </annotation> </attribute>
+        <attribute name="field_margin" type="double" default="1.5"> <annotation> <documentation>margin between field and border</documentation> </annotation> </attribute>
         <attribute name="goal_width" type="double" default="2.0"> <annotation> <documentation>width of goal (longest side)</documentation> </annotation> </attribute>
         <attribute name="goal_length" type="double" default="0.5"> <annotation> <documentation>length of goal (shortest side)</documentation> </annotation> </attribute>
         <attribute name="center_circle_diameter" type="double" default="4.0"> <annotation> <documentation>diameter of center circle</documentation> </annotation> </attribute>
@@ -156,14 +156,14 @@
         <attribute name="penalty_area_present" type="boolean" default="true"> <annotation> <documentation>is penalty area present</documentation> </annotation> </attribute>
         <attribute name="penalty_area_width" type="double" default="6.5"> <annotation> <documentation>width of penalty area (longest side)</documentation> </annotation> </attribute>
         <attribute name="penalty_area_length" type="double" default="2.25"> <annotation> <documentation>length of penalty area (shortest side)</documentation> </annotation> </attribute>
-        <attribute name="robot_size" type="double" default="0.52"> <annotation> <documentation>max diameter of robot</documentation> </annotation> </attribute>
+        <attribute name="robot_size" type="double" default="0.5"> <annotation> <documentation>max diameter of robot</documentation> </annotation> </attribute>
         <attribute name="ball_radius" type="double" default="0.11"> <annotation> <documentation>radius of the ball</documentation> </annotation> </attribute>
         <attribute name="field_markings_width" type="double" default="0.125"> <annotation> <documentation>width of the outer lines of the field</documentation> </annotation> </attribute>
         <attribute name="parking_area_width" type="double" default="0.5"> <annotation> <documentation>width of parking area (longest side)</documentation> </annotation> </attribute>
-        <attribute name="parking_area_length" type="double" default="0.5"> <annotation> <documentation>length of parking area (shortest side)</documentation> </annotation> </attribute>
+        <attribute name="parking_area_length" type="double" default="4.5"> <annotation> <documentation>length of parking area (shortest side)</documentation> </annotation> </attribute>
         <attribute name="parking_distance_between_robots" type="double" default="1.0"> <annotation> <documentation>distance between robots when parking</documentation> </annotation> </attribute>
-        <attribute name="parking_distance_to_line" type="double" default="0.0"> <annotation> <documentation>distance relative to the line to park the robot (negative inside field)</documentation> </annotation> </attribute>
-        <attribute name="corner_circle_diameter" type="double" default="0.75"> <annotation> <documentation>diameter of corner circle</documentation> </annotation> </attribute>
+        <attribute name="parking_distance_to_line" type="double" default="0.5"> <annotation> <documentation>distance relative to the line to park the robot (negative inside field)</documentation> </annotation> </attribute>
+        <attribute name="corner_circle_diameter" type="double" default="0.125"> <annotation> <documentation>diameter of corner circle</documentation> </annotation> </attribute>
         <attribute name="penalty_spot_to_backline" type="double" default="3.0"> <annotation> <documentation>distance from backline to restart spots</documentation> </annotation> </attribute>
     </complexType>
      <simpleType name="GameStateType">

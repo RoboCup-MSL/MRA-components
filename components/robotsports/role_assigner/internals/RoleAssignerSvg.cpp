@@ -339,7 +339,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         if (tracking_id <= 0) {
             tracking_id = data.team[idx].robotId;
         }
-        string trackingString = "tracking=\""+ std::to_string(tracking_id) + "\"";
+        string trackingString = "trackingId=\""+ std::to_string(tracking_id) + "\"";
 
         string controlBallString = "";
         if (data.team[idx].controlBall)

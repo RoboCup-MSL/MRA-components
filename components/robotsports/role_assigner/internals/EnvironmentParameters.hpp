@@ -43,7 +43,7 @@ public:
     double parking_area_length = 5.0;
     double parking_distance_between_robots = 0.75;
     double parking_distance_to_line = 0.0;  // [m] distance to side line when parking : 0 is on the line, negative is outside playing field
-    double robot_size = 0.52; // [m] max robot size as defined in MSL rules
+    double robot_size = 0.5; // [m] max robot size as defined in MSL rules
     double ball_radius = 0.11; // [m] radius of the ball as defined in the MSL rules
 
 };

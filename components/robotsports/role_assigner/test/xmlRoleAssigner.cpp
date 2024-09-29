@@ -288,31 +288,38 @@ ball_status_e ball_status_to_enum(const xsd::cxx::tree::optional<robotsports::Ba
 
 void fillEnvironmentParameters(EnvironmentParameters& env, auto_ptr<robotsports::StrategyType>& c)
 {
-    if (c->Field() != 0) {
+    cout << __func__ <<  " : " << __LINE__ << " field length: " << env.SLM.A << endl;
+    auto ptr = (c->Field());
+    auto ft = robotsports::FieldType();
+    ::xsd::cxx::tree::optional< robotsports::FieldType > optFieldType(ft);
+    if (ptr == 0) {
+        ptr = optFieldType;
+    }
+    if (ptr != 0) {
         // If environment info is present then overwrite the defaults with values from the xml file
-        env.SLM.A = c->Field()->field_length();
-        env.SLM.B = c->Field()->field_width();
-        env.SLM.L = c->Field()->field_margin();
-        env.SLM.G = c->Field()->corner_circle_diameter();
-        env.SLM.Q = c->Field()->penalty_spot_to_backline();
-        env.SLM.K = c->Field()->field_markings_width();
+        env.SLM.A = ptr->field_length();
+        env.SLM.B = ptr->field_width();
+        env.SLM.L = ptr->field_margin();
+        env.SLM.G = ptr->corner_circle_diameter();
+        env.SLM.Q = ptr->penalty_spot_to_backline();
+        env.SLM.K = ptr->field_markings_width();
 
-        env.SLM.H = c->Field()->center_circle_diameter();
-        env.SLM.D = c->Field()->goal_area_width();
-        env.SLM.G = c->Field()->goal_area_length();
-        env.SLM.C = c->Field()->penalty_area_width();
-        env.SLM.E = c->Field()->penalty_area_length();
-        env.penalty_area_present = c->Field()->penalty_area_present();
+        env.SLM.H = ptr->center_circle_diameter();
+        env.SLM.D = ptr->goal_area_width();
+        env.SLM.G = ptr->goal_area_length();
+        env.SLM.C = ptr->penalty_area_width();
+        env.SLM.E = ptr->penalty_area_length();
+        env.penalty_area_present = ptr->penalty_area_present();
         // TODO env.technical_team_area_present = true;
-        env.goal_width = c->Field()->goal_width();
-        env.goal_length = c->Field()->goal_length();
+        env.goal_width = ptr->goal_width();
+        env.goal_length = ptr->goal_length();
 
-        env.parking_area_width = c->Field()->parking_area_width();
-        env.parking_area_length = c->Field()->parking_area_length();
-        env.parking_distance_between_robots = c->Field()->parking_distance_between_robots();
-        env.parking_distance_to_line = c->Field()->parking_distance_to_line();
-        env.robot_size = c->Field()->robot_size();
-        env.ball_radius = c->Field()->ball_radius();
+        env.parking_area_width = ptr->parking_area_width();
+        env.parking_area_length = ptr->parking_area_length();
+        env.parking_distance_between_robots = ptr->parking_distance_between_robots();
+        env.parking_distance_to_line = ptr->parking_distance_to_line();
+        env.robot_size = ptr->robot_size();
+        env.ball_radius = ptr->ball_radius();
     }
 }
 

@@ -11,7 +11,7 @@
 
 namespace MRA {
 
-class FieldConfig;
+class Environment;
 class RoleAssignerData;
 class RoleAssignerGridInfoData;
 class RoleAssignerOpponent;
@@ -79,14 +79,14 @@ class BallSetplayAgainstHeuristic : public GridHeuristic {
 
 public:
     BallSetplayAgainstHeuristic(const char * id, double weight, RoleAssignerGridInfoData& pgid,
-            double cx, double cy, double radius, const FieldConfig& fieldConfig);
+            double cx, double cy, double radius, const Environment& rEnvironment);
     virtual ~BallSetplayAgainstHeuristic() {};
     double getValue(double x, double y);
 private:
     const double m_cx;
     const double m_cy;
     const double m_radius;
-    const FieldConfig& m_fieldConfig;
+    const Environment& m_rEnvironment;
 };
 
 
@@ -158,7 +158,7 @@ public:
     double getValue(double x, double y);
 private:
     bool m_alreadyPlayerAssignedToOwnPenaltyArea;
-    const FieldConfig& m_fieldConfig;
+    const Environment& m_rEnvironment;
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ public:
     double getValue(double x, double y);
 private:
     bool m_alreadyPlayerAssignedToOpponentPenaltyArea;
-    const FieldConfig& m_fieldConfig;
+    const Environment& m_rEnvironment;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -207,11 +207,11 @@ class InfluenceCornerHeuristic : public GridHeuristic
 {
 public:
     InfluenceCornerHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
-            const FieldConfig& m_fieldConfig);
+            const Environment& rEnvironment);
     virtual ~InfluenceCornerHeuristic() {};
     double getValue(double x, double y);
 private:
-    const FieldConfig& m_fieldConfig;
+    const Environment& m_rEnvironment;
 };
 
 
@@ -247,7 +247,7 @@ private:
 class OutsidePlayFieldHeuristic : public InSquareHeuristic
 {
 public:
-    OutsidePlayFieldHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid, const FieldConfig& fieldConfig, double extra_distance_to_sideline);
+    OutsidePlayFieldHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid, const Environment& rEnvironment, double extra_distance_to_sideline);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -279,7 +279,7 @@ class DesiredY : public DistanceToLineHeuristic
 {
 public:
     DesiredY(const char *id, double weight, RoleAssignerGridInfoData& pgid,
-            double desired_y, const FieldConfig& fieldConfig);
+            double desired_y, const Environment& rEnvironment);
 };
 
 // ----------------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ class DesiredX : public DistanceToLineHeuristic
 {
 public:
     DesiredX(const char *id, double weight, RoleAssignerGridInfoData& pgid,
-            double desired_x, const FieldConfig& fieldConfig);
+            double desired_x, const Environment& rEnvironment);
 };
 
 
@@ -388,7 +388,7 @@ public:
     ShootOnGoalHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const std::vector<RoleAssignerRobot>& Team,
             const std::vector<RoleAssignerOpponent>& Opponents,
-            const FieldConfig& fieldConfig,
+            const Environment& rEnvironment,
             const ball_pickup_position_t& ball_pickup_position);
     virtual ~ShootOnGoalHeuristic() {};
     double getValue(double x, double y);
@@ -410,7 +410,7 @@ public:
     PassHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
             const std::vector<RoleAssignerRobot>& Team,
             const std::vector<RoleAssignerOpponent>& Opponents,
-            const FieldConfig& fieldConfig,
+            const Environment& rEnvironment,
             const ball_pickup_position_t& ball_pickup_position,
             const RoleAssignerParameters& parameters);
     virtual ~PassHeuristic() {};

@@ -4,7 +4,6 @@
  *  @curator Jürge van Eijck
  */
 
-#include "FieldConfig.hpp"
 #include "MathUtils.hpp"
 #include "Vertex.hpp"
 #include "logging.hpp"
@@ -23,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "Environment.hpp"
 
 using namespace std;
 
@@ -80,8 +80,8 @@ static int svgId = -1;
  *            Position of objects in the field to avoid. All objects are
  *            assumed to be 60x60 cm.
  */
-GlobalPathPlanner::GlobalPathPlanner(FieldConfig fieldConfig)  :
-    m_fieldConfig(fieldConfig),
+GlobalPathPlanner::GlobalPathPlanner(const Environment& rEnvironment)  :
+    m_Environment(rEnvironment),
     m_start(0),
     m_startVelocity(0),
     m_target(std::vector<Vertex *>()),
@@ -151,8 +151,8 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
         m_vertices.push_back(pTarget);
     }
 
-    m_maxFieldX = m_fieldConfig.getMaxFieldX();
-    m_maxFieldY = m_fieldConfig.getMaxFieldY();
+    m_maxFieldX = m_Environment.getMaxFieldX();
+    m_maxFieldY = m_Environment.getMaxFieldY();
     //
     // Create nodes and opponents (barriers) node
     //
@@ -403,8 +403,8 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
                 continue;
             }
 
-            auto v1_outside_field = not m_fieldConfig.isInField(v1->m_coordinate, 0.0);
-            auto v2_outside_field = not m_fieldConfig.isInField(v2->m_coordinate, 0.0);
+            auto v1_outside_field = not m_Environment.isInField(v1->m_coordinate, 0.0);
+            auto v2_outside_field = not m_Environment.isInField(v2->m_coordinate, 0.0);
 
             if (distance < m_options.maximumEdgeLength) {
                 if (avoidBallPath) {
@@ -510,10 +510,10 @@ double GlobalPathPlanner::ballApproachPenalty(Vertex* v) {
     double y = v->m_coordinate.y;
 
     /* calculate distance to middle of penalty area */
-    double penaltyAreaY = m_fieldConfig.getMaxFieldY() - m_fieldConfig.getPenaltyAreaLength();
+    double penaltyAreaY = m_Environment.getMaxFieldY() - m_Environment.getPenaltyAreaLength();
 
     double distToMiddlePenaltyArea = hypot(x, (penaltyAreaY-y));
-    const double maxLength = hypot(m_fieldConfig.getFullFieldLength(), m_fieldConfig.getFullFieldWidth());
+    const double maxLength = hypot(m_Environment.getFullFieldLength(), m_Environment.getFullFieldWidth());
     double approachPenalty = (maxLength-distToMiddlePenaltyArea)*3.0;
     return approachPenalty;
 }
@@ -557,7 +557,7 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
     // This to prevent that the player will hit them. Only checking on role "goalie" is not possible
     // due to dynamic goalie assignment when the normal goalie is absent.
     for (auto teammate_position : m_teammates) {
-        if (m_fieldConfig.isInOwnPenaltyArea(teammate_position.x, teammate_position.y)) {
+        if (m_Environment.isInOwnPenaltyArea(teammate_position.x, teammate_position.y)) {
             double cost = distanceIntegral(teammate_position, v1->m_coordinate, v2->m_coordinate);
             safetyCost += cost;
             if (not std::isfinite(safetyCost)) {
@@ -576,12 +576,12 @@ double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
 void GlobalPathPlanner::addUniformVertices(bool stayInPlayingField) {
     double border = 0.25;
     if (m_targetFunction == planner_target_e::DRIBBLE) {
-        border = -m_fieldConfig.getBallRadius(); // keep balls in the field
+        border = -m_Environment.getBallRadius(); // keep balls in the field
     }
 
     for (double x = -(m_maxFieldX+border); x <= (m_maxFieldX+border); x += m_options.uniform_x_interval) {
         for (double y = -(m_maxFieldY+border); y <= (m_maxFieldY+border); y += m_options.uniform_y_interval) {
-            if (!m_fieldConfig.isInOwnGoalArea(x,y) && !m_fieldConfig.isInOpponentGoalArea(x,y)) {
+            if (!m_Environment.isInOwnGoalArea(x,y) && !m_Environment.isInOpponentGoalArea(x,y)) {
                 MRA::Geometry::Position vv = MRA::Geometry::Position(x, y);
                 if (nearPath(vv)) {
                     addPoint(vv, stayInPlayingField);
@@ -613,7 +613,7 @@ void GlobalPathPlanner::addBallApproachVertices() {
             for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
                 double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
                 double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
-                if (m_fieldConfig.isInReachableField(x1, y1)) {
+                if (m_Environment.isInReachableField(x1, y1)) {
                     MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
                     Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
                     m_vertices.push_back(vertex);
@@ -645,7 +645,7 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
             for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
                 double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
                 double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
-                if (m_fieldConfig.isInReachableField(x1, y1)) {
+                if (m_Environment.isInReachableField(x1, y1)) {
                     MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
 
                     //logger.info("Add point "+ i + " pos: " + point);
@@ -670,10 +670,10 @@ void GlobalPathPlanner::addEnemyGoalApproachVertices() {
  */
 void GlobalPathPlanner::addPoint(const MRA::Geometry::Position& point, bool stayInPlayingField) {
     //vertices,
-    if (m_fieldConfig.isInReachableField(point.x, point.y) == false) {
+    if (m_Environment.isInReachableField(point.x, point.y) == false) {
         return; // only point inside the (complete) field should be added
     }
-    if (stayInPlayingField and m_fieldConfig.isInField(point.x, point.y, 0.0) == false) {
+    if (stayInPlayingField and m_Environment.isInField(point.x, point.y, 0.0) == false) {
         return; // only point inside the (playing ) field should be added
     }
 

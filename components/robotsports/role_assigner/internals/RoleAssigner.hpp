@@ -13,7 +13,7 @@
 
 namespace MRA {
 
-class FieldConfig;
+class Environment;
 class GlobalPathPlanner;
 class RoleAssignerData;
 
@@ -64,7 +64,7 @@ private:
 
     std::vector<RoleAssignerRobot> getTeamMates(const RoleAssignerData& role_assigner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
-    bool stayPathWithinBoundaries(const FieldConfig& fieldConfig, const RoleAssignerResult& result);
+    bool stayPathWithinBoundaries(const Environment& rEnvironment, const RoleAssignerResult& result);
 
     void printAssignInputs(const RoleAssignerData& role_assigner_data);
 
@@ -81,7 +81,7 @@ private:
 
     bool searchForBallBehaviorNeeded(RoleAssignerData& role_assigner_data);
 
-    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const FieldConfig& fieldConfig);
+    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const Environment& rEnvironment);
 
     bool stayInPlayingField(game_state_e gamestate) const;
 

@@ -3,7 +3,6 @@
  *  @brief   Utility class for plotting planner to svg file
  *  @curator Jürge van Eijck
  */
-#include "FieldConfig.hpp"
 #include "MathUtils.hpp"
 #include "logging.hpp"
 #include "Vertex.hpp"
@@ -24,30 +23,31 @@
 #include <vector>
 #include <sys/stat.h>
 #include "RoleAssignerSvg.hpp"
+#include "Environment.hpp"
 
 using namespace std;
 using namespace MRA;
 
-FieldConfig RoleAssignerSvg::m_fieldConfig(FillDefaultFieldConfig());
+Environment RoleAssignerSvg::m_environment(FillDefaultFieldConfig());
 
 /**
  * Get svg x coordinate for given field X
  */
 double RoleAssignerSvg::svgX(double fieldX) {
-    return m_fieldConfig.getMaxFullFieldX() + fieldX;
+    return m_environment.getMaxFullFieldX() + fieldX;
 }
 
 /**
  * Get svg x coordinate for given field Y
  */
 double RoleAssignerSvg::svgY(double fieldY) {
-    return m_fieldConfig.getMaxFullFieldY() - fieldY;
+    return m_environment.getMaxFullFieldY() - fieldY;
 }
 
 
-void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name) {
+void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  rEnvironment, const std::string& save_name) {
     std::vector<RoleAssignerResult>  comparing_player_paths = {};
-    role_assigner_data_to_svg(player_paths, data, fieldConfig, save_name, comparing_player_paths);
+    role_assigner_data_to_svg(player_paths, data, rEnvironment, save_name, comparing_player_paths);
 }
 
 // Data class for storing file parts
@@ -89,7 +89,7 @@ static bool isDirectory(const string& path)
     return false;
 }
 
-void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const FieldConfig&  fieldConfig, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
+void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  rEnvironment, const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths) {
     bool addInfoBox = true;
     double boxWidth = addInfoBox ? 6.0 : 0.0;
 
@@ -105,7 +105,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         }
     }
 
-    m_fieldConfig = fieldConfig;
+    m_environment = rEnvironment;
 
     RoleAssignerBall ball = data.ball;
     RoleAssignerParameters parameters = data.parameters;
@@ -117,10 +117,10 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     }
 
 
-    double totalFieldLength = fieldConfig.getFullFieldLength();
-    double totalFieldWidth = fieldConfig.getFullFieldWidth();
-    double halfRobotSize = fieldConfig.getRobotRadius();
-    double robotSize = fieldConfig.getRobotSize();
+    double totalFieldLength = rEnvironment.getFullFieldLength();
+    double totalFieldWidth = rEnvironment.getFullFieldWidth();
+    double halfRobotSize = rEnvironment.getRobotRadius();
+    double robotSize = rEnvironment.getRobotSize();
 
     FILE* fp = fopen(save_name.c_str(), "w");
     // SVG header
@@ -234,7 +234,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     fprintf(fp, "paths:\n%s\n", Xtext.str().c_str());
 
     fprintf(fp, "\tparameters:\n%s\n", parameters.toString().c_str());
-    fprintf(fp, "\tfield:\n%s\n", fieldConfig.toString().c_str());
+    fprintf(fp, "\tfield:\n%s\n", rEnvironment.toString().c_str());
     fprintf(fp, "\n");
 
     // add xml output
@@ -314,10 +314,10 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
                 "             penalty_area_present=\"%s\" penalty_area_width=\"%4.3f\" penalty_area_length=\"%4.3f\" center_circle_diameter=\"%4.3f\" robot_size=\"%4.3f\"\n"
                 "             ball_radius=\"%4.3f\" field_markings_width=\"%4.3f\" parking_area_width=\"%4.3f\" parking_area_length=\"%4.3f\" parking_distance_between_robots=\"%4.3f\"\n"
                 "             parking_distance_to_line=\"%4.3f\" corner_circle_diameter=\"%4.3f\" penalty_spot_to_backline=\"%4.3f\" />\n",
-        fieldConfig.getFieldWidth(),fieldConfig.getFieldLength(), fieldConfig.getFieldMargin(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength(),
-        boolToString(fieldConfig.isPenaltyAreaPresent()).c_str(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength(), fieldConfig.getCenterCirleDiameter(), fieldConfig.getRobotSize(),
-        fieldConfig.getBallRadius(), fieldConfig.getFieldMarkingsWidth(), fieldConfig.getParkingAreaWidth(), fieldConfig.getParkingAreaLength(), fieldConfig.getParkingDistanceBetweenPlayers(), fieldConfig.getParkingDistanceToLine(),
-        fieldConfig.getCornerCircleDiameter(), fieldConfig.getPenaltySpotToBackline());
+                rEnvironment.getFieldWidth(),rEnvironment.getFieldLength(), rEnvironment.getFieldMargin(), rEnvironment.getGoalWidth(), rEnvironment.getGoalLength(), rEnvironment.getGoalAreaWidth(), rEnvironment.getGoalAreaLength(),
+        boolToString(rEnvironment.isPenaltyAreaPresent()).c_str(), rEnvironment.getPenaltyAreaWidth(), rEnvironment.getPenaltyAreaLength(), rEnvironment.getCenterCirleDiameter(), rEnvironment.getRobotSize(),
+        rEnvironment.getBallRadius(), rEnvironment.getFieldMarkingsWidth(), rEnvironment.getParkingAreaWidth(), rEnvironment.getParkingAreaLength(), rEnvironment.getParkingDistanceBetweenPlayers(), rEnvironment.getParkingDistanceToLine(),
+        rEnvironment.getCornerCircleDiameter(), rEnvironment.getPenaltySpotToBackline());
     fprintf(fp, "  <tns:GameState>%s</tns:GameState>\n", GameStateAsString(data.original_gamestate).c_str());
     if (ball.is_valid) {
         fprintf(fp, "  <tns:Ball x=\"%4.2f\" y=\"%4.2f\" velx=\"%4.2f\" vely=\"%4.2f\"/>\n",
@@ -488,45 +488,45 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     //FIELD - outer field lines
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"/>",
-            fieldConfig.getFieldMargin(), fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth(), fieldConfig.getFieldLength());
+            rEnvironment.getFieldMargin(), rEnvironment.getFieldMargin(), rEnvironment.getFieldWidth(), rEnvironment.getFieldLength());
     //FIELD - middle line
     fprintf(fp,
             "<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.125cm\"  stroke=\"white\"/>\n",
-            fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin(), fieldConfig.getFieldWidth()+fieldConfig.getFieldMargin(), fieldConfig.getMaxFieldY()+fieldConfig.getFieldMargin());
+            rEnvironment.getFieldMargin(), rEnvironment.getMaxFieldY()+rEnvironment.getFieldMargin(), rEnvironment.getFieldWidth()+rEnvironment.getFieldMargin(), rEnvironment.getMaxFieldY()+rEnvironment.getFieldMargin());
     //FIELD - middle circle
     fprintf(fp,
             "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"none\" stroke=\"white\" stroke-width=\"0.125cm\"  />\n",
-            totalFieldWidth*0.5,  totalFieldLength*0.5, fieldConfig.getCenterCirleDiameter()*0.5);
+            totalFieldWidth*0.5,  totalFieldLength*0.5, rEnvironment.getCenterCirleDiameter()*0.5);
 
     // PENALTY AREAS
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getPenaltyAreaWidth()*0.5), rEnvironment.getFieldMargin(), rEnvironment.getPenaltyAreaWidth(), rEnvironment.getPenaltyAreaLength());
 
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getPenaltyAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getPenaltyAreaLength(), fieldConfig.getPenaltyAreaWidth(), fieldConfig.getPenaltyAreaLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getPenaltyAreaWidth()*0.5), rEnvironment.getFieldMargin()+rEnvironment.getFieldLength()-rEnvironment.getPenaltyAreaLength(), rEnvironment.getPenaltyAreaWidth(), rEnvironment.getPenaltyAreaLength());
 
     // GOAL AREAS
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getGoalAreaWidth()*0.5), rEnvironment.getFieldMargin(), rEnvironment.getGoalAreaWidth(), rEnvironment.getGoalAreaLength());
 
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"green\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getGoalAreaWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()-fieldConfig.getGoalAreaLength(), fieldConfig.getGoalAreaWidth(), fieldConfig.getGoalAreaLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getGoalAreaWidth()*0.5), rEnvironment.getFieldMargin()+rEnvironment.getFieldLength()-rEnvironment.getGoalAreaLength(), rEnvironment.getGoalAreaWidth(), rEnvironment.getGoalAreaLength());
 
     //FIELD - goals
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\" fill=\"plum\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()-fieldConfig.getGoalLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getGoalWidth()*0.5), rEnvironment.getFieldMargin()-rEnvironment.getGoalLength(), rEnvironment.getGoalWidth(), rEnvironment.getGoalLength());
     fprintf(fp,
             "<rect x=\"%4.2fcm\" y=\"%4.2fcm\" width=\"%4.2fcm\" height=\"%4.2fcm\"  fill=\"powderblue\" stroke=\"white\" stroke-width=\"0.125cm\"/>\n",
-            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.5), fieldConfig.getFieldMargin()+fieldConfig.getFieldLength(), fieldConfig.getGoalWidth(), fieldConfig.getGoalLength());
+            (totalFieldWidth*0.5)-(rEnvironment.getGoalWidth()*0.5), rEnvironment.getFieldMargin()+rEnvironment.getFieldLength(), rEnvironment.getGoalWidth(), rEnvironment.getGoalLength());
     // indicate own goal with text own goal
     fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" fill=\"darkred\">OWN</text>",
-            (totalFieldWidth*0.5)-(fieldConfig.getGoalWidth()*0.2),
-            fieldConfig.getFieldMargin()+fieldConfig.getFieldLength()+(fieldConfig.getGoalLength()*0.75));
+            (totalFieldWidth*0.5)-(rEnvironment.getGoalWidth()*0.2),
+            rEnvironment.getFieldMargin()+rEnvironment.getFieldLength()+(rEnvironment.getGoalLength()*0.75));
 
     //vertices
     for (auto j = 0u; j < vertices.size(); j++) {
@@ -620,7 +620,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
                 // last element
                 fprintf(fp,
                         "\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-                        (int)pidx, svgX((player_path.path[j]).x),  svgY((player_path.path[j]).y), fieldConfig.getBallRadius()*1.5,
+                        (int)pidx, svgX((player_path.path[j]).x),  svgY((player_path.path[j]).y), rEnvironment.getBallRadius()*1.5,
                         last_path_element_color.c_str() /* fill color */, last_path_element_color.c_str() /* line color */); // half ball diameter
 
             }
@@ -635,7 +635,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         //        for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
         //            fprintf(fp,
         //                    "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), rEnvironment.getBallRadius(), target_color.c_str(), target_color.c_str());
         //        }
 
     }
@@ -667,7 +667,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
                 // last element
                 fprintf(fp,
                         "\n<!-- path-end player %d-->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-                        (int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), fieldConfig.getBallRadius()*1.5,
+                        (int)pidx, svgX((comparing_player_paths[pidx].path[j]).x),  svgY((comparing_player_paths[pidx].path[j]).y), rEnvironment.getBallRadius()*1.5,
                         compare_last_path_element_color.c_str() /* fill color */, compare_last_path_element_color.c_str() /* line color */); // half ball diameter
 
             }
@@ -682,7 +682,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         //        for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
         //            fprintf(fp,
         //                    "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"%s\" stroke=\"%s\" stroke-width=\"0.125cm\"  />\n",
-        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), fieldConfig.getBallRadius(), target_color.c_str(), target_color.c_str());
+        //                    svgX(m_target[idx]->m_coordinate.x), svgY(m_target[idx]->m_coordinate.y), rEnvironment.getBallRadius(), target_color.c_str(), target_color.c_str());
         //        }
 
     }
@@ -698,7 +698,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
     if (ball.is_valid) {
         fprintf(fp,
                 "\n<!-- Ball -->\n<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-                svgX(ball.position.x),  svgY(ball.position.y), fieldConfig.getBallRadius()); // half ball diameter
+                svgX(ball.position.x),  svgY(ball.position.y), rEnvironment.getBallRadius()); // half ball diameter
     }
     if (parameters.svgDrawVelocity) {
         Geometry::Point linVel(ball.velocity.x, ball.velocity.y);

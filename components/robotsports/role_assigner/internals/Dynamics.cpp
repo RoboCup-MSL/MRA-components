@@ -7,17 +7,17 @@
 
 #include "MathUtils.hpp"
 #include "geometry.hpp"
-#include "FieldConfig.hpp"
 #include "RoleAssignerData.hpp"
 
 #include <cmath>
 #include <limits>
 #include <iostream>
+#include "Environment.hpp"
 
 using namespace MRA;
 
 // calculation position where the ball will leave the field
-Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const FieldConfig &rFieldConfig) {
+Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const RoleAssignerBall& rBallObject, const Environment& rEnvironment) {
     Geometry::Position BallPos = rBallObject.position;
     Geometry::Position BallVelocity = rBallObject.velocity;
 
@@ -32,22 +32,22 @@ Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const RoleAssignerBa
     if (BallVelocity.y < 0) {
         backline_direction = -1; // negative direction (-y)
     }
-    double margin = 0.25 * rFieldConfig.getRobotSize(); // keep ball in the field, player just outside the field
+    double margin = 0.25 * rEnvironment.getRobotSize(); // keep ball in the field, player just outside the field
     double interSectionSideLineX, interSectionSideLineY, interSectionBackLineX,
             interSectionBackLineY = 0.0;
     bool intersectWithBackLine = getIntersectionOfTwoLines(
             interSectionBackLineX, interSectionBackLineY, BallPos.x, BallPos.y,
-            p2.x, p2.y, rFieldConfig.getMaxFieldX(),
-            backline_direction * (rFieldConfig.getMaxFieldY() + margin),
-            -rFieldConfig.getMaxFieldX(),
-            backline_direction * (rFieldConfig.getMaxFieldY() + margin));
+            p2.x, p2.y, rEnvironment.getMaxFieldX(),
+            backline_direction * (rEnvironment.getMaxFieldY() + margin),
+            -rEnvironment.getMaxFieldX(),
+            backline_direction * (rEnvironment.getMaxFieldY() + margin));
     bool intersectWithSideLine = getIntersectionOfTwoLines(
             interSectionSideLineX, interSectionSideLineY, BallPos.x, BallPos.y,
             p2.x, p2.y,
-            sideline_direction * (rFieldConfig.getMaxFieldX() + margin),
-            rFieldConfig.getMaxFieldY(),
-            sideline_direction * (rFieldConfig.getMaxFieldX() + margin),
-            -rFieldConfig.getMaxFieldY());
+            sideline_direction * (rEnvironment.getMaxFieldX() + margin),
+            rEnvironment.getMaxFieldY(),
+            sideline_direction * (rEnvironment.getMaxFieldX() + margin),
+            -rEnvironment.getMaxFieldY());
     if (intersectWithBackLine && !intersectWithSideLine) {
         // intersection only with backline
         leavingPoint.x = interSectionBackLineX;
@@ -73,7 +73,7 @@ Geometry::Position Dynamics::calculateBallLeavingFieldPoint(const RoleAssignerBa
 }
 
 Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject,
-        const Geometry::Point& meCoordinates, double maxSpeed, const FieldConfig& fieldConfig, bool move_to_ball_left_field_position) {
+        const Geometry::Point& meCoordinates, double maxSpeed, const Environment& rEnvironment, bool move_to_ball_left_field_position) {
     dynamics_t result = {};
 
     // for clarity, lets assume Me wants to intercept a moving Ball
@@ -129,7 +129,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject
         result.intercept_position += extention;
     }
 
-    if (!fieldConfig.isInField(result.intercept_position, 0.25*fieldConfig.getRobotRadius()))
+    if (!rEnvironment.isInField(result.intercept_position, 0.25*rEnvironment.getRobotRadius()))
     {
         // interception out of field (used margin: max robot radius outside the field)
         result.move_to_ball_leave_field_pos = true;
@@ -142,7 +142,7 @@ Dynamics::dynamics_t Dynamics::interceptBall(const RoleAssignerBall& rBallObject
             result.intercept_position = ball;
         }
         else {
-            result.intercept_position = calculateBallLeavingFieldPoint(rBallObject, fieldConfig);
+            result.intercept_position = calculateBallLeavingFieldPoint(rBallObject, rEnvironment);
         }
     }
 

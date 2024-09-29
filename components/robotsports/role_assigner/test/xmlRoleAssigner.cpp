@@ -24,9 +24,10 @@
 
 
 #include "StrategyTester_generated.h" // generated
-#include "FieldConfig.hpp"
 #include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
+
+#include "../internals/Environment.hpp"
 #include "../internals/RoleAssignerSvg.hpp"
 #include "../internals/RoleAssignerData.hpp"
 
@@ -286,11 +287,11 @@ ball_status_e ball_status_to_enum(const xsd::cxx::tree::optional<robotsports::Ba
     return ball_status_e::FREE;
 }
 
-void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyType>& c)
+void fillEnvironment(Environment& rEnvironment, auto_ptr<robotsports::StrategyType>& c)
 {
     if (c->Field() != 0) {
         // If field info is present then overwrite the defaults with values from the xml file
-        FieldConfig fc = FillDefaultFieldConfig();
+        Environment fc = FillDefaultFieldConfig();
         fc.setConfig(c->Field()->field_length(),
                      c->Field()->field_width(),
                      c->Field()->field_margin(),
@@ -311,7 +312,7 @@ void fillFieldConfig(FieldConfig& fieldConfig, auto_ptr<robotsports::StrategyTyp
                     c->Field()->field_markings_width(),
                     c->Field()->corner_circle_diameter(),
                     c->Field()->penalty_spot_to_backline());
-        fieldConfig = fc;
+        rEnvironment = fc;
     }
 }
 
@@ -417,7 +418,7 @@ void xmlplanner(string input_filename) {
     Geometry::Position ball_vel = Geometry::Position();
     game_state_e gameState;
     std::string description = "";
-    MRA::FieldConfig fieldConfig = FillDefaultFieldConfig();
+    MRA::Environment environment = FillDefaultFieldConfig();
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
 
@@ -450,7 +451,7 @@ void xmlplanner(string input_filename) {
         fillOpponents(Opponents, c);
 
         gameState = gamestate_string_to_enum(c->GameState());
-        fillFieldConfig(fieldConfig, c);
+        fillEnvironment(environment, c);
         getRoleAssignParameters(parameters, c);
         robot_strategy_parameter_no_sweeper_during_setplay = c->Options().no_sweeper_during_setplay();
         robot_strategy_parameter_attack_formation =  StringToFormation(c->AttackFormation());
@@ -586,7 +587,7 @@ void xmlplanner(string input_filename) {
     tp_input.ball_pickup_position = pickup_pos;
     tp_input.passIsRequired = passIsRequired;
     tp_input.pass_data = pass_data;
-    tp_input.fieldConfig = fieldConfig;
+    tp_input.environment = environment;
 
     RoleAssignerState tp_state;
     tp_state.previous_ball = previous_ball;
@@ -602,7 +603,7 @@ void xmlplanner(string input_filename) {
 
     RoleAssignerData tpd = {};
     tpd.parameters = tp_parameters;
-    tpd.fieldConfig = tp_input.fieldConfig;
+    tpd.environment = tp_input.environment;
     tpd.input_formation = tp_input.input_formation;
     tpd.gamestate = tp_input.gamestate;
     tpd.original_gamestate  = tp_input.gamestate;
@@ -638,7 +639,7 @@ void xmlplanner(string input_filename) {
             cerr << "<< XML: print received path " << endl << flush;
             cerr << RoleAssignerResultToString(player_paths, tpd.team) << endl << flush;
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, fieldConfig, run_filename);
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, environment, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

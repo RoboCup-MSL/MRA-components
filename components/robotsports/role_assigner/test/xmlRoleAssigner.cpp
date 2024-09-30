@@ -289,31 +289,47 @@ ball_status_e ball_status_to_enum(const xsd::cxx::tree::optional<robotsports::Ba
 
 void fillEnvironment(Environment& rEnvironment, auto_ptr<robotsports::StrategyType>& c)
 {
-    if (c->Field() != 0) {
-        // If field info is present then overwrite the defaults with values from the xml file
-        Environment fc = FillDefaultFieldConfig();
-        fc.setConfig(c->Field()->field_length(),
-                     c->Field()->field_width(),
-                     c->Field()->field_margin(),
-                     c->Field()->goal_width(),
-                     c->Field()->goal_length(),
-                     c->Field()->center_circle_diameter(),
-                    c->Field()->goal_area_width(),
-                    c->Field()->goal_area_length(),
-                    c->Field()->penalty_area_present(),
-                    c->Field()->penalty_area_width(),
-                    c->Field()->penalty_area_length(),
-                    c->Field()->parking_area_width(),
-                    c->Field()->parking_area_length(),
-                    c->Field()->parking_distance_between_robots(),
-                    c->Field()->parking_distance_to_line(),
-                    c->Field()->robot_size(),
-                    c->Field()->ball_radius(),
-                    c->Field()->field_markings_width(),
-                    c->Field()->corner_circle_diameter(),
-                    c->Field()->penalty_spot_to_backline());
-        rEnvironment = fc;
+    if (c->Field() == 0) {
+        // not defined, use default
+        rEnvironment = FillDefaultEnvironment();
     }
+    else {
+        // If field info is present then overwrite the defaults with values from the xml file
+        EnvironmentParameters env_params = {};
+        env_params.SLM.A = c->Field()->field_length();  // [22.0]   field length including lines (y)
+        env_params.SLM.B = c->Field()->field_width();  // [14.0]   field width including lines (x)
+        env_params.SLM.C = c->Field()->penalty_area_width();   // [ 6.9]   penalty area width including lines (x)
+        env_params.SLM.D = c->Field()->goal_area_width();   // [ 3.9]   goal area width including lines (x)
+        env_params.SLM.E = c->Field()->penalty_area_length();  // [ 2.25]  penalty area length including lines (y)
+        env_params.SLM.F = c->Field()->goal_area_length();  // [ 0.75]  goal area length including lines (y)
+        env_params.SLM.G = c->Field()->corner_circle_diameter();  // [ 0.75]  corner circle radius including lines
+        env_params.SLM.H = c->Field()->center_circle_diameter();   // [ 4.0]   inner circle diameter including lines
+        env_params.SLM.I = c->Field()->penalty_spot_to_backline();   // [ 3.6]   penalty mark distance (y) including line to mark center (?)
+        env_params.SLM.J = 0.15;  // [ 0.15]  penalty- and center mark diameter
+        env_params.SLM.K = c->Field()->field_markings_width(); // [ 0.125] line width
+        env_params.SLM.L = c->Field()->field_margin();   // [ 1.0]   field border (x) (between outer line and black safety border)
+        env_params.SLM.M = 1.0;   // [ 1.0]   Technical Team Area width (x)
+        env_params.SLM.N = 7.5;   // [ 7.5]   Technical Team Area length (y) (between safety borders)
+        env_params.SLM.O = 1.0;   // [ 1.0]   Technical Team Area ramp length (y)
+        env_params.SLM.P = 0.5;   // [ 0.5]   Technical Team Area ramp width (x)
+        env_params.SLM.Q = 3.5;   // [ 3.5]   off-center distance to restart spots (x)
+        env_params.penalty_area_present = c->Field()->penalty_area_present();
+        env_params.technical_team_area_present = true;
+
+        env_params.goal_width = c->Field()->goal_width();
+        env_params.goal_length = c->Field()->goal_length();
+        //        // parking info in case no technical area is present
+        //        // park robots on the field.
+        env_params.parking_area_width = c->Field()->parking_area_width();
+        env_params.parking_area_length = c->Field()->parking_area_length();
+        env_params.parking_distance_between_robots = c->Field()->parking_distance_between_robots();
+        env_params.parking_distance_to_line = c->Field()->parking_distance_to_line();
+        env_params.robot_size = c->Field()->robot_size();
+        env_params.ball_radius = c->Field()->ball_radius();
+
+        rEnvironment = Environment(env_params);
+    }
+
 }
 
 void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdminTeam>& TeamAdmin,  bool& r_playerPassedBall, bool& r_team_has_ball, auto_ptr<robotsports::StrategyType>& c)
@@ -418,7 +434,7 @@ void xmlplanner(string input_filename) {
     Geometry::Position ball_vel = Geometry::Position();
     game_state_e gameState;
     std::string description = "";
-    MRA::Environment environment = FillDefaultFieldConfig();
+    MRA::Environment environment = {};
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
 

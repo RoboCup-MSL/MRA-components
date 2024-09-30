@@ -28,7 +28,7 @@
 using namespace std;
 using namespace MRA;
 
-Environment RoleAssignerSvg::m_environment(FillDefaultFieldConfig());
+Environment RoleAssignerSvg::m_environment(FillDefaultEnvironment());
 
 /**
  * Get svg x coordinate for given field X

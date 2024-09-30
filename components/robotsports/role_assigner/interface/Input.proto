@@ -107,7 +107,8 @@ message Input
     repeated DynamicRole formation = 11;
 
     repeated Player team = 4;
-    repeated Opponent opponents = 5;
+    repeated Opponent opponents = 5; // opponents participating in the games
+    repeated Opponent no_opponent_obstacles = 12; // detected obstacles which are not a team-mate or opponent
     repeated PickUpPosition pickup = 6; // pickup position
     bool passIsRequired = 7;
     repeated MRA.Datatypes.Pose parking_positions = 8;
@@ -118,5 +119,4 @@ message Input
 // TODO add game info to allow decision based on score and time remaining etc.
 // Usage of MRA vector class
 // Opponents is same as Player, but has different attributes
-// NoOpponentObstacles
 

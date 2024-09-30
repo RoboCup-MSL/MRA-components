@@ -397,7 +397,7 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     bool avoidBallPath = (r_role_assigner_data.gamestate == game_state_e::NORMAL_ATTACK)
                     and r_role_assigner_data.pass_data.valid; // avoid ball path only if pass made (or shot on goal) during normal play (normal_attack)
-    if (r_role_assigner_data.team_admin[idx].result.target_position_is_end_position_of_pass) {
+    if (r_role_assigner_data.team_admin[idx].result.is_pass_desitination) {
         // in case of pass, don't avoid ball path if player is destination of the pass
         avoidBallPath = false;
     }

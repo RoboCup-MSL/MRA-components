@@ -46,8 +46,8 @@ public:
 
 // part of  input data
 typedef struct pass_data_s {
-    long   valid; // 1: if data is valid; 0 otherwise
-    long   kicked; // 1: if pass/shot has been made; 0: otherwise
+    bool   valid; // 1: if data is valid; 0 otherwise
+    bool   kicked; // 1: if pass/shot has been made; 0: otherwise
     long   target_id; // destination of kick, where 0 is goal
     double velocity; // [m/s]
     double angle; // upwards angle

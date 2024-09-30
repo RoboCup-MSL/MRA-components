@@ -13,7 +13,6 @@ message PathPiece {
 };
 
 message DefendInfo {
-    bool valid = 1;
     int32 trackingId = 2;
     double dist_from_defending_id = 3;
     bool between_ball_and_defending_pos = 4; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
@@ -38,7 +37,9 @@ message Assignment {
     int32 role_rank = 3;
     MRA.Datatypes.Point target = 4;
     int32 planner_target = 5;
-    DefendInfo defend_info = 6;
+    DefendInfo defend_info = 6; // object to defend, this field can be absent
+    bool is_pass_desitination = 7; // is player the destination of a pass
+
 };
 
 message Output

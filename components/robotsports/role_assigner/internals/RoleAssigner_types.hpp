@@ -129,7 +129,7 @@ typedef struct path_piece {
 } path_piece_t;
 
 typedef struct defend_info {
-    long valid;
+    bool valid;
     long defending_id;
     double dist_from_defending_id;
     long between_ball_and_defending_pos; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
@@ -149,21 +149,10 @@ typedef struct  previous_used_ball_by_role_assinger  {
     double y;
 } previous_used_ball_by_role_assinger_t;
 
-typedef struct moving_object_s {
-    double x;
-    double y;
-    double rz;
-    double velx;
-    double vely;
-    double velrz;
-    long trackingId;
-    long valid;
-} moving_object_t;
-
 typedef struct ball_pickup_position_s {
     double x;
     double y;
-    long valid;
+    bool valid;
     double ts;
 } ball_pickup_position_t;
 

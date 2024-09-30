@@ -22,7 +22,7 @@ public:
     MRA::Geometry::Point target;
     planner_target_e planner_target;
     defend_info_t defend_info;
-    bool target_position_is_end_position_of_pass;
+    bool is_pass_desitination;
 
     RoleAssignerResult(const game_state_e&  gamestate = game_state_e::NONE,
                        const role_e& role = role_e::role_UNDEFINED,
@@ -30,7 +30,7 @@ public:
                        const MRA::Geometry::Point& target = MRA::Geometry::Point(),
                        const planner_target_e& planner_target = planner_target_e::GOTO_BALL,
                        const defend_info_t& defend_info = {},
-                       bool target_position_is_end_position_of_pass = false) :
+                       bool desitination_of_pass = false) :
                             path(),
                             role(role),
                             role_rank(role_rank),
@@ -38,7 +38,7 @@ public:
                             target(target),
                             planner_target(planner_target),
                             defend_info(defend_info),
-                            target_position_is_end_position_of_pass(target_position_is_end_position_of_pass)
+                            is_pass_desitination(desitination_of_pass)
                         {
 
                         }

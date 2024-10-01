@@ -12,8 +12,8 @@ message Input
     {
         NONE = 0;
         NORMAL = 1;
-        NORMAL_ATTACK = 2;
-        NORMAL_DEFEND = 3;
+        NORMAL_ATTACK = 2;  // normal: based on ball status - only if team is in ball possession
+        NORMAL_DEFEND = 3;  // normal: based on ball status - only if team is NOT in ball possession
         PARKING = 4;
         BEGIN_POSITION = 5;
         KICKOFF = 6;
@@ -46,7 +46,7 @@ message Input
         OWNED_BY_OPPONENT = 4;
     }
 
-    GameState game_state = 1;
-    BallStatus ball_status = 2;
+    GameState game_state = 1;   // state of the game
+    BallStatus ball_status = 2; // status of the ball
 }
 

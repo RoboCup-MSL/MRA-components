@@ -7,20 +7,8 @@ import "datatypes/Pose.proto";
 import "datatypes/Point.proto";
 import "datatypes/Ball.proto";
 import "datatypes/Obstacle.proto";
+import "components/robotsports/role_assigner/interface/Output.proto";
 
-//  - current dynamic role. 
-// part of robot_strategy/interface/Output.proto
-enum DynamicRole {
-    UNDEFINED = 0;
-    GOALKEEPER = 1;
-    ATTACKER_MAIN = 2;
-    ATTACKER_ASSIST = 3;
-    ATTACKER_GENERIC = 4;
-    DEFENDER_MAIN = 5;
-    DEFENDER_GENERIC = 6;
-    DISABLED_OUT = 7;
-    DISABLED_IN = 8;
-};
 
 
 message Player
@@ -104,16 +92,16 @@ message Input
     GameState gamestate = 2;
     repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
 
-    repeated DynamicRole formation = 11;
+    repeated DynamicRole formation = 11; // ordered list of dynamic roles to be assigned.
 
-    repeated Player team = 4;
+    repeated Player team = 4;   // players in the team (own player is first in the list)
     repeated Opponent opponents = 5; // opponents participating in the games
     repeated Opponent no_opponent_obstacles = 12; // detected obstacles which are not a team-mate or opponent
     repeated PickUpPosition pickup = 6; // pickup position
-    bool passIsRequired = 7;
-    repeated MRA.Datatypes.Pose parking_positions = 8;
-    PickUpPosition ball_pickup_position = 9;
-    PassData pass_data = 10;
+    bool passIsRequired = 7;  // is pass required to make valid goal
+    repeated MRA.Datatypes.Pose parking_positions = 8; // location of the parking positions (later: onlyin case of no technical area)
+    PickUpPosition ball_pickup_position = 9;  // where was the ball picked up; avoid to transport the ball over a too large distance with ball (MSL-rule) (if present)
+    PassData pass_data = 10; // information over a pass (if present)
 };
     
 // TODO add game info to allow decision based on score and time remaining etc.

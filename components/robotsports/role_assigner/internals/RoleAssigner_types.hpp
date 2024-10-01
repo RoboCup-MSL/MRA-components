@@ -22,15 +22,12 @@ typedef enum  {
     DRIBBLE = 1,
     SUPPORT_DEFENSE = 2,
     SUPPORT_ATTACK = 3,
-    PREPARE_RESTART_AGAINST = 4,
-    PREPARE_RESTART = 5,
-    PREPARE_DROPBALL = 6,
-    GOTO_TARGET_POSITION = 7,
-    SWEEPER = 8,
-    GOALIE_POSITION = 9,
-    GOTO_TARGET_POSITION_SLOW = 10,
-    PRIORITY_BLOCK = 11,
-    GOALKEEPER = 12
+    PREPARE_RESTART = 4,
+    GOTO_TARGET_POSITION = 5,
+    SWEEPER = 6,
+    GOTO_TARGET_POSITION_SLOW = 7,
+    PRIORITY_BLOCK = 8,
+    GOALKEEPER = 9
 } planner_target_e;
 
 typedef enum  {
@@ -201,12 +198,9 @@ inline std::string PlannerTargetAsString(planner_target_e target) {
     case planner_target_e::DRIBBLE:                 targetString = "Dribble"; break;
     case planner_target_e::SUPPORT_DEFENSE:         targetString = "Defense support"; break;
     case planner_target_e::SUPPORT_ATTACK:          targetString = "Attack support"; break;
-    case planner_target_e::PREPARE_RESTART_AGAINST: targetString = "Prepare restart against"; break;
     case planner_target_e::PREPARE_RESTART:         targetString = "Prepare restart"; break;
-    case planner_target_e::PREPARE_DROPBALL:        targetString = "Prepare dropball"; break;
     case planner_target_e::GOTO_TARGET_POSITION:    targetString = "goto target position"; break;
     case planner_target_e::SWEEPER:                 targetString = "Sweeper"; break;
-    case planner_target_e::GOALIE_POSITION:         targetString = "Goalie position"; break;
     case planner_target_e::GOTO_TARGET_POSITION_SLOW:  targetString = "goto target position slow"; break;
     case planner_target_e::PRIORITY_BLOCK:          targetString = "Priority Block"; break;
     case planner_target_e::GOALKEEPER:              targetString = "Goalie"; break;

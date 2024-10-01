@@ -5,41 +5,54 @@ package MRA.RobotsportsRoleAssigner;
 import "datatypes/PosVel.proto";
 import "datatypes/Point.proto";
 
+enum PathPurpose {
+    GOTO_BALL = 0;   // path to the ball
+    DRIBBLE = 1;   // path with ball
+    SUPPORT_DEFENSE = 2;  // path to defending position
+    SUPPORT_ATTACK = 3;  // path to atttacking position
+    PREPARE_RESTART = 4;  // path to restarting position
+    GOTO_TARGET_POSITION = 5;  // path to arbitrary position
+    SWEEPER = 6; // path to sweeper position (main defender)
+    GOTO_TARGET_POSITION_SLOW = 7; // slowly drive to arbitrary position
+    PRIORITY_BLOCK = 8; // path to blocking position for main attack (
+    GOALKEEPER_PURPOSE = 9;  // path for goalie
+};
+
 message PathPiece {
-    double x = 1;
-    double y = 2;
-    double cost = 3;
-    int32 target = 4; // from enum-type planner_target_e
+    double x = 1;   // [FCS]
+    double y = 2;   // [FCS]
+    double cost = 3;  // cost to this path piece from the previous path piece
+    PathPurpose target = 4; // from enum-type planner_target_e
 };
 
 message DefendInfo {
-    int32 trackingId = 2;
-    double dist_from_defending_id = 3;
-    bool between_ball_and_defending_pos = 4; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
+    int32 trackingId = 1; // trackingid from obstacle tracking of the opponent to defend
+    double dist_from_defending_id = 2;  // distance to stay to the opponent to defend
+    bool between_ball_and_defending_pos = 3; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
 };
 
+enum DynamicRole {
+    UNDEFINED = 0;
+    GOALKEEPER = 1;
+    ATTACKER_MAIN = 2;
+    ATTACKER_ASSIST = 3;
+    ATTACKER_GENERIC = 4;
+    DEFENDER_MAIN = 5;
+    DEFENDER_GENERIC = 6;
+    DISABLED_OUT = 7;
+    DISABLED_IN = 8;
+};
 
 message Assignment {
-    enum DynamicRole {
-        UNDEFINED = 0;
-        GOALKEEPER = 1;
-        ATTACKER_MAIN = 2;
-        ATTACKER_ASSIST = 3;
-        ATTACKER_GENERIC = 4;
-        DEFENDER_MAIN = 5;
-        DEFENDER_GENERIC = 6;
-        DISABLED_OUT = 7;
-        DISABLED_IN = 8;
-    };
-
-    repeated PathPiece path = 1;
-    DynamicRole role = 2;
-    int32 role_rank = 3;
-    MRA.Datatypes.Point target = 4;
-    int32 planner_target = 5;
-    DefendInfo defend_info = 6; // object to defend, this field can be absent
-    bool is_pass_desitination = 7; // is player the destination of a pass
-
+    int32 robotId = 1;  // robotId of robot for the assignment
+    DynamicRole role = 2;   // assigned role
+    MRA.Datatypes.Point target = 4; // target position for player
+    repeated PathPiece path = 5;    // rough x-y path to target
+    int32 role_rank = 6;  // order of role assignment (discuss: can be removed if list of assignments is in order of assignment
+    PathPurpose purpose = 7;  // purpose of path (intension how to execute the path
+    DefendInfo defend_info = 8; // object to defend, this field can be absent
+    bool is_pass_desitination = 9; // is player the destination of a pass
+    // GameState gamestate;   TODO: discuss game-state can be extracted from the input or added to ensure gamestate and intended position are connected.
 };
 
 message Output

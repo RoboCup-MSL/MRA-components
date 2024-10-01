@@ -15,5 +15,8 @@
 // MRA::Geometry::Point is a class that adds operations to protobuf MRA::Datatypes::Point (xy only)
 #include "libraries/geometry/point.hpp"
 
+// intersect two line segments
+#include "libraries/geometry/intersect.hpp"
+
 #endif // #ifndef _MRA_LIBRARIES_GEOMETRY_GEOMETRY_HPP
 

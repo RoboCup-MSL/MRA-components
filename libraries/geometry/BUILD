@@ -71,6 +71,20 @@ cc_library(
 )
 
 cc_library(
+    name = "intersect",
+    hdrs = [
+        "intersect.hpp",
+    ],
+    srcs = [
+        "intersect.cpp",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":point",
+    ],
+)
+
+cc_library(
     name = "geometry",
     hdrs = [
         "geometry.hpp",
@@ -83,6 +97,7 @@ cc_library(
         ":position",
         ":velocity",
         ":angles",
+        ":intersect",
     ],
 )
 
@@ -104,6 +119,18 @@ cc_test(
     ],
     deps = [
         ":position",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+
+cc_test(
+    name = "test-intersect",
+    srcs = [
+        "test-intersect.cpp",
+    ],
+    deps = [
+        ":intersect",
         "@com_google_googletest//:gtest_main",
     ],
 )

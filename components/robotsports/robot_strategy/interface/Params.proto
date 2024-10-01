@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRobotStrategy;
+
+message Params
+{
+    enum TeamFormation  {
+        FORMATION_112 = 0; // 1 player before the ball (offensive), 1 player on the ball, 2 players behind the ball (defensive)
+        FORMATION_013 = 1; // no player before the ball (offensive), 1 player on the ball, 3 players behind the ball (defensive)
+        FORMATION_211 = 2; // 2 players before the ball (offensive), 1 player on the ball, 1 player behind the ball (defensive)
+        FORMATION_310 = 3; // 3 players before the ball (offensive), 1 player on the ball, no player behind the ball (defensive)
+        FORMATION_ATTACK_SUPPORT_ONLY = 4;
+        FORMATION_DEFENDER_ONLY = 5;
+        FORMATION_INTERCEPTOR_ONLY = 6;
+        FORMATION_SWEEPER_ONLY = 7;
+        FORMATION_SETPLAY_RECEIVER_ONLY = 8;
+        FORMATION_SETPLAY_KICKER_ONLY = 9;
+        FORMATION_BALLPLAYER_ONLY = 10;
+        FORMATION_SEARCHFORBALL_ONLY = 11;
+        FORMATION_BEGINPOSITION_ONLY = 12;
+        FORMATION_PARKING_ONLY = 13;
+        FORMATION_PENALTYKICKER_ONLY = 14;
+        FORMATION_PENALTY_SHOOTOUT = 15;
+    }
+
+    bool no_sweeper_during_setplay = 1; // don't bother if ball vector is too far away (return FAILED)
+    TeamFormation attack_formation = 2; // formation during offensive phase
+    TeamFormation defense_formation = 3; // formation during defensing phase
+}

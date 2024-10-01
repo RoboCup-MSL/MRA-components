@@ -6,6 +6,7 @@ add_subdirectory(local_ball_tracking)
 add_subdirectory(local_obstacle_tracking)
 add_subdirectory(obstacle_tracking)
 add_subdirectory(prove_is_alive)
+add_subdirectory(robot_strategy)
 
 add_library(MRA-components-robotsports ${MRA_BINARY_DIR}/dummy.cpp)
 target_link_libraries(MRA-components-robotsports
@@ -17,6 +18,7 @@ target_link_libraries(MRA-components-robotsports
     MRA-components-robotsports-local-obstacle-tracking
     MRA-components-robotsports-obstacle-tracking
     MRA-components-robotsports-prove-is-alive
+    MRA-components-robotsports-robot-strategy
 )
 
 target_link_directories(MRA-components-robotsports PUBLIC
@@ -28,5 +30,6 @@ target_link_directories(MRA-components-robotsports PUBLIC
     ${MRA_BINARY_DIR}/components/robotsports/local_obstacle_tracking
     ${MRA_BINARY_DIR}/components/robotsports/obstacle_tracking
     ${MRA_BINARY_DIR}/components/robotsports/prove_is_alive
+    ${MRA_BINARY_DIR}/components/robotsports/robot_strategy
 )
 

@@ -17,7 +17,7 @@ TEST(MRAGeometryIntersectTest, IntersectSinglePoint)
     MRA::Geometry::Point intersection;
 
     // Act
-    int result = intersect(p1, p2, q1, q2, &intersection);
+    int result = intersect(p1, p2, q1, q2, false, &intersection);
 
     // Assert
     EXPECT_EQ(result, 1);
@@ -35,7 +35,7 @@ TEST(MRAGeometryIntersectTest, IntersectNoPoint)
     MRA::Geometry::Point intersection;
 
     // Act
-    int result = intersect(p1, p2, q1, q2, &intersection);
+    int result = intersect(p1, p2, q1, q2, false, &intersection);
 
     // Assert
     EXPECT_EQ(result, 0);
@@ -51,7 +51,7 @@ TEST(MRAGeometryIntersectTest, IntersectPartialOverlap)
     MRA::Geometry::Point intersection;
 
     // Act
-    int result = intersect(p1, p2, q1, q2, &intersection);
+    int result = intersect(p1, p2, q1, q2, false, &intersection);
 
     // Assert
     EXPECT_EQ(result, 2);
@@ -67,10 +67,28 @@ TEST(MRAGeometryIntersectTest, DegenerateLines)
     MRA::Geometry::Point intersection;
 
     // Act
-    int result = intersect(p1, p2, q1, q2, &intersection);
+    int result = intersect(p1, p2, q1, q2, false, &intersection);
 
     // Assert
     EXPECT_EQ(result, 3);
+}
+
+TEST(MRAGeometryIntersectTest, IntersectFullLines)
+{
+    // Arrange
+    MRA::Geometry::Point p1{0, 0};
+    MRA::Geometry::Point p2{1, 1};
+    MRA::Geometry::Point q1{3, 1};
+    MRA::Geometry::Point q2{4, 0};
+    MRA::Geometry::Point intersection;
+
+    // Act
+    int result = intersect(p1, p2, q1, q2, true, &intersection);
+
+    // Assert
+    EXPECT_EQ(result, 1);
+    EXPECT_EQ(intersection.x, 2.0);
+    EXPECT_EQ(intersection.y, 2.0);
 }
 
 int main(int argc, char **argv)

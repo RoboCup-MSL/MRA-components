@@ -2,21 +2,9 @@ syntax = "proto3";
 
 package MRA.RobotsportsRobotStrategy;
 
-import "datatypes/ActionResult.proto";
-import "datatypes/PosVel.proto";
+import "datatypes/DynamicRole.proto";
 
 message Output
 {
-    enum DynamicRole {
-        UNDEFINED = 0;
-        GOALKEEPER = 1;
-        ATTACKER_MAIN = 2;
-        ATTACKER_ASSIST = 3;
-        ATTACKER_GENERIC = 4;
-        DEFENDER_MAIN = 5;
-        DEFENDER_GENERIC = 6;
-        DISABLED_OUT = 7;
-        DISABLED_IN = 8;
-    };
-    repeated DynamicRole dynamic_roles = 1;
+    repeated MRA.Datatypes.DynamicRole dynamic_roles = 1;
 }

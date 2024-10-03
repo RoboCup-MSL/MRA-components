@@ -41,9 +41,8 @@ message Input
     {
         FREE = 0;
         OWNED_BY_PLAYER = 1;
-        OWNED_BY_TEAMMATE = 2;
-        OWNED_BY_TEAM = 3;
-        OWNED_BY_OPPONENT = 4;
+        OWNED_BY_TEAM = 2;
+        OWNED_BY_OPPONENT = 3;
     }
 
     GameState game_state = 1;   // state of the game

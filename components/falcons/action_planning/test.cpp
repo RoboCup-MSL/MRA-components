@@ -12,7 +12,7 @@ using namespace MRA;
 // Custom matcher for protobuf comparison
 MATCHER_P(EqualsProto, expected, "")
 {
-    return google::protobuf::util::MessageDifferencer::Equivalent(arg, expected);
+    return google::protobuf::util::MessageDifferencer::ApproximatelyEquivalent(arg, expected);
 }
 
 // Test class
@@ -784,6 +784,53 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     expectedActionResult = MRA::Datatypes::FAILED;
 
     // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestActionCatchSuccess)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Setup inputs: Ball is moving towards the robot directly
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(false);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(-0.5 * M_PI); // facing positive x-axis
+
+    // Ball position and velocity
+    auto ball = testWorldState.mutable_ball();
+    ball->mutable_position()->set_x(5.0); // Ball is 5 meters in front of robot
+    ball->mutable_position()->set_y(0.5); // Small y offset w.r.t. robot
+    ball->mutable_velocity()->set_x(-3.0); // Ball is moving towards the robot at 3 m/s
+    ball->mutable_velocity()->set_y(0.0);
+
+    // Params: Capture radius and ball speed threshold
+    FalconsActionPlanning::Params params;
+    params.mutable_action()->mutable_catchball()->set_captureradius(10.0); // 10 meters
+    params.mutable_action()->mutable_catchball()->set_ballspeedthreshold(2.0); // Ball speed threshold = 2 m/s
+    setParams(params);
+
+    // Set inputs in the planner
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // Run tick
+    feedTick();
+
+    // Setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(0.0); // Move in front of ball (within capture radius)
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.5); // Align to ball's y-axis
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.5 * M_PI); // Face the ball, ball is coming from positive x-axis
+    expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
+
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+
+    // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }

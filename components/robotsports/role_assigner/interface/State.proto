@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRoleAssigner;
+
+import "google/protobuf/timestamp.proto";
+import "datatypes/WorldState.proto";
+import "components/robotsports/role_assigner/interface/Output.proto";
+
+//  - current dynamic role.
+// part of robot_strategy/interface/Output.proto + Input.proto
+;
+
+//message PathPiece {
+//    double x = 1;
+//    double y = 2;
+//    double cost = 3;
+//    MRA.RobotsportsRoleAssigner.PathPurpose target = 4;
+//};
+
+message PreviousResult {
+    google.protobuf.Timestamp timestamp = 1;
+    PathPiece end_position = 2;
+    DynamicRole role = 3;
+};
+
+message PreviousBall {
+    double x = 1;
+    double y = 2;
+};
+
+message State
+{
+    PreviousBall previous_ball = 1;
+    repeated PreviousResult previous_result = 2;
+};

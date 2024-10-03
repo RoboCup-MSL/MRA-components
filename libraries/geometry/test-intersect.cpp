@@ -91,6 +91,24 @@ TEST(MRAGeometryIntersectTest, IntersectFullLines)
     EXPECT_EQ(intersection.y, 2.0);
 }
 
+TEST(MRAGeometryIntersectTest, IntersectFullLines2)
+{
+    // Arrange
+    MRA::Geometry::Point p1{0.00, 0.00};
+    MRA::Geometry::Point p2{0.00, 1.00};
+    MRA::Geometry::Point q1{5.00, 0.50};
+    MRA::Geometry::Point q2{4.70, 0.50};
+    MRA::Geometry::Point intersection;
+
+    // Act
+    int result = intersect(p1, p2, q1, q2, true, &intersection);
+
+    // Assert
+    EXPECT_EQ(result, 1);
+    EXPECT_EQ(intersection.x, 0.00);
+    EXPECT_EQ(intersection.y, 0.50);
+}
+
 int main(int argc, char **argv)
 {
     InitGoogleTest(&argc, argv);

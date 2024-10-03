@@ -35,10 +35,6 @@ static void getFormation013(OutputType &output,
         break;
     case Input_GameState_NONE:   // intentional fall through
     case Input_GameState_NORMAL: // intentional fall through
-    case Input_GameState_YELLOW_CARD_AGAINST: // intentional fall through
-    case Input_GameState_RED_CARD_AGAINST: // intentional fall through
-    case Input_GameState_GOAL: // intentional fall through
-    case Input_GameState_GOAL_AGAINST: // intentional fall through
         // different role assignment when ball is passed
         switch (ball_status)
         {
@@ -92,7 +88,7 @@ static void getFormation013(OutputType &output,
 static void getFormation112(OutputType &output,
         Input_GameState game_state,
         Input_BallStatus ball_status,
-        bool no_sweeper_during_setplay)
+        bool no_defender_main_during_setplay)
 {
     switch (game_state)
     {
@@ -103,7 +99,7 @@ static void getFormation112(OutputType &output,
     case Input_GameState_KICKOFF:  // intentional fall through
         output.add_dynamic_roles(MRA::Datatypes::ATTACKER_ASSIST);
         output.add_dynamic_roles(MRA::Datatypes::ATTACKER_MAIN);
-        if (no_sweeper_during_setplay) {
+        if (no_defender_main_during_setplay) {
             output.add_dynamic_roles(MRA::Datatypes::ATTACKER_GENERIC);
         }
         else {
@@ -128,10 +124,6 @@ static void getFormation112(OutputType &output,
     case Input_GameState_CORNER_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_AGAINST: // intentional fall through
     case Input_GameState_DROPPED_BALL: // intentional fall through
-    case Input_GameState_YELLOW_CARD_AGAINST: // intentional fall through
-    case Input_GameState_RED_CARD_AGAINST: // intentional fall through
-    case Input_GameState_GOAL: // intentional fall through
-    case Input_GameState_GOAL_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
     case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
         switch (ball_status)
@@ -169,7 +161,7 @@ static void getFormation112(OutputType &output,
 static void getFormation211(OutputType &output,
         Input_GameState game_state,
         Input_BallStatus ball_status,
-        bool no_sweeper_during_setplay)
+        bool no_defender_main_during_setplay)
 {
     switch (game_state) {
     case Input_GameState_FREEKICK: // intentional fall through
@@ -179,7 +171,7 @@ static void getFormation211(OutputType &output,
     case Input_GameState_KICKOFF:  // intentional fall through
         output.add_dynamic_roles(MRA::Datatypes::ATTACKER_ASSIST);
         output.add_dynamic_roles(MRA::Datatypes::ATTACKER_MAIN);
-        if (no_sweeper_during_setplay) {
+        if (no_defender_main_during_setplay) {
             output.add_dynamic_roles(MRA::Datatypes::ATTACKER_GENERIC);
         }
         else {
@@ -204,10 +196,6 @@ static void getFormation211(OutputType &output,
     case Input_GameState_CORNER_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_AGAINST: // intentional fall through
     case Input_GameState_DROPPED_BALL: // intentional fall through
-    case Input_GameState_YELLOW_CARD_AGAINST: // intentional fall through
-    case Input_GameState_RED_CARD_AGAINST: // intentional fall through
-    case Input_GameState_GOAL: // intentional fall through
-    case Input_GameState_GOAL_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
     case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
         switch (ball_status)
@@ -276,10 +264,6 @@ switch (game_state) {
     case Input_GameState_CORNER_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_AGAINST: // intentional fall through
     case Input_GameState_DROPPED_BALL: // intentional fall through
-    case Input_GameState_YELLOW_CARD_AGAINST: // intentional fall through
-    case Input_GameState_RED_CARD_AGAINST: // intentional fall through
-    case Input_GameState_GOAL: // intentional fall through
-    case Input_GameState_GOAL_AGAINST: // intentional fall through
     case Input_GameState_PENALTY_SHOOTOUT_AGAINST: // should be handled at higher level
     case Input_GameState_PENALTY_SHOOTOUT: // should be handled at higher level
         switch (ball_status)
@@ -381,10 +365,10 @@ int RobotsportsRobotStrategy::RobotsportsRobotStrategy::tick
                 break;
             break;
         case Params_TeamFormation_FORMATION_112:
-            getFormation112(output, input.game_state(), input.ball_status(), params.no_sweeper_during_setplay() );
+            getFormation112(output, input.game_state(), input.ball_status(), params.no_defender_main_during_setplay() );
             break;
         case Params_TeamFormation_FORMATION_211:
-            getFormation211(output, input.game_state(), input.ball_status(), params.no_sweeper_during_setplay());
+            getFormation211(output, input.game_state(), input.ball_status(), params.no_defender_main_during_setplay());
             break;
         case Params_TeamFormation_FORMATION_013:
             getFormation013(output, input.game_state(),input.ball_status());

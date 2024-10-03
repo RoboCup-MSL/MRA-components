@@ -3,7 +3,8 @@
 
 == Summary
 
-Robot-strategy is a component that determines the team formation by providing the roles to be assigned
+Robot-strategy is a component that determines the team formation by providing the roles 
+to be assigned for the field player. GoalKeeper is not part of the list.
 
 == Scope and context
 

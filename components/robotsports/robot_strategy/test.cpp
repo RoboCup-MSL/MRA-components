@@ -45,7 +45,7 @@ TEST(RobotsportsRobotStrategyTest, normal_with_ball_free)
     EXPECT_EQ(output.dynamic_roles(0), MRA::Datatypes::ATTACKER_MAIN);
     EXPECT_EQ(output.dynamic_roles(1), MRA::Datatypes::ATTACKER_GENERIC);
     EXPECT_EQ(output.dynamic_roles(2), MRA::Datatypes::DEFENDER_MAIN);
-    EXPECT_EQ(output.dynamic_roles(3), MRA::Datatypes::ATTACKER_GENERIC);
+    EXPECT_EQ(output.dynamic_roles(3), MRA::Datatypes::DEFENDER_GENERIC);
 }
 
 // More testing via combined tests of role-assigner

@@ -1,0 +1,41 @@
+
+= Robot-strategy Robotsports Variant
+
+== Summary
+
+Robot-strategy is a component that determines the team formation by providing the roles 
+to be assigned for the field player. GoalKeeper is not part of the list.
+
+== Scope and context
+
+This component is closely connected to the role-assigner, this is the consumer of this component. 
+
+== Interface details
+
+* **purpose**: provide list of dynamic roles in order of importance for the team 
+* **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
+    ** WorldState
+
+* **outputs**:  See link:./interface/Output.proto[Output.proto] for the exact definition.
+    ** list of dynamic roles in order of importance.
+
+* *parameters*:
+The components has some configuration parameters. 
+see link:./interface/Params.proto[Params.proto] and
+link:./interface/DefaultParams.json[DefaultParams.json].
+
+== Design
+
+The component determines the team formation by generating a list of dynamic roles.
+The list of dynamic roles is sorted in importance with the most important role first (often main-attacker).
+The formation is determined based on the game state and the status of the ball (who controls the ball).
+
+
+== History
+
+Created by Robotsports.
+
+== Future
+In the future the formation selection can be influenced by the match status (score, remaining time, is-knockout-match). This allows
+to select a strategy which is more conservative or more opportunistic.  
+

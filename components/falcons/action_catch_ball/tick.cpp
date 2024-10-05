@@ -10,6 +10,18 @@ using namespace MRA;
 #include "geometry.hpp"
 
 
+void checkParams(FalconsActionCatchBall::ParamsType const &params)
+{
+    if (params.ballspeedthreshold() == 0)
+    {
+        throw std::runtime_error("ballspeedthreshold must not be zero");
+    }
+    if (params.captureradius() == 0)
+    {
+        throw std::runtime_error("captureradius must not be zero");
+    }
+}
+
 int FalconsActionCatchBall::FalconsActionCatchBall::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
@@ -30,6 +42,9 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
 
     try
     {
+        // Check parameters (some values must not be zero)
+        checkParams(params);
+
         // Always enable ballhandlers
         output.set_bhenabled(true);
 
@@ -40,9 +55,18 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         diagnostics.set_ballmovingfastenough(ballmovingfastenough);
         if (!ballmovingfastenough)
         {
-            output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
+            // Ball may not yet be moving, use state
+            if (state.ballwasmovingfastenough())
+            {
+                output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
+            }
+            else
+            {
+                output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
+            }
             return error_value;
         }
+        state.set_ballwasmovingfastenough(true);
 
         // Check if the ball is moving towards the robot
         bool ballmovingtowardsrobot = input.worldstate().ball().velocity().x() < 0;

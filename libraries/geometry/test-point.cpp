@@ -276,6 +276,15 @@ TEST(MRAGeometryPointTest, normalize)
     EXPECT_NEAR(p.y, 0.5*sqrt(2.0), 1e-9);
 }
 
+TEST(MRAGeometryPointTest, normalizeOfPointWithMagnitudeZero)
+{
+    // Arrange
+    auto p = Point(0.0, 0.0);
+
+    // Act
+    ASSERT_THROW(p.normalize(), std::range_error);
+}
+
 
 int main(int argc, char **argv)
 {

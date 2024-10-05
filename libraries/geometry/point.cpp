@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>
 
 using namespace MRA::Geometry;
 
@@ -123,8 +124,7 @@ double Point::angle( const Point& point) const {
 void Point::normalize() {
     double norm_res = size();
     if (fabs(norm_res) < Point::DEFAULT_EQUALITY_TOLERANCE) {
-        x = 1.0;
-        y = 0.0;
+        throw std::range_error("normalize of vector with magnitude zero is not possible");
     } else {
         x = x / norm_res;
         y = y / norm_res;

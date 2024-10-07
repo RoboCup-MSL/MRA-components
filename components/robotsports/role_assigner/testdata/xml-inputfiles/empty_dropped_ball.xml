@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>test empty input-set:  play 1 robot without ball on field line</tns:Description>
+  <tns:Options svgOutputFileName="output_team/empty_dropped_ball.svg" svgDrawEdges="true" />
+  <tns:GameState>Dropped Ball</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Team id="1" trackingId="1" x="0.0" y="0.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_OPPONENT">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
+ </tns:Situation>

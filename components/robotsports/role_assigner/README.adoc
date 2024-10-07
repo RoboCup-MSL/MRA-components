@@ -1,0 +1,95 @@
+
+Documentation:
+==============
+* **TODO** add documentation in subdirectory (start with updated copy from robotsports)
+
+REMAINING WORK (TODO list) - to create first version:
+==================================================== 
+
+* Use Protobuf on the interface
+* regression test as normal test
+* Clean up interfaces
+** document inputs and outputs properly
+* updated based on known issues in original code
+** filter objects to defined: only inside the playing field (including goal) or (max X from ball)
+** apply additional cost of edges outside the playing field (scaled with distance to outerlines of the playing field)
+** fix overshoot in graphs
+** restructure: split role assignment and calculate rough path (optional)
+* Bazel support
+* remove TODOs
+* Create generic types / library functions (candidates):
+** Environment
+** MathUtils
+* Review
+
+
+Future development:
+===================
+
+
+
+TIP:
+====
+
+# Team Planning: robot strategy and role assignment 
+
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "<b>Game State</b>\n(0.1 Hz)\nvia Refbox" as GS
+    state "<b>World Process</b>\n(40 Hz)" as WP
+    state "Team Planner\n(8 Hz)" as TP
+    state "Statics\n(40 Hz)" as ST
+    state  "Skills (40 Hz)" as SK
+    state SK {
+        direction LR
+        state "Pickup ball" as pb
+        state "Pass ball" as pass
+        state "Dribble" as Dribble
+        etc
+        pb
+        Dribble
+        pass
+        etc
+    }
+
+    [*] --> GS : \ngame state
+    GS --> WP  : \n\nworld model\nteam planner options
+    WP --> TP : \nrobot plan
+    TP --> ST : \nactive skills
+    ST --> SK
+    SK --> [*]
+
+```
+
+## Game State
+A match is controlled by the referee via the refbox. Via the refbox game-commands are sent to the team. Via the game-commands the game-state can be determined.
+
+## World Process
+Provide processed soccer objects for the tactics module. Soccer objects are the ball, me and teammates, opponents.
+
+## Team Planner options
+Several parameters for the teamplanner are configurable. There stored in the tactics.ini file. During initialization these parameters are read from file.
+
+## Robot Plan  (teamplanner output)
+Global plan for the robot
+* Target field position (where to go to)
+* Role (behavior)
+* Global path (how to get there)
+
+## Role behavior (stactics)
+(sub) State machine per role that defines the behaviour of the role by sequencing the skills needed for the role.
+
+
+## Teamplanner output and guiding principles (2017)
+
+![planner_output_svg_example.svg](planner_output_svg_example.svg)
+### Output: Global_plan (for all robots)
+* Target field position (where to go to) – “yellow dots”
+* Global  path  (how to get there) – “blue paths”
+* Role (what to do)  - “Part of robot info in the Infobox at the right, directly after robot-id (Rxx) ”
+* Role-position: x and y - Part of robot info in the Infobox at the right
+* Role-rank: role priority - Part of robot info in the Infobox at the right
+* Role-cost: cost for
+

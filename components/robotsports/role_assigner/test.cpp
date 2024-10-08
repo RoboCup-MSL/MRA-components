@@ -8,6 +8,7 @@
 #include "test_factory.hpp"
 using namespace ::testing;
 #include "test/xmlRoleAssigner.hpp"
+#include "test/roleassigner_regression_checker.hpp"
 #include <string>
 #include <filesystem>
 
@@ -31,13 +32,16 @@ TEST(RobotsportsRoleAssignerTest, basicTick)
 // Basic tick shall run OK and return error_value 0.
 TEST(RobotsportsRoleAssignerTest, xmlTest)
 {
-    std::string path = "./components/robotsports/role_assigner/testdata/xml-inputfiles";
+    std::string path = "components/robotsports/role_assigner/testdata/xml-inputfiles";
     for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
-        //        auto input_filename = "./components/robotsports/role_assigner/testdata/xml-inputfiles/normal_defend_4.xml";
         auto input_filename = file_entry.path();
         std::cerr << "\nxmltest with input-file: " << input_filename << std::endl << std::flush;
         role_assigner_with_xml_input(input_filename);
     }
+    std::string regression_folder = "components/robotsports/role_assigner/testdata/regression";
+    std::string output_path = "output_team";
+    auto nr_failures = validate_regression(regression_folder, output_path);
+    EXPECT_EQ(nr_failures, 0);
 }
 
 

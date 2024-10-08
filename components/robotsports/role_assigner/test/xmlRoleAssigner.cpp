@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <cmath>
 #include <cstddef>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "../internals/RoleAssigner.hpp"
 #include "../internals/RoleAssigner_types.hpp"
@@ -469,8 +469,8 @@ void role_assigner_with_xml_input(string input_filename) {
         if (found != string::npos) {
             // svgOutputFileName contains /,the sub directory relative to current directory should exists
             auto svg_output_dir = svgOutputFileName.substr(0,found);
-            if (not boost::filesystem::exists(svg_output_dir)) {
-                auto created_new_directory = boost::filesystem::create_directory(svg_output_dir);
+            if (not std::filesystem::exists(svg_output_dir)) {
+                auto created_new_directory = std::filesystem::create_directory(svg_output_dir);
                 if (not created_new_directory) {
                     // Either creation failed or the directory was already present.
                     cout << "FAILED to create directory: " << svg_output_dir << endl;

@@ -14,15 +14,15 @@
 #include <algorithm>
 #include <cstdio>
 #include <cmath>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "../internals/Environment.hpp"
 #include "../internals/RoleAssignerSvg.hpp"
 #include "../internals/RoleAssignerResult.hpp"
 
 using namespace std;
-using namespace boost::filesystem;
 using namespace MRA;
+namespace fs = std::filesystem;
 
 class playerSVGresult {
 public:
@@ -135,8 +135,8 @@ void get_player_path(int playerId, const vector<string>& comment_lines, vector<s
 
 void get_files_in_directory(string dir_name, vector<string>& filenames, string filename_filter)
 {
-    path p(dir_name);
-    for (auto i = directory_iterator(p); i != directory_iterator(); i++)
+    fs::path p(dir_name);
+    for (auto i = fs::directory_iterator(p); i != fs::directory_iterator(); i++)
     {
         if (!is_directory(i->path())) //we eliminate directories
         {
@@ -158,7 +158,7 @@ void get_files_in_directory(string dir_name, vector<string>& filenames, string f
 }
 
 int compare_svg_files(const string& filename, const string& regression_dir, const string& output_dir, bool& collision_found,
-        bool& area_fault_found,  bool& unreachable_area_found, bool& infinite_costs_found) {
+                      bool& area_fault_found,  bool& unreachable_area_found, bool& infinite_costs_found) {
 
     int result = 0; // OK
     vector<string> output_comment_lines = vector<string>();
@@ -179,11 +179,11 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
     else {
         for (auto idx = 0u; idx < output_svg_results.size(); idx++) {
             if (
-                (output_svg_results[idx].robotId != regression_svg_results[idx].robotId) or
-                (output_svg_results[idx].role.compare(regression_svg_results[idx].role) != 0) or
-                (output_svg_results[idx].role_rank != regression_svg_results[idx].role_rank) or
-                (fabs(output_svg_results[idx].target_x - regression_svg_results[idx].target_x) > 1e-3) or
-                (fabs(output_svg_results[idx].target_y - regression_svg_results[idx].target_y) > 1e-3)
+                            (output_svg_results[idx].robotId != regression_svg_results[idx].robotId) or
+                            (output_svg_results[idx].role.compare(regression_svg_results[idx].role) != 0) or
+                            (output_svg_results[idx].role_rank != regression_svg_results[idx].role_rank) or
+                            (fabs(output_svg_results[idx].target_x - regression_svg_results[idx].target_x) > 1e-3) or
+                            (fabs(output_svg_results[idx].target_y - regression_svg_results[idx].target_y) > 1e-3)
             )
             {
                 result = 1; // FAILED
@@ -206,7 +206,7 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
             int target = 0;
             path_piece_t piece = {};
             sscanf(output_player_lines[idx].c_str(), "Path[%d]: x: %lf y: %lf cost: %lf",
-                    &p, &piece.x, &piece.y, &piece.cost);
+                   &p, &piece.x, &piece.y, &piece.cost);
             // create substring of the line after the first (
             string line = output_player_lines[idx].substr(output_player_lines[idx].find("(")+1);
             sscanf(line.c_str(), "%d)", &target);
@@ -225,7 +225,7 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
             int target = 0;
             path_piece_t piece = {};
             sscanf(regression_player_lines[idx].c_str(), "Path[%d]: x: %lf y: %lf cost: %lf",
-                    &p, &piece.x, &piece.y, &piece.cost);
+                   &p, &piece.x, &piece.y, &piece.cost);
             // create substring of the line after the first (
             string line = regression_player_lines[idx].substr(regression_player_lines[idx].find("(")+1);
             sscanf(line.c_str(), "%d)", &target);
@@ -255,32 +255,42 @@ int compare_svg_files(const string& filename, const string& regression_dir, cons
 }
 
 
-int main(int argc, char *argv[]) {
-        if (argc < 3) {
-            cerr << "use program: " << argv[0] << " <regression-directory> <compare-to-direcotry> " << endl;
-            return -1;
-        }
+int validate_regression(const std::string& regression_dir, const std::string& output_dir)
+{
+    int nr_ok = 0;
+    int nr_failed = 0;
+    int nr_missing = 0;
+    int nr_collisions_found = 0;
+    int nr_area_faults_found = 0;
+    int nr_unreachable_area = 0;
+    int nr_infinite_costs = 0;
     try {
-        path compare_new ("./compare_new");
-        path compare_old ("./compare_old");
+        fs::path compare_new ("./compare_new");
+        fs::path compare_old ("./compare_old");
 
-        if (!boost::filesystem::is_directory(compare_new)) {
-            boost::filesystem::remove(compare_new);
+        if (fs::is_directory(compare_new)  and fs::exists(compare_new)) {
+            for (auto& fp : fs::directory_iterator(compare_new)) {
+                fs::remove_all(fp);
+            }
+            fs::remove(compare_new);
         }
-        if (!boost::filesystem::is_directory(compare_old)) {
-            boost::filesystem::remove(compare_old);
+        if (fs::is_directory(compare_old) and fs::exists(compare_old)) {
+            for (auto& fp : fs::directory_iterator(compare_old)) {
+                fs::remove_all(fp);
+            }
+            fs::remove(compare_old);
         }
-
+        fs::create_directory(compare_new);
+        fs::create_directory(compare_old);
 
         // convert string to vector of strings (filenames)
         std::vector<std::string> missing_files = std::vector<std::string>();
         // get files in output-directory
         vector<string> output_files = vector<string>();
-        string output_dir = argv[2];
+
         get_files_in_directory(output_dir, output_files, ".svg");
 
         // get files in regression-directory
-        string regression_dir = argv[1];
         vector<string> regression_files = vector<string>();
         get_files_in_directory(regression_dir, regression_files, ".svg");
 
@@ -289,11 +299,11 @@ int main(int argc, char *argv[]) {
         std::sort (regression_files.begin(),regression_files.end());
 
 
-         cout << endl << "+---------------------------------+" << endl
-                     << "|  START checking on regression   |" << endl
-                     << "+---------------------------------+" << endl;
+        cout << endl << "+---------------------------------+" << endl
+                        << "|  START checking on regression   |" << endl
+                        << "+---------------------------------+" << endl;
         cout << "Number of files in regression directory: " << regression_files.size() << endl << endl;
-        for (std::vector<string>::iterator it = output_files.begin() ; it != output_files.end(); ++it) {
+        for (std::vector<string>::iterator it = output_files.begin() ; it != output_files.end(); it++) {
             string output_file = *it;
             // find corresponding output file
             if (std::find(regression_files.begin(), regression_files.end(), output_file) == regression_files.end()) {
@@ -302,14 +312,7 @@ int main(int argc, char *argv[]) {
                 cerr << "REGRESSION: "<<  output_file << " is NOT in the regression-directory." << endl;
             }
         }
-        int nr_missing = 0;
-        int nr_ok = 0;
-        int nr_failed = 0;
-        int nr_collisions_found = 0;
-        int nr_area_faults_found = 0;
-        int nr_unreachable_area = 0;
-        int nr_infinite_costs = 0;
-        for (std::vector<string>::iterator rit = regression_files.begin() ; rit != regression_files.end(); ++rit) {
+        for (std::vector<string>::iterator rit = regression_files.begin() ; rit != regression_files.end(); rit++) {
             string reg_file = *rit;
             // find corresponding output file
             if (std::find(output_files.begin(), output_files.end(), reg_file) != output_files.end()) {
@@ -319,7 +322,7 @@ int main(int argc, char *argv[]) {
                 bool unreachable_area_found = false;
                 bool infinite_costs_found = false;
                 int cmp_result = compare_svg_files(reg_file, regression_dir, output_dir, collision_found, area_fault_found,
-                        unreachable_area_found, infinite_costs_found);
+                                                   unreachable_area_found, infinite_costs_found);
                 if (infinite_costs_found) {
                     nr_infinite_costs++;
                 }
@@ -341,14 +344,14 @@ int main(int argc, char *argv[]) {
                     cerr << "difference found in: " << reg_file  << endl;
 
                     // copy files to compare directories
-                    if (!boost::filesystem::is_directory(compare_new)) {
-                        boost::filesystem::create_directories(compare_new);
+                    if (!fs::is_directory(compare_new)) {
+                        fs::create_directories(compare_new);
                     }
-                    if (!boost::filesystem::is_directory(compare_old)) {
-                        boost::filesystem::create_directories(compare_old);
+                    if (!fs::is_directory(compare_old)) {
+                        fs::create_directories(compare_old);
                     }
-                    boost::filesystem::copy_file(path(regression_dir) / path(reg_file), compare_old / path(reg_file), copy_option::overwrite_if_exists);
-                    boost::filesystem::copy_file(path(output_dir) / path(reg_file), compare_new / path(reg_file), copy_option::overwrite_if_exists);
+                    fs::copy_file(fs::path(regression_dir) / fs::path(reg_file), compare_old / fs::path(reg_file), fs::copy_options::overwrite_existing);
+                    fs::copy_file(fs::path(output_dir) / fs::path(reg_file), compare_new / fs::path(reg_file), fs::copy_options::overwrite_existing);
                     nr_failed++;
                 }
             }
@@ -358,30 +361,29 @@ int main(int argc, char *argv[]) {
                 nr_missing++;
 
                 // copy missing file to compare directory
-                namespace fs = boost::filesystem;
-                path compare_new ("./compare_new");
-                if (!boost::filesystem::is_directory(compare_new)) {
-                    boost::filesystem::create_directories(compare_new);
+                fs::path compare_new ("./compare_new");
+                if (!fs::is_directory(compare_new)) {
+                    fs::create_directories(compare_new);
                 }
-                boost::filesystem::copy_file(path(regression_dir) / path(reg_file), compare_new / path(reg_file));
+                fs::copy_file(fs::path(regression_dir) / fs::path(reg_file), compare_new / fs::path(reg_file));
 
                 missing_files.push_back(reg_file);
             }
         }
 
-         cout << endl << "+---------------------------------+" << endl
-                     << "| FINISHED checking on regression |" << endl
-                     << "+---------------------------------+" << endl;
-         for (auto it = missing_files.begin(); it != missing_files.end(); ++it) {
-             cout << "missing: " << *it << endl;
-         }
-         cout << "#OK = " << nr_ok << endl;
-         cout << "#FAILED = " << nr_failed << endl;
-         cout << "#MISSING = " << nr_missing << endl;
-         cout << "#COLLISIONS = " << nr_collisions_found << endl;
-         cout << "#AREA_FAULTS = " << nr_area_faults_found << endl;
-         cout << "#UNREACHABLE AREA = " << nr_unreachable_area << endl;
-         cout << "#INFINITE COSTS = " << nr_infinite_costs << endl;
+        cout << endl << "+---------------------------------+" << endl
+                        << "| FINISHED checking on regression |" << endl
+                        << "+---------------------------------+" << endl;
+        for (auto it = missing_files.begin(); it != missing_files.end(); ++it) {
+            cout << "missing: " << *it << endl;
+        }
+        cout << "#OK = " << nr_ok << endl;
+        cout << "#FAILED = " << nr_failed << endl;
+        cout << "#MISSING = " << nr_missing << endl;
+        cout << "#COLLISIONS = " << nr_collisions_found << endl;
+        cout << "#AREA_FAULTS = " << nr_area_faults_found << endl;
+        cout << "#UNREACHABLE AREA = " << nr_unreachable_area << endl;
+        cout << "#INFINITE COSTS = " << nr_infinite_costs << endl;
         cout << endl;
         cout << endl;
         if (nr_failed > 0) {
@@ -390,12 +392,32 @@ int main(int argc, char *argv[]) {
             cout << "   new-files  in directory     : " << compare_new << endl;
         }
 
+        auto abs_reg = fs::absolute(fs::path(regression_dir));
+        auto abs_outputdir = fs::absolute(fs::path(output_dir));
+        cout << "abs_reg = " << abs_reg << endl;
+        cout << "abs_outputdir = " << abs_outputdir << endl;
+
     }
     catch (std::exception & e)
     {
         cerr << "Exception:: " << e.what() << endl << flush;
     }
     catch (...) {
-        cerr << "General Exception in " << argv[0] << endl << flush;
+        cerr << "General Exception " << __FILE__ << " : " << __func__ << endl << flush;
     }
+    int total_nr_failures = nr_failed + nr_missing + nr_collisions_found + nr_area_faults_found + nr_unreachable_area + nr_infinite_costs;
+    return total_nr_failures;
 }
+
+//int main(int argc, char *argv[]) {
+//    if (argc < 3) {
+//        cerr << "use program: " << argv[0] << " <regression-directory> <compare-to-direcotry> " << endl;
+//        return -1;
+//    }
+//    else {
+//        string regression_dir = argv[1];
+//        string output_dir = argv[2];
+//
+//        validate_regression(regression_dir, output_dir);
+//    }
+//}

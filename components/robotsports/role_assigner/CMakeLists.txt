@@ -75,21 +75,18 @@ target_include_directories(xml_test PUBLIC
 target_link_libraries(xml_test
     MRA-components-robotsports-role-assigner
     MRA-components-robotsports-robot-strategy
-    ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
     xerces-c
     MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock    
   )
   
 
 # --- planner_regression_checker ---
+#[[
 add_executable(planner_regression_checker
-    test/planner_regression_checker.cpp
+    test/roleassigner_regression_checker.cpp
     #test/xmlGlobalPathPlanner.cpp
     test/xmlRoleAssigner.cpp
-    test/planner_regression_checker.cpp
     ${STRATEGY_TESTER_CPP}
   )
 
@@ -112,6 +109,7 @@ target_link_libraries(planner_regression_checker
     MRA-components-robotsports-robot-strategy
     xerces-c
  )
+]]#
 
 #
 #target_link_libraries(planner_regression_checker
@@ -125,53 +123,11 @@ target_link_libraries(planner_regression_checker
 #ADD_DEPENDENCIES(MRA-components-robotsports-role-assigner, ${STRATEGY_TESTER_CPP}) 
 
 # system dependencies
-
-#add_custom_target(rsplanner_xsd
-#  DEPENDS ${STRATEGY_TESTER_CPP}
-#)
-#
-#  add_executable(xml_test
-#    test/xml_tester++.cpp
-#    ${STRATEGY_TESTER_CPP}
-#    test/xmlRoleAssigner.cpp
-#  )
-#
-#  target_link_libraries(xml_test
-#    ${RS_LINK_LIBS}
-#    ${Boost_FILESYSTEM_LIBRARY}
-#    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-#    ${Boost_SYSTEM_LIBRARY}
-#    ${Boost_THREAD_LIBRARY}
-#  )
-
-  # --- xml_globalpathplanner_test ---
-#  set(GLOBAL_PLANNER_TESTER_XSD ${CMAKE_CURRENT_SOURCE_DIR}/GlobalPathPlannerTester.xsd)
-#  set(GLOBAL_PLANNER_TESTER_CPP GlobalPathPlannerTester_generated.cpp)
-
-#  include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-#  add_custom_command(OUTPUT ${GLOBAL_PLANNER_TESTER_CPP}
-#    COMMAND xsdcxx cxx-tree
-#      --namespace-map http://www.robotsports.nl=robotsports
-#      --hxx-suffix _generated.h
-#      --cxx-suffix _generated.cpp
-#      ${GLOBAL_PLANNER_TESTER_XSD}
-#    DEPENDS ${GLOBAL_PLANNER_TESTER_XSD}
-#  )
-
-#  add_executable(xml_globalpathplanner_test
-#    ${GLOBAL_PLANNER_TESTER_CPP}
-#    test/xmlGlobalPathPlanner.cpp
-#  )
-#
-#  target_link_libraries(xml_globalpathplanner_test
-#    ${RS_LINK_LIBS}
-#  )
-
 add_executable(
     robotsports_role_assigner_test
     test.cpp
     test/xmlRoleAssigner.cpp
+    test/roleassigner_regression_checker.cpp
     ${STRATEGY_TESTER_CPP}
 )
 target_include_directories(robotsports_role_assigner_test  PRIVATE 

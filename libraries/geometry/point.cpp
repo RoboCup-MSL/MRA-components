@@ -1,5 +1,8 @@
 #include "point.hpp"
 #include <cmath>
+#include <sstream>
+#include <iomanip>
+#include <stdexcept>
 
 using namespace MRA::Geometry;
 
@@ -38,7 +41,7 @@ void Point::reset()
 
 double Point::size() const
 {
-    return sqrt(x * x + y * y);
+    return hypot(x, y);
 }    
 
 Point Point::operator+(Point const &other) const
@@ -89,4 +92,43 @@ Point& Point::operator/=(double f)
 {
     return operator*=(1.0 / f);
 }
+
+bool Point::equals( const Point& c, double tolerance) const {
+    return fabs(c.x - x) < tolerance and fabs(c.y - y) < tolerance;
+}
+
+
+std::string Point::toString() const {
+    std::stringstream buffer;
+    buffer << std::fixed << std::setprecision(2) << "x: " << x << " y: " << y;
+    return buffer.str();
+}
+
+double Point::distanceTo(const Point& aCoordinate) const {
+    return hypot(aCoordinate.x - x, aCoordinate.y - y);
+}
+
+double Point::inproduct( const Point& point) const {
+    return this->x * point.x + this->y * point.y;
+}
+
+double Point::angle( const Point& point) const {
+    return atan2(this->y - point.y, this->x - point.x);
+}
+
+/**
+ * Normalizes the point such that its norm is 1.0 and direction unchanged.
+ *
+ * @return Normalized point. When input point has length 0, the result is (1,0)
+ */
+void Point::normalize() {
+    double norm_res = size();
+    if (fabs(norm_res) < Point::DEFAULT_EQUALITY_TOLERANCE) {
+        throw std::range_error("normalize of vector with magnitude zero is not possible");
+    } else {
+        x = x / norm_res;
+        y = y / norm_res;
+    }
+}
+
 

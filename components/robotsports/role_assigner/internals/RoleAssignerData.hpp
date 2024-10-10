@@ -81,9 +81,10 @@ public:
     game_state_e gamestate;
     RoleAssignerBall ball;
 
-    std::vector<role_e> input_formation;
+    std::vector<role_e> formation;
     std::vector<RoleAssignerRobot> team;
     std::vector<RoleAssignerOpponent> opponents;
+    std::vector<RoleAssignerOpponent> no_opponent_obstacles;
 
     std::vector<MRA::Geometry::Point> parking_positions;
     ball_pickup_position_t ball_pickup_position;
@@ -114,7 +115,7 @@ class RoleAssignerData {
 public:
     RoleAssignerData() {};
     /* inputs */
-    std::vector<role_e> input_formation;
+    std::vector<role_e> formation;
     game_state_e gamestate;
     RoleAssignerBall ball;
     std::vector<MRA::Geometry::Point> parking_positions;

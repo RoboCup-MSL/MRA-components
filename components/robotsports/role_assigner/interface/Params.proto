@@ -28,26 +28,23 @@ message StandardLetterModel
     double Q = 17; // [ 3.5]   off-center distance to restart spots (x)
 }
 
-message EnvironmentParameters {
+message Environment_Parameters {
     StandardLetterModel model = 1; // optional MSL standard model of the field using letters, where A=22, B=14, etc, leading to a set of shapes
-//    bool penalty_area_present = true;
-//    bool technical_team_area_present = true;
-//    double goal_width = 2.0;
-//    double goal_length = 0.6;
-//    // parking info in case no technical area is present
-//    // park robots on the field.
-//    double parking_area_width = 1.0;
-//    double parking_area_length = 5.0;
-//    double parking_distance_between_robots = 0.75;
-//    double parking_distance_to_line = 0.0;  // [m] distance to side line when parking : 0 is on the line, negative is outside playing field
-//    double robot_size = 0.5; // [m] max robot size as defined in MSL rules
-//    double ball_radius = 0.11; // [m] radius of the ball as defined in the MSL rules
-
+    bool penalty_area_present = 2;
+    bool technical_team_area_present = 3;
+    double goal_width = 4;
+    double goal_length = 5;
+    double parking_area_width = 6;
+    double parking_area_length = 7;
+    double parking_distance_between_robots = 8;
+    double parking_distance_to_line = 9;  // [m] distance to side line when parking : 0 is on the line, negative is outside playing field
+    double robot_size = 10; // [m] max robot size as defined in MSL rules
+    double ball_radius = 11; // [m] radius of the ball as defined in the MSL rules
 };
 
 message Params
 {
-    EnvironmentParameters environment = 104;
+    Environment_Parameters environment = 104;
 
     // Calculate for all player a path, otherwise stop if own path is calculated.
     bool calculateAllPaths = 1;

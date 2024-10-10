@@ -44,8 +44,8 @@ message PassData {
    int32   target_id =3;  // destination of kick, where 0 is goal
    double velocity = 4; // [m/s]
    double angle = 5 ; // upwards angle
-   MRA.Datatypes.Point  origin_pos = 6; // field coordinates of origin
-   MRA.Datatypes.Point  target_pos = 7; // field coordinates of target
+   MRA.Datatypes.Pose  origin_pos = 6; // field coordinates of origin
+   MRA.Datatypes.Pose  target_pos = 7; // field coordinates of target
    google.protobuf.Timestamp timestamp = 8; // timestamp of update
    google.protobuf.Timestamp eta = 9; // estimated time of arrival at target
 };
@@ -90,14 +90,14 @@ message Input
     }
 
     GameState gamestate = 2;
-    repeated MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
+    MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
 
     repeated DynamicRole formation = 11; // ordered list of dynamic roles to be assigned.
 
     repeated Player team = 4;   // players in the team (own player is first in the list)
     repeated Opponent opponents = 5; // opponents participating in the games
     repeated Opponent no_opponent_obstacles = 12; // detected obstacles which are not a team-mate or opponent
-    repeated PickUpPosition pickup = 6; // pickup position
+    PickUpPosition pickup = 6; // pickup position
     bool passIsRequired = 7;  // is pass required to make valid goal
     repeated MRA.Datatypes.Pose parking_positions = 8; // location of the parking positions (later: onlyin case of no technical area)
     PassData pass_data = 10; // information over a pass (if present)

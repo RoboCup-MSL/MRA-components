@@ -4,12 +4,12 @@
  *  @curator Jürge van Eijck
  */
 
-#ifndef FIELD_CONFIG_HPP
-#define FIELD_CONFIG_HPP 1
+#ifndef ENVIRONMENT_HPP
+#define ENVIRONMENT_HPP 1
 #include "geometry.hpp"
-#include "EnvironmentParameters.hpp"
-
 #include <string>
+
+#include "EnvironmentParameters.hpp"
 
 namespace MRA {
 
@@ -88,4 +88,4 @@ private:
 
 } //namespace
 
-#endif /* FIELD_CONFIG_HPP */
+#endif /* ENVIRONMENT_HPP */

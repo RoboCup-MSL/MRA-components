@@ -163,9 +163,9 @@ void xmlGlobalPathPlanner(char * input_filename) {
     globalPathPlanner.setOptions(plannerOptions);
     bool ballIsObstacle = false;
     bool avoidBallPath = false; // Set to false, this will not be tested here
-    Vector2D BallTargePos;
+    Vector2D BallTargetPos;
     bool stayInPlayingField = false;
-    globalPathPlanner.createGraph(me, ball, teammates, opponents, targets, plannerObjective, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargePos);
+    globalPathPlanner.createGraph(me, ball, teammates, opponents, targets, plannerObjective, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);
     std::vector<planner_piece_t> robotPath = globalPathPlanner.getShortestPath();
     for (unsigned idx = 0; idx < robotPath.size(); idx++) {
         planner_piece_t p = robotPath[idx];

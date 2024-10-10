@@ -33,10 +33,11 @@ TEST(RobotsportsRoleAssignerTest, basicTick)
 TEST(RobotsportsRoleAssignerTest, xmlTest)
 {
     std::string path = "components/robotsports/role_assigner/testdata/xml-inputfiles";
+    std::string output_base_directory = "/home/jurge/MRA-components/components/robotsports/role_assigner/";
     for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
         auto input_filename = file_entry.path();
-        std::cerr << "\nxmltest with input-file: " << input_filename << std::endl << std::flush;
-        role_assigner_with_xml_input(input_filename);
+        std::cerr << "\nxmltest with input-file: " << input_filename;
+        role_assigner_with_xml_input(input_filename, output_base_directory);
     }
     std::string regression_folder = "components/robotsports/role_assigner/testdata/regression";
     std::string output_path = "output_team";

@@ -7,7 +7,7 @@
 #define XMLROLEASSIGNER_HPP
 #include <string>
 
-void role_assigner_with_xml_input(std::string input_filename);
+void role_assigner_with_xml_input(const std::string& input_filename, const std::string& output_base_directory = "");
 
 #endif
 

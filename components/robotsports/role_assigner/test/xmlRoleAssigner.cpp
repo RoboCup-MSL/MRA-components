@@ -370,7 +370,6 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
 
         P.controlBall = (*team_iter).hasBall();
         if (P.controlBall) {
-            cout << "player with ball is  " << P.robotId << endl;
             r_team_has_ball = true;
         }
         P.time_in_own_penalty_area = (*team_iter).time_in_own_penalty_area();
@@ -409,7 +408,7 @@ void fillOpponents(std::vector<RoleAssignerOpponent>& Opponents, unique_ptr<robo
     }
 }
 
-void role_assigner_with_xml_input(string input_filename) {
+void role_assigner_with_xml_input(const std::string& input_filename, const std::string& output_base_directory) {
     string filename = input_filename;
     bool print_only_errors = true;
     if (not print_only_errors) {
@@ -468,7 +467,7 @@ void role_assigner_with_xml_input(string input_filename) {
         std::size_t found = svgOutputFileName.find_last_of("/");
         if (found != string::npos) {
             // svgOutputFileName contains /,the sub directory relative to current directory should exists
-            auto svg_output_dir = svgOutputFileName.substr(0,found);
+            auto svg_output_dir = output_base_directory + svgOutputFileName.substr(0,found);
             if (not std::filesystem::exists(svg_output_dir)) {
                 auto created_new_directory = std::filesystem::create_directory(svg_output_dir);
                 if (not created_new_directory) {
@@ -527,7 +526,7 @@ void role_assigner_with_xml_input(string input_filename) {
         }
 
     } catch (const xml_schema::exception& e) {
-        cerr << e << endl;
+        cerr << "exception: " << e << endl;
         return;
     } catch (const xml_schema::properties::argument&) {
         cerr << "invalid property argument (empty namespace or location)"
@@ -573,10 +572,10 @@ void role_assigner_with_xml_input(string input_filename) {
     if (not print_only_errors) {
         cout <<" xmlPlanner Fill DATA" << endl;
     }
-    auto input_formation = getListWithRoles(gameState, ball_status,
-                                                       robot_strategy_parameter_no_defender_main_during_setplay,
-                                                       robot_strategy_parameter_attack_formation,
-                                                       robot_strategy_parameter_defense_formation);
+    auto formation = getListWithRoles(gameState, ball_status,
+                                      robot_strategy_parameter_no_defender_main_during_setplay,
+                                      robot_strategy_parameter_attack_formation,
+                                      robot_strategy_parameter_defense_formation);
 
 
     RoleAssigner teamplay = RoleAssigner();
@@ -587,7 +586,7 @@ void role_assigner_with_xml_input(string input_filename) {
     tp_input.ball.velocity = ball_vel;
     tp_input.ball.is_valid = ball_is_valid;
 
-    tp_input.input_formation = input_formation;
+    tp_input.formation = formation;
     tp_input.team = Team;
     tp_input.opponents = Opponents;
     tp_input.parking_positions = parking_positions;
@@ -611,7 +610,7 @@ void role_assigner_with_xml_input(string input_filename) {
     RoleAssignerData tpd = {};
     tpd.parameters = tp_parameters;
     tpd.environment = tp_input.environment;
-    tpd.input_formation = tp_input.input_formation;
+    tpd.formation = tp_input.formation;
     tpd.gamestate = tp_input.gamestate;
     tpd.original_gamestate  = tp_input.gamestate;
     tpd.ball = tp_input.ball;

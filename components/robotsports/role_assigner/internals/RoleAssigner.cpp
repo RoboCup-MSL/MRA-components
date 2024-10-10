@@ -39,7 +39,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     RoleAssignerData role_assigner_data = {};
     role_assigner_data.parameters = parameters;
     role_assigner_data.environment = input.environment;
-    role_assigner_data.input_formation = input.input_formation;
+    role_assigner_data.formation = input.formation;
     role_assigner_data.gamestate = input.gamestate;
     role_assigner_data.ball = input.ball;
     role_assigner_data.parking_positions = input.parking_positions;
@@ -100,7 +100,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     }
     // <<< END sort team of role assigner data by robotId
 
-    role_assigner_data.teamFormation = role_assigner_data.input_formation;// getListWithRoles(role_assigner_data);
+    role_assigner_data.teamFormation = role_assigner_data.formation;// getListWithRoles(role_assigner_data);
 
     // printAssignInputs(role_assigner_data);  // for debug purposes
     role_assigner_data.original_opponents = role_assigner_data.opponents;
@@ -174,7 +174,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
 
             //  Determine path for assigned role
             assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition,
-                                planner_target, role_position_is_end_position_of_pass, role_assigner_data.input_formation[dr_idx]);
+                                planner_target, role_position_is_end_position_of_pass, role_assigner_data.formation[dr_idx]);
 
             // stop if this player is assigne and not all paths must be calculated.
             if (role_assigner_data.team_admin[role_assigner_data.this_player_idx].assigned && role_assigner_data.parameters.calculateAllPaths == false) {
@@ -211,7 +211,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
 
             //  Determine path for assigned role
             assignAnyToPosition(role_assigner_data, role_assigner_data.teamFormation[dr_idx], rolePosition, planner_target,
-                                role_position_is_end_position_of_pass, role_assigner_data.input_formation[dr_idx]);
+                                role_position_is_end_position_of_pass, role_assigner_data.formation[dr_idx]);
 
             //cerr << dr_idx <<": DR: " << DynamicRoleAsString(role_assigner_data.teamFormation[dr_idx]) << " pos: " << rolePosition.toString() << endl;
 
@@ -236,14 +236,14 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
                 MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(role_assigner_data.defend_info, planner_target, m_gridFileNumber,
                                                     role_DEFENDER_GENERIC, role_assigner_data, playerPassedBall, role_position_is_end_position_of_pass);
 
-                cout << "size :" << role_assigner_data.input_formation.size() << endl;
-                cout << role_assigner_data.input_formation[ap_idx] << endl;
+                cout << "size :" << role_assigner_data.formation.size() << endl;
+                cout << role_assigner_data.formation[ap_idx] << endl;
                 cout << role_position_is_end_position_of_pass << endl;
                 cout << planner_target << endl;
                 cout << rolePosition.toString() << endl;
                 cout << role_assigner_data.toString() << endl;
                 assignAnyToPosition(role_assigner_data, role_DEFENDER_GENERIC, rolePosition, planner_target, role_position_is_end_position_of_pass,
-                                    role_assigner_data.input_formation[ap_idx]);
+                                    role_assigner_data.formation[ap_idx]);
             }
         }
     }
@@ -1089,7 +1089,7 @@ void RoleAssigner::assignParkingPositions(RoleAssignerData& role_assigner_data) 
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                 role_assigner_data.gamestate,
-                role_assigner_data.input_formation[idx],
+                role_assigner_data.formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
                 planner_target_e::GOTO_TARGET_POSITION_SLOW,
@@ -1148,7 +1148,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
                 role_assigner_data.gamestate,
-                role_assigner_data.input_formation[idx],
+                role_assigner_data.formation[idx],
                 role_assigner_data.incrementAndGetRank(),
                 fixedPlayerPositions[fixed_role_idx],
                 planner_target_e::GOTO_TARGET_POSITION,
@@ -1311,8 +1311,8 @@ std::vector<dynamic_role_e> RoleAssigner::getListWithRoles(RoleAssignerData& rol
 
 
     std::vector<dynamic_role_e> roles_to_assign = {};
-    for (auto idx = 0u; idx < role_assigner_data.input_formation.size(); idx++) {
-        auto odr = role_assigner_data.input_formation[idx];
+    for (auto idx = 0u; idx < role_assigner_data.formation.size(); idx++) {
+        auto odr = role_assigner_data.formation[idx];
         dynamic_role_e dr = dr_NONE;
 
         switch (odr) {

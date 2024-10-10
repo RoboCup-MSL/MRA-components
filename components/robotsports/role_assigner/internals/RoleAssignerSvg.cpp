@@ -716,7 +716,6 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
 
     fprintf(fp, "</svg>\n");
     fclose(fp);
-    printf("created SVG file : %s\n", save_name.c_str());
     MRA_LOG_INFO("created SVG file : %s", save_name.c_str());
 }
 

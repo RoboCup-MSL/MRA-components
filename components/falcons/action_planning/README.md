@@ -33,6 +33,11 @@ Note: it has been decided to leave some actions out of scope, instead handle the
 - **DEFEND:** Defend an opponent. (Using heightmaps, a `MOVE` target is calculated.)
 - **CLEAR:** Clear the ball away from own goal. (Can use `LOB` instead.)
 
+Responsibilities currently out of scope:
+
+* obstacle avoidance: this is left for Navigation, so the movement target is considered 'unsafe'
+* shoot setpoint calculation: this is left for ShootPlanning
+
 ### Context diagram
 
 ```mermaid
@@ -47,6 +52,7 @@ graph TD;
 ```
 
 TODO: link to main MRA diagram.
+TODO: reconsider responsibilities to reduce "multiple captain" situations (fold ShootPlanning and Navigation into ActionPlanning?)
 
 ### Input and Output Flow
 

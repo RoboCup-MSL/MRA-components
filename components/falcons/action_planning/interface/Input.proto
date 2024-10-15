@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPlanning;
+
+import "datatypes/Pose.proto";
+import "datatypes/PosVel.proto";
+import "datatypes/WorldState.proto";
+import "datatypes/ActionType.proto";
+
+message ActionStopInput
+{
+    bool ballHandlersEnabled = 1; // relay, i.e. pass on the setting
+}
+
+message ActionMoveInput
+{
+    MRA.Datatypes.PosVel motionTarget = 1; // in FCS
+    int32 motionType = 2; // relay, optionally set to dribble
+    bool ballHandlersEnabled = 3;
+}
+
+message ActionDashInput
+{
+    oneof target
+    {
+        MRA.Datatypes.Pose velocity = 1; // in RCS
+        MRA.Datatypes.Pose position = 2; // in RCS
+    }
+}
+
+message ActionKickInput
+{
+    float power = 1;
+    float height = 2;
+    bool discharge = 3;
+}
+
+message ActionAimedKickInput
+{
+    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
+}
+
+message ActionGetBallInput
+{
+    int32 motionType = 1; // optional
+    float radius = 2; // optional
+}
+
+message ActionCatchInput
+{
+    float radius = 1; // optional
+}
+
+message ActionShieldInput
+{
+    // no inputs
+}
+
+message ActionTackleInput
+{
+    // no inputs
+}
+
+message ActionKeeperInput
+{
+    // no inputs
+}
+
+message ActionBumpInput
+{
+    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
+}
+
+message ActionParkInput
+{
+    // no inputs
+}
+
+message ActionPrepareInput
+{
+    // no inputs
+}
+
+message ActionAliveInput
+{
+    // no inputs
+}
+
+message ActionInputs
+{
+    MRA.Datatypes.ActionType type = 1; // enum
+    oneof inputs
+    {
+        // idle action has no inputs
+        ActionStopInput stop = 2;
+        ActionMoveInput move = 3;
+        ActionMoveInput dribble = 4; // dribble is a variant of move
+        ActionDashInput dash = 5;
+        ActionKickInput kick = 6;
+        ActionAimedKickInput pass = 7;
+        ActionAimedKickInput shoot = 8;
+        ActionAimedKickInput lob = 9;
+        ActionGetBallInput getball = 10;
+        ActionCatchInput catch = 11;
+        ActionShieldInput shield = 12;
+        ActionTackleInput tackle = 13;
+        ActionKeeperInput keeper = 14;
+        ActionBumpInput bump = 15;
+        ActionParkInput park = 16;
+        ActionPrepareInput prepare = 17;
+        ActionAliveInput alive = 18;
+    }
+}
+
+message Input
+{
+    ActionInputs action = 1;
+    MRA.Datatypes.WorldState worldState = 2;
+}
+

@@ -5,17 +5,23 @@ package MRA.Datatypes;
 enum ActionType
 {
     ACTION_INVALID = 0;
-    ACTION_STOP = 1;
-    ACTION_MOVE = 2;
-    ACTION_KICK = 3;
-    ACTION_PASS = 4;
-    ACTION_SHOOT = 5;
-    ACTION_LOB = 6;
-    ACTION_GETBALL = 7;
-    ACTION_SHIELD = 8; // a.k.a. TURN_AWAY_FROM_OPPONENT
-    ACTION_KEEPER = 9;
-    ACTION_INTERCEPT = 10;
-    ACTION_PARK = 11;
-    ACTION_CATCHBALL = 12; // "catch" is a reserved word in C++ and causes protoc to add magic underscores
+    ACTION_IDLE = 1;
+    ACTION_STOP = 2;
+    ACTION_MOVE = 3;
+    ACTION_DRIBBLE = 4;
+    ACTION_DASH = 5;
+    ACTION_KICK = 6;
+    ACTION_PASS = 7;
+    ACTION_SHOOT = 8;
+    ACTION_LOB = 9;
+    ACTION_GETBALL = 10;
+    ACTION_CATCHBALL = 11;
+    ACTION_SHIELD = 12;
+    ACTION_TACKLE = 13;
+    ACTION_KEEPER = 14;
+    ACTION_BUMP = 15;
+    ACTION_PARK = 16;
+    ACTION_PREPARE = 17;
+    ACTION_ALIVE = 18;
+    ACTION_FOLLOW = 19;
 }
-

@@ -259,6 +259,30 @@ TEST(MRAGeometryPoseTest, operatorDivideScalarAssign)
     EXPECT_EQ(p.rz, 6.0);
 }
 
+TEST(MRAGeometryPoseTest, distanceTo)
+{
+    // Arrange
+    auto pose = Pose(2.0, 4.0, 6.0, 8.0, 10.0, 12.0);
+    auto point = Pose(-1.0, 8.0);
+    // Act
+    auto dist = pose.distanceTo(point);
+
+    // Assert
+    EXPECT_EQ(dist, 5.0);
+}
+
+TEST(MRAGeometryPoseTest, toString)
+{
+    // Arrange
+    auto pose = Pose(2.0011, 3.99999, 6.0, 8.0, 10.0, 12.0);
+    // Act
+    auto str = pose.toString();
+
+    // Assert
+    EXPECT_EQ(str, "x: 2.00 y: 4.00 z: 6.00 rx: 8.00 ry: 10.00 rz: 12.00");
+}
+
+
 int main(int argc, char **argv)
 {
     InitGoogleTest(&argc, argv);

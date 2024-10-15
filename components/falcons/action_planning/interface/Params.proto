@@ -14,11 +14,22 @@ message ActionParams
     MRA.Datatypes.ActionType type = 1;
     MRA.FalconsActionStop.Params stop = 2;
     MRA.FalconsActionMove.Params move = 3;
-    MRA.FalconsActionAimedKick.Params pass = 5;
-    MRA.FalconsActionAimedKick.Params shoot = 6;
-    MRA.FalconsGetball.Params getball = 8;
-    MRA.FalconsActionPark.Params park = 12;
-    MRA.FalconsActionCatchBall.Params catchball = 13;
+    // TODO dribble = 4
+    // TODO dash = 5
+    // TODO kick = 6
+    MRA.FalconsActionAimedKick.Params pass = 7;
+    MRA.FalconsActionAimedKick.Params shoot = 8;
+    // TODO lob = 9
+    MRA.FalconsGetball.Params getball = 10;
+    MRA.FalconsActionCatchBall.Params catchball = 11;
+    // TODO shield = 12
+    // TODO tackle = 13
+    // TODO keeper = 14
+    // TODO bump = 15
+    MRA.FalconsActionPark.Params park = 16;
+    // TODO prepare = 17
+    // TODO alive = 18
+    // TODO follow = 19
 }
 
 message Params

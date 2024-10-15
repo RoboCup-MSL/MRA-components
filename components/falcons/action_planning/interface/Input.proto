@@ -32,11 +32,6 @@ message ActionKeeperInputs
 {
 }
 
-message ActionInterceptInputs
-{
-    float radius = 2; // optional
-}
-
 message ActionInputs
 {
     MRA.Datatypes.ActionType type = 1;
@@ -44,16 +39,22 @@ message ActionInputs
     {
         MRA.FalconsActionStop.Input stop = 2;
         MRA.FalconsActionMove.Input move = 3;
-        ActionKickInputs kick = 4;
-        MRA.FalconsActionAimedKick.Input pass = 5;
-        MRA.FalconsActionAimedKick.Input shoot = 6;
-        ActionLobShotInputs lob = 7;
-        MRA.FalconsGetball.Input getball = 8;
-        ActionShieldInputs shield = 9;
-        ActionKeeperInputs keeper = 10;
-        ActionInterceptInputs intercept = 11;
-        MRA.FalconsActionPark.Input park = 12;
-        MRA.FalconsActionCatchBall.Input catchball = 13;
+        // TODO dribble = 4
+        // TODO dash = 5
+        ActionKickInputs kick = 6;
+        MRA.FalconsActionAimedKick.Input pass = 7;
+        MRA.FalconsActionAimedKick.Input shoot = 8;
+        ActionLobShotInputs lob = 9;
+        MRA.FalconsGetball.Input getball = 10;
+        MRA.FalconsActionCatchBall.Input catchball = 11;
+        ActionShieldInputs shield = 12;
+        // TODO tackle = 13
+        ActionKeeperInputs keeper = 14;
+        // TODO bump = 15
+        MRA.FalconsActionPark.Input park = 16;
+        // TODO prepare = 17
+        // TODO alive = 18
+        // TODO follow = 19
     }
 }
 

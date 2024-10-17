@@ -29,6 +29,13 @@
                 "actionRadius": 4.0
             }
         },
+        "catchball": {
+            "captureRadius": 3.0,
+            "ballSpeedThreshold": 0.4,
+            "proactive": false,
+            "robotCatchSpeed": 1.5,
+            "ballVectorExtrapolation": 0.5
+        },
         "park": {
             "tta": {
                 "size": {

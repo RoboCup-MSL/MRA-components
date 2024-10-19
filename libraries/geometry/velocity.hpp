@@ -2,6 +2,7 @@
 #define _MRA_LIBRARIES_GEOMETRY_VELOCITY_HPP
 
 #include "pose.hpp"
+#include "position.hpp"
 
 namespace MRA::Geometry
 {
@@ -16,8 +17,8 @@ public:
     Velocity(MRA::Datatypes::Pose const &p);
 
     // transform (planar) between RCS and FCS using refpos in FCS
-    Velocity& transformRcsToFcs(Velocity const &refpos);
-    Velocity& transformFcsToRcs(Velocity const &refpos);
+    Velocity& transformRcsToFcs(MRA::Geometry::Position const &refpos);
+    Velocity& transformFcsToRcs(MRA::Geometry::Position const &refpos);
 
 }; // class Velocity: public Pose
 

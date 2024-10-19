@@ -66,6 +66,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":pose",
+        ":position",
         ":angles",
     ],
 )

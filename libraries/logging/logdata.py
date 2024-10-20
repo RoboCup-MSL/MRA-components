@@ -12,14 +12,26 @@ import sys
 import struct
 import importlib
 
-# this datatype is always needed
+
+# try to find cmake build root
+MRA_ROOT = os.path.join(os.path.dirname(__file__), '..', '..') # bazel run uses a tmp folder, which only has limited visibility
+CMAKE_BUILD_ROOT = os.path.join(MRA_ROOT, 'build')
+if not os.path.isdir(CMAKE_BUILD_ROOT) and os.getenv('BUILD_WORKSPACE_DIRECTORY'):
+    MRA_ROOT = os.getenv('BUILD_WORKSPACE_DIRECTORY')
+    CMAKE_BUILD_ROOT = os.path.join(MRA_ROOT, 'build')
+    if not os.path.isdir(CMAKE_BUILD_ROOT):
+        raise Exception('failed to find cmake build folder')
+
+
+
+# this Meta datatype is always needed
 # the others depend on the component specified in the header, those are dynamically imported
 try:
     import datatypes.Meta_pb2
 except ImportError:
-    # try cmake build/folder
+    #print('failed to import datatypes.Meta_pb2, trying cmake build/folder')
     # it works for now (for MRA-tickbin.py), but TODO: make this nicer ...
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'build'))
+    sys.path.append(CMAKE_BUILD_ROOT)
     try:
         import datatypes.Meta_pb2
     except ImportError:
@@ -75,18 +87,23 @@ class Data():
         for elem in FILE_ELEMENTS[1:]: # skip first element (meta)
             key = elem.split('_')[0]
             Key = key.capitalize() # example Input
-            # dynamic import of component interface
-            key_module = '{:s}_pb2'.format(Key) # example Input_pb2
-            module_name = 'components.{:s}.interface.{:s}'.format(self.meta.subfolder.replace('/', '.'), key_module, Key)
-            try:
-                module = importlib.import_module(module_name)
-            except:
-                continue
+            module = self.dynamic_import(self.meta.subfolder, Key)
             # construct message and merge from raw data
             msg = getattr(module, Key)()
             msg.MergeFromString(self.raw_data[elem])
             # store
             setattr(self, elem, msg)
 
-
+    def dynamic_import(self, subfolder, key):
+        key_module = '{:s}_pb2'.format(key) # example Input_pb2
+        module_name = 'components.{:s}.interface.{:s}'.format(subfolder.replace('/', '.'), key_module)
+        # try cmake
+        path_extend_cmake = MRA_ROOT + '/build/components/{:s}/interface'.format(subfolder)
+        f = os.path.join(path_extend_cmake, key_module + '.py')
+        if os.path.isfile(f):
+            os.chdir(os.path.join(MRA_ROOT, 'build'))
+            return importlib.import_module(module_name)
+        raise Exception('failed to import ' + module_name) # maybe try full cmake build?
+        # try bazel?
+        #bazel_output_path = subprocess.getoutput(['bazel', 'info', 'output_path'], shell=True)
 

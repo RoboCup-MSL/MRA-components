@@ -26,13 +26,17 @@ struct SpgLimits
     float ax;
     float ay;
     float aRz;
+    bool  hasJerkLimit;
+    float jx;
+    float jy;
+    float jRz;
 };
 
-class SPGVelocitySetpointController2 : public AbstractVelocitySetpointController
+class SPGVelocitySetpointController : public AbstractVelocitySetpointController
 {
 public:
-    SPGVelocitySetpointController2();
-    ~SPGVelocitySetpointController2();
+    SPGVelocitySetpointController();
+    ~SPGVelocitySetpointController();
     bool calculate(VelocityControlData &data);
 
 private:

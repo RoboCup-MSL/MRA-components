@@ -12,6 +12,6 @@
 
 void SelectVelocityController::execute(VelocityControlData &data)
 {
-    data.controller = std::shared_ptr<AbstractVelocitySetpointController>(new SPGVelocitySetpointController2());
+    data.controller = std::shared_ptr<AbstractVelocitySetpointController>(new SPGVelocitySetpointController());
 }
 

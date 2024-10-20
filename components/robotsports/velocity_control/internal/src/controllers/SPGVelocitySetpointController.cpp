@@ -17,15 +17,15 @@
 using namespace ruckig;
 using namespace MRA;
 
-SPGVelocitySetpointController2::SPGVelocitySetpointController2()
+SPGVelocitySetpointController::SPGVelocitySetpointController()
 {
 }
 
-SPGVelocitySetpointController2::~SPGVelocitySetpointController2()
+SPGVelocitySetpointController::~SPGVelocitySetpointController()
 {
 }
 
-bool SPGVelocitySetpointController2::calculate(VelocityControlData &data)
+bool SPGVelocitySetpointController::calculate(VelocityControlData &data)
 {
     // Ruckig Motion Library with jerk control support
     // in order to achieve higher deceleration, a layer is added around the SPG algorithm
@@ -39,6 +39,12 @@ bool SPGVelocitySetpointController2::calculate(VelocityControlData &data)
     spgLimits.ax = data.limits.maxdec().x();
     spgLimits.ay = data.limits.maxdec().y();
     spgLimits.aRz = data.limits.maxdec().rz();
+    spgLimits.hasJerkLimit = data.limits.has_maxjerk();
+    if (spgLimits.hasJerkLimit) {
+        spgLimits.jx = data.limits.maxjerk().x();
+        spgLimits.jy = data.limits.maxjerk().y();
+        spgLimits.jRz = data.limits.maxjerk().rz();
+    }
 
     // For position, finding a weighted average on the Rz is not trivial when the angles are around the boundary of [0, 2pi].
     // To solve this, rotate both currentPosFCS.Rz and previousPosSetpointFCS.Rz towards currentPosFCS.Rz.
@@ -131,7 +137,7 @@ bool SPGVelocitySetpointController2::calculate(VelocityControlData &data)
     return result;
 }
 
-bool SPGVelocitySetpointController2::isDofAccelerating(const VelocityControlData &data, const Velocity2D& resultVelocity, int dof, float threshold)
+bool SPGVelocitySetpointController::isDofAccelerating(const VelocityControlData &data, const Velocity2D& resultVelocity, int dof, float threshold)
 {
     // To check if a DOF is accelerating, we should look if the m_currentVelocityRCS -> resultVelocity is "moving away from zero".
     std::vector<double> currentVelocity;
@@ -169,7 +175,7 @@ bool SPGVelocitySetpointController2::isDofAccelerating(const VelocityControlData
 
 
 
-bool SPGVelocitySetpointController2::calculateSPG(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
+bool SPGVelocitySetpointController::calculateSPG(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
 {
     bool result = false;
 
@@ -232,7 +238,7 @@ bool SPGVelocitySetpointController2::calculateSPG(VelocityControlData& data, Spg
 //    }
 //}
 
-bool SPGVelocitySetpointController2::calculatePosXYRzPhaseSynchronized(VelocityControlData& data, const SpgLimits& spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
+bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(VelocityControlData& data, const SpgLimits& spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
 {
 //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
 //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
@@ -252,7 +258,9 @@ bool SPGVelocitySetpointController2::calculatePosXYRzPhaseSynchronized(VelocityC
 
       input.max_velocity = {spgLimits.vx, spgLimits.vy, spgLimits.vRz};
       input.max_acceleration = {spgLimits.ax, spgLimits.ay, spgLimits.aRz};
-      //input.max_jerk = {0.0, 0.0, 0.5}; // not used in TypeII library (TODO: enable for ruckig)
+      if (spgLimits.hasJerkLimit) {
+          input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
+      }
 
       // steering from currentPos = 0, to targetPos = deltaPos
       input.target_position = {m_deltaPositionRCS.x, m_deltaPositionRCS.y, m_deltaPositionRCS.rz};
@@ -317,7 +325,7 @@ bool SPGVelocitySetpointController2::calculatePosXYRzPhaseSynchronized(VelocityC
     return true;
 }
 
-bool SPGVelocitySetpointController2::calculatePosXYPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
+bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
 {
 //    RMLPositionFlags            Flags;
 //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
@@ -331,29 +339,19 @@ bool SPGVelocitySetpointController2::calculatePosXYPhaseSynchronized(VelocityCon
     InputParameter<numberOfDOFs> input;
 
     // set-up the input parameters
-    input.current_position      [0] = 0.0; // instead of steering from current to target,
-    input.current_position      [1] = 0.0; // we steer from zero to delta, so we can better configure
+    input.current_position = { 0.0, 0.0 }; // instead of steering from current to target, we steer from zero to delta, so we can better configure
+    input.current_velocity  = { m_currentVelocityRCS.x,  m_currentVelocityRCS.y };
+    input.current_acceleration  = { 0.0, 0.0 };     // not relevant, due to limitation of TypeII library // TODO ruckig
 
-    input.current_velocity      [0] = m_currentVelocityRCS.x;
-    input.current_velocity      [1] = m_currentVelocityRCS.y;
+    input.max_velocity = { spgLimits.vx, spgLimits.vy };
+    input.max_acceleration = { spgLimits.ax, spgLimits.ay };
 
-    input.current_acceleration  [0] = 0.0; // not relevant, due to limitation of TypeII library // TODO ruckig
-    input.current_acceleration  [1] = 0.0;
+    if (spgLimits.hasJerkLimit) {
+        input.max_jerk = { spgLimits.jx, spgLimits.jy };
+    }
 
-    input.max_velocity          [0] = spgLimits.vx;
-    input.max_velocity          [1] = spgLimits.vy;
-
-    input.max_acceleration      [0] = spgLimits.ax;
-    input.max_acceleration      [1] = spgLimits.ay;
-// TODO ruckig
-//    input.max_jerk              [0] = 0.0; // not used in TypeII library
-//    input.max_jerk              [1] = 0.0;
-
-    input.target_position       [0] = m_deltaPositionRCS.x;  // steering from currentPos = 0,
-    input.target_position       [1] = m_deltaPositionRCS.y;  // to targetPos = deltaPos
-
-    input.target_velocity       [0] = m_targetVelocityRCS.x;
-    input.target_velocity       [1] = m_targetVelocityRCS.y;
+    input.target_position = { m_deltaPositionRCS.x, m_deltaPositionRCS.y };  // steering from currentPos = 0 to targetPos = deltaPos
+    input.target_velocity = { m_targetVelocityRCS.x, m_targetVelocityRCS.y };
 
     auto result = otg.calculate(input, trajectory);
     if (result == ErrorInvalidInput) {
@@ -405,7 +403,7 @@ bool SPGVelocitySetpointController2::calculatePosXYPhaseSynchronized(VelocityCon
 }
 
 
-bool SPGVelocitySetpointController2::calculatePosRzNonSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
+bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
 {
 //    RMLPositionFlags            Flags;
 //    Flags.SynchronizationBehavior                  = RMLPositionFlags::NO_SYNCHRONIZATION;
@@ -423,7 +421,9 @@ bool SPGVelocitySetpointController2::calculatePosRzNonSynchronized(VelocityContr
     input.current_acceleration  [0] = 0.0;
     input.max_velocity          [0] = spgLimits.vRz;
     input.max_acceleration      [0] = spgLimits.aRz;
-    // TODO input.max_jerk              [0] = 0.0;
+    if (spgLimits.hasJerkLimit) {
+        input.max_jerk = { spgLimits.jRz };
+    }
     input.target_position       [0] = m_deltaPositionRCS.rz;
     input.target_velocity       [0] = m_targetVelocityRCS.rz;
 
@@ -459,7 +459,7 @@ bool SPGVelocitySetpointController2::calculatePosRzNonSynchronized(VelocityContr
 
 
 
-bool SPGVelocitySetpointController2::calculateVelXYRzPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
+bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity)
 {
 //    // initialize
 //    RMLVelocityFlags            Flags;
@@ -489,9 +489,9 @@ bool SPGVelocitySetpointController2::calculateVelXYRzPhaseSynchronized(VelocityC
     input.max_acceleration      [1] = spgLimits.ay;
     input.max_acceleration      [2] = spgLimits.aRz;
 
-//    input.max_jerk              [0] = 0.0; // not used in TypeII library
-//    input.max_jerk              [1] = 0.0;
-//    input.max_jerk              [2] = 0.0;
+    if (spgLimits.hasJerkLimit) {
+        input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
+    }
 
     input.target_velocity       [0] = std::clamp(m_targetVelocityRCS.x,   (double) -spgLimits.vx,  (double) spgLimits.vx);
     input.target_velocity       [1] = std::clamp(m_targetVelocityRCS.y,   (double) -spgLimits.vy,  (double) spgLimits.vy);

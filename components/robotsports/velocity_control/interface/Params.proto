@@ -40,6 +40,7 @@ message Limits
     XYRzLimits maxAcc = 3;
     XYRzLimits maxDec = 4;
     XYRzLimits accThreshold = 5;
+    XYRzLimits maxJerk = 6;
 }
 
 message Params

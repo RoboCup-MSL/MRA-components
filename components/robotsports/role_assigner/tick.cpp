@@ -11,6 +11,8 @@ using namespace MRA;
 #include "internals/RoleAssigner.hpp"
 #include "internals/RoleAssignerData.hpp"
 
+#include "RoleAssignerSvg.hpp" // TODO remove later
+
 // helper function for adding some seconds to a google timestamp
 google::protobuf::Timestamp timeFromDouble(google::protobuf::Timestamp const &t0, double dt)
 {
@@ -301,51 +303,44 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     auto ra_state_org = ra_state;
     teamplay.assign(ra_input, ra_state, ra_output, ra_parameters);
 
-//    RoleAssignerData tpd = {};
-//    tpd.parameters = tp_parameters;
-//    tpd.environment = tp_input.environment;
-//    tpd.input_formation = tp_input.input_formation;
-//    tpd.gamestate = tp_input.gamestate;
-//    tpd.original_gamestate  = tp_input.gamestate;
-//    tpd.ball = tp_input.ball;
-//    tpd.parking_positions = tp_input.parking_positions;
-//    tpd.ball_pickup_position = tp_input.ball_pickup_position;
-//    tpd.passIsRequired = tp_input.passIsRequired;
-//    tpd.pass_data = tp_input.pass_data;
-//    tpd.previous_ball = tp_state.previous_ball;
-//    tpd.team = tp_input.team;
-//    tpd.opponents = tp_input.opponents;
-//
-//    // inputs
-//    tpd.previous_ball = tp_state_org.previous_ball;
-//    for (auto idx = 0u; idx < tp_state_org.previous_result.size(); ++idx) {
-//        RoleAssignerAdminTeam tp_admin = {};
-//        tp_admin.previous_result = tp_state_org.previous_result[idx];
-//        tpd.team_admin.push_back(tp_admin);
-//    }
-//
-//    for (auto idx = 0u; idx < tp_output.player_paths.size(); ++idx) {
-//        tpd.team_admin[idx].robotId = tp_input.team[idx].robotId;
-//        tpd.team_admin[idx].assigned = true;
-//        tpd.team_admin[idx].result = tp_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
-//    }
-//    player_paths = tp_output.player_paths;
-//
-//    RunData run_data (tpd, player_paths);
-//    run_results.push_back(run_data);
-//
-//    if (player_paths.size() > 0) {
-//        if (not print_only_errors) {
-//            cerr << "<< XML: print received path " << endl << flush;
-//            cerr << RoleAssignerResultToString(player_paths, tpd.team) << endl << flush;
-//        }
-//        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, environment, run_filename);
-//
-//    } else {
-//        cerr << "<< XML: no path received" << endl << flush;
-//    }
+    RoleAssignerData tpd = {};
+    tpd.parameters = ra_parameters;
+    tpd.environment = ra_input.environment;
+    tpd.formation = ra_input.formation;
+    tpd.gamestate = ra_input.gamestate;
+    tpd.original_gamestate  = ra_input.gamestate;
+    tpd.ball = ra_input.ball;
+    tpd.parking_positions = ra_input.parking_positions;
+    tpd.ball_pickup_position = ra_input.ball_pickup_position;
+    tpd.passIsRequired = ra_input.passIsRequired;
+    tpd.pass_data = ra_input.pass_data;
+    tpd.previous_ball = ra_state.previous_ball;
+    tpd.team = ra_input.team;
+    tpd.opponents = ra_input.opponents;
+
+    // inputs
+    tpd.previous_ball = ra_state_org.previous_ball;
+    for (auto idx = 0u; idx < ra_state_org.previous_result.size(); ++idx) {
+        RoleAssignerAdminTeam tp_admin = {};
+        tp_admin.previous_result = ra_state_org.previous_result[idx];
+        tpd.team_admin.push_back(tp_admin);
+    }
+
+    for (auto idx = 0u; idx < ra_output.player_paths.size(); ++idx) {
+        tpd.team_admin[idx].robotId = ra_input.team[idx].robotId;
+        tpd.team_admin[idx].assigned = true;
+        tpd.team_admin[idx].result = ra_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
+    }
+    auto player_paths = ra_output.player_paths;
+
+    if (player_paths.size() > 0) {
+        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, ra_input.environment, "test.svg");
+
+    } else {
+        std::cerr << "<< XML: no path received" << std::endl << std::flush;
+    }
 //    if (not print_only_errors) {
-//        cerr << "<< Assign roles" << endl << flush;
+        std::cerr << "<< Assign roles" << std::endl << std::flush;
 //    }
 
 

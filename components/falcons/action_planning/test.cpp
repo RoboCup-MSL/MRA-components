@@ -788,7 +788,34 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }
 
-TEST_F(TestActionPlanner, TickTestActionCatchSuccess)
+TEST_F(TestActionPlanner, TickTestActionCatchRobotHasBall)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Setup inputs: Robot already has the ball
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(true);
+
+    // Set inputs in the planner
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // Run tick
+    feedTick();
+
+    // Setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_bh()->set_enabled(true);
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::PASSED;
+
+    // Check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
 {
     MRA_TRACE_TEST_FUNCTION();
 
@@ -797,7 +824,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchSuccess)
     testWorldState.mutable_robot()->set_hasball(false);
     testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
     testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
-    testWorldState.mutable_robot()->mutable_position()->set_rz(-0.5 * M_PI); // facing positive x-axis
+    testWorldState.mutable_robot()->mutable_position()->set_rz(-0.5 * M_PI);
 
     // Ball position and velocity
     auto ball = testWorldState.mutable_ball();
@@ -834,6 +861,153 @@ TEST_F(TestActionPlanner, TickTestActionCatchSuccess)
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }
+
+TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Ball will be dy=2m in front of robot, and dx=0.5m aside, moving in opposite direction (generally towards the robot)
+    // Robot is expected to move 0.5 to the right
+    double dy = 2.0;
+    double dx = 0.5;
+
+    // Test all 8 wind directions, to ensure coordinate transformations are ok
+    for (int direction = 0; direction < 8; direction++)
+    {
+        MRA_LOG_DEBUG("direction=%d", direction);
+
+        // Robot position, facing direction
+        double a = direction * M_PI / 4;
+        a += 0.01; // add a small offset to avoid exact 0 or 90 degrees
+        double c = cos(a);
+        double s = sin(a);
+        double rz = a - 0.5 * M_PI; // correct for MSL coordinate system
+        if (rz > M_PI) // wrap to [-pi, pi)
+        {
+            rz -= 2 * M_PI;
+        }
+        Datatypes::WorldState testWorldState;
+        testWorldState.mutable_robot()->set_hasball(false);
+        testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+        testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+        testWorldState.mutable_robot()->mutable_position()->set_rz(rz);
+
+        // Ball position and velocity
+        auto ball = testWorldState.mutable_ball();
+        ball->mutable_position()->set_x(dy * c - dx * s);
+        ball->mutable_position()->set_y(dx * c + dy * s);
+        ball->mutable_velocity()->set_x(-dy * c);
+        ball->mutable_velocity()->set_y(-dy * s);
+
+        // Set inputs in the planner
+        FalconsActionPlanning::ActionInputs testActionInputs;
+        testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+        setWorldState(testWorldState);
+        setActionInputs(testActionInputs);
+
+        // Run tick
+        feedTick();
+
+        // Setup expected outputs
+        FalconsActionPlanning::Setpoints expectedSetpoints;
+        expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(-dx * s);
+        expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(dx * c);
+        expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(rz);
+        expectedSetpoints.mutable_bh()->set_enabled(true);
+
+        MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+
+        // Check the outputs
+        EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+        EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    }
+}
+
+/*
+
+
+TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Setup inputs: Ball is moving away from the robot
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(false);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0); // facing positive x-axis
+
+    // Ball position and velocity
+    auto ball = testWorldState.mutable_ball();
+    ball->mutable_position()->set_x(5.0); // Ball is 5 meters in front of robot
+    ball->mutable_position()->set_y(0.0);
+    ball->mutable_velocity()->set_x(3.0); // Ball is moving away from the robot at 3 m/s
+    ball->mutable_velocity()->set_y(0.0);
+
+    // Params: Capture radius and ball speed threshold
+    FalconsActionPlanning::Params params;
+    params.mutable_action()->mutable_catchball()->set_captureradius(10.0); // 10 meters
+    params.mutable_action()->mutable_catchball()->set_ballspeedthreshold(2.0); // Ball speed threshold = 2 m/s
+    setParams(params);
+
+    // Set inputs in the planner
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // Run tick
+    feedTick();
+
+    // Setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(5.0); // Move towards the ball
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.0);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.0); // Face the ball
+    expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
+
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::FAILED;
+
+    // Check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // Setup inputs: Ball is stationary
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_hasball(false);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+    auto ball = testWorldState.mutable_ball();
+    ball->mutable_position()->set_x(3.0);
+    ball->mutable_position()->set_y(0.0);
+    ball->mutable_velocity()->set_x(0.0);
+    ball->mutable_velocity()->set_y(0.0);
+
+    // Set inputs in the planner
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // Run tick
+    feedTick();
+
+    // Setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+
+    // Check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+*/
 
 int main(int argc, char **argv)
 {

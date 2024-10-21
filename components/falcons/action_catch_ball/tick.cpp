@@ -48,6 +48,13 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         // Always enable ballhandlers
         output.set_bhenabled(true);
 
+        // Check for success (robot has ball)
+        if (input.worldstate().robot().hasball())
+        {
+            output.set_actionresult(MRA::Datatypes::ActionResult::PASSED);
+            return error_value;
+        }
+
         // Check if the ball speed is above the threshold
         MRA::Geometry::Velocity ball_velocity = input.worldstate().ball().velocity();
         float ball_speed = ball_velocity.size();
@@ -69,7 +76,10 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         state.set_ballwasmovingfastenough(true);
 
         // Check if the ball is moving towards the robot
-        bool ballmovingtowardsrobot = input.worldstate().ball().velocity().x() < 0;
+        MRA::Geometry::Position robot_position(input.worldstate().robot().position());
+        MRA::Geometry::Velocity ball_velocity_rcs = ball_velocity;
+        ball_velocity_rcs.transformFcsToRcs(robot_position);
+        bool ballmovingtowardsrobot = ball_velocity_rcs.y < 0;
         diagnostics.set_ballmovingtowardsrobot(ballmovingtowardsrobot);
         if (!ballmovingtowardsrobot)
         {
@@ -78,7 +88,6 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         }
 
         // Calculate interception point
-        MRA::Geometry::Position robot_position(input.worldstate().robot().position());
         MRA::Geometry::Position robot_position_side = robot_position;
         robot_position_side.addRcsToFcs(MRA::Geometry::Position(1, 0));
         MRA::Geometry::Point robot_point = robot_position;

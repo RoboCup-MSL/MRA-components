@@ -16,8 +16,9 @@ import sys
 import argparse
 from matplotlib import pyplot as plt
 
-# own modules
+# MRA modules
 from libraries.logging.logdata import Data
+from libraries.plotting import plot_worldstate, plot_field
 
 
 
@@ -40,9 +41,14 @@ def main(args: argparse.Namespace) -> None:
     Make the plot.
     """
     data = Data(args.datafile)
-    action = 'unknown'
-    plt.axis('off')
+    action = data.input.action
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    plot_field(ax)
+    plot_worldstate(ax, data.input.worldState)
     plt.title(f'action={action}')
+    figManager = plt.get_current_fig_manager()
+    figManager.window.showMaximized()
     plt.show()
 
 

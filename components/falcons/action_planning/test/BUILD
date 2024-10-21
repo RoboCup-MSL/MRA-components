@@ -7,7 +7,8 @@ py_binary(
     python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
-        "//libraries/logging:logdata",
         "//components/falcons/action_planning/interface:interface_py",
+        "//libraries/logging:logdata",
+        "//libraries/plotting",
     ],
 )

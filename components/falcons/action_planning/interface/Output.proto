@@ -24,17 +24,17 @@ enum ShootingType
 
 message ShootingSetpoint
 {
-    float pos_x = 1; // FCS coordinates
-    float pos_y = 2;
-    float pos_z = 3;
+    double pos_x = 1; // FCS coordinates
+    double pos_y = 2;
+    double pos_z = 3;
     MRA.FalconsActionAimedKick.ShootingPhase phase = 4;
     ShootingType type = 5;
 }
 
 message KickerSetpoint
 {
-    float power = 1;
-    float height = 2;
+    double power = 1;
+    double height = 2;
     bool discharge = 3; // trigger
 }
 

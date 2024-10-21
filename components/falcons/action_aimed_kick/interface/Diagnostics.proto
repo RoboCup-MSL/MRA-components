@@ -4,6 +4,6 @@ package MRA.FalconsActionAimedKick;
 
 message Diagnostics
 {
-    float remainingRotationAngle = 1;
-    float aimError = 2; // radians, evaluation after shot, fill in when PASSED
+    double remainingRotationAngle = 1;
+    double aimError = 2; // radians, evaluation after shot, fill in when PASSED
 }

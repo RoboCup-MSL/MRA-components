@@ -15,5 +15,5 @@ message Output
     bool bhEnabled = 4;
     bool doKick = 5;
     ShootingPhase phase = 6;
-    //float kickPower = ; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
+    //double kickPower = ; // TODO, right now this is handled in Falcons setpoint processing, consider to move responsibility here?
 }

@@ -15,8 +15,8 @@ import "components/falcons/action_catch_ball/interface/Input.proto";
 
 message ActionKickInputs
 {
-    float power = 1;
-    float height = 2;
+    double power = 1;
+    double height = 2;
 }
 
 message ActionLobShotInputs

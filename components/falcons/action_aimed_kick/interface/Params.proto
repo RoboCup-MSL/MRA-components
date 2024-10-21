@@ -4,7 +4,7 @@ package MRA.FalconsActionAimedKick;
 
 message Params
 {
-    float angleAccuracyThreshold = 1;
-    float maxCooldownDuration = 2;
-    float ballTargetProximity = 3;
+    double angleAccuracyThreshold = 1;
+    double maxCooldownDuration = 2;
+    double ballTargetProximity = 3;
 }

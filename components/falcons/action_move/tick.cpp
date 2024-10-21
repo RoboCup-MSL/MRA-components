@@ -46,8 +46,8 @@ int FalconsActionMove::FalconsActionMove::tick
         MRA::Geometry::Position target_pos = input.motiontarget().position();
         MRA::Geometry::Position current_pos = input.worldstate().robot().position();
         auto delta_pos = target_pos - current_pos;
-        float tolerance_xy = params.tolerances().xy();
-        float tolerance_rz = params.tolerances().rz();
+        double tolerance_xy = params.tolerances().xy();
+        double tolerance_rz = params.tolerances().rz();
         bool xy_ok = ((abs(delta_pos.x) < tolerance_xy) && (abs(delta_pos.y) < tolerance_xy));
         bool rz_ok = (abs(delta_pos.rz) < tolerance_rz);
         if (xy_ok && rz_ok)
@@ -83,12 +83,12 @@ int FalconsActionMove::FalconsActionMove::tick
 
 void checkParams(FalconsActionMove::ParamsType const &params)
 {
-    float tolerance_xy = params.tolerances().xy();
+    double tolerance_xy = params.tolerances().xy();
     if (tolerance_xy <= 0.0)
     {
         throw std::runtime_error("invalid configuration parameter for move.tolerances.xy: should be larger than zero");
     }
-    float tolerance_rz = params.tolerances().rz();
+    double tolerance_rz = params.tolerances().rz();
     if (tolerance_rz <= 0.0)
     {
         throw std::runtime_error("invalid configuration parameter for move.tolerances.rz: should be larger than zero");

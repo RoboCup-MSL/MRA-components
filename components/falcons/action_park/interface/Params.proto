@@ -7,10 +7,10 @@ import "datatypes/Shapes.proto";
 message Params
 {
     MRA.Datatypes.Rectangle tta = 1;
-    float robotRadius = 2; // about 0.40m max
-    float toleranceX = 3;
-    float robotClearance = 4;
-    float preTargetXoffset = 5; // waypoint placement into the field
-    float preTargetDistance = 6;
+    double robotRadius = 2; // about 0.40m max
+    double toleranceX = 3;
+    double robotClearance = 4;
+    double preTargetXoffset = 5; // waypoint placement into the field
+    double preTargetDistance = 6;
 }
 

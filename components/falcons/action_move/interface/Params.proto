@@ -4,8 +4,8 @@ package MRA.FalconsActionMove;
 
 message Tolerances
 {
-    float xy = 1;
-    float rz = 2;
+    double xy = 1;
+    double rz = 2;
 }
 
 message Params

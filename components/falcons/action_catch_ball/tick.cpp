@@ -57,7 +57,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
 
         // Check if the ball speed is above the threshold
         MRA::Geometry::Velocity ball_velocity = input.worldstate().ball().velocity();
-        float ball_speed = ball_velocity.size();
+        double ball_speed = ball_velocity.size();
         bool ballmovingfastenough = ball_speed > params.ballspeedthreshold();
         diagnostics.set_ballmovingfastenough(ballmovingfastenough);
         if (!ballmovingfastenough)
@@ -111,8 +111,8 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         }
 
         // Check if the ball is within capture range
-        float distance_ball_to_intersect = (intersect_point - ball_point).size();
-        float distance_robot_to_intersect = (intersect_point - robot_point).size();
+        double distance_ball_to_intersect = (intersect_point - ball_point).size();
+        double distance_robot_to_intersect = (intersect_point - robot_point).size();
         //MRA_LOG_DEBUG("distance_ball_to_intersect=(%6.2f)", distance_ball_to_intersect);
         //MRA_LOG_DEBUG("distance_robot_to_intersect=(%6.2f)", distance_robot_to_intersect);
         bool ballmovingwithincapturerange = distance_robot_to_intersect < params.captureradius();
@@ -124,7 +124,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         }
 
         // Calculate the time to intercept based on ball speed and robot speed
-        float time_to_catch = distance_ball_to_intersect / ball_speed;
+        double time_to_catch = distance_ball_to_intersect / ball_speed;
         diagnostics.set_timetocatch(time_to_catch);
 
         // Set the calculated interception point as the motion target, facing the ball

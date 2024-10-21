@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 
 # MRA modules
 from libraries.logging.logdata import Data
-from libraries.plotting import plot_worldstate, plot_field
+from libraries.plotting import plot_worldstate, plot_field, plot_target
 
 
 
@@ -46,6 +46,8 @@ def main(args: argparse.Namespace) -> None:
     ax = fig.add_subplot(111)
     plot_field(ax)
     plot_worldstate(ax, data.input.worldState)
+    targetpos = data.output.setpoints.move.target
+    plot_target(ax, targetpos, data.input.worldState.robot)
     plt.title(f'action={action}')
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()

@@ -235,9 +235,9 @@ TEST(RobotsportsVelocityControlTest, bugNonconvergingRz)
 TEST(RobotsportsVelocityControlTest, bugLargeXYJump)
 {
     // TODO check if test case is valid for ruckig
-//    double tolerance = 1e-5;
-//    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(std::string("components/robotsports/velocity_control/testdata/bug_large_xy_jump.json"), tolerance);
-//    // the problem was: output: {"velocity":{"x":-100,"y":-40}}
+    double tolerance = 1e-5;
+    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(std::string("components/robotsports/velocity_control/testdata/bug_large_xy_jump.json"), tolerance);
+    // the problem was: output: {"velocity":{"x":-100,"y":-40}}
 
 }
 

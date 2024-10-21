@@ -14,12 +14,12 @@ import json
 from google.protobuf import json_format
 
 # component modules
-import components.falcons.velocity_control.interface.Params_pb2 as Params_pb2
+import components.robotsports.velocity_control.interface.Params_pb2 as Params_pb2
 
 
 
 def main():
-    file_path = 'components/falcons/velocity_control/interface/DefaultParams.json'
+    file_path = 'components/robotsports/velocity_control/interface/DefaultParams.json'
     with open(file_path, 'r') as file:
         json_data = json.load(file)
     protobuf_message = Params_pb2.Params()

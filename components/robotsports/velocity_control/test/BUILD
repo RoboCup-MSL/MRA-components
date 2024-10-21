@@ -6,10 +6,10 @@ py_test(
     ],
     main = "demo_protobuf.py",
     deps = [
-        "//components/falcons/velocity_control/interface:interface_py_proto",
+        "//components/robotsports/velocity_control/interface:interface_py_proto",
     ],
     data = [
-        "//components/falcons/velocity_control/interface", # needed for DefaultParams.json
+        "//components/robotsports/velocity_control/interface", # needed for DefaultParams.json
     ],
 )
 

@@ -5,4 +5,5 @@ components/falcons/action_move
 components/falcons/action_aimed_kick
 components/falcons/action_park
 components/falcons/action_catch_ball
+components/falcons/action_keeper
 internal

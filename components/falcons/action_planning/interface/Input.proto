@@ -12,6 +12,7 @@ import "components/falcons/action_move/interface/Input.proto";
 import "components/falcons/action_aimed_kick/interface/Input.proto";
 import "components/falcons/action_park/interface/Input.proto";
 import "components/falcons/action_catch_ball/interface/Input.proto";
+import "components/falcons/action_keeper/interface/Input.proto";
 
 message ActionKickInputs
 {
@@ -25,10 +26,6 @@ message ActionLobShotInputs
 }
 
 message ActionShieldInputs
-{
-}
-
-message ActionKeeperInputs
 {
 }
 
@@ -49,7 +46,7 @@ message ActionInputs
         MRA.FalconsActionCatchBall.Input catchball = 11;
         ActionShieldInputs shield = 12;
         // TODO tackle = 13
-        ActionKeeperInputs keeper = 14;
+        MRA.FalconsActionKeeper.Input keeper = 14;
         // TODO bump = 15
         MRA.FalconsActionPark.Input park = 16;
         // TODO prepare = 17

@@ -6,6 +6,7 @@ import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
 import "datatypes/Pose.proto";
 import "components/falcons/action_aimed_kick/interface/Common.proto";
+import "components/falcons/action_keeper/interface/Output.proto";
 
 message MotionSetpoint
 {
@@ -38,19 +39,6 @@ message KickerSetpoint
     bool discharge = 3; // trigger
 }
 
-enum KeeperFrameExtensionDirection
-{
-    KEEPER_FRAME_EXTEND_NONE = 0;
-    KEEPER_FRAME_EXTEND_TOP = 1;
-    KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
-    KEEPER_FRAME_EXTEND_RIGHT = 3;
-}
-
-message KeeperFrameSetpoint
-{
-    KeeperFrameExtensionDirection extension = 1;
-}
-
 message BallHandlersSetpoint
 {
     bool enabled = 1; // engage to grab the ball
@@ -66,7 +54,7 @@ message Setpoints
     MRA.Datatypes.Pose velocity = 3;
     ShootingSetpoint shoot = 4;
     KickerSetpoint kick = 5;
-    KeeperFrameSetpoint keeperFrame = 6;
+    MRA.FalconsActionKeeper.KeeperFrameSetpoint keeperFrame = 6;
 }
 
 message Output

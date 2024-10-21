@@ -17,6 +17,7 @@ proto_library(
         "//components/falcons/action_aimed_kick/interface:interface_proto",
         "//components/falcons/action_park/interface:interface_proto",
         "//components/falcons/action_catch_ball/interface:interface_proto",
+        "//components/falcons/action_keeper/interface:interface_proto",
     ],
 )
 

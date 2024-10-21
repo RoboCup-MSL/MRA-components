@@ -937,9 +937,6 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
     }
 }
 
-/*
-
-
 TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
 {
     MRA_TRACE_TEST_FUNCTION();
@@ -949,20 +946,12 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
     testWorldState.mutable_robot()->set_hasball(false);
     testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
     testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
-    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0); // facing positive x-axis
-
-    // Ball position and velocity
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
     auto ball = testWorldState.mutable_ball();
     ball->mutable_position()->set_x(5.0); // Ball is 5 meters in front of robot
     ball->mutable_position()->set_y(0.0);
     ball->mutable_velocity()->set_x(3.0); // Ball is moving away from the robot at 3 m/s
     ball->mutable_velocity()->set_y(0.0);
-
-    // Params: Capture radius and ball speed threshold
-    FalconsActionPlanning::Params params;
-    params.mutable_action()->mutable_catchball()->set_captureradius(10.0); // 10 meters
-    params.mutable_action()->mutable_catchball()->set_ballspeedthreshold(2.0); // Ball speed threshold = 2 m/s
-    setParams(params);
 
     // Set inputs in the planner
     FalconsActionPlanning::ActionInputs testActionInputs;
@@ -975,11 +964,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
 
     // Setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
-    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(5.0); // Move towards the ball
-    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.0);
-    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.0); // Face the ball
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
-
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::FAILED;
 
     // Check the outputs
@@ -1021,7 +1006,6 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }
-*/
 
 int main(int argc, char **argv)
 {

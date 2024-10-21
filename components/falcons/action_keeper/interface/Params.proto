@@ -4,4 +4,15 @@ package MRA.FalconsActionKeeper;
 
 message Params
 {
+    // only respond to ball trajectory if it is expected to come close enough
+    double captureRadius = 1; // [m]
+
+    // only respond to balls which are coming sufficiently fast
+    double ballSpeedThreshold = 2; // [m/s]
+
+    // y coordinate of the line on which to position
+    double baselineY = 3; // typically around -11m for large MSL field
+
+    // x limit coordinate on which to position
+    double maxMoveX = 4; // typically around 1m
 }

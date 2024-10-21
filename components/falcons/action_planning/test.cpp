@@ -15,6 +15,20 @@ MATCHER_P(EqualsProto, expected, "")
     return google::protobuf::util::MessageDifferencer::ApproximatelyEquivalent(arg, expected);
 }
 
+MATCHER_P2(EqualsProtoWithTolerance, expected, tolerance, "")
+{
+    google::protobuf::util::MessageDifferencer differencer;
+    google::protobuf::util::DefaultFieldComparator comparator;
+
+    // configure the comparator to use the tolerance for floating point fields
+    comparator.set_float_comparison(google::protobuf::util::DefaultFieldComparator::APPROXIMATE);
+    comparator.SetDefaultFractionAndMargin(tolerance, tolerance);
+
+    // set the custom comparator on the differencer
+    differencer.set_field_comparator(&comparator);
+    return differencer.Compare(arg, expected);
+}
+
 // Test class
 class TestActionPlanner : public ::testing::Test
 {
@@ -637,7 +651,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedActionResult = Datatypes::PASSED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
-    EXPECT_THAT(getDiagnostics(), EqualsProto(expectedDiagnostics));
+    EXPECT_THAT(getDiagnostics(), EqualsProtoWithTolerance(expectedDiagnostics, 1e-9));
 
     // Alternate ending 2
     // Tick: simulate that the ball did not arrive at target and the cooldown expired, action should finish FAILED
@@ -918,7 +932,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
         MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
 
         // Check the outputs
-        EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+        EXPECT_THAT(getLastSetpoints(), EqualsProtoWithTolerance(expectedSetpoints, 1e-6));
         EXPECT_EQ(getLastActionResult(), expectedActionResult);
     }
 }

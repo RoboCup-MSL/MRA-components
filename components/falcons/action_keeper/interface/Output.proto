@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package MRA.FalconsActionKeeper;
+
+import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
+
+enum KeeperFrameExtensionDirection
+{
+    KEEPER_FRAME_EXTEND_NONE = 0;
+    KEEPER_FRAME_EXTEND_TOP = 1;
+    KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
+    KEEPER_FRAME_EXTEND_RIGHT = 3;
+}
+
+message KeeperFrameSetpoint
+{
+    KeeperFrameExtensionDirection extension = 1;
+}
+
+// TODO: new v1 keeper needs a new kind of setpoints
+
+message Output
+{
+    MRA.Datatypes.ActionResult actionresult = 1;
+    MRA.Datatypes.PosVel motionTarget = 2; // in FCS
+    KeeperFrameSetpoint frameSetpoint = 3;
+}

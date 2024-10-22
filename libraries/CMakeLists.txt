@@ -2,6 +2,7 @@ add_subdirectory(geometry)
 add_subdirectory(logging)
 add_subdirectory(opencv_utils)
 add_subdirectory(reflexxes)
+add_subdirectory(ruckig)
 
 add_library(MRA-libraries-dir ${MRA_BINARY_DIR}/dummy.cpp)
 
@@ -10,6 +11,7 @@ target_link_libraries(MRA-libraries-dir
                     MRA-libraries-logging
                     MRA-libraries-opencv-utils
                     MRA-libraries-reflexxes
+                    MRA-libraries-ruckig
 )
 
 target_link_directories(MRA-libraries-dir PUBLIC
@@ -17,5 +19,6 @@ target_link_directories(MRA-libraries-dir PUBLIC
     ${MRA_BINARY_DIR}/libraries/logging
     ${MRA_BINARY_DIR}/libraries/opencv_utils
     ${MRA_BINARY_DIR}/libraries/reflexxes
+    ${MRA_BINARY_DIR}/libraries/ruckig
 )
 

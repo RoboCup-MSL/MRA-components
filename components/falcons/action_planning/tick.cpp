@@ -15,6 +15,7 @@ using namespace MRA;
 #include "FalconsActionAimedKick.hpp"
 #include "FalconsActionPark.hpp"
 #include "FalconsActionCatchBall.hpp"
+#include "FalconsActionKeeper.hpp"
 
 
 using namespace MRA::FalconsActionPlanning;
@@ -140,6 +141,18 @@ void outputToSetpointsActionCatchBall(MRA::FalconsActionCatchBall::OutputType co
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
 }
 
+void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
+    if (actionOutput.has_framesetpoint())
+    {
+        setpoints->mutable_keeperframe()->set_extension(actionOutput.framesetpoint().extension());
+    }
+}
+
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, DiagnosticsType &diagnostics)
 {
     // TODO: memorize previousActionType, if different, wipe state
@@ -191,6 +204,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         error_value = handleAction<MRA::FalconsActionCatchBall::FalconsActionCatchBall>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionCatchBall, "catchball"
+        );
+    }
+    else if (currentActionType == MRA::Datatypes::ACTION_KEEPER)
+    {
+        error_value = handleAction<MRA::FalconsActionKeeper::FalconsActionKeeper>(
+            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionKeeper, "keeper"
         );
     }
     // TODO other actions

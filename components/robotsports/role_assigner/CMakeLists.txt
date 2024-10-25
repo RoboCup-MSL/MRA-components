@@ -61,6 +61,7 @@ add_custom_command(OUTPUT ${STRATEGY_TESTER_CPP}
 
 target_include_directories(xml_test PUBLIC
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
+    ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
@@ -92,6 +93,7 @@ add_executable(planner_regression_checker
 
 target_include_directories(planner_regression_checker PUBLIC
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
+    ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
@@ -132,6 +134,7 @@ add_executable(
 )
 target_include_directories(robotsports_role_assigner_test  PRIVATE 
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
+    ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base

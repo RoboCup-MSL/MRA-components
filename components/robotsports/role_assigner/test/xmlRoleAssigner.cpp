@@ -21,6 +21,7 @@
 #include "../internals/RoleAssigner_types.hpp"
 #include "../internals/RoleAssignerResult.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
+#include "RobotsportsRoleAssigner.hpp"
 
 
 #include "StrategyTester_generated.h" // generated
@@ -34,6 +35,179 @@
 using namespace MRA;
 using namespace std;
 using namespace robotsports;
+
+
+static void xml_assign_roles(const RoleAssignerInput& ra_input,
+                      RoleAssignerState& ra_state,
+                      RoleAssignerOutput& ra_output,
+                      const RoleAssignerParameters& ra_parameters) {
+
+    bool useProto = true;
+
+    if (useProto) {
+        auto m = RobotsportsRoleAssigner::RobotsportsRoleAssigner();
+
+        RobotsportsRoleAssigner::InputType proto_input;
+
+        proto_input.set_gamestate(static_cast<MRA::RobotsportsRoleAssigner::Input_GameState>(ra_input.gamestate));
+
+        if (ra_input.ball.is_valid) {
+
+            if (ra_input.ball.status) {
+                proto_input.mutable_ball()->mutable_position()->set_x(ra_input.ball.position.x);
+                proto_input.mutable_ball()->mutable_position()->set_y(ra_input.ball.position.y);
+                proto_input.mutable_ball()->mutable_position()->set_z(ra_input.ball.position.z);
+                proto_input.mutable_ball()->mutable_position()->set_rx(ra_input.ball.position.rx);
+                proto_input.mutable_ball()->mutable_position()->set_ry(ra_input.ball.position.ry);
+                proto_input.mutable_ball()->mutable_position()->set_rz(ra_input.ball.position.rz);
+                proto_input.mutable_ball()->mutable_velocity()->set_x(ra_input.ball.velocity.x);
+                proto_input.mutable_ball()->mutable_velocity()->set_y(ra_input.ball.velocity.y);
+                proto_input.mutable_ball()->mutable_velocity()->set_z(ra_input.ball.velocity.z);
+                proto_input.mutable_ball()->mutable_velocity()->set_rx(ra_input.ball.velocity.rx);
+                proto_input.mutable_ball()->mutable_velocity()->set_ry(ra_input.ball.velocity.ry);
+                proto_input.mutable_ball()->mutable_velocity()->set_rz(ra_input.ball.velocity.rz);
+            }
+            //            MRA::Datatypes::BallPossession bp = input.ball().possesion();
+            //            if (bp == MRA::Datatypes::BallPossession::FREE) {
+            //                ra_input.ball.status = ball_status_e::FREE;
+            //            }
+            //            else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
+            //                ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
+            //                // OWNED_BY_TEAM = 2,  // TODO check if undercontrol by a player otherwise owned_by_team
+            //            }
+            //            else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
+            //                ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
+            //            }
+            //            ra_input.ball.position = input.ball().position();
+            //            ra_input.ball.velocity = input.ball().velocity();
+            //        }
+
+        }
+//        ra_input.ball = {};
+//        ra_input.ball.is_valid = input.has_ball();
+//        if (ra_input.ball.is_valid) {
+//            MRA::Datatypes::BallPossession bp = input.ball().possesion();
+//            if (bp == MRA::Datatypes::BallPossession::FREE) {
+//                ra_input.ball.status = ball_status_e::FREE;
+//            }
+//            else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
+//                ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
+//                // OWNED_BY_TEAM = 2,  // TODO check if undercontrol by a player otherwise owned_by_team
+//            }
+//            else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
+//                ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
+//            }
+//            ra_input.ball.position = input.ball().position();
+//            ra_input.ball.velocity = input.ball().velocity();
+//        }
+//        ra_input.formation = {};
+//        for (auto idx = 0; idx <  input.formation_size(); idx++) {
+//            ra_input.formation.push_back(static_cast<role_e>(input.formation(idx))); // enums have the same values
+//        }
+//
+//        for (auto idx = 0; idx <  input.team_size(); idx++) {
+//            auto input_team =  input.team(idx);
+//            if (input_team.active()) {
+//                RoleAssignerRobot rbt = {};
+//                //rbt = input_team;
+//                rbt.robotId = input_team.id();
+//                rbt.active = input_team.active();
+//                rbt.human = input_team.human();
+//                rbt.trackingId = input_team.trackingid();
+//                rbt.controlBall = input_team.hasball();
+//                rbt.passBall = input_team.passed_ball();
+//                if (input_team.is_keeper()) {
+//                    rbt.player_type = player_type_e::GOALIE;
+//                }
+//                else {
+//                    if (input_team.active()) {
+//                        rbt.player_type = player_type_e::FIELD_PLAYER;
+//                    }
+//                    else {
+//                        rbt.player_type = player_type_e::RESERVE;
+//                    }
+//                }
+//                rbt.position = input_team.position();
+//                rbt.velocity = input_team.velocity();
+//                rbt.time_in_own_penalty_area = input_team.time_in_own_penalty_area();
+//                rbt.time_in_opponent_penalty_area = input_team.time_in_opponent_penalty_area();
+//                ra_input.team.push_back(rbt);
+//            }
+//        }
+//
+//        for (auto idx = 0; idx <  input.no_opponent_obstacles_size(); idx++) {
+//            auto obstacle =  input.no_opponent_obstacles(idx);
+//            RoleAssignerOpponent no_opponent_obstacle = {};
+//            no_opponent_obstacle.position = obstacle.position();
+//            no_opponent_obstacle.velocity = obstacle.velocity();
+//            no_opponent_obstacle.trackingId = obstacle.trackingid();
+//            ra_input.no_opponent_obstacles.push_back(no_opponent_obstacle);
+//
+//        }
+//
+//
+//        for (auto idx = 0; idx <  input.opponents_size(); idx++) {
+//            auto input_opponent =  input.opponents(idx);
+//            RoleAssignerOpponent opponent = {};
+//            opponent.position = input_opponent.position();
+//            opponent.velocity = input_opponent.velocity();
+//            opponent.trackingId = input_opponent.trackingid();
+//            ra_input.opponents.push_back(opponent);
+//        }
+//
+//        for (auto idx = 0; idx <  input.parking_positions_size(); idx++) {
+//            auto parking_pos = input.parking_positions(idx);
+//            ra_input.parking_positions.push_back(MRA::Geometry::Point(parking_pos.x(), parking_pos.y()));
+//        }
+//        ra_input.ball_pickup_position = {};
+//        ra_input.ball_pickup_position.valid = input.has_pickup();
+//        if (ra_input.ball_pickup_position.valid) {
+//            ra_input.ball_pickup_position.x = input.pickup().position().x();
+//            ra_input.ball_pickup_position.y  = input.pickup().position().y();
+//            ra_input.ball_pickup_position.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pickup().timestamp()) / 1000.0;
+//        }
+//
+//
+//        ra_input.passIsRequired = input.passisrequired();
+//        ra_input.pass_data = {};
+//        ra_input.pass_data.valid = input.has_pass_data();
+//        if (ra_input.pass_data.valid) {
+//            ra_input.pass_data.kicked = input.pass_data().kicked(); // 1: if pass/shot has been made; 0: otherwise
+//            ra_input.pass_data.target_id = input.pass_data().target_id();
+//            ra_input.pass_data.velocity = input.pass_data().velocity();
+//            ra_input.pass_data.angle = input.pass_data().angle();
+//            ra_input.pass_data.origin_pos = input.pass_data().origin_pos();
+//            ra_input.pass_data.target_pos = input.pass_data().target_pos();
+//            ra_input.pass_data.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().timestamp()) / 1000.0;
+//            ra_input.pass_data.eta = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().eta()) / 1000.0;
+//        }
+
+        int error_value = m.tick();
+        if (error_value != 0) {
+            cout << "RobotsportsRoleAssigner failed" << endl;
+            exit(1);
+        }
+
+        //    int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
+        //    (
+        //        google::protobuf::Timestamp timestamp,   // absolute timestamp
+        //        InputType  const           &input,       // input data, type generated from Input.proto
+        //        ParamsType const           &params,      // configuration parameters, type generated from Params.proto
+        //        StateType                  &state,       // state data, type generated from State.proto
+        //        OutputType                 &output,      // output data, type generated from Output.proto
+        //        DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
+        //    )
+        //
+    }
+    else {
+        RoleAssigner teamplay = RoleAssigner();
+        teamplay.assign(ra_input, ra_state, ra_output, ra_parameters);
+    }
+}
+
+
+
+
 
 class RunData {
 public:
@@ -578,7 +752,6 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
                                       robot_strategy_parameter_defense_formation);
 
 
-    RoleAssigner teamplay = RoleAssigner();
     RoleAssignerInput tp_input = {};
     tp_input.gamestate = gameState;
     tp_input.ball.status = ball_status;
@@ -605,7 +778,8 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     RoleAssignerParameters tp_parameters = parameters;
     RoleAssignerOutput tp_output = {};
     auto tp_state_org = tp_state;
-    teamplay.assign(tp_input, tp_state, tp_output, tp_parameters);
+
+    xml_assign_roles(tp_input, tp_state, tp_output, tp_parameters);
 
     RoleAssignerData tpd = {};
     tpd.parameters = tp_parameters;

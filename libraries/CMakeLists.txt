@@ -10,7 +10,6 @@ target_link_libraries(MRA-libraries-dir
                     MRA-libraries-geometry
                     MRA-libraries-logging
                     MRA-libraries-opencv-utils
-                    MRA-libraries-reflexxes
                     MRA-libraries-ruckig
 )
 
@@ -18,7 +17,6 @@ target_link_directories(MRA-libraries-dir PUBLIC
     ${MRA_BINARY_DIR}/libraries/geometry
     ${MRA_BINARY_DIR}/libraries/logging
     ${MRA_BINARY_DIR}/libraries/opencv_utils
-    ${MRA_BINARY_DIR}/libraries/reflexxes
     ${MRA_BINARY_DIR}/libraries/ruckig
 )
 

@@ -4,7 +4,7 @@ add_subdirectory(getball_intercept)
 add_subdirectory(localization_vision)
 add_subdirectory(test_mra_logger)
 # TODO: add_subdirectory(trajectory_generation)
-add_subdirectory(velocity_control)
+#add_subdirectory(velocity_control)
 
 add_library(MRA-components-falcons ${MRA_BINARY_DIR}/dummy.cpp)
 target_link_libraries(MRA-components-falcons
@@ -14,7 +14,7 @@ target_link_libraries(MRA-components-falcons
                         MRA-components-falcons-localization-vision
                         MRA-components-falcons-test-mra-logger
                         # TODO: MRA-falcons-trajectory-generation
-                        MRA-components-falcons-velocity-control
+  #                      MRA-components-falcons-velocity-control
 )
 
 target_link_directories(MRA-components-falcons PUBLIC
@@ -22,5 +22,5 @@ target_link_directories(MRA-components-falcons PUBLIC
     ${MRA_BINARY_DIR}/components/falcons/getball_intercept
     ${MRA_BINARY_DIR}/components/falcons/localization_vision
     ${MRA_BINARY_DIR}/components/falcons/test_mra_logger
-    ${MRA_BINARY_DIR}/components/falcons/velocity_control
+ #   ${MRA_BINARY_DIR}/components/falcons/velocity_control
 )

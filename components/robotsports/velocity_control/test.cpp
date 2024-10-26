@@ -190,13 +190,14 @@ TEST(RobotsportsVelocityControlTest, noHotRestart)
     auto diagnostics = RobotsportsVelocityControl::Diagnostics();
     auto params = m.defaultParams();
     input1.mutable_worldstate()->mutable_robot()->set_active(true);
-    input2.mutable_worldstate()->mutable_robot()->set_active(true);
     // STOP command is given by VEL_ONLY (0,0,0)
     input1.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(1.0);
     input1.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(1.0);
     input1.mutable_setpoint()->mutable_velocity()->set_x(0.0);
     input1.mutable_setpoint()->mutable_velocity()->set_y(0.0);
     input1.mutable_setpoint()->mutable_velocity()->set_rz(0.0);
+
+    input2.mutable_worldstate()->mutable_robot()->set_active(true);
     input2.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(1.0);
     input2.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
     input2.mutable_setpoint()->mutable_velocity()->set_x(0.0);

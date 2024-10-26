@@ -14,7 +14,9 @@ void CheckStop::execute(VelocityControlData &data)
     {
         return;
     }
-    if (data.targetVelocityFcs.x == 0.0 && data.targetVelocityFcs.y == 0.0 && data.targetVelocityFcs.rz == 0.0)
+    if (abs(data.targetVelocityFcs.x) < 1e-4 and
+        abs(data.targetVelocityFcs.y) < 1e-4 and
+        abs(data.targetVelocityFcs.rz) < 1e-4  )
     {
         // wipe state to prevent SPG continuing full throttle after stop
         data.previousPositionSetpointFcs.reset();

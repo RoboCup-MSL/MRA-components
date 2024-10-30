@@ -105,15 +105,16 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 //            ra_input.formation.push_back(static_cast<role_e>(input.formation(idx))); // enums have the same values
 //        }
 //
-//        for (auto idx = 0; idx <  input.team_size(); idx++) {
-//            auto input_team =  input.team(idx);
-//            if (input_team.active()) {
-//                RoleAssignerRobot rbt = {};
-//                //rbt = input_team;
-//                rbt.robotId = input_team.id();
-//                rbt.active = input_team.active();
-//                rbt.human = input_team.human();
-//                rbt.trackingId = input_team.trackingid();
+
+        proto_input.mutable_team()->Clear();
+        for (auto idx = 0u; idx <  ra_input.team.size(); idx++) {
+            if (ra_input.team[idx].active) {
+                auto input_team =  ra_input.team[idx];
+                RobotsportsRoleAssigner::Player player;
+                player.set_id(input_team.robotId);
+                player.set_active(input_team.active);
+                player.set_human(input_team.human);
+                player.set_trackingid(input_team.trackingId );
 //                rbt.controlBall = input_team.hasball();
 //                rbt.passBall = input_team.passed_ball();
 //                if (input_team.is_keeper()) {
@@ -132,8 +133,9 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 //                rbt.time_in_own_penalty_area = input_team.time_in_own_penalty_area();
 //                rbt.time_in_opponent_penalty_area = input_team.time_in_opponent_penalty_area();
 //                ra_input.team.push_back(rbt);
-//            }
-//        }
+//                proto_input.mutable_team()->Add(player);
+            }
+        }
 //
 //        for (auto idx = 0; idx <  input.no_opponent_obstacles_size(); idx++) {
 //            auto obstacle =  input.no_opponent_obstacles(idx);

@@ -1,8 +1,6 @@
 /*
  * CheckPrepareInputs.cpp
- *
- *  Created on: May 2023
- *      Author: Jan Feitsma
+ * Started as copy of file with same name in the Falcons variant of Velocity Control
  */
 
 #include "VelocityControlAlgorithms.hpp"

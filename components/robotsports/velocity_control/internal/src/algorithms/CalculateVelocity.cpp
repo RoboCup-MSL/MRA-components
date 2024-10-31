@@ -1,8 +1,6 @@
 /*
  * CalculateVelocity.cpp
- *
- *  Created on: July, 2019
- *      Author: Jan Feitsma
+ * Started as copy of file with same name in the Falcons variant of Velocity Control
  */
 
 #include "VelocityControlAlgorithms.hpp"

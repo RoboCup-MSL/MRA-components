@@ -1,8 +1,6 @@
 /*
  * AbstractVelocitySetpointController.hpp
- *
- *  Created on: October 2020
- *      Author: Erik Kouters
+ * Started as copy of file with same name in the Falcons variant of Velocity Control
  */
 
 #ifndef ROBOTSPORTS_VELOCITYCONTROL_ABSTRACTVELOCITYSETPOINTCONTROLLER_HPP_

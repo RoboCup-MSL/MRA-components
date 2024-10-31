@@ -1,8 +1,6 @@
 /*
  * VelocitySetpointControllers.hpp
- *
- *  Created on: October, 2020
- *      Author: Erik Kouters
+ * Started as copy of file with same name in the Falcons variant of Velocity Control
  */
 
 #ifndef VELOCITYCONTROL_VELOCITYSETPOINTCONTROLLERS_HPP_

@@ -1,8 +1,6 @@
 /*
  * SPGVelocitySetpointController.cpp
- *
- *  Created on: November, 2019
- *      Author: Jan Feitsma
+ * Started as copy of file with same name in the Falcons variant of Velocity Control
  */
 
 // TODO: reduce excessive code duplication, improve maintainability

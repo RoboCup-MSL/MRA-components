@@ -4,7 +4,7 @@ VelocityControl is responsible for smooth controlled movement of the robot.
 
 It uses [Ruckig](../../../libraries/ruckig/ruckig/README.md) trajectory setpoint generator which limits velocity and acceleration and jerk.
 
-TODO: a nice picture (KSTplot?) of combined X,Y,Rz trajectories, sync/nonsync.
+![Trajectory Profile](https://github.com/pantor/ruckig/raw/main/doc/example_profile.png?raw=true)
 
 # Scope and context
 
@@ -29,4 +29,3 @@ A sequence of sub-algorithms is applied. They are somewhat configurable.
 # History
 
 Based on the Falcons Velocity Control component: using Ruckig instead of Reflexxes Library
-

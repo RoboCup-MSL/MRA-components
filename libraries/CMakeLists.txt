@@ -1,24 +1,32 @@
 add_subdirectory(geometry)
 add_subdirectory(logging)
-add_subdirectory(opencv_utils)
-add_subdirectory(reflexxes)
-add_subdirectory(ruckig)
+if(BUILD_LIBRARY_OPENCV_UTILS)
+    add_subdirectory(opencv_utils)
+endif()
+if(BUILD_LIBRARY_REFLEXXES)
+    add_subdirectory(reflexxes)
+endif()
+if(BUILD_LIBRARY_RUCKIG)
+    add_subdirectory(ruckig)
+endif()
 
 add_library(MRA-libraries-dir ${MRA_BINARY_DIR}/dummy.cpp)
 
+message(INFO "BUILD_LIBRARY_REFLEXXES = = ${BUILD_LIBRARY_REFLEXXES}")
 target_link_libraries(MRA-libraries-dir
                     MRA-libraries-geometry
                     MRA-libraries-logging
-                    MRA-libraries-opencv-utils
-                    MRA-libraries-reflexxes
-                    MRA-libraries-ruckig
+                    $<IF:${BUILD_LIBRARY_OPENCV_UTILS},MRA-libraries-opencv-utils,>
+                    $<IF:${BUILD_LIBRARY_REFLEXXES},MRA-libraries-reflexxes,>
+                    $<IF:${BUILD_LIBRARY_RUCKIG},MRA-libraries-ruckig,>
 )
 
 target_link_directories(MRA-libraries-dir PUBLIC
     ${MRA_BINARY_DIR}/libraries/geometry
     ${MRA_BINARY_DIR}/libraries/logging
-    ${MRA_BINARY_DIR}/libraries/opencv_utils
-    ${MRA_BINARY_DIR}/libraries/reflexxes
-    ${MRA_BINARY_DIR}/libraries/ruckig
+    $<IF:${BUILD_LIBRARY_OPENCV_UTILS},${MRA_BINARY_DIR}/libraries/opencv_utils,>
+    $<IF:${BUILD_LIBRARY_REFLEXXES},${MRA_BINARY_DIR}/libraries/reflexxes,>
+    $<IF:${BUILD_LIBRARY_RUCKIG}, ${MRA_BINARY_DIR}/libraries/ruckig,>
 )
+
 

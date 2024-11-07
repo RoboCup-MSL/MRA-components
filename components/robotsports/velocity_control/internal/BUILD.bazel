@@ -39,7 +39,7 @@ cc_library(
         ":common_headers",
         ":data",
         "//libraries/logging",
-        "//libraries/ruckig",
+        "//third-party-libraries/ruckig",
     ],
 )
 

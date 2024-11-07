@@ -29,7 +29,7 @@ cc_library(
         "//components/robotsports/velocity_control/internal:VelocityControl",
         "//libraries/logging",
         "//libraries/geometry",
-        "//libraries/ruckig",
+        "//third-party-libraries/ruckig",
     ],
 )
 

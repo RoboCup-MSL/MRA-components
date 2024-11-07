@@ -6,6 +6,7 @@ add_library(MRA-components-falcons-getball-fetch
 )
 target_include_directories(MRA-components-falcons-getball-fetch PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)

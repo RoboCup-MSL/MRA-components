@@ -1,4 +1,4 @@
 libraries/geometry
-libraries/ruckig
+third-party-libraries/ruckig
 internal:VelocityControl
 

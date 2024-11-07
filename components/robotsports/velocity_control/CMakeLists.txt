@@ -17,7 +17,8 @@ add_library(MRA-components-robotsports-velocity-control
 )
 target_include_directories(MRA-components-robotsports-velocity-control PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
-    ${MRA_SOURCE_DIR}/libraries/ruckig/ruckig/include
+    ${MRA_SOURCE_DIR}/libraries/geometry
+    ${MRA_SOURCE_DIR}/third-party-libraries/ruckig/ruckig/include
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface

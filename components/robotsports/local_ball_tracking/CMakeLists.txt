@@ -10,6 +10,7 @@ add_library(MRA-components-robotsports-local-ball-tracking
 include_directories(${CMAKE_SOURCE_DIR})
 target_include_directories(MRA-components-robotsports-local-ball-tracking PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/components/robotsports/local_ball_tracking    

@@ -13,6 +13,7 @@ option(MRA_TEST_ENABLED "Build all tests" ON)
 #   can be switched off via ../MRA_build.txt --> set(<BUILD_XXX> 0) or set(<BUILD_XXX> 1)
 set(BUILD_LIBRARY_REFLEXXES 1)
 set(BUILD_LIBRARY_OPENCV_UTILS 1)
+set(BUILD_LIBRARY_RUCKIG 1)
 
 set(BUILD_FALCONS_ACTION_PLANNING 1)
 set(BUILD_FALCONS_GETBALL 1)
@@ -30,6 +31,7 @@ set(BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING 1)
 set(BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING 1)
 set(BUILD_ROBOTSPORTS_OBSTACLE_TRACKING 1)
 set(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE 1)
+set(BUILD_ROBOTSPORTS_VELOCITY_CONTROL 1)
 
 
 # use C++17 standard, or suffer errors re. using std::filesystem
@@ -75,11 +77,21 @@ if (MRA_TEST_ENABLED)
 endif()
 
 include(FetchContent)
+option(RUCKIG_BUILD_EXAMPLES "build ruckig examples" OFF)
+option(RUCKIG_BUILD_CLOUD_CLIENT "build ruckig cloud client" OFF)
+option(RUCKIG_BUILD_TESTS "build ruckig tests" OFF)
+option(RUCKIG_BUILD_SHARED_LIBS "build ruckig shared lib" OFF)
+FetchContent_Declare(
+    ruckig
+    URL https://github.com/pantor/ruckig/archive/refs/tags/v0.14.0.tar.gz
+)
+
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#FetchContent_MakeAvailable(ruckig googletest)
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
@@ -136,17 +148,16 @@ FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}
 # generate code from protofiles and add them  intermediate library
 add_library(MRA-components-protofiles)
 protobuf_generate(TARGET MRA-components-protofiles PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-file(GLOB MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/datatype/*.pb.cc")
+file(GLOB MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.cc")
 target_include_directories(MRA-components-protofiles PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
 target_link_libraries(MRA-components-protofiles PUBLIC ${MRA-components-generated-files})
 
-
 # create library for MRA-component-proto with the generated code
-add_library(MRA-components-proto OBJECT ${MESSAGE_PROTOS_COMMON})
-target_link_libraries(MRA-components-proto PUBLIC protobuf::libprotobuf MRA-components-protofiles)
+add_library(MRA-components-proto OBJECT ${MESSAGE_PROTOS_COMPONENTS})
+target_link_libraries(MRA-components-proto PUBLIC protobuf::libprotobuf MRA-components-protofiles ${MRA-components-generated-files})
 set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
-target_link_libraries(MRA-components-proto ${MRA-components-generated-files})     
+#target_link_libraries(MRA-components-proto )     
 
 # generate Python files from protofiles, copy to build/datatypes directory
 protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python)
@@ -164,7 +175,7 @@ add_subdirectory(base)
 
 add_subdirectory(components)
 add_subdirectory(libraries)
-
+add_subdirectory(third-party-libraries)
 
 
 ##########################################################
@@ -183,8 +194,8 @@ target_link_libraries(MRA-components MRA-components-dir)
 target_link_directories(MRA-components PUBLIC ${MRA_BINARY_DIR}/components)
 
 add_library(MRA-libraries ${MRA_BINARY_DIR}/dummy.cpp)
-target_link_libraries(MRA-libraries MRA-libraries-dir)
-target_link_directories(MRA-libraries PUBLIC ${MRA_BINARY_DIR}/libraries)
+target_link_libraries(MRA-libraries MRA-libraries-dir MRA-third-party-libraries-dir)
+target_link_directories(MRA-libraries PUBLIC ${MRA_BINARY_DIR}/libraries ${MRA_BINARY_DIR}/third-party-libraries)
 
 
 

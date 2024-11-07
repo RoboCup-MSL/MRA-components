@@ -6,6 +6,7 @@ add_library(MRA-components-robotsports-getball-intercept
 )
 target_include_directories(MRA-components-robotsports-getball-intercept PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)

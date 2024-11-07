@@ -6,6 +6,7 @@ add_library(MRA-components-falcons-trajectory-generation
 )
 target_include_directories(MRA-components-falcons-trajectory-generation PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/components/falcons/velocity_control

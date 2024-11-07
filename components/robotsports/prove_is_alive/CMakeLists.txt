@@ -6,6 +6,7 @@ add_library(MRA-components-robotsports-Prove-is-alive
 )
 target_include_directories(MRA-components-robotsports-Prove-is-alive PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)

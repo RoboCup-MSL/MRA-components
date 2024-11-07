@@ -9,8 +9,31 @@ project(MRA LANGUAGES CXX)
 cmake_policy(SET CMP0077 NEW) # option() command to do nothing when a normal variable of the given name already exists
 option(MRA_TEST_ENABLED "Build all tests" ON)
 
+# set build options (to reduce build time): 
+#   can be switched off via ../MRA_build.txt --> set(<BUILD_XXX> 0) or set(<BUILD_XXX> 1)
+set(BUILD_LIBRARY_REFLEXXES 1)
+set(BUILD_LIBRARY_OPENCV_UTILS 1)
+
+set(BUILD_FALCONS_ACTION_PLANNING 1)
+set(BUILD_FALCONS_GETBALL 1)
+set(BUILD_FALCONS_GETBALL_FETCH 1)
+set(BUILD_FALCONS_GETBALL_INTERCEPT 1)
+set(BUILD_FALCONS_LOCALIZATION_VISION 1)
+set(BUILD_FALCONS_TRAJECTORY_GENERATION 1)
+set(BUILD_FALCONS_VELOCITY_CONTROL 1)
+
+set(BUILD_ROBOTSPORTS_GETBALL_FETCH 1)
+set(BUILD_ROBOTSPORTS_GETBALL_INTERCEPT 1)
+set(BUILD_ROBOTSPORTS_LOCAL_BALL 1)
+set(BUILD_ROBOTSPORTS_LOCAL_BALL_PREPROCESSOR 1)
+set(BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING 1)
+set(BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING 1)
+set(BUILD_ROBOTSPORTS_OBSTACLE_TRACKING 1)
+set(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE 1)
+
+
 # use C++17 standard, or suffer errors re. using std::filesystem
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-error=nonnull-compare -g")
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-array-bounds -Wno-error=nonnull-compare")
  # to prevent compiler errors added the not preferred flags: -Wno-address -Wno-reorder -Wno-array-bounds 
 
 # dependency: ProtoBuf
@@ -25,6 +48,10 @@ find_library(PROTOBUF_LIBRARY protobuf)
 # dependency: opencv
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+
+include("../MRA_build.txt" OPTIONAL)
+
 
 if (MRA_TEST_ENABLED)
   # dependency gtest

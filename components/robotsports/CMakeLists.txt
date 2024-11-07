@@ -1,32 +1,48 @@
-add_subdirectory(getball_fetch)
-add_subdirectory(getball_intercept)
-add_subdirectory(local_ball)
-add_subdirectory(local_ball_preprocessor)
-add_subdirectory(local_ball_tracking)
-add_subdirectory(local_obstacle_tracking)
-add_subdirectory(obstacle_tracking)
-add_subdirectory(prove_is_alive)
+if(BUILD_ROBOTSPORTS_GETBALL_FETCH)
+    add_subdirectory(getball_fetch)
+endif()
+if(BUILD_ROBOTSPORTS_GETBALL_INTERCEPT)
+    add_subdirectory(getball_intercept)
+endif()
+if(BUILD_ROBOTSPORTS_LOCAL_BALL)
+    add_subdirectory(local_ball)
+endif()
+if(BUILD_ROBOTSPORTS_LOCAL_BALL_PREPROCESSOR)
+    add_subdirectory(local_ball_preprocessor)
+endif()
+if(BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING)
+    add_subdirectory(local_ball_tracking)
+endif()
+if(BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING)
+    add_subdirectory(local_obstacle_tracking)
+endif()
+if(BUILD_ROBOTSPORTS_OBSTACLE_TRACKING)
+    add_subdirectory(obstacle_tracking)
+endif()
+if(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE)
+    add_subdirectory(prove_is_alive)
+endif()
 
 add_library(MRA-components-robotsports ${MRA_BINARY_DIR}/dummy.cpp)
 target_link_libraries(MRA-components-robotsports
-    MRA-components-robotsports-getball-fetch
-    MRA-components-robotsports-getball-intercept
-    MRA-components-robotsports-local-ball
-    MRA-components-robotsports-local-ball-preprocessor
-    MRA-components-robotsports-local-ball-tracking
-    MRA-components-robotsports-local-obstacle-tracking
-    MRA-components-robotsports-obstacle-tracking
-    MRA-components-robotsports-prove-is-alive
+    $<IF:${BUILD_ROBOTSPORTS_GETBALL_FETCH},MRA-components-robotsports-getball-fetch,>
+    $<IF:${BUILD_ROBOTSPORTS_GETBALL_INTERCEPT},MRA-components-robotsports-getball-intercept,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL},MRA-components-robotsports-local-ball,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_PREPROCESSOR},MRA-components-robotsports-local-ball-preprocessor,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},MRA-components-robotsports-local-ball-tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING},MRA-components-robotsports-local-obstacle-tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_OBSTACLE_TRACKING},MRA-components-robotsports-obstacle-tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_PROVE_IS_ALIVE},MRA-components-robotsports-prove-is-alive,>
 )
 
 target_link_directories(MRA-components-robotsports PUBLIC
-    ${MRA_BINARY_DIR}/components/robotsports/getball_fetch
-    ${MRA_BINARY_DIR}/components/robotsports/getball_intercept
-    ${MRA_BINARY_DIR}/components/robotsports/local_ball
-    ${MRA_BINARY_DIR}/components/robotsports/local_ball_preprocessor
-    ${MRA_BINARY_DIR}/components/robotsports/local_ball_tracking
-    ${MRA_BINARY_DIR}/components/robotsports/local_obstacle_tracking
-    ${MRA_BINARY_DIR}/components/robotsports/obstacle_tracking
-    ${MRA_BINARY_DIR}/components/robotsports/prove_is_alive
+    $<IF:${BUILD_ROBOTSPORTS_GETBALL_FETCH},${MRA_BINARY_DIR}/components/robotsports/getball_fetch,>
+    $<IF:${BUILD_ROBOTSPORTS_GETBALL_INTERCEPT},${MRA_BINARY_DIR}/components/robotsports/getball_intercept,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL},${MRA_BINARY_DIR}/components/robotsports/local_ball,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_PREPROCESSOR},${MRA_BINARY_DIR}/components/robotsports/local_ball_preprocessor,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},${MRA_BINARY_DIR}/components/robotsports/local_ball_tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},${MRA_BINARY_DIR}/components/robotsports/local_obstacle_tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_OBSTACLE_TRACKING},${MRA_BINARY_DIR}/components/robotsports/obstacle_tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_PROVE_IS_ALIVE},${MRA_BINARY_DIR}/components/robotsports/prove_is_alive,>
 )
 

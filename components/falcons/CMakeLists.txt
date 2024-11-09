@@ -31,18 +31,19 @@ add_subdirectory(test_mra_logger)
 
 add_library(MRA-components-falcons ${MRA_BINARY_DIR}/dummy.cpp)
 target_link_libraries(MRA-components-falcons
-                        $<IF:${BUILD_FALCONS_GETBALL},MRA-falcons-getball,>
                         $<IF:${BUILD_FALCONS_ACTION_PLANNING},MRA-components-falcons-action-planning,>
+                        $<IF:${BUILD_FALCONS_GETBALL},MRA-components-falcons-getball,>
                         $<IF:${BUILD_FALCONS_GETBALL_FETCH},MRA-components-falcons-getball-fetch,>
                         $<IF:${BUILD_FALCONS_GETBALL_INTERCEPT},MRA-components-falcons-getball-intercept,>
                         $<IF:${BUILD_FALCONS_LOCALIZATION_VISION},MRA-components-falcons-localization-vision,>
-                        $<IF:${BUILD_FALCONS_TRAJECTORY_GENERATION},MRA-falcons-trajectory-generation,>
+                        $<IF:${BUILD_FALCONS_TRAJECTORY_GENERATION},MRA-components-falcons-trajectory-generation,>
                         $<IF:${BUILD_FALCONS_VELOCITY_CONTROL},MRA-components-falcons-velocity-control,>
                         MRA-components-falcons-test-mra-logger
 )
 
 target_link_directories(MRA-components-falcons PUBLIC
     $<IF:${BUILD_FALCONS_ACTION_PLANNING},${MRA_BINARY_DIR}/components/falcons/action_planning,>
+    $<IF:${BUILD_FALCONS_GETBALL},${MRA_BINARY_DIR}/components/falcons/getball,>
     $<IF:${BUILD_FALCONS_GETBALL_FETCH},${MRA_BINARY_DIR}/components/falcons/getball_fetch,>
     $<IF:${BUILD_FALCONS_GETBALL_INTERCEPT},${MRA_BINARY_DIR}/components/falcons/getball_intercept,>
     $<IF:${BUILD_FALCONS_LOCALIZATION_VISION},${MRA_BINARY_DIR}/components/falcons/localization_vision,>

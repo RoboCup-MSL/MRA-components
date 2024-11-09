@@ -48,6 +48,6 @@ target_link_directories(MRA-components-robotsports PUBLIC
     $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},${MRA_BINARY_DIR}/components/robotsports/local_obstacle_tracking,>
     $<IF:${BUILD_ROBOTSPORTS_OBSTACLE_TRACKING},${MRA_BINARY_DIR}/components/robotsports/obstacle_tracking,>
     $<IF:${BUILD_ROBOTSPORTS_PROVE_IS_ALIVE},${MRA_BINARY_DIR}/components/robotsports/prove_is_alive,>
-    $<IF:${BUILD_ROBOTSPORTS_VELOCITY_CONTROL},${MRA_BINARY_DIR}/components/robotsports/prove_is_alive,>
+    $<IF:${BUILD_ROBOTSPORTS_VELOCITY_CONTROL},${MRA_BINARY_DIR}/components/robotsports/velocity_control,>
 )
 

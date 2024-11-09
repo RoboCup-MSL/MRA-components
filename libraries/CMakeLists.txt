@@ -6,7 +6,6 @@ endif()
 
 add_library(MRA-libraries-dir ${MRA_BINARY_DIR}/dummy.cpp)
 
-message(INFO "BUILD_LIBRARY_REFLEXXES = = ${BUILD_LIBRARY_REFLEXXES}")
 target_link_libraries(MRA-libraries-dir
                     MRA-libraries-geometry
                     MRA-libraries-logging

@@ -15,7 +15,7 @@ target_include_directories(MRA-components-robotsports-local-ball-tracking PUBLIC
     ${CMAKE_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/components/robotsports/local_ball_tracking    
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-robotsports-local-ball-tracking MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-robotsports-local-ball-tracking MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 add_executable(
     robotsports_local_ball_tracking_test
@@ -24,7 +24,7 @@ add_executable(
 target_link_libraries(
     robotsports_local_ball_tracking_test
     MRA-components-robotsports-local-ball-tracking
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

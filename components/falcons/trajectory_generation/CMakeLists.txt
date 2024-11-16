@@ -11,7 +11,7 @@ target_include_directories(MRA-components-falcons-trajectory-generation PUBLIC
     ${MRA_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/components/falcons/velocity_control
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-falcons-trajectory-generation MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-falcons-trajectory-generation MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
@@ -23,7 +23,7 @@ target_link_libraries(
     falcons_trajectory_generation_test
     MRA-components-falcons-trajectory-generation
     MRA-components-falcons-velocity-control
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

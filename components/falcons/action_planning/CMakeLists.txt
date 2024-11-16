@@ -9,7 +9,7 @@ target_include_directories(MRA-components-falcons-action-planning PUBLIC
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-falcons-action-planning MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-falcons-action-planning MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
@@ -20,7 +20,7 @@ target_include_directories(falcons_action_planning_test PRIVATE ${MRA_SOURCE_DIR
 target_link_libraries(
     falcons_action_planning_test
     MRA-components-falcons-action-planning
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

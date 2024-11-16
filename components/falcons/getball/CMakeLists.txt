@@ -11,7 +11,7 @@ target_include_directories(MRA-components-falcons-getball PUBLIC
     ${MRA_SOURCE_DIR}/components/falcons/getball_fetch
     ${MRA_SOURCE_DIR}/components/falcons/getball_intercept
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-falcons-getball MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-falcons-getball MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
@@ -24,7 +24,7 @@ target_link_libraries(
     MRA-components-falcons-getball
     MRA-components-falcons-getball-fetch
     MRA-components-falcons-getball-intercept
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

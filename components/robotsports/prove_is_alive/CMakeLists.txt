@@ -10,7 +10,7 @@ target_include_directories(MRA-components-robotsports-prove-is-alive PUBLIC
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-robotsports-prove-is-alive MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-robotsports-prove-is-alive MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
@@ -21,7 +21,7 @@ target_include_directories(robotsports_prove_is_alive_test PRIVATE ${MRA_SOURCE_
 target_link_libraries(
     robotsports_prove_is_alive_test
     MRA-components-robotsports-prove-is-alive
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-datatypes MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

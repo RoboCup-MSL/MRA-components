@@ -16,7 +16,7 @@ add_executable(
     falcons_action_planning_test
     test.cpp
 )
-target_include_directories(falcons_action_planning_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(falcons_action_planning_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     falcons_action_planning_test
     MRA-components-falcons-action-planning

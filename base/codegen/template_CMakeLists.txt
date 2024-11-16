@@ -16,7 +16,7 @@ add_executable(
     CMAKE_COMPONENT_TEST_NAME
     test.cpp
 )
-target_include_directories(CMAKE_COMPONENT_TEST_NAME PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(CMAKE_COMPONENT_TEST_NAME PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     CMAKE_COMPONENT_TEST_NAME
     MRA-components-CMAKE_COMPONENT_LIBRARY_NAME

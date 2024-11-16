@@ -18,7 +18,7 @@ add_executable(
     robotsports_local_ball_test
     test.cpp
 )
-target_include_directories(robotsports_local_ball_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(robotsports_local_ball_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     robotsports_local_ball_test
     MRA-components-robotsports-local-ball

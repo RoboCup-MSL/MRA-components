@@ -31,7 +31,7 @@ add_executable(
     falcons_localization_vision_test
     test.cpp
 )
-target_include_directories(falcons_localization_vision_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(falcons_localization_vision_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     falcons_localization_vision_test
     MRA-components-falcons-localization-vision

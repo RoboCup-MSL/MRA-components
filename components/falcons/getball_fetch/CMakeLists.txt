@@ -17,7 +17,7 @@ add_executable(
     falcons_getball_fetch_test
     test.cpp
 )
-target_include_directories(falcons_getball_fetch_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(falcons_getball_fetch_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     falcons_getball_fetch_test
     MRA-components-falcons-getball-fetch

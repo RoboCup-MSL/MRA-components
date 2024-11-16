@@ -24,18 +24,18 @@ target_include_directories(MRA-components-robotsports-velocity-control PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/interface
     ${CMAKE_CURRENT_SOURCE_DIR}/internal/include
 )
-target_link_libraries(MRA-components-robotsports-velocity-control MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-robotsports-velocity-control MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 
 add_executable(
     robotsports_velocity_control_test
     test.cpp
 )
-target_include_directories(robotsports_velocity_control_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(robotsports_velocity_control_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     robotsports_velocity_control_test
     MRA-components-robotsports-velocity-control
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

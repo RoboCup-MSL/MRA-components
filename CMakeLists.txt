@@ -141,10 +141,10 @@ add_library(MRA-datatypes-proto)
 protobuf_generate(TARGET MRA-datatypes-proto PROTOS ${MESSAGE_PROTOS_COMMON} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
 file(GLOB MRA-datatypes_generated_files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/datatype/*.pb.cc")
 target_include_directories(MRA-datatypes-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
+target_sources(MRA-datatypes-proto PUBLIC ${MRA-datatypes_generated_files})
 target_link_libraries(MRA-datatypes-proto PUBLIC ${MRA-datatypes_generated})
 
 # create library for datatypes including the generated code
-include_directories(datatypes)
 add_library(MRA-datatypes OBJECT ${MESSAGE_PROTOS_COMMON})
 target_link_libraries(MRA-datatypes PUBLIC protobuf::libprotobuf MRA-datatypes-proto)
 set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -163,29 +163,54 @@ endforeach()
 # component proto files
 ##########################################################
 # generate source from component proto files from toplevel to get correct header file guard 
-
-# collect proto files from sub-directories below directory component
+if(0)
 FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/components *.proto)
 # generate code from protofiles and add them  intermediate library
-add_library(MRA-components-protofiles)
-protobuf_generate(TARGET MRA-components-protofiles PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-file(GLOB MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.cc")
-target_include_directories(MRA-components-protofiles PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
-target_link_libraries(MRA-components-protofiles PUBLIC ${MRA-components-generated-files})
+add_library(MRA-components-proto)
+protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
+file(GLOB_RECURSE MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.cc")
+target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
+target_sources(MRA-components-proto PUBLIC ${MRA-components-generated-files})
+target_link_libraries(MRA-components-proto ${MRA-components-generated-files})
+endif()
 
-# create library for MRA-component-proto with the generated code
-add_library(MRA-components-proto OBJECT ${MESSAGE_PROTOS_COMPONENTS})
-target_link_libraries(MRA-components-proto PUBLIC protobuf::libprotobuf MRA-components-protofiles ${MRA-components-generated-files})
-set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
-#target_link_libraries(MRA-components-proto )     
 
+# generate code from protofiles and add them  intermediate library
+FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/components *.proto)
+add_library(MRA-components-proto)
+protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
+if (NOT EXISTS "${MRA_BINARY_DIR}/libMRA-components-proto.a")
+  file(GLOB_RECURSE MRA-components-generated-files "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.*")
+endif()
+target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
+target_sources(MRA-components-proto PUBLIC ${MRA-components-generated-files})
+target_link_libraries(MRA-components-proto ${MRA-components-generated-files})
+set(MESSAGE_PROTOS_COMPONENTS "")
+set(src_file_names "")
+FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS "${CMAKE_CURRENT_SOURCE_DIR}/components/**/*.proto")
+if (NOT EXISTS "${MRA_BINARY_DIR}/libMRA-components-proto.a")
+  FILE(GLOB_RECURSE generated_sources CONFIGURE_DEPENDS "${MRA_BINARY_DIR}/components/**/*.pb.*")
+  target_sources(MRA-components-proto PUBLIC ${generated_sources})
+endif()
+add_library(MRA-components-protofiles OBJECT ${MESSAGE_PROTOS_COMPONENTS})
+add_dependencies(MRA-components-protofiles MRA-components-proto)
+#set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(MRA-components-protofiles PRIVATE "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
+target_link_libraries(MRA-components-protofiles PRIVATE protobuf::libprotobuf ${MRA-components-generated-files} MRA-components-proto)     
+
+if(1)
 # generate Python files from protofiles, copy to build/datatypes directory
-protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python)
+protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+file(GLOB PYTHON_FILES "${CMAKE_CURRENT_BINARY_DIR}/components/*/*/interface/*.py")
+foreach(PYTHON_FILE ${PYTHON_FILES})
+  file(COPY ${PYTHON_FILE} DESTINATION "${CMAKE_BINARY_DIR}")
+endforeach()
+
+endif()
+
 
 # create dummy file for creating libraries with only ohter libraries
 file(TOUCH ${MRA_BINARY_DIR}/dummy.cpp)
-
 
 ##########################################################
 # subdirectories
@@ -211,8 +236,8 @@ add_subdirectory(third-party-libraries)
 #)
 
 add_library(MRA-components ${MRA_BINARY_DIR}/dummy.cpp)
-target_link_libraries(MRA-components MRA-components-dir)
-target_link_directories(MRA-components PUBLIC ${MRA_BINARY_DIR}/components)
+add_dependencies(MRA-components MRA-components-protofiles)
+target_link_libraries(MRA-components MRA-components-dir MRA-components-protofiles)
 
 add_library(MRA-libraries ${MRA_BINARY_DIR}/dummy.cpp)
 target_link_libraries(MRA-libraries MRA-libraries-dir MRA-third-party-libraries-dir)

@@ -131,6 +131,8 @@ class ComponentGenerator():
                     self.component_dependencies.append(dep)
                 elif dep.startswith('libraries'):
                     self.library_dependencies.append(dep)
+                elif dep.startswith('third-party-libraries'):
+                    self.library_dependencies.append(dep)
                 else:
                     raise Exception(f'invalid dependency, expected dependency to start with either "components" or "libraries": "{dep}" in file "{deps_file}"')
         # check if package naming is consistent

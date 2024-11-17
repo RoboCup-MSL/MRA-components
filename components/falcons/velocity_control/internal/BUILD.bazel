@@ -38,7 +38,7 @@ cc_library(
     deps = [
         ":common_headers",
         ":data",
-        "//libraries/reflexxes",
+        "//third-party-libraries/reflexxes",
     ],
 )
 

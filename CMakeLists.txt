@@ -32,6 +32,8 @@ set(BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING 1)
 set(BUILD_ROBOTSPORTS_OBSTACLE_TRACKING 1)
 set(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE 1)
 set(BUILD_ROBOTSPORTS_VELOCITY_CONTROL 1)
+
+set(MRA_PROTO_COMPONENT_LIB "${MRA_BINARY_DIR}/lib/libMRA-components-proto.a")
 # overwrite setting above via ../MRA_build.txt (if exists)
 include("../MRA_build.txt" OPTIONAL)
 
@@ -120,6 +122,8 @@ include(GoogleTest)
 ##########################################################
 # common datatypes
 ##########################################################
+# Future: use datatypes/CMakeLists.txt instead of building at toplevel
+
 # proto files for datatypes
 set(MESSAGE_PROTOS_COMMON
     datatypes/ActionResult.proto
@@ -162,24 +166,16 @@ endforeach()
 ##########################################################
 # component proto files
 ##########################################################
-# generate source from component proto files from toplevel to get correct header file guard 
-if(0)
-FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/components *.proto)
-# generate code from protofiles and add them  intermediate library
-add_library(MRA-components-proto)
-protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-file(GLOB_RECURSE MRA-components-generated-files CONFIGURE_DEPENDS "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.cc")
-target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
-target_sources(MRA-components-proto PUBLIC ${MRA-components-generated-files})
-target_link_libraries(MRA-components-proto ${MRA-components-generated-files})
-endif()
-
+# Generate source from component proto files from toplevel to get correct header file guard 
+# require to run protobuf_generate for the toplevel. 
+# Running it for the top makes rebuild (build after the initial build) tricky
+# To avoid endless loops and/or missing files: protofiles and the generated source are not rebuild (only if lib MRA-components-proto is not present)
 
 # generate code from protofiles and add them  intermediate library
 FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/components *.proto)
 add_library(MRA-components-proto)
 protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE cpp IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${MRA_SOURCE_DIR})
-if (NOT EXISTS "${MRA_BINARY_DIR}/libMRA-components-proto.a")
+if (NOT EXISTS ${MRA_PROTO_COMPONENT_LIB})
   file(GLOB_RECURSE MRA-components-generated-files "${PROTO_BINARY_DIR}/components/*/*/interface/*.pb.*")
 endif()
 target_include_directories(MRA-components-proto PUBLIC "$<BUILD_INTERFACE:${MRA_BINARY_DIR}>")
@@ -188,17 +184,15 @@ target_link_libraries(MRA-components-proto ${MRA-components-generated-files})
 set(MESSAGE_PROTOS_COMPONENTS "")
 set(src_file_names "")
 FILE(GLOB_RECURSE MESSAGE_PROTOS_COMPONENTS "${CMAKE_CURRENT_SOURCE_DIR}/components/**/*.proto")
-if (NOT EXISTS "${MRA_BINARY_DIR}/libMRA-components-proto.a")
+if (NOT EXISTS ${MRA_PROTO_COMPONENT_LIB})
   FILE(GLOB_RECURSE generated_sources CONFIGURE_DEPENDS "${MRA_BINARY_DIR}/components/**/*.pb.*")
   target_sources(MRA-components-proto PUBLIC ${generated_sources})
 endif()
 add_library(MRA-components-protofiles OBJECT ${MESSAGE_PROTOS_COMPONENTS})
 add_dependencies(MRA-components-protofiles MRA-components-proto)
-#set(PROTO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(MRA-components-protofiles PRIVATE "$<BUILD_INTERFACE:${PROTO_BINARY_DIR}>")
 target_link_libraries(MRA-components-protofiles PRIVATE protobuf::libprotobuf ${MRA-components-generated-files} MRA-components-proto)     
 
-if(1)
 # generate Python files from protofiles, copy to build/datatypes directory
 protobuf_generate(TARGET MRA-components-proto PROTOS ${MESSAGE_PROTOS_COMPONENTS} LANGUAGE python OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 file(GLOB PYTHON_FILES "${CMAKE_CURRENT_BINARY_DIR}/components/*/*/interface/*.py")
@@ -206,7 +200,8 @@ foreach(PYTHON_FILE ${PYTHON_FILES})
   file(COPY ${PYTHON_FILE} DESTINATION "${CMAKE_BINARY_DIR}")
 endforeach()
 
-endif()
+
+
 
 
 # create dummy file for creating libraries with only ohter libraries
@@ -215,8 +210,6 @@ file(TOUCH ${MRA_BINARY_DIR}/dummy.cpp)
 ##########################################################
 # subdirectories
 ##########################################################
-#TODO use datatypes/CMakeLists.txt:
-# add_subdirectory(datatypes)
 add_subdirectory(base)
 
 add_subdirectory(components)
@@ -227,13 +220,6 @@ add_subdirectory(third-party-libraries)
 ##########################################################
 # create libraries with input from subdirectories
 ##########################################################
-# TODO use datatypes/CMakeLists.txt
-#add_library(MRA-datatypes ${MRA_BINARY_DIR}/dummy.cpp)
-#target_link_libraries(MRA-datatypes
-#    MRA-libraries-dir)
-#target_link_directories(MRA-datatypes PUBLIC
-#    ${MRA_BINARY_DIR}/datatypes
-#)
 
 add_library(MRA-components ${MRA_BINARY_DIR}/dummy.cpp)
 add_dependencies(MRA-components MRA-components-protofiles)

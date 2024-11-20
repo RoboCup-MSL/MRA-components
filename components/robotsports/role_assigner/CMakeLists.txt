@@ -37,7 +37,7 @@ target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/internals
     ${CMAKE_CURRENT_SOURCE_DIR}/temp
  )
-target_link_libraries(MRA-components-robotsports-role-assigner MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json)
+target_link_libraries(MRA-components-robotsports-role-assigner MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 
 # xsdcxx using c++11 (on ubuntu 20.04 that is highest supported c++ version)
 add_custom_command(OUTPUT ${STRATEGY_TESTER_CPP}
@@ -78,7 +78,7 @@ target_link_libraries(xml_test
     MRA-components-robotsports-robot-strategy
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     xerces-c
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock    
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock    
   )
   
 
@@ -143,14 +143,13 @@ target_include_directories(robotsports_role_assigner_test  PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/internals
     ${CMAKE_CURRENT_SOURCE_DIR}/temp
     ${CMAKE_CURRENT_SOURCE_DIR}/test    
+    ${MRA_BINARY_DIR}
 )
 
 target_link_libraries(
     robotsports_role_assigner_test
-    MRA-components-robotsports-role-assigner
-    MRA-components-robotsports-robot-strategy
     MRA-libraries 
-    MRA-components-proto 
+    MRA-components
     nlohmann_json::nlohmann_json 
     rt 
     GTest::gtest_main 

@@ -20,6 +20,6 @@ target_include_directories(MRA-libraries-logging PUBLIC
 		${MRA_BINARY_DIR}
 		${MRA_SOURCE_DIR}/base
 )
-target_link_libraries(MRA-libraries-logging MRA-base nlohmann_json::nlohmann_json rt spdlog::spdlog opencv_core)
+target_link_libraries(MRA-libraries-logging MRA-datatypes MRA-base nlohmann_json::nlohmann_json rt spdlog::spdlog opencv_core)
 add_dependencies(MRA-libraries-logging MRA-datatypes)
 

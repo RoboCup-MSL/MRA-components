@@ -29,7 +29,7 @@ cc_library(
         "//components/falcons/velocity_control/internal:VelocityControl",
         "//libraries/logging",
         "//libraries/geometry",
-        "//libraries/reflexxes",
+        "//third-party-libraries/reflexxes",
     ],
 )
 

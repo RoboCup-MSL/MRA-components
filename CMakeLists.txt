@@ -34,7 +34,7 @@ set(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE 1)
 set(BUILD_ROBOTSPORTS_ROBOT_STRATEGY 1)
 set(BUILD_ROBOTSPORTS_VELOCITY_CONTROL 1)
 
-set(MRA_PROTO_COMPONENT_LIB "${MRA_BINARY_DIR}/lib/libMRA-components-proto.a")
+set(MRA_PROTO_COMPONENT_LIB "${MRA_BINARY_DIR}/libMRA-components-proto.a")
 # overwrite setting above via ../MRA_build.txt (if exists)
 include("../MRA_build.txt" OPTIONAL)
 

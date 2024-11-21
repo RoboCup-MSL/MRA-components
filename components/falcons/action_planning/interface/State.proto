@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package MRA.FalconsActionPlanning;
+import "google/protobuf/timestamp.proto";
 import "datatypes/ActionType.proto";
 import "components/falcons/getball/interface/State.proto";
 import "components/falcons/action_stop/interface/State.proto";
@@ -9,6 +10,10 @@ import "components/falcons/action_aimed_kick/interface/State.proto";
 import "components/falcons/action_park/interface/State.proto";
 import "components/falcons/action_catch_ball/interface/State.proto";
 import "components/falcons/action_keeper/interface/State.proto";
+import "components/falcons/action_planning/interface/Input.proto";
+import "components/falcons/action_planning/interface/Output.proto";
+import "components/falcons/action_planning/interface/Params.proto";
+import "components/falcons/action_planning/interface/Diagnostics.proto";
 
 message ActionState
 {
@@ -26,8 +31,24 @@ message ActionState
     }
 }
 
+message ActionSample
+{
+    google.protobuf.Timestamp timestamp = 1;
+    Input input = 2;
+    Output output = 3;
+    Diagnostics diagnostics = 4;
+}
+
+message ActionHistory
+{
+    MRA.Datatypes.ActionType type = 1;
+    repeated ActionSample samples = 2;
+    Params params = 3; // at start of the running action (assuming no reconfiguration happens during action)
+}
+
 message State
 {
     ActionState action = 1;
+    ActionHistory history = 2; // growing buffer for running action, flushed to file (if so configured) upon starting a new one
 }
 

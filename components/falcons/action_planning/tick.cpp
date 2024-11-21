@@ -153,12 +153,37 @@ void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &a
     }
 }
 
+void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType const &params, StateType &state)
+{
+    if (state.action().type() != currentActionType)
+    {
+        // TODO: introduce some params to control this
+
+        // TODO: flush history to file, if so configured
+
+        // reset and re-initialize history
+        state.Clear();
+        state.mutable_action()->set_type(currentActionType);
+        state.mutable_history()->set_type(currentActionType);
+        *state.mutable_history()->mutable_params() = params;
+    }
+}
+
+void updateHistory(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType const &output, DiagnosticsType const &diagnostics)
+{
+    MRA::FalconsActionPlanning::ActionSample sample;
+    *sample.mutable_timestamp() = timestamp;
+    *sample.mutable_input() = input;
+    *sample.mutable_output() = output;
+    *sample.mutable_diagnostics() = diagnostics;
+    *state.mutable_history()->mutable_samples()->Add() = sample;
+}
+
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, DiagnosticsType &diagnostics)
 {
-    // TODO: memorize previousActionType, if different, wipe state
     int error_value = 0;
     MRA::Datatypes::ActionType currentActionType = input.action().type();
-    state.mutable_action()->set_type(currentActionType);
+    checkFlushHistory(currentActionType, params, state);
     diagnostics.mutable_action()->set_type(currentActionType);
     if (currentActionType == MRA::Datatypes::ACTION_INVALID)
     {
@@ -218,6 +243,8 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         output.set_actionresult(MRA::Datatypes::FAILED);
     }
+    // update history
+    updateHistory(timestamp, input, params, state, output, diagnostics);
     return error_value;
 }
 

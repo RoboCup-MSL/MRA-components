@@ -153,13 +153,51 @@ void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &a
     }
 }
 
+void replaceAll(std::string &s, const std::string &search, const std::string &replace) {
+    size_t pos = 0;
+    while ((pos = s.find(search, pos)) != std::string::npos) {
+        s.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
+}
+
 void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType const &params, StateType &state)
 {
+    int num_ticks = state.history().samples_size();
+    MRA_TRACE_FUNCTION_INPUTS(state.action().type(), currentActionType, num_ticks);
     if (state.action().type() != currentActionType)
     {
-        // TODO: introduce some params to control this
+        // flush history to file, if so configured
+        bool do_flush = params.history().enabled() && (num_ticks >= params.history().minimumticks());
+        if (do_flush)
+        {
+            std::string filename = params.history().logfolder() + "/" + params.history().logfilepattern();
+            // replace <action> and <actionresult>, use last sample
+            auto lastSample = state.history().samples(num_ticks - 1);
+            replaceAll(filename, "<action>", MRA::Datatypes::ActionType_Name(lastSample.input().action().type()));
+            replaceAll(filename, "<actionresult>", MRA::Datatypes::ActionResult_Name(lastSample.output().actionresult()));
+            // replace <date> and <time>
+            std::time_t currentTime = std::time(nullptr);
+            struct std::tm *timeinfo = std::localtime(&currentTime);
+            char dateBuffer[9];
+            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y%m%d", timeinfo);
+            char timeBuffer[11];
+            std::strftime(timeBuffer, sizeof(timeBuffer), "%H%M%S", timeinfo);
+            replaceAll(filename, "<date>", dateBuffer);
+            replaceAll(filename, "<time>", timeBuffer);
+            // replace <msec> for milliseconds
+            auto now = std::chrono::system_clock::now();
+            auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+            int milliseconds = (microseconds / 1000) % 1000;
+            sprintf(timeBuffer, "%03d", milliseconds);
+            replaceAll(filename, "<msec>", timeBuffer);
+            // logging
+            MRA_LOG_INFO("flushing history to file: %s", filename.c_str());
 
-        // TODO: flush history to file, if so configured
+            // TODO: try to open file, make sure an error occurs if configuration is empty (either folder or filename)
+
+            // TODO: reuse logging .bin write
+        }
 
         // reset and re-initialize history
         state.Clear();
@@ -171,6 +209,7 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
 
 void updateHistory(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType const &output, DiagnosticsType const &diagnostics)
 {
+    MRA_TRACE_FUNCTION();
     MRA::FalconsActionPlanning::ActionSample sample;
     *sample.mutable_timestamp() = timestamp;
     *sample.mutable_input() = input;
@@ -181,6 +220,7 @@ void updateHistory(google::protobuf::Timestamp timestamp, InputType const &input
 
 int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input, ParamsType const &params, StateType &state, OutputType &output, DiagnosticsType &diagnostics)
 {
+    MRA_TRACE_FUNCTION();
     int error_value = 0;
     MRA::Datatypes::ActionType currentActionType = input.action().type();
     checkFlushHistory(currentActionType, params, state);

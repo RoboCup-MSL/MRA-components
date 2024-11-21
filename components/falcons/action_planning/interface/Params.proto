@@ -33,8 +33,18 @@ message ActionParams
     // TODO follow = 19
 }
 
+message HistoryParams
+{
+    bool enabled = 1;
+    int32 minimumTicks = 2;
+    string logFolder = 3;
+    string logFilePattern = 4;
+    // TODO: ignore list of actiontypes? MOVE is not very interesting for instance
+}
+
 message Params
 {
     ActionParams action = 1;
+    HistoryParams history = 2;
 }
 

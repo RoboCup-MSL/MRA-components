@@ -31,6 +31,7 @@ add_library(MRA-components-robotsports-role-assigner
 target_include_directories(MRA-components-robotsports-role-assigner PUBLIC
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}/interface
@@ -63,6 +64,7 @@ target_include_directories(xml_test PUBLIC
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -136,6 +138,7 @@ target_include_directories(robotsports_role_assigner_test  PRIVATE
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${CMAKE_CURRENT_BINARY_DIR}

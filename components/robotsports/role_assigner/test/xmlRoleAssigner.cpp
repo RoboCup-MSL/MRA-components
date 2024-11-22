@@ -115,24 +115,24 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                 player.set_active(input_team.active);
                 player.set_human(input_team.human);
                 player.set_trackingid(input_team.trackingId );
-//                rbt.controlBall = input_team.hasball();
-//                rbt.passBall = input_team.passed_ball();
-//                if (input_team.is_keeper()) {
-//                    rbt.player_type = player_type_e::GOALIE;
-//                }
-//                else {
-//                    if (input_team.active()) {
-//                        rbt.player_type = player_type_e::FIELD_PLAYER;
-//                    }
-//                    else {
-//                        rbt.player_type = player_type_e::RESERVE;
-//                    }
-//                }
-//                rbt.position = input_team.position();
-//                rbt.velocity = input_team.velocity();
+                player.set_hasball(input_team.controlBall);
+                player.set_passed_ball(input_team.passBall);
+                player.set_is_keeper(input_team.player_type == player_type_e::GOALIE);
+                player.mutable_position()->set_x(input_team.position.x);
+                player.mutable_position()->set_y(input_team.position.y);
+                player.mutable_position()->set_z(input_team.position.z);
+                player.mutable_position()->set_rx(input_team.position.rx);
+                player.mutable_position()->set_ry(input_team.position.ry);
+                player.mutable_position()->set_rz(input_team.position.rz);
+                player.mutable_velocity()->set_x(input_team.velocity.x);
+                player.mutable_velocity()->set_y(input_team.velocity.y);
+                player.mutable_velocity()->set_z(input_team.velocity.z);
+                player.mutable_velocity()->set_rx(input_team.velocity.rx);
+                player.mutable_velocity()->set_ry(input_team.velocity.ry);
+                player.mutable_velocity()->set_rz(input_team.velocity.rz);
+                proto_input.mutable_team()->Add()->CopyFrom(player);
 //                rbt.time_in_own_penalty_area = input_team.time_in_own_penalty_area();
 //                rbt.time_in_opponent_penalty_area = input_team.time_in_opponent_penalty_area();
-//                ra_input.team.push_back(rbt);
 //                proto_input.mutable_team()->Add(player);
             }
         }
@@ -526,6 +526,7 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
         }
 
 
+        P.active = true;
         P.position = Geometry::Position(*team_iter->x(), *team_iter->y(), 0.0, 0.0, 0.0, team_iter->rz());
         P.velocity= Geometry::Position(team_iter->velx(), team_iter->vely(), 0.0, 0.0, 0.0, team_iter->velrz());
         

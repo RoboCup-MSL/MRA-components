@@ -245,6 +245,10 @@ bool Environment::isInOwnPenaltyArea(double x, double y) const {
     return Environment::isInOwnPenaltyArea(x, y, 0.0);
 }
 
+void Environment::getEnvironmentParameters(EnvironmentParameters& env_params) const {
+	env_params = m_env_params;
+}
+
 string Environment::toString() const {
     std::stringstream buffer;
     buffer << "FIELD_LENGTH = " << getFieldLength() << endl;
@@ -304,4 +308,4 @@ Environment FillDefaultEnvironment() {
 }
 
 
-}
+} // namespace MRA

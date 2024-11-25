@@ -52,10 +52,14 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
     // inputs
     role_assigner_data.previous_ball = r_state.previous_ball;
-    for (auto idx = 0u; idx < r_state.previous_result.size(); ++idx) {
+    for (auto idx = 0u; idx < input.team.size(); ++idx) {
         RoleAssignerAdminTeam tp_admin = {};
-        tp_admin.previous_result = r_state.previous_result[idx];
+        tp_admin.assigned = false;
         role_assigner_data.team_admin.push_back(tp_admin);
+
+    }
+    for (auto idx = 0u; idx < r_state.previous_result.size(); ++idx) {
+    	role_assigner_data.team_admin[idx].previous_result = r_state.previous_result[idx];
     }
 
     std::vector<RoleAssignerResult> assign_results = assign(role_assigner_data);

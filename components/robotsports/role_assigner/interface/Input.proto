@@ -26,7 +26,7 @@ message Player
     double time_in_opponent_penalty_area = 10;
     // double energy, competence? Reasoning should take it account when choosing player to pass to
     // radius?
-    DynamicRole dynamic_role = 11;
+    //    DynamicRole dynamic_role = 11;
     int32 trackingId = 12; // id of object tracking
 }
 
@@ -99,7 +99,7 @@ message Input
     repeated Opponent no_opponent_obstacles = 12; // detected obstacles which are not a team-mate or opponent
     PickUpPosition pickup = 6; // pickup position
     bool passIsRequired = 7;  // is pass required to make valid goal
-    repeated MRA.Datatypes.Pose parking_positions = 8; // location of the parking positions (later: onlyin case of no technical area)
+    repeated MRA.Datatypes.Pose parking_positions = 8; // location of the parking positions (later: only in case of no technical area)
     PassData pass_data = 10; // information over a pass (if present)
 };
     

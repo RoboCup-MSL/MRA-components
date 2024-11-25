@@ -80,6 +80,7 @@ public:
     double getPenaltySpotToBackline() const;
     double getCornerCircleDiameter() const;
 
+    void getEnvironmentParameters(EnvironmentParameters& env_params) const;
 private:
     EnvironmentParameters m_env_params;
 };

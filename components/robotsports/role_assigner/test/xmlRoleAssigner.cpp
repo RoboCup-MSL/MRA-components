@@ -47,12 +47,16 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
     if (useProto) {
         auto m = RobotsportsRoleAssigner::RobotsportsRoleAssigner();
 
+        google::protobuf::Timestamp timestamp;   // absolute timestamp
         RobotsportsRoleAssigner::InputType proto_input;
+        RobotsportsRoleAssigner::ParamsType proto_params;      // configuration parameters, type generated from Params.proto
+        RobotsportsRoleAssigner::StateType  proto_state;       // state data, type generated from State.proto
+        RobotsportsRoleAssigner::OutputType proto_output;      // output data, type generated from Output.proto
+        RobotsportsRoleAssigner::DiagnosticsType proto_diagnostics;  // diagnostics data, type generated from Diagnostics.proto
 
         proto_input.set_gamestate(static_cast<MRA::RobotsportsRoleAssigner::Input_GameState>(ra_input.gamestate));
 
         if (ra_input.ball.is_valid) {
-
             if (ra_input.ball.status) {
                 proto_input.mutable_ball()->mutable_position()->set_x(ra_input.ball.position.x);
                 proto_input.mutable_ball()->mutable_position()->set_y(ra_input.ball.position.y);
@@ -66,58 +70,38 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                 proto_input.mutable_ball()->mutable_velocity()->set_rx(ra_input.ball.velocity.rx);
                 proto_input.mutable_ball()->mutable_velocity()->set_ry(ra_input.ball.velocity.ry);
                 proto_input.mutable_ball()->mutable_velocity()->set_rz(ra_input.ball.velocity.rz);
+                if (ra_input.ball.status == ball_status_e::FREE) {
+                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::FREE);
+                }
+                else if (ra_input.ball.status == ball_status_e::OWNED_BY_PLAYER) {
+                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_TEAM);
+                }
+                else {
+                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT);
+                }
             }
-            //            MRA::Datatypes::BallPossession bp = input.ball().possesion();
-            //            if (bp == MRA::Datatypes::BallPossession::FREE) {
-            //                ra_input.ball.status = ball_status_e::FREE;
-            //            }
-            //            else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
-            //                ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
-            //                // OWNED_BY_TEAM = 2,  // TODO check if undercontrol by a player otherwise owned_by_team
-            //            }
-            //            else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
-            //                ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
-            //            }
-            //            ra_input.ball.position = input.ball().position();
-            //            ra_input.ball.velocity = input.ball().velocity();
-            //        }
-
         }
-//        ra_input.ball = {};
-//        ra_input.ball.is_valid = input.has_ball();
-//        if (ra_input.ball.is_valid) {
-//            MRA::Datatypes::BallPossession bp = input.ball().possesion();
-//            if (bp == MRA::Datatypes::BallPossession::FREE) {
-//                ra_input.ball.status = ball_status_e::FREE;
-//            }
-//            else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
-//                ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
-//                // OWNED_BY_TEAM = 2,  // TODO check if undercontrol by a player otherwise owned_by_team
-//            }
-//            else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
-//                ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
-//            }
-//            ra_input.ball.position = input.ball().position();
-//            ra_input.ball.velocity = input.ball().velocity();
-//        }
-//        ra_input.formation = {};
-//        for (auto idx = 0; idx <  input.formation_size(); idx++) {
-//            ra_input.formation.push_back(static_cast<role_e>(input.formation(idx))); // enums have the same values
-//        }
-//
+        proto_input.clear_formation();
+        for (auto idx = 0u; idx < ra_input.formation.size(); idx++) {
+        	// enums have the same values
+        	proto_input.add_formation(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(ra_input.formation[idx]));
+        }
 
         proto_input.mutable_team()->Clear();
         for (auto idx = 0u; idx <  ra_input.team.size(); idx++) {
             if (ra_input.team[idx].active) {
                 auto input_team =  ra_input.team[idx];
-                RobotsportsRoleAssigner::Player player;
-                player.set_id(input_team.robotId);
+                auto player = MRA::RobotsportsRoleAssigner::Player();
+                player.set_id(input_team.robotId);  // T-shirt number
                 player.set_active(input_team.active);
                 player.set_human(input_team.human);
                 player.set_trackingid(input_team.trackingId );
                 player.set_hasball(input_team.controlBall);
                 player.set_passed_ball(input_team.passBall);
                 player.set_is_keeper(input_team.player_type == player_type_e::GOALIE);
+                player.set_time_in_own_penalty_area(input_team.time_in_own_penalty_area);
+                player.set_time_in_opponent_penalty_area(input_team.time_in_opponent_penalty_area);
+                player.set_trackingid(input_team.trackingId);
                 player.mutable_position()->set_x(input_team.position.x);
                 player.mutable_position()->set_y(input_team.position.y);
                 player.mutable_position()->set_z(input_team.position.z);
@@ -131,60 +115,231 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                 player.mutable_velocity()->set_ry(input_team.velocity.ry);
                 player.mutable_velocity()->set_rz(input_team.velocity.rz);
                 proto_input.mutable_team()->Add()->CopyFrom(player);
-//                rbt.time_in_own_penalty_area = input_team.time_in_own_penalty_area();
-//                rbt.time_in_opponent_penalty_area = input_team.time_in_opponent_penalty_area();
-//                proto_input.mutable_team()->Add(player);
             }
         }
-//
-//        for (auto idx = 0; idx <  input.no_opponent_obstacles_size(); idx++) {
-//            auto obstacle =  input.no_opponent_obstacles(idx);
-//            RoleAssignerOpponent no_opponent_obstacle = {};
-//            no_opponent_obstacle.position = obstacle.position();
-//            no_opponent_obstacle.velocity = obstacle.velocity();
-//            no_opponent_obstacle.trackingId = obstacle.trackingid();
-//            ra_input.no_opponent_obstacles.push_back(no_opponent_obstacle);
-//
-//        }
-//
-//
-//        for (auto idx = 0; idx <  input.opponents_size(); idx++) {
-//            auto input_opponent =  input.opponents(idx);
-//            RoleAssignerOpponent opponent = {};
-//            opponent.position = input_opponent.position();
-//            opponent.velocity = input_opponent.velocity();
-//            opponent.trackingId = input_opponent.trackingid();
-//            ra_input.opponents.push_back(opponent);
-//        }
-//
-//        for (auto idx = 0; idx <  input.parking_positions_size(); idx++) {
-//            auto parking_pos = input.parking_positions(idx);
-//            ra_input.parking_positions.push_back(MRA::Geometry::Point(parking_pos.x(), parking_pos.y()));
-//        }
-//        ra_input.ball_pickup_position = {};
-//        ra_input.ball_pickup_position.valid = input.has_pickup();
-//        if (ra_input.ball_pickup_position.valid) {
-//            ra_input.ball_pickup_position.x = input.pickup().position().x();
-//            ra_input.ball_pickup_position.y  = input.pickup().position().y();
-//            ra_input.ball_pickup_position.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pickup().timestamp()) / 1000.0;
-//        }
-//
-//
-//        ra_input.passIsRequired = input.passisrequired();
-//        ra_input.pass_data = {};
-//        ra_input.pass_data.valid = input.has_pass_data();
-//        if (ra_input.pass_data.valid) {
-//            ra_input.pass_data.kicked = input.pass_data().kicked(); // 1: if pass/shot has been made; 0: otherwise
-//            ra_input.pass_data.target_id = input.pass_data().target_id();
-//            ra_input.pass_data.velocity = input.pass_data().velocity();
-//            ra_input.pass_data.angle = input.pass_data().angle();
-//            ra_input.pass_data.origin_pos = input.pass_data().origin_pos();
-//            ra_input.pass_data.target_pos = input.pass_data().target_pos();
-//            ra_input.pass_data.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().timestamp()) / 1000.0;
-//            ra_input.pass_data.eta = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().eta()) / 1000.0;
-//        }
 
-        int error_value = m.tick();
+        for (auto idx = 0u; idx < ra_input.opponents.size(); idx++) {
+        	auto input_opponent = ra_input.opponents[idx];
+            auto opponent = MRA::RobotsportsRoleAssigner::Opponent();
+        	opponent.mutable_position()->set_x(input_opponent.position.x);
+            opponent.mutable_position()->set_y(input_opponent.position.y);
+            opponent.mutable_position()->set_z(input_opponent.position.z);
+            opponent.mutable_position()->set_rx(input_opponent.position.rx);
+            opponent.mutable_position()->set_ry(input_opponent.position.ry);
+            opponent.mutable_position()->set_rz(input_opponent.position.rz);
+            opponent.mutable_velocity()->set_x(input_opponent.velocity.x);
+            opponent.mutable_velocity()->set_y(input_opponent.velocity.y);
+            opponent.mutable_velocity()->set_z(input_opponent.velocity.z);
+            opponent.mutable_velocity()->set_rx(input_opponent.velocity.rx);
+            opponent.mutable_velocity()->set_ry(input_opponent.velocity.ry);
+            opponent.mutable_velocity()->set_rz(input_opponent.velocity.rz);
+        	opponent.set_trackingid(input_opponent.trackingId);
+        	proto_input.mutable_opponents()->Add()->CopyFrom(opponent);
+        }
+
+        for (auto idx = 0u; idx < ra_input.no_opponent_obstacles.size(); idx++) {
+        	auto input_obstacle = ra_input.no_opponent_obstacles[idx];
+            auto obstacle = MRA::RobotsportsRoleAssigner::Opponent();
+            obstacle.mutable_position()->set_x(input_obstacle.position.x);
+        	obstacle.mutable_position()->set_y(input_obstacle.position.y);
+        	obstacle.mutable_position()->set_z(input_obstacle.position.z);
+        	obstacle.mutable_position()->set_rx(input_obstacle.position.rx);
+        	obstacle.mutable_position()->set_ry(input_obstacle.position.ry);
+        	obstacle.mutable_position()->set_rz(input_obstacle.position.rz);
+        	obstacle.mutable_velocity()->set_x(input_obstacle.velocity.x);
+        	obstacle.mutable_velocity()->set_y(input_obstacle.velocity.y);
+        	obstacle.mutable_velocity()->set_z(input_obstacle.velocity.z);
+        	obstacle.mutable_velocity()->set_rx(input_obstacle.velocity.rx);
+        	obstacle.mutable_velocity()->set_ry(input_obstacle.velocity.ry);
+        	obstacle.mutable_velocity()->set_rz(input_obstacle.velocity.rz);
+        	obstacle.set_trackingid(input_obstacle.trackingId);
+        	proto_input.mutable_no_opponent_obstacles()->Add()->CopyFrom(obstacle);
+        }
+
+        if (ra_input.ball_pickup_position.valid) {
+            google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.ball_pickup_position.ts * 1000);
+            proto_input.mutable_pickup()->mutable_timestamp()->CopyFrom(timestamp);
+            proto_input.mutable_pickup()->mutable_position()->set_x(ra_input.ball_pickup_position.x);
+            proto_input.mutable_pickup()->mutable_position()->set_y(ra_input.ball_pickup_position.y);
+        }
+
+        proto_input.set_passisrequired(ra_input.passIsRequired);
+
+        for (auto idx = 0u; idx < ra_input.parking_positions.size(); idx++) {
+        	auto park_pose = MRA::Datatypes::Pose();
+        	park_pose.set_x(ra_input.parking_positions[idx].x);
+        	park_pose.set_y(ra_input.parking_positions[idx].y);
+        	proto_input.mutable_parking_positions()->Add()->CopyFrom(park_pose);
+        }
+        if (ra_input.pass_data.valid) {
+        	auto pass_data = MRA::RobotsportsRoleAssigner::PassData();
+        	pass_data.set_angle(ra_input.pass_data.angle);
+        	pass_data.set_target_id(ra_input.pass_data.target_id);
+        	pass_data.set_kicked(ra_input.pass_data.kicked);
+        	pass_data.set_valid(ra_input.pass_data.valid);
+        	pass_data.set_velocity(ra_input.pass_data.velocity);
+        	pass_data.mutable_origin_pos()->set_x(ra_input.pass_data.origin_pos.x);
+        	pass_data.mutable_origin_pos()->set_y(ra_input.pass_data.origin_pos.y);
+        	pass_data.mutable_target_pos()->set_x(ra_input.pass_data.target_pos.x);
+        	pass_data.mutable_target_pos()->set_y(ra_input.pass_data.target_pos.y);
+            google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.pass_data.ts * 1000);
+        	pass_data.mutable_timestamp()->CopyFrom(timestamp);
+            google::protobuf::Timestamp eta = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.pass_data.eta * 1000);
+			pass_data.mutable_eta()->CopyFrom(eta);
+        	proto_input.mutable_pass_data()->CopyFrom(pass_data);
+        }
+
+        auto proto_env_params =  MRA::RobotsportsRoleAssigner::Environment_Parameters();
+        EnvironmentParameters env_params = {};
+        ra_input.environment.getEnvironmentParameters(env_params);
+        proto_env_params.mutable_model()->set_a(env_params.SLM.A);
+        proto_env_params.mutable_model()->set_b(env_params.SLM.B);
+        proto_env_params.mutable_model()->set_c(env_params.SLM.C);
+        proto_env_params.mutable_model()->set_d(env_params.SLM.D);
+        proto_env_params.mutable_model()->set_e(env_params.SLM.E);
+        proto_env_params.mutable_model()->set_f(env_params.SLM.F);
+        proto_env_params.mutable_model()->set_g(env_params.SLM.G);
+        proto_env_params.mutable_model()->set_h(env_params.SLM.H);
+        proto_env_params.mutable_model()->set_i(env_params.SLM.I);
+        proto_env_params.mutable_model()->set_j(env_params.SLM.J);
+        proto_env_params.mutable_model()->set_k(env_params.SLM.K);
+        proto_env_params.mutable_model()->set_l(env_params.SLM.L);
+        proto_env_params.mutable_model()->set_m(env_params.SLM.M);
+        proto_env_params.mutable_model()->set_n(env_params.SLM.N);
+        proto_env_params.mutable_model()->set_o(env_params.SLM.O);
+        proto_env_params.mutable_model()->set_p(env_params.SLM.P);
+        proto_env_params.mutable_model()->set_p(env_params.SLM.Q);
+        proto_env_params.set_ball_radius(env_params.ball_radius);
+        proto_env_params.set_goal_length(env_params.goal_length);
+        proto_env_params.set_goal_width(env_params.goal_width);
+        proto_env_params.set_parking_area_length(env_params.parking_area_length);
+        proto_env_params.set_parking_area_width(env_params.parking_area_width);
+        proto_env_params.set_parking_distance_between_robots(env_params.parking_distance_between_robots);
+        proto_env_params.set_parking_distance_to_line(env_params.parking_distance_to_line);
+        proto_env_params.set_penalty_area_present(env_params.penalty_area_present);
+        proto_env_params.set_robot_size(env_params.robot_size);
+        proto_env_params.set_technical_team_area_present(env_params.technical_team_area_present);
+
+        proto_params.mutable_environment()->CopyFrom(proto_env_params);
+
+        proto_params.set_calculateallpaths(ra_parameters.calculateAllPaths);
+        proto_params.set_minimumedgelength(ra_parameters.minimumEdgeLength);
+        proto_params.set_maximumedgelength(ra_parameters.maximumEdgeLength);
+        proto_params.set_minimumdistancetoendpoint(ra_parameters.minimumDistanceToEndPoint);
+        proto_params.set_nrverticesfirstcircle(ra_parameters.nrVerticesFirstCircle);
+        proto_params.set_firstcircleradius(ra_parameters.firstCircleRadius);
+        proto_params.set_nrverticessecondcircle(ra_parameters.nrVerticesSecondCircle);
+        proto_params.set_secondcircleradius(ra_parameters.secondCircleRadius);
+        proto_params.set_safetyfactor(ra_parameters.safetyFactor);
+        proto_params.set_addbariervertices(ra_parameters.addBarierVertices);
+        proto_params.set_adduniformvertices(ra_parameters.addUniformVertices);
+        proto_params.set_uniform_x_interval(ra_parameters.uniform_x_interval);
+        proto_params.set_uniform_y_interval(ra_parameters.uniform_y_interval);
+        proto_params.set_startingvelocitypenaltyfactor(ra_parameters.startingVelocityPenaltyFactor);
+        proto_params.set_disttoapplyballapproachvertices(ra_parameters.distToapplyBallApproachVertices);
+        proto_params.set_addballapproachvertices(ra_parameters.addBallApproachVertices);
+        proto_params.set_ballapproachverticesradius(ra_parameters.ballApproachVerticesRadius);
+        proto_params.set_ballapproachnumberofvertices(ra_parameters.ballApproachNumberOfVertices);
+        proto_params.set_mandefensebetweenballandplayer(ra_parameters.manDefenseBetweenBallAndPlayer);
+        proto_params.set_dist_before_penalty_area_for_sweeper(ra_parameters.dist_before_penalty_area_for_sweeper);
+        proto_params.set_grid_size(ra_parameters.grid_size);
+        proto_params.set_nrdynamicplanneriterations(ra_parameters.nrDynamicPlannerIterations);
+        proto_params.set_maxpossiblelinearspeed(ra_parameters.maxPossibleLinearSpeed);
+        proto_params.set_maxpossiblelinearacceleration(ra_parameters.maxPossibleLinearAcceleration);
+        proto_params.set_interceptionchancestartdistance(ra_parameters.interceptionChanceStartDistance);
+//        proto_params.set_interceptionchanceincreasepermeter(useProto);
+//        proto_params.set_interceptionchancepenaltyfactor(useProto);
+//        proto_params.set_grid_close_to_ball_normal_penalty(useProto);
+//        proto_params.set_grid_close_to_ball_normal_radius(useProto);
+//        proto_params.set_grid_close_to_ball_restart_normal_penalty(useProto);
+//        proto_params.set_grid_close_to_ball_restart_normal_radius(useProto);
+//        proto_params.set_grid_close_to_ball_restart_penalty_penalty(useProto);
+//        proto_params.set_grid_close_to_ball_restart_penalty_radius(useProto);
+//        proto_params.set_grid_close_to_ball_restart_dropball_penalty(useProto);
+//        proto_params.set_grid_close_to_ball_restart_dropball_radius(useProto);
+//        proto_params.set_grid_opponent_goal_clearance_x(useProto);
+//        proto_params.set_grid_opponent_goal_clearance_y(useProto);
+//        proto_params.set_grid_own_goal_clearance_x(useProto);useProto);
+//        proto_params.set_grid_own_goal_clearance_y(useProto);
+//        proto_params.set_wait_on_non_optimal_position_during_prepare_phase(useProto);
+//        proto_params.set_priority_block_min_distance(useProto);
+//        proto_params.set_priority_block_max_distance(useProto);
+//        proto_params.set_priority_block_max_distance_to_defense_line(useProto);
+//        proto_params.set_attack_supporter_extra_distance_to_stay_from_sideline(useProto);
+//        proto_params.set_restart_receiver_ball_dist(useProto);
+//        proto_params.set_restart_shooter_ball_dist(useProto);
+//        proto_params.set_equality_cost_threshold(useProto);
+//        proto_params.set_previous_role_bonus_must_be_applied(useProto);
+//        proto_params.set_previous_role_end_pos_threshold(useProto);
+//        proto_params.set_previous_role_bonus_end_pos_radius(useProto);
+//        proto_params.set_use_pass_to_position_for_attack_support(useProto);
+//        proto_params.set_man_to_man_defense_during_normal_play(useProto);
+//        proto_params.set_man_to_man_defense_during_setplay_against(useProto);
+//        proto_params.set_dist_to_goal_to_mark_opponent_as_goalie(useProto);
+//        proto_params.set_setplay_against_dist_to_opponent(useProto);
+//        proto_params.set_move_to_ball_left_field_position(useProto);
+//        proto_params.set_auto_save_svg_period(useProto);
+//        proto_params.set_svgoutputfilename(const ::std::string& value) {
+//		proto_params.set_svgoutputfilename(::std::string&& value) {
+//		proto_params.set_svgoutputfilename(const char* value) {
+//		proto_params.set_svgoutputfilename(const char* value, size_t size) {
+//		proto_params.set_allocated_svgoutputfilename(::std::string* svgoutputfilename) {
+//		proto_params.set_svgdefaulttargetcolor(const ::std::string& value) {
+//		proto_params.set_svgdefaulttargetcolor(::std::string&& value) {
+//		proto_params.set_svgdefaulttargetcolor(const char* value) {
+//		proto_params.set_svgdefaulttargetcolor(const char* value, size_t size) {
+//		proto_params.set_allocated_svgdefaulttargetcolor(::std::string* svgdefaulttargetcolor) {
+//		proto_params.set_svgballcolor(const ::std::string& value) {
+//		proto_params.set_svgballcolor(::std::string&& value) {
+//		proto_params.set_svgballcolor(const char* value) {
+//		proto_params.set_svgballcolor(const char* value, size_t size) {
+//		proto_params.set_allocated_svgballcolor(::std::string* svgballcolor) {
+//		proto_params.set_svgoriginaltargetcolor(const ::std::string& value) {
+//		proto_params.set_svgoriginaltargetcolor(::std::string&& value) {
+//		proto_params.set_svgoriginaltargetcolor(const char* value) {
+//		proto_params.set_svgoriginaltargetcolor(const char* value, size_t size) {
+//		proto_params.set_allocated_svgoriginaltargetcolor(::std::string* svgoriginaltargetcolor) {
+//		proto_params.set_svgteamcolor(const ::std::string& value) {
+//		proto_params.set_svgteamcolor(::std::string&& value) {
+//		proto_params.set_svgteamcolor(const char* value) {
+//		proto_params.set_svgteamcolor(const char* value, size_t size) {
+//		proto_params.set_allocated_svgteamcolor(::std::string* svgteamcolor) {
+//		proto_params.set_svgopponentcolor(const ::std::string& value) {
+//		proto_params.set_svgopponentcolor(::std::string&& value) {
+//		proto_params.set_svgopponentcolor(const char* value) {
+//		proto_params.set_svgopponentcolor(const char* value, size_t size) {
+//		proto_params.set_allocated_svgopponentcolor(::std::string* svgopponentcolor) {
+//		proto_params.set_svgdrawvelocity(useProto);
+//		proto_params.set_svgdrawedges(useProto);
+//		proto_params.set_savegriddatatofile(useProto);
+//		proto_params.set_svgrobotplanner(useProto);
+//		proto_params.set_preferredsetplaykicker(useProto);
+//		proto_params.set_preferredsetplayreceiver(useProto);
+//		proto_params.set_setplay_margin_to_penalty_area_side(useProto);
+//		proto_params.set_interceptor_assign_use_ball_velocity(useProto);
+//		proto_params.set_interceptor_assign_min_velocity_for_calculate_interception_position(useProto);
+//		proto_params.set_autoassigngoalie(useProto);
+//		proto_params.set_min_y_for_lob_shot(useProto);
+//		proto_params.set_outsidefieldmargin(useProto);
+//		proto_params.set_kickoff_fp1_x(useProto);
+//		proto_params.set_kickoff_fp1_y(useProto);
+//		proto_params.set_kickoff_fp2_x(useProto);
+//		proto_params.set_kickoff_fp2_y(useProto);
+//		proto_params.set_kickoff_fp3_x(useProto);
+//		proto_params.set_kickoff_fp3_y(useProto);
+//		proto_params.set_kickoff_fp4_x(useProto);
+//		proto_params.set_kickoff_fp4_y(useProto);
+//		proto_params.set_kickoff_against_fp1_x(useProto);
+//		proto_params.set_kickoff_against_fp1_y(useProto);
+//		proto_params.set_kickoff_against_fp2_x(useProto);
+//		proto_params.set_kickoff_against_fp2_y(useProto);
+//		proto_params.set_kickoff_against_fp3_x(useProto);
+//		proto_params.set_kickoff_against_fp3_y(useProto);
+//		proto_params.set_kickoff_against_fp4_x(useProto);
+//		proto_params.set_kickoff_against_fp4_y(useProto);
+
+
+        int error_value = m.tick(timestamp, proto_input, proto_params, proto_state, proto_output, proto_diagnostics);
         if (error_value != 0) {
             cout << "RobotsportsRoleAssigner failed" << endl;
             exit(1);
@@ -505,8 +660,8 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
     r_playerPassedBall = false;
     for (StrategyType::Team_const_iterator team_iter = c->Team().begin(); team_iter != c->Team().end(); ++team_iter) {
         playerId++;
-        RoleAssignerRobot P;
-        RoleAssignerAdminTeam PA;
+        RoleAssignerRobot P = {};
+        RoleAssignerAdminTeam PA  = {};
         PA.previous_result.present = (*team_iter).previous_result_present();
         PA.previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), role_UNDEFINED);
         PA.previous_result.end_position.x = (*team_iter).previous_result_x();

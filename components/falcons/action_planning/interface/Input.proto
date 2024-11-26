@@ -15,8 +15,11 @@ import "components/falcons/action_keeper/interface/Input.proto";
 
 message ActionDashInput // TODO move
 {
-    MRA.Datatypes.Pose velocity = 1; // in RCS
-    // TODO: allow target in RCS?
+    oneof target
+    {
+        MRA.Datatypes.Pose velocity = 1; // in RCS
+        MRA.Datatypes.Pose position = 2; // in RCS
+    }
 }
 
 message ActionKickInput // TODO move

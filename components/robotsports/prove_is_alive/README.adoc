@@ -1,16 +1,16 @@
-= Proof-is-Alive Robotsports Variant
+= prove-is-alive Robotsports Variant
 
 == Summary
 
-Proof-is-Alive is an action that proofs the robot is a live. (on requested of the referee)
+prove-is-alive is an action that proofs the robot is a live. (on requested of the referee)
 
 == Scope and context
 
-This action implements the proof-is-alive action as specified in the MSL-rules.
+This action implements the prove-is-alive action as specified in the MSL-rules.
 
 == Interface details
 
-* **purpose**: proof the player is a live
+* **purpose**: prove that the player is a live (active) to the referee (mandatory function according to the MSL rules)
 * **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
 	** WorldState
 

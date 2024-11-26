@@ -103,6 +103,17 @@ cc_library(
 )
 
 cc_test(
+    name = "test-point",
+    srcs = [
+        "test-point.cpp",
+    ],
+    deps = [
+        ":point",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "test-pose",
     srcs = [
         "test-pose.cpp",

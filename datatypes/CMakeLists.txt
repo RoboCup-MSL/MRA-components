@@ -7,6 +7,7 @@ set(MESSAGE_PROTOS_COMMON
     Ball.proto
     BallCandidate.proto
     CvMat.proto
+    DynamicRole.proto
     Logging.proto
     Meta.proto
     Obstacle.proto

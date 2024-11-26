@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
 """
-Plot data from ActionPlanning to diagnose what happens at a tick.
+Plot data from ActionPlanning to diagnose what happens at a tick or during the tick sequence.
 
 Inputs / modes:
 1. binary file a single tick: plot worldstate, target.
-2. TODO action file: plot the sequence, trajectory, etc.
+2. action file: plot the sequence, trajectory, etc.
 
-Example:
+Examples:
     bazel run //components/falcons/action_planning/test:plot /tmp/testsuite_mra_logging/tickbins/tick_FalconsActionPlanning_0.bin
+    bazel run //components/falcons/action_planning/test:plot /tmp/ap_ACTION_GETBALL_PASSED_20241121T193131f746.bin
+
+For the interactive plot, use the left/right arrow keys to navigate through the samples, and press q to quit.
 """
 
 # python modules
@@ -22,7 +25,6 @@ from matplotlib import pyplot as plt
 from libraries.logging.logdata import Data
 from libraries.plotting import plot_worldstate, plot_field, plot_target
 import components.falcons.action_planning.interface.State_pb2 as State_pb2
-
 
 
 def parse_args(args: list) -> argparse.Namespace:
@@ -44,6 +46,10 @@ class Action:
     """
     def __init__(self):
         self.data = None
+        self.tickplotter = ActionTick()
+        self.sample_idx = 0
+        self.fig = None
+        self.ax = None
 
     def load(self, datafile: str):
         """
@@ -54,9 +60,51 @@ class Action:
             raw_data = f.read(n)
         self.data = State_pb2.ActionHistory()
         self.data.MergeFromString(raw_data)
+        self.action_type_str = protobuf_enum2str(self.data, 'type')
+
+    def on_key_press(self, event):
+        """
+        Keypress event handler.
+        """
+        if event.key == 'right':
+            self.sample_idx = (self.sample_idx + 1) % len(self.data.samples)
+        elif event.key == 'left':
+            self.sample_idx = (self.sample_idx - 1) % len(self.data.samples)
+        self.ax.clear()
+        plot_field(self.ax)
+        self.plot_sample(self.sample_idx)
+        self.fig.canvas.draw()
 
     def plot(self):
-        self.setup_plotter()
+        """
+        Setup the window and connect key_press events.
+        """
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(111)
+        plot_field(self.ax)
+        self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
+        self.plot_sample(-1) # start with the last one
+        figManager = plt.get_current_fig_manager()
+        figManager.window.showMaximized()
+        plt.show()
+
+    def plot_sample(self, sample_idx):
+        """
+        Plot sample data and title for given index.
+        """
+        sample_idx %= len(self.data.samples)
+        sample = self.data.samples[sample_idx]
+        self.tickplotter.plot_io(sample.input, sample.output, self.ax)
+        action_result_str = protobuf_enum2str(self.data.samples[sample_idx].output, 'actionresult')
+        ts = self.timestamp_to_str(sample.timestamp)
+        plt.title(f'action={self.action_type_str} status={action_result_str} sample={1+sample_idx}/{len(self.data.samples)} time={ts}')
+
+    def timestamp_to_str(self, timestamp):
+        """
+        Convert timestamp to string.
+        """
+        timestamp_str = datetime.fromtimestamp(timestamp.seconds + timestamp.nanos / 1e9).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+        return timestamp_str
 
     def print_info(self):
         """
@@ -79,33 +127,6 @@ class Action:
         print(f'      start: {start_timestamp_str}')
         print(f'        end: {end_timestamp_str}')
         print(f'   duration: {duration:.3f} [s]')
-
-    def setup_plotter(self):
-        def on_key_press(event):
-            if event.key == 'right':
-                on_key_press.idx = (on_key_press.idx + 1) % len(self.data.samples)
-            elif event.key == 'left':
-                on_key_press.idx = (on_key_press.idx - 1) % len(self.data.samples)
-            ax.clear()
-            plot_field(ax)
-            self.plot_tick_io(self.data.samples[on_key_press.idx].input, self.data.samples[on_key_press.idx].output, ax)
-            fig.canvas.draw()
-
-        on_key_press.idx = 0
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        plot_field(ax)
-        fig.canvas.mpl_connect('key_press_event', on_key_press)
-        self.plot_tick_io(self.data.samples[0].input, self.data.samples[0].output, ax)
-        plt.title(f'action=TODO')
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        plt.show()
-
-    def plot_tick_io(self, input, output, ax: plt.Axes):
-        plot_worldstate(ax, input.worldState)
-        targetpos = output.setpoints.move.target
-        plot_target(ax, targetpos, input.worldState.robot)
 
 
 class ActionTick:

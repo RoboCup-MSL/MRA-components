@@ -79,7 +79,7 @@ int FalconsGetball::FalconsGetball::tick
             params.fetch,
             state,
             output,
-            local
+            diagnostics
         );
     }
 */

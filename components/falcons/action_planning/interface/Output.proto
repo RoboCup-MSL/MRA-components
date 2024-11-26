@@ -8,7 +8,14 @@ import "datatypes/Pose.proto";
 import "components/falcons/action_aimed_kick/interface/Common.proto";
 import "components/falcons/action_keeper/interface/Output.proto";
 
-message MotionSetpoint
+// TODO: are these setpoints generic enough to be moved to shared Datatypes?
+
+message BallHandlersSetpoint
+{
+    bool enabled = 1; // engage to grab the ball
+}
+
+message MoveSetpoint
 {
     MRA.Datatypes.PosVel target = 1; // use position.x, y and rz; velocity typically unused
     bool stop = 2; // use either this or target
@@ -18,6 +25,8 @@ message MotionSetpoint
 
 enum ShootingType
 {
+    // this affects the shot solver in ShootPlanning
+    // TODO, should SP be merged into ActionPlanning? Advantage: get rid of this intermediate Shooting layer, instead only directly control kicker
     SHOOT_TYPE_PASS = 0; // soft landing at teammate
     SHOOT_TYPE_SHOOT = 1; // max power typically
     SHOOT_TYPE_LOB = 2; // maximize height
@@ -39,18 +48,13 @@ message KickerSetpoint
     bool discharge = 3; // trigger
 }
 
-message BallHandlersSetpoint
-{
-    bool enabled = 1; // engage to grab the ball
-}
-
 message Setpoints
 {
     // combinations may be used, but not all combinations make sense
     // for instance: keeperFrame extension in combination with kick/shoot would be strange
     // also: an error should be triggered when both ShootingSetpoint and KickerSetpoint are used at the same time -- Shooting controls Kicker
     BallHandlersSetpoint bh = 1;
-    MotionSetpoint move = 2;
+    MoveSetpoint move = 2;
     MRA.Datatypes.Pose velocity = 3;
     ShootingSetpoint shoot = 4;
     KickerSetpoint kick = 5;
@@ -62,4 +66,3 @@ message Output
     Setpoints setpoints = 1;
     MRA.Datatypes.ActionResult actionresult = 2;
 }
-

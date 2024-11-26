@@ -319,18 +319,18 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     tpd.opponents = ra_input.opponents;
 
     // inputs
+	for (auto idx = 0u; idx < ra_output.player_paths.size(); ++idx) {
+        RoleAssignerAdminTeam tp_admin = {};
+        tp_admin.robotId = ra_input.team[idx].robotId;
+        tp_admin.assigned = true;
+//TODO        tp_admin.result = ra_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
+        tpd.team_admin.push_back(tp_admin);
+	}
     tpd.previous_ball = ra_state_org.previous_ball;
     for (auto idx = 0u; idx < ra_state_org.previous_result.size(); ++idx) {
-        RoleAssignerAdminTeam tp_admin = {};
-        tp_admin.previous_result = ra_state_org.previous_result[idx];
-        tpd.team_admin.push_back(tp_admin);
+    	tpd.team_admin[idx].previous_result = ra_state_org.previous_result[idx];
     }
 
-    for (auto idx = 0u; idx < ra_output.player_paths.size(); ++idx) {
-        tpd.team_admin[idx].robotId = ra_input.team[idx].robotId;
-        tpd.team_admin[idx].assigned = true;
-        tpd.team_admin[idx].result = ra_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
-    }
     auto player_paths = ra_output.player_paths;
 
     if (player_paths.size() > 0) {

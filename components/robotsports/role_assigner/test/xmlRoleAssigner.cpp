@@ -247,96 +247,72 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         proto_params.set_maxpossiblelinearspeed(ra_parameters.maxPossibleLinearSpeed);
         proto_params.set_maxpossiblelinearacceleration(ra_parameters.maxPossibleLinearAcceleration);
         proto_params.set_interceptionchancestartdistance(ra_parameters.interceptionChanceStartDistance);
-//        proto_params.set_interceptionchanceincreasepermeter(useProto);
-//        proto_params.set_interceptionchancepenaltyfactor(useProto);
-//        proto_params.set_grid_close_to_ball_normal_penalty(useProto);
-//        proto_params.set_grid_close_to_ball_normal_radius(useProto);
-//        proto_params.set_grid_close_to_ball_restart_normal_penalty(useProto);
-//        proto_params.set_grid_close_to_ball_restart_normal_radius(useProto);
-//        proto_params.set_grid_close_to_ball_restart_penalty_penalty(useProto);
-//        proto_params.set_grid_close_to_ball_restart_penalty_radius(useProto);
-//        proto_params.set_grid_close_to_ball_restart_dropball_penalty(useProto);
-//        proto_params.set_grid_close_to_ball_restart_dropball_radius(useProto);
-//        proto_params.set_grid_opponent_goal_clearance_x(useProto);
-//        proto_params.set_grid_opponent_goal_clearance_y(useProto);
-//        proto_params.set_grid_own_goal_clearance_x(useProto);useProto);
-//        proto_params.set_grid_own_goal_clearance_y(useProto);
-//        proto_params.set_wait_on_non_optimal_position_during_prepare_phase(useProto);
-//        proto_params.set_priority_block_min_distance(useProto);
-//        proto_params.set_priority_block_max_distance(useProto);
-//        proto_params.set_priority_block_max_distance_to_defense_line(useProto);
-//        proto_params.set_attack_supporter_extra_distance_to_stay_from_sideline(useProto);
-//        proto_params.set_restart_receiver_ball_dist(useProto);
-//        proto_params.set_restart_shooter_ball_dist(useProto);
-//        proto_params.set_equality_cost_threshold(useProto);
-//        proto_params.set_previous_role_bonus_must_be_applied(useProto);
-//        proto_params.set_previous_role_end_pos_threshold(useProto);
-//        proto_params.set_previous_role_bonus_end_pos_radius(useProto);
-//        proto_params.set_use_pass_to_position_for_attack_support(useProto);
-//        proto_params.set_man_to_man_defense_during_normal_play(useProto);
-//        proto_params.set_man_to_man_defense_during_setplay_against(useProto);
-//        proto_params.set_dist_to_goal_to_mark_opponent_as_goalie(useProto);
-//        proto_params.set_setplay_against_dist_to_opponent(useProto);
-//        proto_params.set_move_to_ball_left_field_position(useProto);
-//        proto_params.set_auto_save_svg_period(useProto);
-//        proto_params.set_svgoutputfilename(const ::std::string& value) {
-//		proto_params.set_svgoutputfilename(::std::string&& value) {
-//		proto_params.set_svgoutputfilename(const char* value) {
-//		proto_params.set_svgoutputfilename(const char* value, size_t size) {
-//		proto_params.set_allocated_svgoutputfilename(::std::string* svgoutputfilename) {
-//		proto_params.set_svgdefaulttargetcolor(const ::std::string& value) {
-//		proto_params.set_svgdefaulttargetcolor(::std::string&& value) {
-//		proto_params.set_svgdefaulttargetcolor(const char* value) {
-//		proto_params.set_svgdefaulttargetcolor(const char* value, size_t size) {
-//		proto_params.set_allocated_svgdefaulttargetcolor(::std::string* svgdefaulttargetcolor) {
-//		proto_params.set_svgballcolor(const ::std::string& value) {
-//		proto_params.set_svgballcolor(::std::string&& value) {
-//		proto_params.set_svgballcolor(const char* value) {
-//		proto_params.set_svgballcolor(const char* value, size_t size) {
-//		proto_params.set_allocated_svgballcolor(::std::string* svgballcolor) {
-//		proto_params.set_svgoriginaltargetcolor(const ::std::string& value) {
-//		proto_params.set_svgoriginaltargetcolor(::std::string&& value) {
-//		proto_params.set_svgoriginaltargetcolor(const char* value) {
-//		proto_params.set_svgoriginaltargetcolor(const char* value, size_t size) {
-//		proto_params.set_allocated_svgoriginaltargetcolor(::std::string* svgoriginaltargetcolor) {
-//		proto_params.set_svgteamcolor(const ::std::string& value) {
-//		proto_params.set_svgteamcolor(::std::string&& value) {
-//		proto_params.set_svgteamcolor(const char* value) {
-//		proto_params.set_svgteamcolor(const char* value, size_t size) {
-//		proto_params.set_allocated_svgteamcolor(::std::string* svgteamcolor) {
-//		proto_params.set_svgopponentcolor(const ::std::string& value) {
-//		proto_params.set_svgopponentcolor(::std::string&& value) {
-//		proto_params.set_svgopponentcolor(const char* value) {
-//		proto_params.set_svgopponentcolor(const char* value, size_t size) {
-//		proto_params.set_allocated_svgopponentcolor(::std::string* svgopponentcolor) {
-//		proto_params.set_svgdrawvelocity(useProto);
-//		proto_params.set_svgdrawedges(useProto);
-//		proto_params.set_savegriddatatofile(useProto);
-//		proto_params.set_svgrobotplanner(useProto);
-//		proto_params.set_preferredsetplaykicker(useProto);
-//		proto_params.set_preferredsetplayreceiver(useProto);
-//		proto_params.set_setplay_margin_to_penalty_area_side(useProto);
-//		proto_params.set_interceptor_assign_use_ball_velocity(useProto);
-//		proto_params.set_interceptor_assign_min_velocity_for_calculate_interception_position(useProto);
-//		proto_params.set_autoassigngoalie(useProto);
-//		proto_params.set_min_y_for_lob_shot(useProto);
-//		proto_params.set_outsidefieldmargin(useProto);
-//		proto_params.set_kickoff_fp1_x(useProto);
-//		proto_params.set_kickoff_fp1_y(useProto);
-//		proto_params.set_kickoff_fp2_x(useProto);
-//		proto_params.set_kickoff_fp2_y(useProto);
-//		proto_params.set_kickoff_fp3_x(useProto);
-//		proto_params.set_kickoff_fp3_y(useProto);
-//		proto_params.set_kickoff_fp4_x(useProto);
-//		proto_params.set_kickoff_fp4_y(useProto);
-//		proto_params.set_kickoff_against_fp1_x(useProto);
-//		proto_params.set_kickoff_against_fp1_y(useProto);
-//		proto_params.set_kickoff_against_fp2_x(useProto);
-//		proto_params.set_kickoff_against_fp2_y(useProto);
-//		proto_params.set_kickoff_against_fp3_x(useProto);
-//		proto_params.set_kickoff_against_fp3_y(useProto);
-//		proto_params.set_kickoff_against_fp4_x(useProto);
-//		proto_params.set_kickoff_against_fp4_y(useProto);
+        proto_params.set_interceptionchanceincreasepermeter(ra_parameters.interceptionChanceIncreasePerMeter);
+        proto_params.set_interceptionchancepenaltyfactor(ra_parameters.interceptionChancePenaltyFactor);
+        proto_params.set_grid_close_to_ball_normal_penalty(ra_parameters.grid_close_to_ball_normal_penalty);
+        proto_params.set_grid_close_to_ball_normal_radius(ra_parameters.grid_close_to_ball_normal_radius);
+        proto_params.set_grid_close_to_ball_restart_normal_penalty(ra_parameters.grid_close_to_ball_restart_normal_penalty);
+        proto_params.set_grid_close_to_ball_restart_normal_radius(ra_parameters.grid_close_to_ball_restart_normal_radius);
+        proto_params.set_grid_close_to_ball_restart_penalty_penalty(ra_parameters.grid_close_to_ball_restart_penalty_penalty);
+        proto_params.set_grid_close_to_ball_restart_penalty_radius(ra_parameters.grid_close_to_ball_restart_penalty_radius);
+        proto_params.set_grid_close_to_ball_restart_dropball_penalty(ra_parameters.grid_close_to_ball_restart_dropball_penalty);
+        proto_params.set_grid_close_to_ball_restart_dropball_radius(ra_parameters.grid_close_to_ball_restart_dropball_radius);
+        proto_params.set_grid_opponent_goal_clearance_x(ra_parameters.grid_opponent_goal_clearance_x);
+        proto_params.set_grid_opponent_goal_clearance_y(ra_parameters.grid_opponent_goal_clearance_y);
+        proto_params.set_grid_own_goal_clearance_x(ra_parameters.grid_own_goal_clearance_x);
+        proto_params.set_grid_own_goal_clearance_y(ra_parameters.grid_own_goal_clearance_y);
+        proto_params.set_wait_on_non_optimal_position_during_prepare_phase(ra_parameters.wait_on_non_optimal_position_during_prepare_phase);
+        proto_params.set_priority_block_min_distance(ra_parameters.priority_block_min_distance);
+        proto_params.set_priority_block_max_distance(ra_parameters.priority_block_max_distance);
+        proto_params.set_priority_block_max_distance_to_defense_line(ra_parameters.priority_block_max_distance_to_defense_line);
+        proto_params.set_attack_supporter_extra_distance_to_stay_from_sideline(ra_parameters.attack_supporter_extra_distance_to_stay_from_sideline);
+        proto_params.set_restart_receiver_ball_dist(ra_parameters.restart_receiver_ball_dist);
+        proto_params.set_restart_shooter_ball_dist(ra_parameters.restart_shooter_ball_dist);
+        proto_params.set_equality_cost_threshold(ra_parameters.equality_cost_threshold);
+        proto_params.set_previous_role_bonus_must_be_applied(ra_parameters.previous_role_bonus_must_be_applied);
+        proto_params.set_previous_role_end_pos_threshold(ra_parameters.previous_role_end_pos_threshold);
+        proto_params.set_previous_role_bonus_end_pos_radius(ra_parameters.previous_role_bonus_end_pos_radius);
+        proto_params.set_use_pass_to_position_for_attack_support(ra_parameters.use_pass_to_position_for_attack_support);
+        proto_params.set_man_to_man_defense_during_normal_play(ra_parameters.man_to_man_defense_during_normal_play);
+        proto_params.set_man_to_man_defense_during_setplay_against(ra_parameters.man_to_man_defense_during_setplay_against);
+        proto_params.set_dist_to_goal_to_mark_opponent_as_goalie(ra_parameters.dist_to_goal_to_mark_opponent_as_goalie);
+        proto_params.set_setplay_against_dist_to_opponent(ra_parameters.setplay_against_dist_to_opponent);
+        proto_params.set_move_to_ball_left_field_position(ra_parameters.move_to_ball_left_field_position);
+        proto_params.set_auto_save_svg_period(ra_parameters.auto_save_svg_period);
+        proto_params.set_svgoutputfilename(ra_parameters.svgOutputFileName);
+		proto_params.set_svgdefaulttargetcolor(ra_parameters.svgDefaultTargetColor);
+		proto_params.set_svgballcolor(ra_parameters.svgBallColor);
+		proto_params.set_svgoriginaltargetcolor(ra_parameters.svgOriginalTargetColor);
+		proto_params.set_svgteamcolor(ra_parameters.svgTeamColor);
+		proto_params.set_svgopponentcolor(ra_parameters.svgOpponentColor);
+		proto_params.set_svgdrawvelocity(ra_parameters.svgDrawVelocity);
+		proto_params.set_svgdrawedges(ra_parameters.svgDrawEdges);
+		proto_params.set_savegriddatatofile(ra_parameters.saveGridDataToFile);
+		proto_params.set_svgrobotplanner(ra_parameters.svgRobotPlanner);
+		proto_params.set_preferredsetplaykicker(ra_parameters.preferredSetplayKicker);
+		proto_params.set_preferredsetplayreceiver(ra_parameters.preferredSetplayReceiver);
+		proto_params.set_setplay_margin_to_penalty_area_side(ra_parameters.setplay_margin_to_penalty_area_side);
+		proto_params.set_interceptor_assign_use_ball_velocity(ra_parameters.interceptor_assign_use_ball_velocity);
+		proto_params.set_interceptor_assign_min_velocity_for_calculate_interception_position(ra_parameters.interceptor_assign_min_velocity_for_calculate_interception_position);
+		proto_params.set_autoassigngoalie(ra_parameters.autoAssignGoalie);
+		proto_params.set_min_y_for_lob_shot(ra_parameters.min_y_for_lob_shot);
+		proto_params.set_outsidefieldmargin(ra_parameters.outsideFieldMargin);
+		proto_params.set_kickoff_fp1_x(ra_parameters.kickoff_fp1_x);
+		proto_params.set_kickoff_fp1_y(ra_parameters.kickoff_fp1_y);
+		proto_params.set_kickoff_fp2_x(ra_parameters.kickoff_fp2_x);
+		proto_params.set_kickoff_fp2_y(ra_parameters.kickoff_fp2_y);
+		proto_params.set_kickoff_fp3_x(ra_parameters.kickoff_fp3_x);
+		proto_params.set_kickoff_fp3_y(ra_parameters.kickoff_fp3_y);
+		proto_params.set_kickoff_fp4_x(ra_parameters.kickoff_fp4_x);
+		proto_params.set_kickoff_fp4_y(ra_parameters.kickoff_fp4_y);
+		proto_params.set_kickoff_against_fp1_x(ra_parameters.kickoff_against_fp1_x);
+		proto_params.set_kickoff_against_fp1_y(ra_parameters.kickoff_against_fp1_y);
+		proto_params.set_kickoff_against_fp2_x(ra_parameters.kickoff_against_fp2_x);
+		proto_params.set_kickoff_against_fp2_y(ra_parameters.kickoff_against_fp2_y);
+		proto_params.set_kickoff_against_fp3_x(ra_parameters.kickoff_against_fp3_x);
+		proto_params.set_kickoff_against_fp3_y(ra_parameters.kickoff_against_fp3_y);
+		proto_params.set_kickoff_against_fp4_x(ra_parameters.kickoff_against_fp4_x);
+		proto_params.set_kickoff_against_fp4_y(ra_parameters.kickoff_against_fp4_y);
 
 
         int error_value = m.tick(timestamp, proto_input, proto_params, proto_state, proto_output, proto_diagnostics);
@@ -742,7 +718,7 @@ void fillOpponents(std::vector<RoleAssignerOpponent>& Opponents, unique_ptr<robo
 
 void role_assigner_with_xml_input(const std::string& input_filename, const std::string& output_base_directory) {
     string filename = input_filename;
-    bool print_only_errors = true;
+    bool print_only_errors = false;
     if (not print_only_errors) {
         cout << "reading file : " << filename << endl;
     }

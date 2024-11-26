@@ -64,8 +64,10 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
     std::vector<RoleAssignerResult> assign_results = assign(role_assigner_data);
     r_state.previous_ball.present = role_assigner_data.ball.is_valid;
-    r_state.previous_ball.x  = role_assigner_data.ball.position.x;
-    r_state.previous_ball.y  = role_assigner_data.ball.position.y;
+    if (role_assigner_data.ball.is_valid) {
+    	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
+    	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
+    }
     for (auto idx = 0u; idx < role_assigner_data.team_admin.size(); ++idx) {
         r_output.player_paths.push_back(role_assigner_data.team_admin[idx].result);
     }
@@ -82,6 +84,11 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
 std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assigner_data)
 {
+    std::vector<RoleAssignerResult> player_paths_in_correct_order;
+    if (role_assigner_data.team.size() == 0) {
+    	return player_paths_in_correct_order;
+    }
+
     role_assigner_data.original_gamestate = role_assigner_data.gamestate;
     role_assigner_data.this_player_robotId = role_assigner_data.team[0].robotId;
 
@@ -367,7 +374,6 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     role_assigner_data.team = restored_order_team;
     role_assigner_data.team_admin = restored_order_team_admin;
 
-    std::vector<RoleAssignerResult> player_paths_in_correct_order;
     for (unsigned team_idx = 0; team_idx < role_assigner_data.team_admin.size(); team_idx++) {
         player_paths_in_correct_order.push_back(role_assigner_data.team_admin[team_idx].result);
     }

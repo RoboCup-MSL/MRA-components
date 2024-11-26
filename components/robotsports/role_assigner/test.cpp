@@ -32,7 +32,7 @@ TEST(RobotsportsRoleAssignerTest, basicTick)
 // Basic tick shall run OK and return error_value 0.
 TEST(RobotsportsRoleAssignerTest, xmlTest)
 {
-    std::string path = "components/robotsports/role_assigner/testdata/xml-inputfiles";
+    std::string path = "/home/jurge/MRA-components/components/robotsports/role_assigner/testdata/xml-inputfiles";
     std::string output_base_directory = "/home/jurge/MRA-components/components/robotsports/role_assigner/";
     for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
         auto input_filename = file_entry.path();

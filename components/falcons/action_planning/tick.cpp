@@ -191,14 +191,25 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
             int milliseconds = (microseconds / 1000) % 1000;
             sprintf(timeBuffer, "%03d", milliseconds);
             replaceAll(filename, "<msec>", timeBuffer);
+            // serialize the protobuf object to a bytes string
+            std::ostringstream oss;
+            state.history().SerializeToOstream(&oss);
+            std::string serializedData = oss.str();
+            int byteCount = static_cast<int>(serializedData.size());
+            // write file
+            std::ofstream fh(filename);
+            if (fh.is_open())
+            {
+                fh.write(reinterpret_cast<const char*>(&byteCount), sizeof(int));
+                fh.write(serializedData.c_str(), byteCount);
+            }
+            else
+            {
+                MRA_LOG_ERROR("failed to open file for writing: %s", filename.c_str());
+            }
             // logging
-            MRA_LOG_INFO("flushing history to file: %s", filename.c_str());
-
-            // TODO: try to open file, make sure an error occurs if configuration is empty (either folder or filename)
-
-            // TODO: reuse logging .bin write
+            MRA_LOG_INFO("flushed history to file: %s (%d bytes)", filename.c_str(), byteCount+4);
         }
-
         // reset and re-initialize history
         state.Clear();
         state.mutable_action()->set_type(currentActionType);

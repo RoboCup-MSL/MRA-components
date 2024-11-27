@@ -62,8 +62,8 @@ class RoleAssignerAdminTeam {
 public:
     bool assigned = false;
     long robotId = -1;
-    RoleAssignerResult result;
-    previous_role_assigner_result_t previous_result;
+    RoleAssignerResult result = {};
+    previous_role_assigner_result_t previous_result = {};
     // compare function to sort vector of the class on the member robotId
     static inline bool CompareRobotId(const RoleAssignerAdminTeam& r1, const RoleAssignerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
 };

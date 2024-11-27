@@ -84,7 +84,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
 std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assigner_data)
 {
-    std::vector<RoleAssignerResult> player_paths_in_correct_order;
+    std::vector<RoleAssignerResult> player_paths_in_correct_order = {};
     if (role_assigner_data.team.size() == 0) {
     	return player_paths_in_correct_order;
     }
@@ -125,7 +125,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         }
     }
 
-    std::vector<RoleAssignerResult> player_paths;
+    std::vector<RoleAssignerResult> player_paths = {};
     if (role_assigner_data.gamestate != game_state_e::NONE) {
         // printAssignInputs(gamestate, ball, Team, Opponents, parameters,  parking_positions, ball_pickup_position, passIsRequired, pass_data);
     }
@@ -301,10 +301,9 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     bool thisPlayerHasUnallowedPath = false;
     bool thisPlayerStartsAtUnallowedPosition = false;
     for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
-        RoleAssignerResult player_result;
         if (role_assigner_data.team_admin[idx].assigned) {
             bool pathOK = stayPathWithinBoundaries(role_assigner_data.environment, role_assigner_data.team_admin[idx].result);
-            player_result = role_assigner_data.team_admin[idx].result;
+            RoleAssignerResult player_result = role_assigner_data.team_admin[idx].result;
             player_result.gamestate = role_assigner_data.team_admin[idx].result.gamestate;
             player_result.role = role_assigner_data.team_admin[idx].result.role;
             if (not pathOK && idx == role_assigner_data.this_player_idx) { // CHECK Only this robot

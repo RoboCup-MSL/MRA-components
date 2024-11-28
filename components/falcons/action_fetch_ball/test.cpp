@@ -9,16 +9,16 @@
 using namespace ::testing;
 
 // System under test:
-#include "FalconsGetballFetch.hpp"
+#include "FalconsActionFetchBall.hpp"
 using namespace MRA;
 
 
 
 // Basic tick shall run OK and return error_value 0.
-TEST(FalconsGetballFetchTest, basicTick)
+TEST(FalconsActionFetchBallTest, basicTick)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
 
     // Act
     int error_value = m.tick();
@@ -28,12 +28,12 @@ TEST(FalconsGetballFetchTest, basicTick)
 }
 
 // When robot is inactive, the action shall fail.
-TEST(FalconsGetballFetchTest, robotInactive)
+TEST(FalconsActionFetchBallTest, robotInactive)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(false);
 
     // Act
@@ -45,12 +45,12 @@ TEST(FalconsGetballFetchTest, robotInactive)
 }
 
 // Move towards stationary ball in positive x direction.
-TEST(FalconsGetballFetchTest, getStationaryBall)
+TEST(FalconsActionFetchBallTest, getStationaryBall)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-2.0);
     input.mutable_worldstate()->mutable_ball()->mutable_position()->set_x(2.0);
@@ -65,12 +65,12 @@ TEST(FalconsGetballFetchTest, getStationaryBall)
 }
 
 // Verify target position in case of stationary ball close to robot at left side and not in front of robot
-TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnLeft)
+TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotOnLeft)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
@@ -90,12 +90,12 @@ TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnLeft)
 }
 
 // Verify target position in case of stationary ball close to robot at right side and not in front of robot
-TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnRight)
+TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotOnRight)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
@@ -115,12 +115,12 @@ TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotOnRight)
 }
 
 // Verify target position in case of stationary ball close to robot at right side and in front of robot
-TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotInFront)
+TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotInFront)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.5);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-0.5);
@@ -141,12 +141,12 @@ TEST(FalconsGetballFetchTest, getStationaryBallCloseToRobotInFront)
 }
 
 // Verify target position in case of stationary ball far from robot
-TEST(FalconsGetballFetchTest, getStationaryBallFarFromRobot)
+TEST(FalconsActionFetchBallTest, getStationaryBallFarFromRobot)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.5);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.5);
@@ -165,14 +165,13 @@ TEST(FalconsGetballFetchTest, getStationaryBallFarFromRobot)
     EXPECT_FLOAT_EQ(output.target().position().y(), -1.9);
 }
 
-
 // When robot has the ball, the action PASSED.
-TEST(FalconsGetballFetchTest, hasBallPassed)
+TEST(FalconsActionFetchBallTest, hasBallPassed)
 {
     // Arrange
-    auto m = FalconsGetballFetch::FalconsGetballFetch();
-    auto input = FalconsGetballFetch::Input();
-    auto output = FalconsGetballFetch::Output();
+    auto m = FalconsActionFetchBall::FalconsActionFetchBall();
+    auto input = FalconsActionFetchBall::Input();
+    auto output = FalconsActionFetchBall::Output();
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_worldstate()->mutable_robot()->set_hasball(true);
 
@@ -189,12 +188,12 @@ TEST(FalconsGetballFetchTest, hasBallPassed)
 }
 
 // Match setup, full/realistic data, kickoff-prepare.
-TEST(FalconsGetballFetchTest, matchKickoff)
+TEST(FalconsActionFetchBallTest, matchKickoff)
 {
     double tolerance = 1e-5;
     // A test vector contains Input, Output, Params
     // The factory will run a tick with provided data and compare against expected output
-    auto output = TestFactory::run_testvector<FalconsGetballFetch::FalconsGetballFetch>(std::string("components/falcons/getball_fetch/testdata/kickoff_prepare.json"), tolerance);
+    auto output = TestFactory::run_testvector<FalconsActionFetchBall::FalconsActionFetchBall>(std::string("components/falcons/action_fetch_ball/testdata/kickoff_prepare.json"), tolerance);
 
     EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
 }

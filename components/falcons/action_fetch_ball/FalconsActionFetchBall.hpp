@@ -1,17 +1,17 @@
 // this file was produced by MRA-codegen.py from template_instance.hpp
 // it should NOT be modified by user
 
-#ifndef _MRA_FALCONS_GETBALL_FETCH_HPP
-#define _MRA_FALCONS_GETBALL_FETCH_HPP
+#ifndef _MRA_FALCONS_ACTION_FETCH_BALL_HPP
+#define _MRA_FALCONS_ACTION_FETCH_BALL_HPP
 
 
 // component name definition goes on top
 // (when logging.hpp is used internally in a component, then component name may resolve to "unknown")
 #ifndef MRA_COMPONENT_NAME
-#define MRA_COMPONENT_NAME "FalconsGetballFetch"
+#define MRA_COMPONENT_NAME "FalconsActionFetchBall"
 #endif
 #ifndef MRA_COMPONENT_FOLDER
-#define MRA_COMPONENT_FOLDER "falcons/getball_fetch"
+#define MRA_COMPONENT_FOLDER "falcons/action_fetch_ball"
 #endif
 
 
@@ -21,26 +21,26 @@
 #include "logging.hpp"
 
 // generated protobuf types from interface of this component
-#include "FalconsGetballFetch_datatypes.hpp"
+#include "FalconsActionFetchBall_datatypes.hpp"
 
 
 
 
-namespace MRA::FalconsGetballFetch
+namespace MRA::FalconsActionFetchBall
 {
 
-typedef MRA::FalconsGetballFetch::Input InputType;
-typedef MRA::FalconsGetballFetch::Params ParamsType;
+typedef MRA::FalconsActionFetchBall::Input InputType;
+typedef MRA::FalconsActionFetchBall::Params ParamsType;
 typedef google::protobuf::Empty StateType; // no .proto -> unused
-typedef MRA::FalconsGetballFetch::Output OutputType;
+typedef MRA::FalconsActionFetchBall::Output OutputType;
 typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
 
 
-class FalconsGetballFetch: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>
+class FalconsActionFetchBall: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>
 {
 public:
-    FalconsGetballFetch() {};
-    ~FalconsGetballFetch() {};
+    FalconsActionFetchBall() {};
+    ~FalconsActionFetchBall() {};
 
     // user implementation
     int tick(
@@ -55,7 +55,7 @@ public:
     // make default configuration easily accessible
     ParamsType defaultParams() const
     {
-        return MRA::LoadDefaultParams<ParamsType>("components/falcons/getball_fetch/interface/DefaultParams.json");
+        return MRA::LoadDefaultParams<ParamsType>("components/falcons/action_fetch_ball/interface/DefaultParams.json");
     };
 
     // allow omitting arguments, useful for testing and code brevity
@@ -99,20 +99,20 @@ public:
         return tick(google::protobuf::util::TimeUtil::GetCurrentTime(), input, params, state, output, diagnostics);
     };
 
-}; // class FalconsGetballFetch
+}; // class FalconsActionFetchBall
 
 
 // configuration handling
 inline ParamsType defaultParams()
 {
-    return FalconsGetballFetch().defaultParams();
+    return FalconsActionFetchBall().defaultParams();
 }
 inline ParamsType loadParams(std::string configFile)
 {
     return MRA::LoadDefaultParams<ParamsType>(configFile);
 }
 
-} // namespace MRA::FalconsGetballFetch
+} // namespace MRA::FalconsActionFetchBall
 
 
 #endif

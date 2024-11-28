@@ -2,7 +2,7 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "FalconsGetballFetch.hpp"
+#include "FalconsActionFetchBall.hpp"
 
 // dependent libraries:
 #include "geometry.hpp"
@@ -14,7 +14,7 @@ using namespace MRA;
 
 
 
-int FalconsGetballFetch::FalconsGetballFetch::tick
+int FalconsActionFetchBall::FalconsActionFetchBall::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto

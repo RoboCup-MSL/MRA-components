@@ -9,7 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 
-void checkParams(FalconsActionMove::ParamsType const &params);
+bool checkParams(FalconsActionMove::ParamsType const &params, std::string &verdict);
 
 
 int FalconsActionMove::FalconsActionMove::tick
@@ -30,12 +30,19 @@ int FalconsActionMove::FalconsActionMove::tick
         // user implementation goes here
 
         // check params
-        checkParams(params);
+        std::string verdict;
+        if (!checkParams(params, verdict))
+        {
+            output.set_actionresult(MRA::Datatypes::FAILED);
+            diagnostics.set_verdict(verdict);
+            return 0;
+        }
 
         // copy ballHandlers setpoint
         output.set_ballhandlersenabled(input.ballhandlersenabled());
 
         // if with ball, then set motiontype to 1
+        // TODO: call ACTION_DRIBBLE
         output.set_motiontype(input.motiontype());
         if (input.worldstate().robot().hasball())
         {
@@ -81,16 +88,19 @@ int FalconsActionMove::FalconsActionMove::tick
     return error_value;
 }
 
-void checkParams(FalconsActionMove::ParamsType const &params)
+bool checkParams(FalconsActionMove::ParamsType const &params, std::string &verdict)
 {
     double tolerance_xy = params.tolerances().xy();
     if (tolerance_xy <= 0.0)
     {
-        throw std::runtime_error("invalid configuration parameter for move.tolerances.xy: should be larger than zero");
+        verdict = "invalid configuration parameter for move.tolerances.xy: should be larger than zero";
+        return false;
     }
     double tolerance_rz = params.tolerances().rz();
     if (tolerance_rz <= 0.0)
     {
-        throw std::runtime_error("invalid configuration parameter for move.tolerances.rz: should be larger than zero");
+        verdict = "invalid configuration parameter for move.tolerances.rz: should be larger than zero";
+        return false;
     }
+    return true;
 }

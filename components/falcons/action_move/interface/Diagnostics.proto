@@ -4,4 +4,5 @@ package MRA.FalconsActionMove;
 
 message Diagnostics
 {
+    string verdict = 1;
 }

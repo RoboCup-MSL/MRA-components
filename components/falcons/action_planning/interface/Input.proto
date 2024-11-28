@@ -5,7 +5,7 @@ package MRA.FalconsActionPlanning;
 import "datatypes/Pose.proto";
 import "datatypes/WorldState.proto";
 import "datatypes/ActionType.proto";
-import "components/falcons/getball/interface/Input.proto";
+import "components/falcons/action_get_ball/interface/Input.proto";
 import "components/falcons/action_stop/interface/Input.proto";
 import "components/falcons/action_move/interface/Input.proto";
 import "components/falcons/action_aimed_kick/interface/Input.proto";
@@ -42,7 +42,7 @@ message ActionInputs
         MRA.FalconsActionAimedKick.Input pass = 7;
         MRA.FalconsActionAimedKick.Input shoot = 8;
         //ActionLobShotInput lob = 9;
-        MRA.FalconsGetball.Input getball = 10;
+        MRA.FalconsActionGetBall.Input getball = 10;
         MRA.FalconsActionCatchBall.Input catchball = 11;
         //ActionShieldInput shield = 12;
         // TODO tackle = 13

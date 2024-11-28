@@ -9,7 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 #include "subcomponent_template.hpp" // internal
-#include "FalconsGetball.hpp"
+#include "FalconsActionGetBall.hpp"
 #include "FalconsActionStop.hpp"
 #include "FalconsActionMove.hpp"
 #include "FalconsActionAimedKick.hpp"
@@ -83,7 +83,7 @@ void outputToSetpointsActionMove(MRA::FalconsActionMove::OutputType const &actio
     setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
 }
 
-void outputToSetpointsActionGetball(MRA::FalconsGetball::OutputType const &actionOutput, Setpoints *setpoints)
+void outputToSetpointsActionGetBall(MRA::FalconsActionGetBall::OutputType const &actionOutput, Setpoints *setpoints)
 {
     if (actionOutput.has_target())
     {
@@ -266,8 +266,8 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     }
     else if (currentActionType == MRA::Datatypes::ACTION_GETBALL)
     {
-        error_value = handleAction<MRA::FalconsGetball::FalconsGetball>(
-            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionGetball, "getball"
+        error_value = handleAction<MRA::FalconsActionGetBall::FalconsActionGetBall>(
+            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionGetBall, "getball"
         );
     }
     else if (currentActionType == MRA::Datatypes::ACTION_PARK)

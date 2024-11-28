@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package MRA.FalconsActionPlanning;
 import "datatypes/ActionType.proto";
-import "components/falcons/getball/interface/Params.proto";
+import "components/falcons/action_get_ball/interface/Params.proto";
 import "components/falcons/action_stop/interface/Params.proto";
 import "components/falcons/action_move/interface/Params.proto";
 import "components/falcons/action_aimed_kick/interface/Params.proto";
@@ -21,7 +21,7 @@ message ActionParams
     MRA.FalconsActionAimedKick.Params pass = 7;
     MRA.FalconsActionAimedKick.Params shoot = 8;
     // TODO lob = 9
-    MRA.FalconsGetball.Params getball = 10;
+    MRA.FalconsActionGetBall.Params getball = 10;
     MRA.FalconsActionCatchBall.Params catchball = 11;
     // TODO shield = 12
     // TODO tackle = 13

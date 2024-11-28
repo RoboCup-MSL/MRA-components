@@ -3,7 +3,7 @@ syntax = "proto3";
 package MRA.FalconsActionPlanning;
 import "google/protobuf/timestamp.proto";
 import "datatypes/ActionType.proto";
-import "components/falcons/getball/interface/State.proto";
+import "components/falcons/action_get_ball/interface/State.proto";
 import "components/falcons/action_stop/interface/State.proto";
 import "components/falcons/action_move/interface/State.proto";
 import "components/falcons/action_aimed_kick/interface/State.proto";
@@ -24,7 +24,7 @@ message ActionState
         MRA.FalconsActionMove.State move = 3;
         MRA.FalconsActionAimedKick.State pass = 5;
         MRA.FalconsActionAimedKick.State shoot = 6;
-        MRA.FalconsGetball.State getball = 8;
+        MRA.FalconsActionGetBall.State getball = 8;
         MRA.FalconsActionPark.State park = 12;
         MRA.FalconsActionCatchBall.State catchball = 13;
         MRA.FalconsActionKeeper.State keeper = 14;

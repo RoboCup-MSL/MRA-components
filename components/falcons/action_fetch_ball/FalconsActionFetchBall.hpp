@@ -31,7 +31,7 @@ namespace MRA::FalconsActionFetchBall
 
 typedef MRA::FalconsActionFetchBall::Input InputType;
 typedef MRA::FalconsActionFetchBall::Params ParamsType;
-typedef google::protobuf::Empty StateType; // no .proto -> unused
+typedef MRA::FalconsActionFetchBall::State StateType;
 typedef MRA::FalconsActionFetchBall::Output OutputType;
 typedef MRA::FalconsActionFetchBall::Diagnostics DiagnosticsType;
 

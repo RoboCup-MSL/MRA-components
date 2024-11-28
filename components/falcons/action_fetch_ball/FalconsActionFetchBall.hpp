@@ -33,7 +33,7 @@ typedef MRA::FalconsActionFetchBall::Input InputType;
 typedef MRA::FalconsActionFetchBall::Params ParamsType;
 typedef google::protobuf::Empty StateType; // no .proto -> unused
 typedef MRA::FalconsActionFetchBall::Output OutputType;
-typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
+typedef MRA::FalconsActionFetchBall::Diagnostics DiagnosticsType;
 
 
 class FalconsActionFetchBall: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>

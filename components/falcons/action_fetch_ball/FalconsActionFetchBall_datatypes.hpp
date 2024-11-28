@@ -7,6 +7,7 @@
 #include "components/falcons/action_fetch_ball/interface/Input.pb.h"
 #include "components/falcons/action_fetch_ball/interface/Params.pb.h"
 #include "components/falcons/action_fetch_ball/interface/Output.pb.h"
+#include "components/falcons/action_fetch_ball/interface/Diagnostics.pb.h"
 
 
 #endif

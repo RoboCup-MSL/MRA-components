@@ -45,12 +45,16 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         if (!ws.robot().active())
         {
             output.set_actionresult(MRA::Datatypes::FAILED);
+            diagnostics.set_verdict("robot is inactive");
+            return error_value;
         }
 
         // fail when there is no ball
         if (!ws.has_ball())
         {
             output.set_actionresult(MRA::Datatypes::FAILED);
+            diagnostics.set_verdict("robot lost track of the ball");
+            return error_value;
         }
 
         // fail when teammember has the ball
@@ -59,6 +63,8 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
             if (teammember.hasball())
             {
                 output.set_actionresult(MRA::Datatypes::FAILED);
+                diagnostics.set_verdict("teammate got the ball");
+                return error_value;
             }
         }
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsGetball;
+package MRA.FalconsActionGetBall;
 
 message Diagnostics
 {

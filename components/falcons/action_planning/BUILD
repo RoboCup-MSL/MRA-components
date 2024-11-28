@@ -26,7 +26,7 @@ cc_library(
     deps = [
         "//base:abstract_interface",
         ":datatypes",
-        "//components/falcons/getball:implementation",
+        "//components/falcons/action_get_ball:implementation",
         "//components/falcons/action_stop:implementation",
         "//components/falcons/action_move:implementation",
         "//components/falcons/action_aimed_kick:implementation",

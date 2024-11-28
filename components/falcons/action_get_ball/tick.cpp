@@ -2,11 +2,11 @@
 // with the intent of letting user add the implementation here
 
 // generated component header:
-#include "FalconsGetball.hpp"
+#include "FalconsActionGetBall.hpp"
 
 // dependent (generated) component headers:
-#include "FalconsGetballFetch.hpp"
-#include "FalconsGetballIntercept.hpp"
+#include "FalconsActionFetchBall.hpp"
+#include "FalconsActionCatchBall.hpp"
 
 using namespace MRA;
 
@@ -14,12 +14,8 @@ using namespace MRA;
 #include <cmath>
 #include "geometry.hpp"
 
-// globals
-FalconsGetballFetch::StateType g_fetch_state;
-FalconsGetballIntercept::StateType g_intercept_state;
 
-
-int FalconsGetball::FalconsGetball::tick
+int FalconsActionGetBall::FalconsActionGetBall::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
     InputType  const           &input,       // input data, type generated from Input.proto
@@ -46,19 +42,20 @@ int FalconsGetball::FalconsGetball::tick
 
     if (ball_speed < params.ballspeedstationarythreshold())
     {
-        // call component: FalconsGetballFetch
-        FalconsGetballFetch::InputType subcomponent_input;
+        // call component: FalconsActionFetchBall
+        FalconsActionFetchBall::InputType subcomponent_input;
         //subcomponent_input.MergeFrom(input); // same type
         std::string tmpdata;
         input.SerializeToString(&tmpdata);
         subcomponent_input.ParseFromString(tmpdata);
-        FalconsGetballFetch::OutputType subcomponent_output;
-        FalconsGetballFetch::DiagnosticsType subcomponent_diagnostics;
-        error_value = FalconsGetballFetch::FalconsGetballFetch().tick(
+        FalconsActionFetchBall::OutputType subcomponent_output;
+        FalconsActionFetchBall::StateType subcomponent_state;
+        FalconsActionFetchBall::DiagnosticsType subcomponent_diagnostics;
+        error_value = FalconsActionFetchBall::FalconsActionFetchBall().tick(
             timestamp,
             subcomponent_input,
-            params.fetch(),
-            g_fetch_state,
+            params.fetchball(),
+            subcomponent_state,
             subcomponent_output,
             subcomponent_diagnostics
         );
@@ -73,7 +70,7 @@ int FalconsGetball::FalconsGetball::tick
 /*    else
     {
         // TODO: determine direction relative to robot
-        error_value = FalconsGetballIntercept().tick(
+        error_value = FalconsActionGetBallIntercept().tick(
             timestamp,
             input,
             params.fetch,

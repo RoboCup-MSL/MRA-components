@@ -9,15 +9,15 @@
 using namespace ::testing;
 
 // System under test:
-#include "FalconsGetball.hpp"
+#include "FalconsActionGetBall.hpp"
 using namespace MRA;
 
 
 // Basic tick shall run OK and return error_value 0.
-TEST(FalconsGetballTest, basicTick)
+TEST(FalconsActionGetBallTest, basicTick)
 {
     // Arrange
-    auto m = FalconsGetball::FalconsGetball();
+    auto m = FalconsActionGetBall::FalconsActionGetBall();
 
     // Act
     int error_value = m.tick();

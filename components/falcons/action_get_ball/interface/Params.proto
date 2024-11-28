@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package MRA.FalconsActionGetBall;
+
+import "components/falcons/action_fetch_ball/interface/Params.proto";
+import "components/falcons/action_catch_ball/interface/Params.proto";
+
+message Params
+{
+    double ballSpeedStationaryThreshold = 1;
+    FalconsActionFetchBall.Params fetchBall = 2;
+    FalconsActionCatchBall.Params catchBall = 3;
+}
+

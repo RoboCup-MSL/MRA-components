@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package MRA.FalconsActionGetBall;
+
+import "components/falcons/action_fetch_ball/interface/State.proto";
+import "components/falcons/action_catch_ball/interface/State.proto";
+
+message State
+{
+    FalconsActionFetchBall.State fetchBall = 1;
+    FalconsActionCatchBall.State catchBall = 2;
+}
+

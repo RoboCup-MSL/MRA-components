@@ -9,5 +9,5 @@ message Output
 {
     MRA.Datatypes.ActionResult actionresult = 1;
     MRA.Datatypes.PosVel motionTarget = 2; // in FCS
-    bool bhEnabled = 3;
+    bool bhEnabled = 3; // always true
 }

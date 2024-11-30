@@ -407,7 +407,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }
 
-TEST_F(TestActionPlanner, TickTestGetBallFarNoRadius)
+TEST_F(TestActionPlanner, TickTestGetBallFarNoRadiusFail)
 {
     MRA_TRACE_TEST_FUNCTION();
 
@@ -421,6 +421,39 @@ TEST_F(TestActionPlanner, TickTestGetBallFarNoRadius)
 
     FalconsActionPlanning::ActionInputs testActionInput;
     testActionInput.set_type(Datatypes::ACTION_GETBALL);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInput);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_bh()->set_enabled(true);
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+}
+
+TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_ball()->mutable_position()->set_x(2.0);
+    testWorldState.mutable_ball()->mutable_position()->set_y(2.0);
+    testWorldState.mutable_robot()->mutable_position()->set_x(-10.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
+
+    FalconsActionPlanning::ActionInputs testActionInput;
+    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.mutable_getball()->set_radius(20.0);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -835,6 +868,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
 
     // Setup inputs: Ball is moving towards the robot directly
     Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
     testWorldState.mutable_robot()->set_hasball(false);
     testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
     testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
@@ -901,6 +935,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
             rz -= 2 * M_PI;
         }
         Datatypes::WorldState testWorldState;
+        testWorldState.mutable_robot()->set_active(true);
         testWorldState.mutable_robot()->set_hasball(false);
         testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
         testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
@@ -943,6 +978,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
 
     // Setup inputs: Ball is moving away from the robot
     Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
     testWorldState.mutable_robot()->set_hasball(false);
     testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
     testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
@@ -978,6 +1014,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
 
     // Setup inputs: Ball is stationary
     Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
     testWorldState.mutable_robot()->set_hasball(false);
     testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
     testWorldState.mutable_robot()->mutable_position()->set_y(0.0);

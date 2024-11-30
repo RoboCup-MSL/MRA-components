@@ -18,12 +18,13 @@
             "ballTargetProximity": 2.0
         },
         "getball": {
-            "ballSpeedStationaryThreshold": 0.2,
+            "ballSpeedFetchThreshold": 0.2,
             "fetchBall": {
                 "ballSpeedThreshold": 0.35,
                 "ballSpeedScaling": 0.40,
                 "rotationOnlyDistance": 1.0,
-                "rotationOnlyAngle": 35.0
+                "rotationOnlyAngle": 35.0,
+                "actionRadius": 5.0
             },
             "catchBall": {
             }

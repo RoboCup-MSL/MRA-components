@@ -7,6 +7,5 @@ import "datatypes/WorldState.proto";
 message Input
 {
     MRA.Datatypes.WorldState worldstate = 1;
-    int32 motionType = 2; // optional
-    float radius = 3; // optional
+    double radius = 2; // optional overrule of configured action radius
 }

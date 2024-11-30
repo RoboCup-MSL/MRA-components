@@ -2,6 +2,7 @@ cc_library(
     name = "logging",
     hdrs = [
         "logging.hpp", # main header, others are helpers/subcomponents
+        "dummies.hpp",
         "frontend.hpp",
         "backend.hpp",
         "logtick.hpp",

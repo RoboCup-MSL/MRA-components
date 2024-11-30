@@ -1,6 +1,12 @@
 #ifndef _MRA_LIBRARIES_LOGGING_MACROS_HPP
 #define _MRA_LIBRARIES_LOGGING_MACROS_HPP
 
+
+#ifndef MRA_LOGGING_ENABLED
+#include "dummies.hpp"
+#else
+
+
 #include "logtick.hpp"
 #include "backend.hpp"
 
@@ -64,6 +70,8 @@
 #define MRA_TRACE_FUNCTION_OUTPUT_PAIR(v) scoped.add_output(#v, v);
 #define MRA_TRACE_FUNCTION_OUTPUTS(...) \
     MAP(MRA_TRACE_FUNCTION_OUTPUT_PAIR, __VA_ARGS__) \
+
+#endif // #ifndef else MRA_LOGGING_ENABLED
 
 #endif // #ifndef _MRA_LIBRARIES_LOGGING_MACROS_HPP
 

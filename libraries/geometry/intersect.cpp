@@ -1,30 +1,6 @@
 #include "intersect.hpp"
 #include <cmath>
 
-/*
-
-
-TEST(MRAGeometryIntersectTest, IntersectFullLines2)
-{
-    // Arrange
-    MRA::Geometry::Point p1{0.00, 0.00};
-    MRA::Geometry::Point p2{1.00, 0.00};
-    MRA::Geometry::Point q1{5.00, 0.50};
-    MRA::Geometry::Point q2{4.70, 0.50};
-    MRA::Geometry::Point intersection;
-
-    // Act
-    int result = intersect(p1, p2, q1, q2, true, &intersection);
-
-    // Assert
-    EXPECT_EQ(result, 1);
-    EXPECT_EQ(intersection.x, 0.00); // inf
-    EXPECT_EQ(intersection.y, 0.50); // nan
-}
-
-copilot explain why below code produces above inf,nan result, and possibly fix the bug
-*/
-
 
 namespace MRA::Geometry
 {

@@ -168,7 +168,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionAtTarget)
     testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_MOVE);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_MOVE);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_x(1.0);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_y(1.0);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_rz(0.0);
@@ -203,7 +203,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
     testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_MOVE);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_MOVE);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_x(2.0);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_y(2.0);
     testActionInput.mutable_move()->mutable_motiontarget()->mutable_position()->set_rz(0.5);
@@ -239,7 +239,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionDribble)
     testWorldState.mutable_robot()->set_hasball(true);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_MOVE);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_MOVE);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -267,7 +267,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionHasBall)
     testWorldState.mutable_robot()->set_hasball(true);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -295,7 +295,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionInactiveRobot)
     testWorldState.mutable_robot()->set_active(false);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -323,7 +323,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionNoBall)
     testWorldState.clear_ball();
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -352,7 +352,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionTeammateHasBall)
     teammate->set_hasball(true);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -384,7 +384,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
     testWorldState.mutable_robot()->mutable_position()->set_y(1.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
     // not specifying radius should lead to any ball
 
     // set inputs in the planner
@@ -420,7 +420,7 @@ TEST_F(TestActionPlanner, TickTestGetBallFarNoRadiusFail)
     testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -452,7 +452,7 @@ TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
     testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
     testActionInput.mutable_getball()->set_radius(20.0);
 
     // set inputs in the planner
@@ -488,7 +488,7 @@ TEST_F(TestActionPlanner, TickTestGetBallRadiusClipping)
     testWorldState.mutable_robot()->mutable_position()->set_y(-10.0);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_GETBALL);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
     testActionInput.mutable_getball()->set_radius(10.0);
 
     // set inputs in the planner
@@ -517,7 +517,7 @@ TEST_F(TestActionPlanner, TickTestPassActionNoBall)
     testWorldState.mutable_robot()->set_hasball(false);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_PASS);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_PASS);
     testActionInput.mutable_pass()->mutable_target()->mutable_position()->set_x(5.0);
     testActionInput.mutable_pass()->mutable_target()->mutable_position()->set_y(5.0);
 
@@ -552,7 +552,7 @@ TEST_F(TestActionPlanner, TickTestPassActionRunning)
     testWorldState.mutable_ball()->mutable_position()->set_y(2.1);
 
     FalconsActionPlanning::ActionInputs testActionInput;
-    testActionInput.set_type(Datatypes::ACTION_PASS);
+    testActionInput.set_type(Datatypes::ActionType::ACTION_PASS);
     testActionInput.mutable_pass()->mutable_target()->mutable_position()->set_x(5.0);
     testActionInput.mutable_pass()->mutable_target()->mutable_position()->set_y(6.0);
 
@@ -594,7 +594,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     testWorldState.mutable_ball()->mutable_position()->set_y(2.1);
 
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_PASS);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_PASS);
     testActionInputs.mutable_pass()->mutable_target()->mutable_position()->set_x(5.0);
     testActionInputs.mutable_pass()->mutable_target()->mutable_position()->set_y(6.0);
 
@@ -664,7 +664,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
 
     // Check the outputs
     FalconsActionPlanning::Diagnostics expectedDiagnostics;
-    expectedDiagnostics.mutable_action()->set_type(Datatypes::ACTION_PASS);
+    expectedDiagnostics.mutable_action()->set_type(Datatypes::ActionType::ACTION_PASS);
     expectedDiagnostics.mutable_action()->mutable_pass()->set_aimerror(0.0);
     expectedActionResult = Datatypes::ActionResult::PASSED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -679,7 +679,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     feedTick();
 
     // Check the outputs
-    expectedDiagnostics.mutable_action()->set_type(Datatypes::ACTION_PASS);
+    expectedDiagnostics.mutable_action()->set_type(Datatypes::ActionType::ACTION_PASS);
     expectedDiagnostics.mutable_action()->mutable_pass()->set_aimerror(0.058755815);
     expectedActionResult = Datatypes::ActionResult::PASSED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -723,7 +723,7 @@ TEST_F(TestActionPlanner, TickTestActionParkSuccess)
 
     // set action
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_PARK);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_PARK);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -791,7 +791,7 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
 
     // set action
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_PARK);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_PARK);
 
     // set inputs in the planner
     setWorldState(testWorldState);
@@ -845,7 +845,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchRobotHasBall)
 
     // Set inputs in the planner
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_CATCHBALL);
     setWorldState(testWorldState);
     setActionInputs(testActionInputs);
 
@@ -889,7 +889,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
 
     // Set inputs in the planner
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_CATCHBALL);
     setWorldState(testWorldState);
     setActionInputs(testActionInputs);
 
@@ -950,7 +950,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
 
         // Set inputs in the planner
         FalconsActionPlanning::ActionInputs testActionInputs;
-        testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+        testActionInputs.set_type(Datatypes::ActionType::ACTION_CATCHBALL);
         setWorldState(testWorldState);
         setActionInputs(testActionInputs);
 
@@ -991,7 +991,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
 
     // Set inputs in the planner
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_CATCHBALL);
     setWorldState(testWorldState);
     setActionInputs(testActionInputs);
 
@@ -1027,7 +1027,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
 
     // Set inputs in the planner
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_CATCHBALL);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_CATCHBALL);
     setWorldState(testWorldState);
     setActionInputs(testActionInputs);
 

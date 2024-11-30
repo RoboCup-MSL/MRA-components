@@ -236,53 +236,53 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     MRA::Datatypes::ActionType currentActionType = input.action().type();
     checkFlushHistory(currentActionType, params, state);
     diagnostics.mutable_action()->set_type(currentActionType);
-    if (currentActionType == MRA::Datatypes::ACTION_INVALID)
+    if (currentActionType == MRA::Datatypes::ActionType::ACTION_INVALID)
     {
         return 1;
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_MOVE)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_MOVE)
     {
         error_value = handleAction<MRA::FalconsActionMove::FalconsActionMove>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionMove, "move"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_STOP)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_STOP)
     {
         error_value = handleAction<MRA::FalconsActionStop::FalconsActionStop>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionStop, "stop"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_PASS)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_PASS)
     {
         error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionPass, "pass"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_SHOOT)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_SHOOT)
     {
         error_value = handleAction<MRA::FalconsActionAimedKick::FalconsActionAimedKick>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionShoot, "shoot"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_GETBALL)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_GETBALL)
     {
         error_value = handleAction<MRA::FalconsActionGetBall::FalconsActionGetBall>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionGetBall, "getball"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_PARK)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_PARK)
     {
         error_value = handleAction<MRA::FalconsActionPark::FalconsActionPark>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionPark, "park"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_CATCHBALL)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_CATCHBALL)
     {
         error_value = handleAction<MRA::FalconsActionCatchBall::FalconsActionCatchBall>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionCatchBall, "catchball"
         );
     }
-    else if (currentActionType == MRA::Datatypes::ACTION_KEEPER)
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_KEEPER)
     {
         error_value = handleAction<MRA::FalconsActionKeeper::FalconsActionKeeper>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionKeeper, "keeper"

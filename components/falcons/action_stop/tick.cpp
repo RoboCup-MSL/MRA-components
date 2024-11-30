@@ -25,7 +25,7 @@ int FalconsActionStop::FalconsActionStop::tick
 
     // user implementation goes here
 
-    output.set_actionresult(MRA::Datatypes::PASSED);
+    output.set_actionresult(MRA::Datatypes::ActionResult::PASSED);
     output.set_stopmoving(true);
     output.set_ballhandlersenabled(input.ballhandlersenabled());
 

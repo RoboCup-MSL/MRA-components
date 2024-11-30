@@ -33,7 +33,7 @@ int FalconsActionMove::FalconsActionMove::tick
         std::string verdict;
         if (!checkParams(params, verdict))
         {
-            output.set_actionresult(MRA::Datatypes::FAILED);
+            output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
             diagnostics.set_verdict(verdict);
             return 0;
         }
@@ -59,7 +59,7 @@ int FalconsActionMove::FalconsActionMove::tick
         bool rz_ok = (abs(delta_pos.rz) < tolerance_rz);
         if (xy_ok && rz_ok)
         {
-            output.set_actionresult(MRA::Datatypes::PASSED);
+            output.set_actionresult(MRA::Datatypes::ActionResult::PASSED);
             if (params.activestop())
             {
                 output.set_stop(true);
@@ -70,7 +70,7 @@ int FalconsActionMove::FalconsActionMove::tick
             // just copy target setpoint, for further processing down the line by pathPlanning and subsequently velocityControl
             // architecture idea: should pathPlanning responsibility be moved here? (to apply obstacle avoidance and motion smoothening)
             *output.mutable_motiontarget() = input.motiontarget();
-            output.set_actionresult(MRA::Datatypes::RUNNING);
+            output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         }
 
     }

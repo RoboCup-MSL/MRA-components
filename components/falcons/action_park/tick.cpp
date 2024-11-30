@@ -47,7 +47,7 @@ int FalconsActionPark::FalconsActionPark::tick
     checkRobotInTTA(robotPos, params, xInTTA, yInTTA);
     if (xCloseToCenter && yInTTA)
     {
-        output.set_actionresult(MRA::Datatypes::PASSED);
+        output.set_actionresult(MRA::Datatypes::ActionResult::PASSED);
         return error_value;
     }
 
@@ -70,7 +70,7 @@ int FalconsActionPark::FalconsActionPark::tick
         // set target
         output.mutable_motiontarget()->mutable_position()->set_x(preTargetPos.x);
         output.mutable_motiontarget()->mutable_position()->set_y(preTargetPos.y);
-        output.set_actionresult(MRA::Datatypes::RUNNING);
+        output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
     }
     else
     {
@@ -81,7 +81,7 @@ int FalconsActionPark::FalconsActionPark::tick
         // set target or determine action failure
         if (targetBlocked) // TODO: keep trying a bit more?
         {
-            output.set_actionresult(MRA::Datatypes::FAILED);
+            output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
         }
         else
         {
@@ -92,7 +92,7 @@ int FalconsActionPark::FalconsActionPark::tick
             // set target
             output.mutable_motiontarget()->mutable_position()->set_x(targetPos.x);
             output.mutable_motiontarget()->mutable_position()->set_y(targetPos.y);
-            output.set_actionresult(MRA::Datatypes::RUNNING);
+            output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         }
     }
 

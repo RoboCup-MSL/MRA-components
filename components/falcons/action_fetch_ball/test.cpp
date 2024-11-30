@@ -41,7 +41,7 @@ TEST(FalconsActionFetchBallTest, robotInactive)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::FAILED);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::FAILED);
 }
 
 // Move towards stationary ball in positive x direction.
@@ -60,7 +60,7 @@ TEST(FalconsActionFetchBallTest, getStationaryBall)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
     EXPECT_EQ(output.motiontarget().position().x(), 2.0);
 }
 
@@ -83,7 +83,7 @@ TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotOnLeft)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
     // robot should rotate on current position before translating
     EXPECT_FLOAT_EQ(output.motiontarget().position().x(), -1.5);
     EXPECT_FLOAT_EQ(output.motiontarget().position().y(), -1.5);
@@ -108,7 +108,7 @@ TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotOnRight)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
     // robot should rotate on current position before translating
     EXPECT_FLOAT_EQ(output.motiontarget().position().x(), -1.5);
     EXPECT_FLOAT_EQ(output.motiontarget().position().y(), -1.5);
@@ -133,7 +133,7 @@ TEST(FalconsActionFetchBallTest, getStationaryBallCloseToRobotInFront)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
     // robot should just drive forward to ball
     EXPECT_FLOAT_EQ(output.motiontarget().position().x(), 0.0);
     EXPECT_FLOAT_EQ(output.motiontarget().position().y(), 0.0);
@@ -159,7 +159,7 @@ TEST(FalconsActionFetchBallTest, getStationaryBallFarFromRobot)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
     // robot should move towards the ball
     EXPECT_FLOAT_EQ(output.motiontarget().position().x(), 1.9);
     EXPECT_FLOAT_EQ(output.motiontarget().position().y(), -1.9);
@@ -180,7 +180,7 @@ TEST(FalconsActionFetchBallTest, hasBallPassed)
 
     // Assert
     EXPECT_EQ(error_value, 0);
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::PASSED);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::PASSED);
     // TODO: what do we require on target? target==current or not? prevent move. Current: target shall be empty
     std::string json_output;
     EXPECT_TRUE(google::protobuf::util::MessageToJsonString(output, &json_output).ok());
@@ -195,7 +195,7 @@ TEST(FalconsActionFetchBallTest, matchKickoff)
     // The factory will run a tick with provided data and compare against expected output
     auto output = TestFactory::run_testvector<FalconsActionFetchBall::FalconsActionFetchBall>(std::string("components/falcons/action_fetch_ball/testdata/kickoff_prepare.json"), tolerance);
 
-    EXPECT_EQ(output.actionresult(), MRA::Datatypes::RUNNING);
+    EXPECT_EQ(output.actionresult(), MRA::Datatypes::ActionResult::RUNNING);
 }
 
 int main(int argc, char **argv)

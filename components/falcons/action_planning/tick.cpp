@@ -292,7 +292,7 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     // HACK: prevent INVALID causing crashes on client side -- TODO remove
     if (output.actionresult() == MRA::Datatypes::INVALID)
     {
-        output.set_actionresult(MRA::Datatypes::FAILED);
+        output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
     }
     // update history
     updateHistory(timestamp, input, params, state, output, diagnostics);

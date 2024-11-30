@@ -96,7 +96,7 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         }
 
         // calculate the target position to drive to
-        output.set_actionresult(MRA::Datatypes::RUNNING);
+        output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         MRA::Geometry::Position ball_position(ws.ball().position());
         MRA::Geometry::Velocity ball_velocity(ws.ball().velocity());
         MRA::Geometry::Position robot_position(ws.robot().position());

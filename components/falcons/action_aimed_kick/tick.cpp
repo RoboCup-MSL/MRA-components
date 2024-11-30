@@ -72,7 +72,7 @@ int ActionAimedKick::run()
     // fail when there is no ball
     if (!_input.worldstate().has_ball())
     {
-        _output.set_actionresult(MRA::Datatypes::FAILED);
+        _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
         _output.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_INVALID);
         _diagnostics.set_verdict("robot lost track of the ball");
         return 0;
@@ -127,7 +127,7 @@ void ActionAimedKick::phasePrepare()
     {
         // TODO: robustness: use state - it can happen that the robot kicked the ball away, but it takes a tick or more for the ball to actually leave?
         // in that case, functionally the shot was a success, so we should not produce FAILED
-        _output.set_actionresult(MRA::Datatypes::FAILED);
+        _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
         _diagnostics.set_verdict("robot lost possession of the ball");
         return;
     }
@@ -138,7 +138,7 @@ void ActionAimedKick::phasePrepare()
         *_output.mutable_motiontarget()->mutable_position() = _input.worldstate().robot().position();
         _output.mutable_motiontarget()->mutable_position()->set_rz(_ballTargetPos.rz);
         *_output.mutable_balltarget() = _input.target().position();
-        _output.set_actionresult(MRA::Datatypes::RUNNING);
+        _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         _diagnostics.set_remainingrotationangle(_remainingRotationAngle);
     }
     else
@@ -147,7 +147,7 @@ void ActionAimedKick::phasePrepare()
         // TODO: calculate timeToKick, tune it?
         _output.set_dokick(true);
         *_state.mutable_dischargetimestamp() = _timestamp;
-        _output.set_actionresult(MRA::Datatypes::RUNNING);
+        _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
     }
 }
@@ -156,7 +156,7 @@ void ActionAimedKick::phaseDischarge()
 {
     MRA_TRACE_FUNCTION();
     // not much to do except advancing to next phase
-    _output.set_actionresult(MRA::Datatypes::RUNNING);
+    _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
     _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
 }
 
@@ -179,10 +179,10 @@ void ActionAimedKick::phaseCooldown()
     auto elapsedDuration = _timestamp - _state.dischargetimestamp();
     float elapsedSeconds = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsedDuration);
     float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
-    _output.set_actionresult(MRA::Datatypes::RUNNING);
+    _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
     if (elapsedSeconds > _params.maxcooldownduration())
     {
-        _output.set_actionresult(MRA::Datatypes::FAILED);
+        _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
     }
     else if (!_input.worldstate().robot().hasball())
     {
@@ -192,7 +192,7 @@ void ActionAimedKick::phaseCooldown()
         if (ballTargetDistance < _params.balltargetproximity())
         {
             _diagnostics.set_aimerror(calculateAimError());
-            _output.set_actionresult(MRA::Datatypes::PASSED);
+            _output.set_actionresult(MRA::Datatypes::ActionResult::PASSED);
         }
     }
     MRA_TRACE_FUNCTION_OUTPUTS(elapsedSeconds, ballTargetDistance);

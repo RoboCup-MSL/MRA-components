@@ -116,7 +116,7 @@ TEST_F(TestActionPlanner, TickStopBhDisabled)
 
     // Setup inputs
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_STOP);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_STOP);
     setActionInputs(testActionInputs);
 
     // Tick
@@ -126,7 +126,7 @@ TEST_F(TestActionPlanner, TickStopBhDisabled)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_move()->set_stop(true);
     expectedSetpoints.mutable_bh()->set_enabled(false);
-    Datatypes::ActionResult expectedActionResult = Datatypes::PASSED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
 
     // Check
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
@@ -139,7 +139,7 @@ TEST_F(TestActionPlanner, TickStopBhEnabled)
 
     // Setup inputs
     FalconsActionPlanning::ActionInputs testActionInputs;
-    testActionInputs.set_type(Datatypes::ACTION_STOP);
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_STOP);
     testActionInputs.mutable_stop()->set_ballhandlersenabled(true);
     setActionInputs(testActionInputs);
 
@@ -150,7 +150,7 @@ TEST_F(TestActionPlanner, TickStopBhEnabled)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_move()->set_stop(true);
     expectedSetpoints.mutable_bh()->set_enabled(true);
-    Datatypes::ActionResult expectedActionResult = Datatypes::PASSED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
 
     // Check
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
@@ -185,7 +185,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionAtTarget)
     FalconsActionPlanning::Setpoints expectedSetpoints; // No motion setpoint
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_move()->set_stop(true);
-    Datatypes::ActionResult expectedActionResult = Datatypes::PASSED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -222,7 +222,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5);
     expectedSetpoints.mutable_bh()->set_enabled(false);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -251,7 +251,7 @@ TEST_F(TestActionPlanner, TickTestMoveActionDribble)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_move()->set_motiontype(1);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -279,7 +279,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionHasBall)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
-    Datatypes::ActionResult expectedActionResult = Datatypes::PASSED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -307,7 +307,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionInactiveRobot)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // TODO: this does not make much sense and likely gets overruled at lower levels in Falcons SW
-    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -335,7 +335,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionNoBall)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
-    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -364,7 +364,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionTeammateHasBall)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // TODO: when accidentally scrumming with teammate, maybe better to disable?
-    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -400,7 +400,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -468,7 +468,7 @@ TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -501,7 +501,7 @@ TEST_F(TestActionPlanner, TickTestGetBallRadiusClipping)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
-    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -531,7 +531,7 @@ TEST_F(TestActionPlanner, TickTestPassActionNoBall)
     // setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_INVALID);
-    Datatypes::ActionResult expectedActionResult = Datatypes::FAILED;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -573,7 +573,7 @@ TEST_F(TestActionPlanner, TickTestPassActionRunning)
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -615,7 +615,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
-    Datatypes::ActionResult expectedActionResult = Datatypes::RUNNING;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
 
     // Check the outputs after the first tick
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -666,7 +666,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     FalconsActionPlanning::Diagnostics expectedDiagnostics;
     expectedDiagnostics.mutable_action()->set_type(Datatypes::ACTION_PASS);
     expectedDiagnostics.mutable_action()->mutable_pass()->set_aimerror(0.0);
-    expectedActionResult = Datatypes::PASSED;
+    expectedActionResult = Datatypes::ActionResult::PASSED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getDiagnostics(), EqualsProto(expectedDiagnostics));
@@ -681,7 +681,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     // Check the outputs
     expectedDiagnostics.mutable_action()->set_type(Datatypes::ACTION_PASS);
     expectedDiagnostics.mutable_action()->mutable_pass()->set_aimerror(0.058755815);
-    expectedActionResult = Datatypes::PASSED;
+    expectedActionResult = Datatypes::ActionResult::PASSED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getDiagnostics(), EqualsProtoWithTolerance(expectedDiagnostics, 1e-9));
@@ -695,7 +695,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     feedTick();
 
     // Check the outputs
-    expectedActionResult = Datatypes::FAILED;
+    expectedActionResult = Datatypes::ActionResult::FAILED;
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
 }
@@ -739,7 +739,7 @@ TEST_F(TestActionPlanner, TickTestActionParkSuccess)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5 * M_PI); // facing the field
     expectedSetpoints.mutable_bh()->set_enabled(false);
 
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -754,7 +754,7 @@ TEST_F(TestActionPlanner, TickTestActionParkSuccess)
     feedTick();
 
     // Expected result after arriving at the position
-    expectedActionResult = MRA::Datatypes::PASSED;
+    expectedActionResult = MRA::Datatypes::ActionResult::PASSED;
 
     // check the outputs
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
@@ -807,7 +807,7 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5 * M_PI);
     expectedSetpoints.mutable_bh()->set_enabled(false);
 
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -828,7 +828,7 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.0); // No movement
     expectedSetpoints.mutable_bh()->set_enabled(false);
 
-    expectedActionResult = MRA::Datatypes::FAILED;
+    expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -855,7 +855,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchRobotHasBall)
     // Setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::PASSED;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::PASSED;
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -903,7 +903,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.5 * M_PI); // Face the ball, ball is coming from positive x-axis
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
 
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -964,7 +964,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
         expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(rz);
         expectedSetpoints.mutable_bh()->set_enabled(true);
 
-        MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+        MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
 
         // Check the outputs
         EXPECT_THAT(getLastSetpoints(), EqualsProtoWithTolerance(expectedSetpoints, 1e-6));
@@ -1001,7 +1001,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
     // Setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::FAILED;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
@@ -1037,7 +1037,7 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
     // Setup expected outputs
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
-    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::RUNNING;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));

@@ -29,6 +29,7 @@ cc_library(
         "//components/falcons/action_fetch_ball:implementation",
         "//components/falcons/action_catch_ball:implementation",
         "//libraries/logging",
+        "//libraries/geometry",
     ],
 )
 

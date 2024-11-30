@@ -11,6 +11,7 @@ using namespace MRA;
 
 
 bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &verdict);
+int calc_intercept_strafe(FalconsActionCatchBall::InputType const &input, FalconsActionCatchBall::ParamsType const &params, FalconsActionCatchBall::OutputType &output, FalconsActionCatchBall::DiagnosticsType &diagnostics);
 
 int FalconsActionCatchBall::FalconsActionCatchBall::tick
 (
@@ -112,55 +113,18 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
             return error_value;
         }
 
-        // calculate interception point
-        MRA::Geometry::Position robot_position_side = robot_position;
-        robot_position_side.addRcsToFcs(MRA::Geometry::Position(1, 0));
-        MRA::Geometry::Point robot_point = robot_position;
-        MRA::Geometry::Point robot_point_side = robot_position_side;
-        MRA::Geometry::Position ball_position(input.worldstate().ball().position());
-        MRA::Geometry::Point ball_point(input.worldstate().ball().position().x(), input.worldstate().ball().position().y());
-        MRA::Geometry::Point ball_point_next = ball_point + ball_velocity * 0.1;
-        MRA::Geometry::Point intersect_point;
-        int intersect_result = intersect(robot_point, robot_point_side, ball_point, ball_point_next, true, &intersect_point);
-        if (intersect_result != 1)
+        // proactive mode or traditional "strafe"?
+        if (params.proactive())
         {
-            // this should not happen, all previous checks should have guaranteed a valid intersection
+            //return calc_intercept_proactive(input, params, output, diagnostics);
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            throw std::runtime_error("intersect failed with return code " + std::to_string(intersect_result));
+            diagnostics.set_verdict("proactive intercept not yet implemented");
         }
-
-        // determine action radius
-        double action_radius = params.captureradius();
-        if (input.radius() > 0.0)
+        else
         {
-            action_radius = input.radius();
+            return calc_intercept_strafe(input, params, output, diagnostics);
         }
 
-        // check if the ball is going to be within capture range
-        double distance_ball_to_intersect = (intersect_point - ball_point).size();
-        double distance_robot_to_intersect = (intersect_point - robot_point).size();
-        //MRA_LOG_DEBUG("distance_ball_to_intersect=(%6.2f)", distance_ball_to_intersect);
-        //MRA_LOG_DEBUG("distance_robot_to_intersect=(%6.2f)", distance_robot_to_intersect);
-        bool ballmovingwithincapturerange = distance_robot_to_intersect < action_radius;
-        diagnostics.set_ballmovingwithincapturerange(ballmovingwithincapturerange);
-        if (!ballmovingwithincapturerange)
-        {
-            output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("ball trajectory too far away");
-            return error_value;
-        }
-
-        // calculate the time to intercept based on ball speed and robot speed
-        double time_to_catch = distance_ball_to_intersect / ball_speed;
-        diagnostics.set_timetocatch(time_to_catch);
-
-        // set the calculated interception point as the motion target, facing the ball
-        MRA::Geometry::Position robot_target_position(intersect_point.x, intersect_point.y);
-        robot_target_position.faceTowards(ball_position);
-        output.mutable_motiontarget()->mutable_position()->set_x(robot_target_position.x);
-        output.mutable_motiontarget()->mutable_position()->set_y(robot_target_position.y);
-        output.mutable_motiontarget()->mutable_position()->set_rz(robot_target_position.rz);
-        output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
     }
     catch (const std::exception& e)
     {
@@ -189,4 +153,65 @@ bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &
         return false;
     }
     return true;
+}
+
+int calc_intercept_strafe(
+    FalconsActionCatchBall::InputType  const &input,
+    FalconsActionCatchBall::ParamsType const &params,
+    FalconsActionCatchBall::OutputType       &output,
+    FalconsActionCatchBall::DiagnosticsType  &diagnostics
+)
+{
+    // calculate interception point
+    MRA::Geometry::Position robot_position(input.worldstate().robot().position());
+    MRA::Geometry::Position robot_position_side = robot_position;
+    robot_position_side.addRcsToFcs(MRA::Geometry::Position(1, 0));
+    MRA::Geometry::Point robot_point = robot_position;
+    MRA::Geometry::Point robot_point_side = robot_position_side;
+    MRA::Geometry::Velocity ball_velocity = input.worldstate().ball().velocity();
+    double ball_speed = ball_velocity.size();
+    MRA::Geometry::Position ball_position(input.worldstate().ball().position());
+    MRA::Geometry::Point ball_point(input.worldstate().ball().position().x(), input.worldstate().ball().position().y());
+    MRA::Geometry::Point ball_point_next = ball_point + ball_velocity * 0.1;
+    MRA::Geometry::Point intersect_point;
+    int intersect_result = intersect(robot_point, robot_point_side, ball_point, ball_point_next, true, &intersect_point);
+    if (intersect_result != 1)
+    {
+        // this should not happen, all previous checks should have guaranteed a valid intersection
+        throw std::runtime_error("intersect failed with return code " + std::to_string(intersect_result));
+    }
+
+    // determine action radius
+    double action_radius = params.captureradius();
+    if (input.radius() > 0.0)
+    {
+        action_radius = input.radius();
+    }
+
+    // check if the ball is going to be within capture range
+    double distance_ball_to_intersect = (intersect_point - ball_point).size();
+    double distance_robot_to_intersect = (intersect_point - robot_point).size();
+    //MRA_LOG_DEBUG("distance_ball_to_intersect=(%6.2f)", distance_ball_to_intersect);
+    //MRA_LOG_DEBUG("distance_robot_to_intersect=(%6.2f)", distance_robot_to_intersect);
+    bool ballmovingwithincapturerange = distance_robot_to_intersect < action_radius;
+    diagnostics.set_ballmovingwithincapturerange(ballmovingwithincapturerange);
+    if (!ballmovingwithincapturerange)
+    {
+        output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
+        diagnostics.set_verdict("ball trajectory too far away");
+        return 0;
+    }
+
+    // calculate the time to intercept based on ball speed and robot speed
+    double time_to_catch = distance_ball_to_intersect / ball_speed;
+    diagnostics.set_timetocatch(time_to_catch);
+
+    // set the calculated interception point as the motion target, facing the ball
+    MRA::Geometry::Position robot_target_position(intersect_point.x, intersect_point.y);
+    robot_target_position.faceTowards(ball_position);
+    output.mutable_motiontarget()->mutable_position()->set_x(robot_target_position.x);
+    output.mutable_motiontarget()->mutable_position()->set_y(robot_target_position.y);
+    output.mutable_motiontarget()->mutable_position()->set_rz(robot_target_position.rz);
+    output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
+    return 0;
 }

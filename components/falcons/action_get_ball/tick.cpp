@@ -15,6 +15,44 @@ using namespace MRA;
 #include "geometry.hpp"
 
 
+// template to call subcomponent FalconsActionFetchBall or FalconsActionCatchBall
+template <typename SubcomponentType>
+int callSubcomponent(
+    google::protobuf::Timestamp timestamp,
+    FalconsActionGetBall::InputType const &input,
+    typename SubcomponentType::ParamsType const &subcomponent_params,
+    typename SubcomponentType::StateType *state,
+    FalconsActionGetBall::OutputType &output,
+    FalconsActionGetBall::DiagnosticsType &diagnostics
+)
+{
+    SubcomponentType subcomponent;
+    typename SubcomponentType::InputType subcomponent_input;
+    std::string tmpdata;
+    input.SerializeToString(&tmpdata);
+    subcomponent_input.ParseFromString(tmpdata);
+    typename SubcomponentType::OutputType subcomponent_output;
+    typename SubcomponentType::StateType subcomponent_state = *state;
+    typename SubcomponentType::DiagnosticsType subcomponent_diagnostics;
+    int result = subcomponent.tick(
+        timestamp,
+        subcomponent_input,
+        subcomponent_params,
+        subcomponent_state,
+        subcomponent_output,
+        subcomponent_diagnostics
+    );
+    output.set_actionresult(subcomponent_output.actionresult());
+    diagnostics.set_verdict(subcomponent_diagnostics.verdict());
+    *state = subcomponent_state;
+    if (subcomponent_output.has_motiontarget())
+    {
+        *output.mutable_motiontarget() = subcomponent_output.motiontarget();
+    }
+    output.set_bhenabled(subcomponent_output.bhenabled());
+    return result;
+}
+
 int FalconsActionGetBall::FalconsActionGetBall::tick
 (
     google::protobuf::Timestamp timestamp,   // absolute timestamp
@@ -28,58 +66,44 @@ int FalconsActionGetBall::FalconsActionGetBall::tick
     int error_value = 0;
     MRA_LOG_TICK();
 
-    // user implementation goes here
-
-    Geometry::Position bpos = Geometry::Position(input.worldstate().ball().position()) - Geometry::Position(input.worldstate().robot().position());
-    if (input.radius() > 0.0 && bpos.size() > input.radius()) {
-        output.set_actionresult(Datatypes::ActionResult::FAILED);
-    }
-    else {
-
     float vx = input.worldstate().ball().velocity().x();
     float vy = input.worldstate().ball().velocity().y();
     float ball_speed = sqrt(vx * vx + vy * vy);
 
-    if (ball_speed < params.ballspeedstationarythreshold())
+    if (ball_speed < params.ballspeedfetchthreshold())
     {
-        // call component: FalconsActionFetchBall
-        FalconsActionFetchBall::InputType subcomponent_input;
-        //subcomponent_input.MergeFrom(input); // same type
-        std::string tmpdata;
-        input.SerializeToString(&tmpdata);
-        subcomponent_input.ParseFromString(tmpdata);
-        FalconsActionFetchBall::OutputType subcomponent_output;
-        FalconsActionFetchBall::StateType subcomponent_state;
-        FalconsActionFetchBall::DiagnosticsType subcomponent_diagnostics;
-        error_value = FalconsActionFetchBall::FalconsActionFetchBall().tick(
-            timestamp,
-            subcomponent_input,
-            params.fetchball(),
-            subcomponent_state,
-            subcomponent_output,
-            subcomponent_diagnostics
-        );
-        output.set_actionresult(subcomponent_output.actionresult());
-        if (subcomponent_output.has_target())
-        {
-            *output.mutable_target() = subcomponent_output.target();
-        }
-    }
-
-    }
-/*    else
-    {
-        // TODO: determine direction relative to robot
-        error_value = FalconsActionGetBallIntercept().tick(
+        // use a template to call component: FalconsActionFetchBall
+        return callSubcomponent<FalconsActionFetchBall::FalconsActionFetchBall>(
             timestamp,
             input,
-            params.fetch,
-            state,
+            params.fetchball(),
+            state.mutable_fetchball(),
             output,
             diagnostics
         );
     }
-*/
+
+    // check if the ball is moving towards the robot
+    MRA::Geometry::Position robot_position(input.worldstate().robot().position());
+    MRA::Geometry::Velocity ball_velocity(input.worldstate().ball().velocity());
+    MRA::Geometry::Velocity ball_velocity_rcs = ball_velocity;
+    ball_velocity_rcs.transformFcsToRcs(robot_position);
+    bool ballmovingtowardsrobot = ball_velocity_rcs.y < 0;
+
+    if (ballmovingtowardsrobot)
+    {
+        // use a template to call component: FalconsActionCatchBall
+        return callSubcomponent<FalconsActionCatchBall::FalconsActionCatchBall>(
+            timestamp,
+            input,
+            params.catchball(),
+            state.mutable_catchball(),
+            output,
+            diagnostics
+        );
+    }
+
+    // TODO: maybe chase/swerve after the ball?
 
     return error_value;
 }

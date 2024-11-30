@@ -7,7 +7,7 @@ import "components/falcons/action_catch_ball/interface/Params.proto";
 
 message Params
 {
-    double ballSpeedStationaryThreshold = 1;
+    double ballSpeedFetchThreshold = 1;
     FalconsActionFetchBall.Params fetchBall = 2;
     FalconsActionCatchBall.Params catchBall = 3;
 }

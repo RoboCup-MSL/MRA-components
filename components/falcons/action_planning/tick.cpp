@@ -4,6 +4,8 @@
 // generated component header:
 #include "FalconsActionPlanning.hpp"
 
+#include <fstream>
+
 using namespace MRA;
 
 // custom includes, if any

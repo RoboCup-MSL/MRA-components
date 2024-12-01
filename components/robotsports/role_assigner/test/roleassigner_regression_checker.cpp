@@ -409,15 +409,15 @@ int validate_regression(const std::string& regression_dir, const std::string& ou
     return total_nr_failures;
 }
 
-//int main(int argc, char *argv[]) {
-//    if (argc < 3) {
-//        cerr << "use program: " << argv[0] << " <regression-directory> <compare-to-direcotry> " << endl;
-//        return -1;
-//    }
-//    else {
-//        string regression_dir = argv[1];
-//        string output_dir = argv[2];
-//
-//        validate_regression(regression_dir, output_dir);
-//    }
-//}
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        cerr << "use program: " << argv[0] << " <regression-directory> <compare-to-direcotry> " << endl;
+        return -1;
+    }
+    else {
+        string regression_dir = argv[1];
+        string output_dir = argv[2];
+
+        validate_regression(regression_dir, output_dir);
+    }
+}

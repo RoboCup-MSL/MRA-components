@@ -99,7 +99,7 @@ std::string RoleAssignerData::toString() const
         buffer <<" role: " << RoleAsString(this->team_admin[idx].result.role);
         buffer << "time-own-PA: " << rbt.time_in_own_penalty_area;
         buffer << "time-opp-PA: " << rbt.time_in_opponent_penalty_area << endl;
-        auto prev_res = this->team_admin[idx].previous_result;
+        auto prev_res = this->previous_results[idx];
         buffer << "\t\t\tprev result:  " << prev_res.present;
         if (prev_res.present)
         {

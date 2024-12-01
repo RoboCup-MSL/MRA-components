@@ -183,7 +183,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
                 boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(dr_role).c_str(),
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
-        auto prev_res = rbt_admin.previous_result;
+        auto prev_res = data.previous_results[idx];
         fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
         if (prev_res.present)
         {
@@ -352,9 +352,9 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         {
             passedBallString = "passedBall=\"true\"";
         }
-        if (data.team_admin[idx].previous_result.present)
+        if (data.previous_results[idx].present)
         {
-            auto previous_result = data.team_admin[idx].previous_result;
+            auto previous_result = data.previous_results[idx];
             std::stringstream previous_result_Xtext;
             previous_result_Xtext << " previous_result_present=\"true\" "
                     <<" previous_result_ts=\""  << previous_result.ts << "\""

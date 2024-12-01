@@ -119,7 +119,7 @@ typedef struct path_piece {
 } path_piece_t;
 
 typedef struct defend_info {
-    bool valid;
+    bool valid = false;
     long defending_id;
     double dist_from_defending_id;
     long between_ball_and_defending_pos; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
@@ -134,7 +134,7 @@ typedef struct previous_role_assigner_result  {
 } previous_role_assigner_result_t;
 
 typedef struct  previous_used_ball_by_role_assinger  {
-    bool   present;
+    bool   present = false;
     double x;
     double y;
 } previous_used_ball_by_role_assinger_t;
@@ -142,7 +142,7 @@ typedef struct  previous_used_ball_by_role_assinger  {
 typedef struct ball_pickup_position_s {
     double x;
     double y;
-    bool valid;
+    bool valid = false;
     double ts;
 } ball_pickup_position_t;
 

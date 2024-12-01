@@ -85,7 +85,6 @@ target_link_libraries(xml_test
   
 
 # --- planner_regression_checker ---
-#[[
 add_executable(planner_regression_checker
     test/roleassigner_regression_checker.cpp
     #test/xmlGlobalPathPlanner.cpp
@@ -109,11 +108,11 @@ target_include_directories(planner_regression_checker PUBLIC
 
 target_link_libraries(planner_regression_checker
    MRA-components-robotsports-role-assigner
+   MRA-components
    ${Boost_FILESYSTEM_LIBRARY}
-    MRA-components-robotsports-robot-strategy
-    xerces-c
+   xerces-c
  )
-]]#
+
 
 #
 #target_link_libraries(planner_regression_checker
@@ -129,7 +128,6 @@ target_link_libraries(planner_regression_checker
 # system dependencies
 add_executable(
     robotsports_role_assigner_test
-    test.cpp
     test/xmlRoleAssigner.cpp
     test/roleassigner_regression_checker.cpp
     ${STRATEGY_TESTER_CPP}
@@ -166,7 +164,7 @@ target_link_libraries(
 
 
 gtest_discover_tests(
-    robotsports_role_assigner_test
+    xml_test
     WORKING_DIRECTORY ${MRA_SOURCE_DIR}
     PROPERTIES ENVIRONMENT "MRA_LOGGER_CONTEXT=unittest"
 )

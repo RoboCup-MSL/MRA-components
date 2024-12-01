@@ -174,15 +174,22 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         ra_state.previous_ball.y = state.previous_ball().y();
     }
 
-    for (auto idx = 0; idx < state.previous_result_size(); idx++) {
-        auto result = state.previous_result(idx);
-        previous_role_assigner_result_t prev_res = {};
-        prev_res.present = true;
-        prev_res.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(result.timestamp()) / 1000.0;
-        prev_res.end_position.x = result.end_position().x();
-        prev_res.end_position.y = result.end_position().y();
-        prev_res.role = (MRA::role_e) result.role();
-        ra_state.previous_result.push_back(prev_res);
+    for (auto idx = 0; idx <  input.team_size(); idx++) {
+    	if (idx  < state.previous_result_size()) {
+            auto result = state.previous_result(idx);
+            previous_role_assigner_result_t prev_res = {};
+            prev_res.present = true;
+            prev_res.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(result.timestamp()) / 1000.0;
+            prev_res.end_position.x = result.end_position().x();
+            prev_res.end_position.y = result.end_position().y();
+            prev_res.role = (MRA::role_e) result.role();
+            ra_state.previous_results.push_back(prev_res);
+    	}
+    	else {
+            previous_role_assigner_result_t prev_res = {.present = false};
+            ra_state.previous_results.push_back(prev_res);
+
+    	}
     }
 
     RoleAssignerParameters ra_parameters = {}; //    parameters;
@@ -303,6 +310,48 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     auto ra_state_org = ra_state;
     teamplay.assign(ra_input, ra_state, ra_output, ra_parameters);
 
+
+
+//    message Assignment {
+//        int32 robotId = 1;  // robotId of robot for the assignment
+//        DynamicRole role = 2;   // assigned role
+//        MRA.Datatypes.Point target = 4; // target position for player
+//        repeated PathPiece path = 5;    // rough x-y path to target
+//        int32 role_rank = 6;  // order of role assignment (discuss: can be removed if list of assignments is in order of assignment
+//        PathPurpose purpose = 7;  // purpose of path (intension how to execute the path
+//        DefendInfo defend_info = 8; // object to defend, this field can be absent
+//        bool is_pass_desitination = 9; // is player the destination of a pass
+//        // GameState gamestate;   TODO: discuss game-state can be extracted from the input or added to ensure gamestate and intended position are connected.
+//    };
+//
+//    message Output
+//    {
+//        repeated Assignment assignments = 1;
+//    }
+//class RoleAssignerOutput {
+//    public:
+//        std::vector<RoleAssignerResult> player_paths;
+//
+    for (auto p_idx = 0u; p_idx < ra_output.player_paths.size(); p_idx++) {
+    	auto pp = ra_output.player_paths[p_idx];
+    	auto assignment = MRA::RobotsportsRoleAssigner::Assignment();
+    	assignment.set_is_pass_desitination(pp.is_pass_desitination);
+		assignment.set_role_rank(pp.role_rank);
+		assignment.set_robotid(ra_input.team[p_idx].robotId);
+		assignment.set_role(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(pp.role));
+		assignment.set_purpose(static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(pp.planner_target));
+		if (pp.defend_info.valid) {
+			assignment.mutable_defend_info()->set_trackingid(pp.defend_info.defending_id);
+			assignment.mutable_defend_info()->set_between_ball_and_defending_pos(pp.defend_info.between_ball_and_defending_pos);
+			assignment.mutable_defend_info()->set_dist_from_defending_id(pp.defend_info.dist_from_defending_id);
+		}
+		assignment.mutable_target()->set_x(pp.target.x);
+    	assignment.mutable_target()->set_y(pp.target.y);
+//		assignment.mutable_path()->
+//	    std::vector<path_piece_t> path = std::vector<path_piece_t>();
+    	output.mutable_assignments()->Add()->CopyFrom(assignment);
+    }
+
     RoleAssignerData tpd = {};
     tpd.parameters = ra_parameters;
     tpd.environment = ra_input.environment;
@@ -327,9 +376,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         tpd.team_admin.push_back(tp_admin);
 	}
     tpd.previous_ball = ra_state_org.previous_ball;
-    for (auto idx = 0u; idx < ra_state_org.previous_result.size(); ++idx) {
-    	tpd.team_admin[idx].previous_result = ra_state_org.previous_result[idx];
-    }
+	tpd.previous_results = ra_state_org.previous_results;
 
     auto player_paths = ra_output.player_paths;
 

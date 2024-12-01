@@ -63,7 +63,6 @@ public:
     bool assigned = false;
     long robotId = -1;
     RoleAssignerResult result = {};
-    previous_role_assigner_result_t previous_result = {};
     // compare function to sort vector of the class on the member robotId
     static inline bool CompareRobotId(const RoleAssignerAdminTeam& r1, const RoleAssignerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
 };
@@ -98,7 +97,7 @@ public:
 class RoleAssignerState {
 public:
     previous_used_ball_by_role_assinger_t previous_ball;
-    std::vector<previous_role_assigner_result_t> previous_result;
+    std::vector<previous_role_assigner_result_t> previous_results;
 };
 
 // class with outputs (data for Output.proto)
@@ -132,6 +131,7 @@ public:
     bool searchForBall;
     defend_info_t defend_info;
     previous_used_ball_by_role_assinger_t previous_ball = {};
+    std::vector<previous_role_assigner_result_t> previous_results = {};
 
     // internal administration
     game_state_e original_gamestate;

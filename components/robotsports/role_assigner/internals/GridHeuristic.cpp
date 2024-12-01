@@ -595,11 +595,11 @@ InfluencePreviousAssignedPositionsHeuristic::InfluencePreviousAssignedPositionsH
 double InfluencePreviousAssignedPositionsHeuristic::getValue(double x, double y) {
     // add influence of the previous positions of any players of our team. Penalty increases linearly with distance.
     double value = 0.0;
-    for (unsigned idx = 0; idx < m_r_role_assigner_data.team_admin.size(); idx++) {
-        if (m_r_role_assigner_data.team_admin[idx].previous_result.present) {
-            if (m_r_role_assigner_data.team_admin[idx].previous_result.role == m_role) {
-                Geometry::Position prevPos = Geometry::Position(m_r_role_assigner_data.team_admin[idx].previous_result.end_position.x,
-                                                                m_r_role_assigner_data.team_admin[idx].previous_result.end_position.y);
+    for (unsigned idx = 0; idx < m_r_role_assigner_data.previous_results.size(); idx++) {
+        if (m_r_role_assigner_data.previous_results[idx].present) {
+            if (m_r_role_assigner_data.previous_results[idx].role == m_role) {
+                Geometry::Position prevPos = Geometry::Position(m_r_role_assigner_data.previous_results[idx].end_position.x,
+                												m_r_role_assigner_data.previous_results[idx].end_position.y);
                 // check if previous assigned
                 value += prevPos.distanceTo( Geometry::Position(x,y) ) / m_dScaling;
             }

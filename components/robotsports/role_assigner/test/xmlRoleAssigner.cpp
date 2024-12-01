@@ -314,6 +314,10 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 		proto_params.set_kickoff_against_fp4_x(ra_parameters.kickoff_against_fp4_x);
 		proto_params.set_kickoff_against_fp4_y(ra_parameters.kickoff_against_fp4_y);
 
+		if (ra_state.previous_ball.present) {
+			proto_state.mutable_previous_ball()->set_x(ra_state.previous_ball.x);
+			proto_state.mutable_previous_ball()->set_y(ra_state.previous_ball.y);
+		}
 
         int error_value = m.tick(timestamp, proto_input, proto_params, proto_state, proto_output, proto_diagnostics);
         if (error_value != 0) {
@@ -321,16 +325,25 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
             exit(1);
         }
 
-        //    int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
-        //    (
-        //        google::protobuf::Timestamp timestamp,   // absolute timestamp
-        //        InputType  const           &input,       // input data, type generated from Input.proto
-        //        ParamsType const           &params,      // configuration parameters, type generated from Params.proto
-        //        StateType                  &state,       // state data, type generated from State.proto
-        //        OutputType                 &output,      // output data, type generated from Output.proto
-        //        DiagnosticsType            &diagnostics  // diagnostics data, type generated from Diagnostics.proto
-        //    )
-        //
+        for (auto idx= 0; idx < proto_output.assignments_size(); idx++) {
+        	auto assignement = proto_output.assignments(idx);
+        	RoleAssignerResult result = {};
+        	result.role = static_cast<MRA::role_e>(assignement.role());
+        	result.role_rank = assignement.role_rank();
+        	result.gamestate = ra_input.gamestate;
+        	result.target = assignement.target();
+        	result.planner_target = static_cast<MRA::planner_target_e>(assignement.purpose());
+        	result.is_pass_desitination = assignement.is_pass_desitination();
+        	result.defend_info = {};
+        	result.defend_info.valid = assignement.has_defend_info();
+        	if (result.defend_info.valid) {
+        		result.defend_info.defending_id = assignement.defend_info().trackingid();
+        		result.defend_info.dist_from_defending_id = assignement.defend_info().dist_from_defending_id();
+        		result.defend_info.between_ball_and_defending_pos = assignement.defend_info().between_ball_and_defending_pos();
+        	}
+        	result.path = std::vector<path_piece_t>();
+        	ra_output.player_paths.push_back(result);
+        }
     }
     else {
         RoleAssigner teamplay = RoleAssigner();
@@ -630,7 +643,7 @@ void fillEnvironment(Environment& rEnvironment, unique_ptr<robotsports::Strategy
 
 }
 
-void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdminTeam>& TeamAdmin,  bool& r_playerPassedBall, bool& r_team_has_ball, unique_ptr<robotsports::StrategyType>& c)
+void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdminTeam>& TeamAdmin,  std::vector<previous_role_assigner_result_t>& previous_results, bool& r_playerPassedBall, bool& r_team_has_ball, unique_ptr<robotsports::StrategyType>& c)
 {
     long playerId = 0;
     r_playerPassedBall = false;
@@ -638,11 +651,14 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
         playerId++;
         RoleAssignerRobot P = {};
         RoleAssignerAdminTeam PA  = {};
-        PA.previous_result.present = (*team_iter).previous_result_present();
-        PA.previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), role_UNDEFINED);
-        PA.previous_result.end_position.x = (*team_iter).previous_result_x();
-        PA.previous_result.end_position.y = (*team_iter).previous_result_y();
-        PA.previous_result.ts = (*team_iter).previous_result_ts();
+
+        previous_role_assigner_result_t previous_result  = {};
+        previous_result.present = (*team_iter).previous_result_present();
+        previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), role_UNDEFINED);
+        previous_result.end_position.x = (*team_iter).previous_result_x();
+        previous_result.end_position.y = (*team_iter).previous_result_y();
+        previous_result.ts = (*team_iter).previous_result_ts();
+        previous_results.push_back(previous_result);
         PA.assigned = false;
         PA.result = {};
 
@@ -735,6 +751,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     MRA::Environment environment = {};
     ball_pickup_position_t pickup_pos = {};
     bool pickup_pos_set = false;
+    std::vector<previous_role_assigner_result_t> previous_results = {};
 
     std::vector<RoleAssignerRobot> Team = {};
     std::vector<RoleAssignerAdminTeam> TeamAdmin = {};
@@ -761,7 +778,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
             ball_vel.y = c->Ball()->vely();
         }
 
-        fillTeam(Team, TeamAdmin, playerPassedBall, team_has_ball, c);
+        fillTeam(Team, TeamAdmin, previous_results, playerPassedBall, team_has_ball, c);
         fillOpponents(Opponents, c);
 
         gameState = gamestate_string_to_enum(c->GameState());
@@ -904,10 +921,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
 
     RoleAssignerState tp_state;
     tp_state.previous_ball = previous_ball;
-    for (auto idx = 0u; idx < TeamAdmin.size(); idx++) {
-        tp_state.previous_result.push_back(TeamAdmin[idx].previous_result);
-
-    }
+    tp_state.previous_results  = previous_results;
 
     RoleAssignerParameters tp_parameters = parameters;
     RoleAssignerOutput tp_output = {};
@@ -926,22 +940,21 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     tpd.ball_pickup_position = tp_input.ball_pickup_position;
     tpd.passIsRequired = tp_input.passIsRequired;
     tpd.pass_data = tp_input.pass_data;
-    tpd.previous_ball = tp_state.previous_ball;
+
     tpd.team = tp_input.team;
     tpd.opponents = tp_input.opponents;
 
     // inputs
     tpd.previous_ball = tp_state_org.previous_ball;
-    for (auto idx = 0u; idx < tp_state_org.previous_result.size(); ++idx) {
-        RoleAssignerAdminTeam tp_admin = {};
-        tp_admin.previous_result = tp_state_org.previous_result[idx];
-        tpd.team_admin.push_back(tp_admin);
-    }
+//    tpd.previous_ball = tp_state.previous_ball;
+    tpd.previous_results = tp_state.previous_results;
 
-    for (auto idx = 0u; idx < tp_output.player_paths.size(); ++idx) {
-        tpd.team_admin[idx].robotId = tp_input.team[idx].robotId;
-        tpd.team_admin[idx].assigned = true;
-        tpd.team_admin[idx].result = tp_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
+    for (auto idx = 0u; idx < tp_input.team.size(); ++idx) {
+    	RoleAssignerAdminTeam ta = {};
+    	ta.robotId = tp_input.team[idx].robotId;
+        ta.assigned = true;
+        ta.result = tp_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
+        tpd.team_admin.push_back(ta);
     }
     player_paths = tp_output.player_paths;
 

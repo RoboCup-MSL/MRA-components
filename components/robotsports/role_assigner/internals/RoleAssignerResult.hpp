@@ -15,12 +15,12 @@ namespace MRA {
 
 class RoleAssignerResult {
 public:
-    std::vector<path_piece_t> path;
-    role_e role = {};
+    std::vector<path_piece_t> path = std::vector<path_piece_t>();
+    role_e role = role_e::role_UNDEFINED;
     int role_rank = -1;
-    game_state_e gamestate = {};
+    game_state_e gamestate = game_state_e::NONE;
     MRA::Geometry::Point target = {};
-    planner_target_e planner_target = {};
+    planner_target_e planner_target = planner_target_e::GOTO_TARGET_POSITION;
     defend_info_t defend_info = {.valid = false, .defending_id = -1, .dist_from_defending_id = 0.0, .between_ball_and_defending_pos = 1};
     bool is_pass_desitination = false;
 

@@ -554,8 +554,8 @@ MRA::Geometry::Point RolePosition::calculateSetPlayReceiverPosition(const RoleAs
 
     MRA::Geometry::Point previousEndPos;
     for (unsigned int idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
-        if (r_role_assigner_data.team_admin[idx].previous_result.present and r_role_assigner_data.team_admin[idx].previous_result.role == role_ATTACKER_ASSIST) {
-            MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(r_role_assigner_data.team_admin[idx].previous_result.end_position.x, r_role_assigner_data.team_admin[idx].previous_result.end_position.y);
+        if (r_role_assigner_data.previous_results[idx].present and r_role_assigner_data.previous_results[idx].role == role_ATTACKER_ASSIST) {
+            MRA::Geometry::Point previousEndPos = MRA::Geometry::Point(r_role_assigner_data.previous_results[idx].end_position.x, r_role_assigner_data.previous_results[idx].end_position.y);
             MRA::Geometry::Point previousBall = MRA::Geometry::Point(r_role_assigner_data.previous_ball.x, r_role_assigner_data.previous_ball.y);
 
             if (r_role_assigner_data.ball.position.distanceTo(previousBall) < 0.26) {

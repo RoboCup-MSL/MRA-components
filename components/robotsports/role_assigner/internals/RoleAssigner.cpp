@@ -52,26 +52,17 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
     // inputs
     role_assigner_data.previous_ball = r_state.previous_ball;
-    for (auto idx = 0u; idx < input.team.size(); ++idx) {
-        RoleAssignerAdminTeam tp_admin = {};
-        tp_admin.assigned = false;
-        role_assigner_data.team_admin.push_back(tp_admin);
+    role_assigner_data.previous_results = r_state.previous_results;
 
-    }
-    for (auto idx = 0u; idx < r_state.previous_result.size(); ++idx) {
-    	role_assigner_data.team_admin[idx].previous_result = r_state.previous_result[idx];
-    }
+    r_output.player_paths = assign(role_assigner_data);
 
-    std::vector<RoleAssignerResult> assign_results = assign(role_assigner_data);
+    // save for next calculation
     r_state.previous_ball.present = role_assigner_data.ball.is_valid;
     if (role_assigner_data.ball.is_valid) {
     	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
     	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
     }
-    for (auto idx = 0u; idx < role_assigner_data.team_admin.size(); ++idx) {
-        r_output.player_paths.push_back(role_assigner_data.team_admin[idx].result);
-    }
-
+    // todo add previous results
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -84,7 +75,15 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
 
 std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assigner_data)
 {
-    std::vector<RoleAssignerResult> player_paths_in_correct_order = {};
+    for (auto idx = 0u; idx < role_assigner_data.team.size(); ++idx) {
+        RoleAssignerAdminTeam tp_admin = {};
+        tp_admin.assigned = false;
+        tp_admin.result = {};
+        tp_admin.result.defend_info.valid = false;
+        role_assigner_data.team_admin.push_back(tp_admin);
+    }
+
+	std::vector<RoleAssignerResult> player_paths_in_correct_order = {};
     if (role_assigner_data.team.size() == 0) {
     	return player_paths_in_correct_order;
     }
@@ -148,7 +147,6 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
     for (unsigned r_idx = 0; r_idx < role_assigner_data.team_admin.size(); r_idx++) {
         role_assigner_data.team_admin[r_idx].result.gamestate = role_assigner_data.gamestate;
         role_assigner_data.team_admin[r_idx].result.role = role_e::role_UNDEFINED;
-        role_assigner_data.team_admin[r_idx].result.defend_info.valid = false;
     }
 
     /* set avoid ball flag : only not avoiding during normal play */
@@ -290,7 +288,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         if ((interceptorIdx == (int) role_assigner_data.this_player_idx) || role_assigner_data.parameters.calculateAllPaths) {
             replan = (interceptorIdx != -1)
                       and (role_assigner_data.team_admin[interceptorIdx].result.path.size() > 0)
-                      and (role_assigner_data.team_admin[interceptorIdx].result.path[role_assigner_data.this_player_idx].target != PRIORITY_BLOCK);
+                      and (role_assigner_data.team_admin[interceptorIdx].result.path[0].target != PRIORITY_BLOCK);
         }
         if (replan and interceptorIdx >= 0) {
             ReplanInterceptor(interceptorIdx, role_assigner_data);
@@ -649,10 +647,10 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
 
             player.distToPreviousTarget = 0.0;
             // calculate previous target position distance-threshold.
-            if (role_assigner_data.team_admin[idx].previous_result.present and role_assigner_data.team_admin[idx].previous_result.role == role)
+            if (role_assigner_data.previous_results[idx].present and role_assigner_data.previous_results[idx].role == role)
             {
-                Geometry::Point previousEndPos = Geometry::Point(role_assigner_data.team_admin[idx].previous_result.end_position.x,
-                                                                 role_assigner_data.team_admin[idx].previous_result.end_position.y);
+                Geometry::Point previousEndPos = Geometry::Point(role_assigner_data.previous_results[idx].end_position.x,
+                                                                 role_assigner_data.previous_results[idx].end_position.y);
                 if (currentEndPos.distanceTo(previousEndPos) < role_assigner_data.parameters.previous_role_end_pos_threshold) {
                     player.distToPreviousTarget = role_assigner_data.parameters.previous_role_bonus_end_pos_radius;
                 }
@@ -827,7 +825,7 @@ void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
 
     if (keeperFound) {
         role_assigner_data.team_admin[keeper_idx].assigned = true;
-        defend_info_t defend_info = {};
+        defend_info_t defend_info = {.valid = false, .defending_id = -1, .dist_from_defending_id = 0.0, .between_ball_and_defending_pos = 1};
         role_assigner_data.team_admin[keeper_idx].result = RoleAssignerResult(
             role_assigner_data.gamestate,
             role_assigner_data.gamestate == game_state_e::PARKING ? DynamicRoleToRole(dr_PARKING, role_GOALKEEPER) : DynamicRoleToRole(dr_GOALKEEPER, role_GOALKEEPER),

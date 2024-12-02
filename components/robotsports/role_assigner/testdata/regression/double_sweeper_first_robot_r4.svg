@@ -32,18 +32,23 @@ paths:
 Player 0 (id: 4) : 
 	role: ATTACKSUPPORTER
 	Game State: Normal
-	Target position : x: 3.04 y: 4.54
-	Planner target type  goto target position
+	Target position : x: -1.50 y: 3.75
+	Planner target type  Attack support
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: -1.00 y: -1.01 cost: 0.00 target: Attack support (3)
+Path[0]: x: -0.13 y: 0.13 cost: 2.93 target: Attack support (3)
+Path[0]: x: -1.50 y: 3.75 cost: 7.26 target: Attack support (3)
 
 Player 1 (id: 2) : 
 	role: INTERCEPTOR
 	Game State: Normal
-	Target position : x: -3.04 y: -4.54
-	Planner target type  goto target position
+	Target position : x: 0.00 y: 0.00
+	Planner target type  Goto ball
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[1]: x: 1.00 y: -1.00 cost: 0.00 target: Goto ball (0)
+Path[1]: x: 0.00 y: 0.00 cost: 3.03 target: Goto ball (0)
 
 	parameters:
 calculateAllPaths = 1
@@ -62,8 +67,8 @@ dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
-distToapplyBallApproachVertices  = 1.5
-addBallApproachVertices  = 0
+distToapplyBallApproachVertices  = 12.146
+addBallApproachVertices  = 1
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -163,16 +168,16 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
 <tns:Description>xml from svg-file: output_team/double_sweeper_first_robot_r4.svg</tns:Description>
 <tns:Options svgOutputFileName="output_team/double_sweeper_first_robot_r4.svg_NEW"
-   addBallApproachVertices="false"
+   addBallApproachVertices="true"
    addBarierVertices="true"
-   addUniformVertices="false"
+   addUniformVertices="true"
    autoAssignGoalie="false"
    ballApproachNumberOfVertices="8"
    ballApproachVerticesRadius="0.600"
    calculateAllPaths="true"
    dist_before_penalty_area_for_sweeper="0.750"
    dist_to_goal_to_mark_opponent_as_goalie="1.500"
-   distToapplyBallApproachVertices="1.500"
+   distToapplyBallApproachVertices="12.146"
    firstCircleRadius="1.000"
    grid_close_to_ball_normal_penalty="17000.000"
    grid_close_to_ball_normal_radius="3.100"
@@ -256,11 +261,11 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <text x="14.25cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: ATTACKSUPPORTER</text>
-<text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.04 y: 4.54</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
+<text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -1.50 y: 3.75</text>
+<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 7.258978</text>
 <text x="14.25cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: INTERCEPTOR</text>
-<text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.04 y: -4.54</text>
-<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.00 y: 0.00</text>
+<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 3.032144</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="3.76cm" y="1.00cm" width="6.62cm" height="2.26cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -275,6 +280,27 @@ PARKING_DISTANCE_TO_LINE = -0.25
 
 <!-- Teammate -->
 <rect x="7.81cm" y="10.81cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="5.81cm" y="10.82cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="6.23cm" y1="10.87cm" x2="6.94cm" y2="9.94cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="6.94cm" y1="9.94cm" x2="5.57cm" y2="6.32cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="5.57cm" cy="6.32cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 1-->
+<rect x="7.81cm" y="10.81cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 1-->
+<line x1="7.89cm" y1="10.89cm" x2="7.07cm" y2="10.07cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 1-->
+<circle cx="7.07cm" cy="10.07cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="5.90cm" y="11.25cm" font-size="large" font-weight-absolute="bold" fill="black">4</text><text x="7.90cm" y="11.24cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
 <!-- Ball -->
 <circle cx="7.07cm" cy="10.07cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

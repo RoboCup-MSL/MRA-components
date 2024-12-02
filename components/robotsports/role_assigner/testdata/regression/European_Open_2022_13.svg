@@ -39,10 +39,14 @@ paths:
 Player 0 (id: 1) : 
 	role: INTERCEPTOR
 	Game State: Normal
-	Target position : x: -3.00 y: -4.50
-	Planner target type  goto target position
+	Target position : x: 2.88 y: -0.98
+	Planner target type  Goto ball
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: 1.39 y: -4.72 cost: 0.00 target: Goto ball (0)
+Path[0]: x: 3.75 y: -3.25 cost: 5.62 target: Goto ball (0)
+Path[0]: x: 3.75 y: -1.25 cost: 8.43 target: Goto ball (0)
+Path[0]: x: 3.14 y: 1.78 cost: 12.75 target: Goto ball (0)
 
 Player 1 (id: 2) : 
 	role: GOALKEEPER
@@ -51,22 +55,32 @@ Player 1 (id: 2) :
 	Planner target type  Goalie
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[1]: x: 0.25 y: -8.69 cost: 0.00 target: Goalie (9)
+Path[1]: x: 0.00 y: -8.50 cost: 1.48 target: Goalie (9)
 
 Player 2 (id: 3) : 
 	role: SWEEPER
 	Game State: Normal
-	Target position : x: 3.00 y: -4.50
-	Planner target type  goto target position
+	Target position : x: 0.75 y: -6.75
+	Planner target type  Sweeper
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[2]: x: 0.47 y: -6.68 cost: 0.00 target: Sweeper (6)
+Path[2]: x: 0.75 y: -6.75 cost: 0.73 target: Sweeper (6)
 
 Player 3 (id: 4) : 
 	role: ATTACKSUPPORTER
 	Game State: Normal
-	Target position : x: 3.00 y: 4.50
-	Planner target type  goto target position
+	Target position : x: 2.25 y: 3.75
+	Planner target type  Attack support
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[3]: x: 0.11 y: -3.48 cost: 0.00 target: Attack support (3)
+Path[3]: x: 0.74 y: -3.59 cost: 2.71 target: Attack support (3)
+Path[3]: x: 1.36 y: -1.70 cost: 7.06 target: Attack support (3)
+Path[3]: x: 1.58 y: -0.98 cost: 9.07 target: Attack support (3)
+Path[3]: x: 1.75 y: 0.15 cost: 12.09 target: Attack support (3)
+Path[3]: x: 2.25 y: 3.75 cost: 17.59 target: Attack support (3)
 
 	parameters:
 calculateAllPaths = 1
@@ -85,7 +99,7 @@ dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
-distToapplyBallApproachVertices  = 1
+distToapplyBallApproachVertices  = 12
 addBallApproachVertices  = 1
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
@@ -195,7 +209,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
    calculateAllPaths="true"
    dist_before_penalty_area_for_sweeper="0.750"
    dist_to_goal_to_mark_opponent_as_goalie="1.500"
-   distToapplyBallApproachVertices="1.000"
+   distToapplyBallApproachVertices="12.000"
    firstCircleRadius="1.300"
    grid_close_to_ball_normal_penalty="17000.000"
    grid_close_to_ball_normal_radius="3.100"
@@ -281,17 +295,17 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: INTERCEPTOR</text>
-<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: -4.50</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
+<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 2.88 y: -0.98</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 12.746198</text>
 <text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: GOALKEEPER</text>
 <text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.00 y: -8.50</text>
-<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.475948</text>
 <text x="15.10cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: SWEEPER</text>
-<text x="15.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.00 y: -4.50</text>
-<text x="15.30cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: unknown</text>
+<text x="15.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.75 y: -6.75</text>
+<text x="15.30cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 0.729121</text>
 <text x="15.10cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: ATTACKSUPPORTER</text>
-<text x="15.30cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.00 y: 4.50</text>
-<text x="15.30cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: unknown</text>
+<text x="15.30cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 2.25 y: 3.75</text>
+<text x="15.30cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 17.585181</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -315,6 +329,60 @@ PARKING_DISTANCE_TO_LINE = 0.5
 
 <!-- Teammate -->
 <rect x="7.36cm" y="13.73cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="8.64cm" y="14.97cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="9.10cm" y1="15.09cm" x2="11.25cm" y2="13.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="11.25cm" y1="13.75cm" x2="11.25cm" y2="11.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="11.25cm" y1="11.75cm" x2="10.64cm" y2="8.72cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="10.64cm" cy="8.72cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 1-->
+<rect x="7.50cm" y="18.94cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 1-->
+<line x1="7.55cm" y1="19.04cm" x2="7.50cm" y2="19.00cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 1-->
+<circle cx="7.50cm" cy="19.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 2-->
+<rect x="7.72cm" y="16.93cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 2-->
+<line x1="8.22cm" y1="17.24cm" x2="8.25cm" y2="17.25cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 2-->
+<circle cx="8.25cm" cy="17.25cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 3-->
+<rect x="7.36cm" y="13.73cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 3-->
+<line x1="7.86cm" y1="14.03cm" x2="8.24cm" y2="14.09cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 3-->
+<line x1="8.24cm" y1="14.09cm" x2="8.86cm" y2="12.20cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 3-->
+<line x1="8.86cm" y1="12.20cm" x2="9.08cm" y2="11.48cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 3-->
+<line x1="9.08cm" y1="11.48cm" x2="9.25cm" y2="10.35cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 3-->
+<line x1="9.25cm" y1="10.35cm" x2="9.75cm" y2="6.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 3-->
+<circle cx="9.75cm" cy="6.75cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="8.73cm" y="15.38cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="7.59cm" y="19.35cm" font-size="large" font-weight-absolute="bold" fill="black">2</text><text x="7.81cm" y="17.35cm" font-size="large" font-weight-absolute="bold" fill="black">3</text><text x="7.45cm" y="14.15cm" font-size="large" font-weight-absolute="bold" fill="black">4</text>
 <!-- Ball -->
 <circle cx="10.08cm" cy="14.64cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

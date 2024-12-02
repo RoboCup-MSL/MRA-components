@@ -33,6 +33,8 @@ Player 0 (id: 1) :
 	Planner target type  Dribble
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: -6.50 y: -0.50 cost: 0.00 target: Goto ball (0)
+Path[0]: x: -6.00 y: 0.00 cost: 1.71 target: Goto ball (0)
 
 	parameters:
 calculateAllPaths = 1
@@ -244,7 +246,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_player</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BALLPLAYER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -6.50 y: -0.50</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.707107</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -259,6 +261,15 @@ PARKING_DISTANCE_TO_LINE = 0.5
 
 <!-- aiming -->
 <line x1="1.00cm" y1="11.00cm" x2="1.00cm" y2="-1.00cm" stroke-width="0.05cm"  stroke="yellow"/>
+
+<!-- player-path start 0-->
+<rect x="0.75cm" y="10.75cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="1.18cm" y1="10.82cm" x2="1.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="1.50cm" cy="10.50cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="0.84cm" y="11.16cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
 <!-- Ball -->
 <circle cx="1.50cm" cy="10.50cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

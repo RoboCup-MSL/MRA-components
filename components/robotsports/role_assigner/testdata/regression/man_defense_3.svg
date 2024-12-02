@@ -36,6 +36,8 @@ Player 0 (id: 4) :
 	Planner target type  Priority Block
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: 0.82 y: -0.98 cost: 0.00 target: Priority Block (8)
+Path[0]: x: 1.50 y: -1.11 cost: 1.68 target: Priority Block (8)
 
 	parameters:
 calculateAllPaths = 1
@@ -251,7 +253,7 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_opponent</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: INTERCEPTOR</text>
 <text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.50 y: -1.11</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.681769</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="3.76cm" y="1.00cm" width="6.62cm" height="2.26cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -272,6 +274,15 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <text x="8.62cm" y="10.16cm" font-size="large" font-weight-absolute="bold" fill="black">3</text>
 <!-- ME -->
 <rect x="7.63cm" y="10.79cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="7.63cm" y="10.79cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="8.14cm" y1="11.10cm" x2="8.57cm" y2="11.18cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="8.57cm" cy="11.18cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="7.72cm" y="11.22cm" font-size="large" font-weight-absolute="bold" fill="black">4</text>
 <!-- Ball -->
 <circle cx="8.45cm" cy="9.80cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

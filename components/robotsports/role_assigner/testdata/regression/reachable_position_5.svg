@@ -33,6 +33,10 @@ Player 0 (id: 1) :
 	Planner target type  goto target position
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: 6.00 y: -6.00 cost: 0.00 target: Goto ball (0)
+Path[0]: x: 5.75 y: -7.25 cost: 2.27 target: Goto ball (0)
+Path[0]: x: 4.41 y: -10.20 cost: 5.52 target: Goto ball (0)
+Path[0]: x: 3.81 y: -10.20 cost: 30.99 target: Goto ball (0)
 
 	parameters:
 calculateAllPaths = 1
@@ -51,7 +55,7 @@ dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
-distToapplyBallApproachVertices  = 1
+distToapplyBallApproachVertices  = 12
 addBallApproachVertices  = 1
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
@@ -161,7 +165,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
    calculateAllPaths="true"
    dist_before_penalty_area_for_sweeper="0.750"
    dist_to_goal_to_mark_opponent_as_goalie="1.500"
-   distToapplyBallApproachVertices="1.000"
+   distToapplyBallApproachVertices="12.000"
    firstCircleRadius="1.300"
    grid_close_to_ball_normal_penalty="17000.000"
    grid_close_to_ball_normal_radius="3.100"
@@ -244,7 +248,7 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: INTERCEPTOR</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: -4.50</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 30.994393</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -256,6 +260,21 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="7.10cm" y="19.88cm" fill="darkred">OWN</text>
 <!-- ME -->
 <rect x="13.25cm" y="16.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="13.25cm" y="16.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="13.45cm" y1="16.75cm" x2="13.25cm" y2="17.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="13.25cm" y1="17.75cm" x2="11.91cm" y2="20.70cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="11.91cm" y1="20.70cm" x2="11.31cm" y2="20.70cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="11.31cm" cy="20.70cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="13.34cm" y="16.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
 <!-- Ball -->
 <circle cx="7.50cm" cy="28.00cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

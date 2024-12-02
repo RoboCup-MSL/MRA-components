@@ -40,11 +40,14 @@ Player 0 (id: 1) :
 	Planner target type  Attack support
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: -4.58 y: 3.63 cost: 0.00 target: Attack support (3)
+Path[0]: x: -2.32 y: 4.68 cost: 3.76 target: Attack support (3)
+Path[0]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
 
 Player 1 (id: 2) : 
 	role: SETPLAY_RECEIVER
 	Game State: Freekick
-	Target position : x: 2.71 y: 0.25
+	Target position : x: 2.67 y: 0.24
 	Planner target type  Prepare restart
 	Is pass_desitination: false
 	Defend info valid:  false
@@ -52,7 +55,7 @@ Player 1 (id: 2) :
 Player 2 (id: 3) : 
 	role: SETPLAY_KICKER
 	Game State: Freekick
-	Target position : x: 0.39 y: 2.60
+	Target position : x: 0.39 y: 2.61
 	Planner target type  Prepare restart
 	Is pass_desitination: false
 	Defend info valid:  false
@@ -270,12 +273,12 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_player</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: ATTACKSUPPORTER</text>
 <text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.00 y: 6.00</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: unknown</text>
+<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 6.863478</text>
 <text x="14.25cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: SETPLAY_RECEIVER</text>
-<text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 2.71 y: 0.25</text>
+<text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 2.67 y: 0.24</text>
 <text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
 <text x="14.25cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: SETPLAY_KICKER</text>
-<text x="14.45cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.39 y: 2.60</text>
+<text x="14.45cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.39 y: 2.61</text>
 <text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
@@ -294,6 +297,18 @@ PARKING_DISTANCE_TO_LINE = -0.25
 
 <!-- Teammate -->
 <rect x="7.56cm" y="7.56cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="2.23cm" y="6.18cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="2.72cm" y1="6.33cm" x2="4.75cm" y2="5.39cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 0-->
+<line x1="4.75cm" y1="5.39cm" x2="7.07cm" y2="4.07cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="7.07cm" cy="4.07cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="2.32cm" y="6.60cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="9.34cm" y="10.14cm" font-size="large" font-weight-absolute="bold" fill="black">2</text><text x="7.65cm" y="7.99cm" font-size="large" font-weight-absolute="bold" fill="black">3</text>
 <!-- Ball -->
 <circle cx="8.02cm" cy="8.04cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

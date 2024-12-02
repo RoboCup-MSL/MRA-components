@@ -38,6 +38,8 @@ Player 0 (id: 1) :
 	Planner target type  Dribble
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[0]: x: -3.25 y: -5.20 cost: 0.00 target: Goto ball (0)
+Path[0]: x: -3.00 y: -5.00 cost: 2.19 target: Goto ball (0)
 
 Player 1 (id: 2) : 
 	role: ATTACKSUPPORTER
@@ -46,6 +48,9 @@ Player 1 (id: 2) :
 	Planner target type  Attack support
 	Is pass_desitination: false
 	Defend info valid:  false
+Path[1]: x: -1.50 y: -5.00 cost: 0.00 target: Attack support (3)
+Path[1]: x: -2.25 y: -3.25 cost: 4.91 target: Attack support (3)
+Path[1]: x: -3.00 y: -0.75 cost: 9.47 target: Attack support (3)
 
 	parameters:
 calculateAllPaths = 1
@@ -260,10 +265,10 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_player</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BALLPLAYER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.71 y: -4.29</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 2.194448</text>
 <text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: ATTACKSUPPORTER</text>
 <text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: -0.75</text>
-<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
+<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 9.468416</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -287,6 +292,27 @@ PARKING_DISTANCE_TO_LINE = 0.5
 
 <!-- Teammate -->
 <rect x="5.75cm" y="15.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- player-path start 0-->
+<rect x="4.00cm" y="15.45cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 0-->
+<line x1="4.45cm" y1="15.54cm" x2="4.50cm" y2="15.50cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 0-->
+<circle cx="4.50cm" cy="15.50cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 1-->
+<rect x="5.75cm" y="15.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 1-->
+<line x1="5.90cm" y1="15.27cm" x2="5.25cm" y2="13.75cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 1-->
+<line x1="5.25cm" y1="13.75cm" x2="4.50cm" y2="11.25cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 1-->
+<circle cx="4.50cm" cy="11.25cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="4.09cm" y="15.86cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="5.84cm" y="15.66cm" font-size="large" font-weight-absolute="bold" fill="black">2</text>
 <!-- Ball -->
 <circle cx="4.50cm" cy="15.50cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

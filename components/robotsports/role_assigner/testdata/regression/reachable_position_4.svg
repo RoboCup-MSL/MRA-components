@@ -10,7 +10,7 @@ file: output_team/reachable_position_4.svg
 	gamestate = Normal (1)
 	original_gamestate = Normal (1)
 	ball_status = "FREE"
-	Ball: position: x: 5.00 y: -27.50 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
+	Ball: position: x: 5.00 y: -27.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false
 	pass_is_required: true
 	pass_data - valid false
@@ -20,87 +20,68 @@ file: output_team/reachable_position_4.svg
 	pickup ball ts: 0.00
 
 	team:
-		R01 = x: 4.00 y: -7.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
+		R01 = x: 4.00 y: -7.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: SWEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R02 = x: 3.50 y: -8.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
+		R02 = x: 3.50 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: DEFENDER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R03 = x: 2.00 y: -6.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
+		R03 = x: 2.00 y: -6.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R04 = x: 4.00 y: 2.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 4 type = FIELD_PLAYER (1)
+		R04 = x: 4.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
-		R05 = x: 0.00 y: -8.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 5 type = GOALIE (2)
+		R05 = x: 0.00 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 5 type = GOALIE (2)
 			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
-		player[0] = position x: 5.00 y: -8.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
-		player[1] = position x: 1.00 y: 1.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
-		player[2] = position x: 3.00 y: 3.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
-		player[3] = position x: 0.25 y: 8.50 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
-		player[4] = position x: -5.00 y: -2.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00
+		player[0] = position x: 5.00 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+		player[1] = position x: 1.00 y: 1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+		player[2] = position x: 3.00 y: 3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+		player[3] = position x: 0.25 y: 8.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+		player[4] = position x: -5.00 y: -2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 paths:
 
 Player 0 (id: 1) : 
-	Dynamic-role: SWEEPER
-	Game State: Normal defend
+	role: SWEEPER
+	Game State: Normal
 	Target position : x: 3.00 y: -4.50
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 94563140501808 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[0]: x: 4.00 y: -7.00 cost: 0.00 target: goto target position (7)
-Path[0]: x: 3.00 y: -4.50 cost: 6.96 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 1 (id: 2) : 
-	Dynamic-role: DEFENDER
-	Game State: Normal defend
+	role: DEFENDER
+	Game State: Normal
 	Target position : x: -3.00 y: 4.50
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 94563140501808 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[1]: x: 3.50 y: -8.00 cost: 0.00 target: goto target position (7)
-Path[1]: x: 2.00 y: -7.60 cost: 5.10 target: goto target position (7)
-Path[1]: x: 1.13 y: -6.87 cost: 8.22 target: goto target position (7)
-Path[1]: x: 0.70 y: -6.00 cost: 10.89 target: goto target position (7)
-Path[1]: x: -0.25 y: -3.25 cost: 16.34 target: goto target position (7)
-Path[1]: x: -2.25 y: -1.25 cost: 20.73 target: goto target position (7)
-Path[1]: x: -2.25 y: 0.75 cost: 23.84 target: goto target position (7)
-Path[1]: x: -3.00 y: 4.50 cost: 29.19 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 2 (id: 3) : 
-	Dynamic-role: INTERCEPTOR
-	Game State: Normal defend
+	role: INTERCEPTOR
+	Game State: Normal
 	Target position : x: -3.00 y: -4.50
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 94563140501808 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[2]: x: 2.00 y: -6.00 cost: 0.00 target: Goto ball (0)
-Path[2]: x: 2.20 y: -8.00 cost: 6.78 target: Goto ball (0)
-Path[2]: x: 2.59 y: -10.20 cost: 12.83 target: Goto ball (0)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 3 (id: 4) : 
-	Dynamic-role: ATTACKSUPPORTER
-	Game State: Normal defend
+	role: ATTACKSUPPORTER
+	Game State: Normal
 	Target position : x: 3.00 y: 4.50
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 94563140501808 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[3]: x: 4.00 y: 2.00 cost: 0.00 target: goto target position (7)
-Path[3]: x: 4.30 y: 3.00 cost: 3.66 target: goto target position (7)
-Path[3]: x: 4.13 y: 4.13 cost: 6.35 target: goto target position (7)
-Path[3]: x: 3.00 y: 4.50 cost: 8.99 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 4 (id: 5) : 
-	Dynamic-role: GOALKEEPER
-	Game State: Normal defend
-	Target position : x: 0.50 y: -8.50
+	role: GOALKEEPER
+	Game State: Normal
+	Target position : x: 0.00 y: -8.50
 	Planner target type  Goalie
-	Target_position_is_end_position_of_pass: false
+	Is pass_desitination: false
 	Defend info valid:  false
-Path[4]: x: 0.00 y: -8.00 cost: 0.00 target: Goalie (12)
-Path[4]: x: 0.50 y: -8.50 cost: 2.10 target: Goalie (12)
 
 	parameters:
 calculateAllPaths = 1
@@ -120,7 +101,7 @@ uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 1
-addBallApproachVertices  = 0
+addBallApproachVertices  = 1
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -142,13 +123,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-nr_robots_needed_for_pass_play = 2
-nr_attack_support_during_defensive_period = 0
 wait_on_non_optimal_position_during_prepare_phase = 0
-priority_block_max_ball_y = 0
-priority_block_max_opponent_to_ball_dist = 3
-priority_block_check_ball_in_area = 1
-priority_block_check_opponent_close_to_ball = 1
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -156,7 +131,6 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-select_lowest_robot_nr_for_dynamic_role = 1
 previous_role_bonus_must_be_applied = 1
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
@@ -182,7 +156,6 @@ svgRobotPlanner = 0
 preferredSetplayKicker = 0
 preferredSetplayReceiver = 0
 setplay_margin_to_penalty_area_side = 0.75
-lobShotWhenPossible = 1
 min_y_for_lob_shot = 0.25
 outsideFieldMargin = 0.5
 kickoff_fp1 x = -1
@@ -201,7 +174,6 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-dedicatedSweeper = 0
 autoAssignGoalie = 0
 
 	field:
@@ -229,9 +201,9 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
 <tns:Description>xml from svg-file: output_team/reachable_position_4.svg</tns:Description>
 <tns:Options svgOutputFileName="output_team/reachable_position_4.svg_NEW"
-   addBallApproachVertices="false"
+   addBallApproachVertices="true"
    addBarierVertices="true"
-   addUniformVertices="false"
+   addUniformVertices="true"
    autoAssignGoalie="false"
    ballApproachNumberOfVertices="8"
    ballApproachVerticesRadius="0.600"
@@ -267,8 +239,6 @@ PARKING_DISTANCE_TO_LINE = 0.5
    minimumDistanceToEndPoint="3.000"
    minimumEdgeLength="0.300"
    move_to_ball_left_field_position="true"
-   nr_attack_support_during_defensive_period="0"
-   nr_robots_needed_for_pass_play="2"
    nrDynamicPlannerIterations="2"
    nrVerticesFirstCircle="6"
    nrVerticesSecondCircle="8"
@@ -299,19 +269,19 @@ PARKING_DISTANCE_TO_LINE = 0.5
   <tns:Field field_width="12.000" field_length="18.000" field_margin="1.50" goal_width="2.000" goal_length="0.500" goal_area_width="3.500" goal_area_length="0.750"
              penalty_area_present="true" penalty_area_width="6.500" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.500"
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
-             parking_distance_to_line="0.500" corner_circle_diameter="0.125" penalty_spot_to_backline="3.000" />
+             parking_distance_to_line="0.500" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
   <tns:GameState>Normal</tns:GameState>
   <tns:Ball x="5.00" y="-27.50" velx="0.00" vely="0.00"/>
-  <tns:Team id="1" label="1" x="4.000" y="-7.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Team id="2" label="2" x="3.500" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Team id="3" label="3" x="2.000" y="-6.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Team id="4" label="4" x="4.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Team id="5" label="5" x="0.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"    />
-  <tns:Opponent id="1" label="1" x="5.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="2" label="2" x="1.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="3" label="3" x="3.000" y="3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="4" label="4" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="5" label="5" x="-5.000" y="-2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Team id="1" tracking="1" x="4.000" y="-7.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="2" tracking="2" x="3.500" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="3" tracking="3" x="2.000" y="-6.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="4" tracking="4" x="4.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:Team id="5" tracking="5" x="0.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"    />
+  <tns:Opponent id="1" trackingId="1" x="5.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="2" trackingId="2" x="1.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="3" trackingId="3" x="3.000" y="3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="4" trackingId="4" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="5" trackingId="5" x="-5.000" y="-2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="5.000" y="-27.500" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
@@ -332,19 +302,19 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: SWEEPER</text>
 <text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.00 y: -4.50</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 6.962123</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: unknown</text>
 <text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: DEFENDER</text>
 <text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: 4.50</text>
-<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 5 costs: 29.191314</text>
+<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 5 costs: unknown</text>
 <text x="15.10cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: INTERCEPTOR</text>
 <text x="15.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: -4.50</text>
-<text x="15.30cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 12.832166</text>
+<text x="15.30cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
 <text x="15.10cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: ATTACKSUPPORTER</text>
 <text x="15.30cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.00 y: 4.50</text>
-<text x="15.30cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 8.990663</text>
+<text x="15.30cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: unknown</text>
 <text x="15.10cm" y="11.50cm" font-size="14" font-weight-absolute="bold" fill="black">R05: GOALKEEPER</text>
-<text x="15.30cm" y="12.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.50 y: -8.50</text>
-<text x="15.30cm" y="12.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 2.097235</text>
+<text x="15.30cm" y="12.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.00 y: -8.50</text>
+<text x="15.30cm" y="12.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -383,78 +353,6 @@ PARKING_DISTANCE_TO_LINE = 0.5
 
 <!-- Teammate -->
 <rect x="7.25cm" y="18.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- player-path start 0-->
-<rect x="11.25cm" y="17.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 0-->
-<line x1="11.41cm" y1="17.27cm" x2="10.50cm" y2="15.00cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 0-->
-<circle cx="10.50cm" cy="15.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 1-->
-<rect x="10.75cm" y="18.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 1-->
-<line x1="10.76cm" y1="18.44cm" x2="9.50cm" y2="18.10cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="9.50cm" y1="18.10cm" x2="8.63cm" y2="17.37cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="8.63cm" y1="17.37cm" x2="8.20cm" y2="16.50cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="8.20cm" y1="16.50cm" x2="7.25cm" y2="13.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="7.25cm" y1="13.75cm" x2="5.25cm" y2="11.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="5.25cm" y1="11.75cm" x2="5.25cm" y2="9.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 1-->
-<line x1="5.25cm" y1="9.75cm" x2="4.50cm" y2="6.00cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 1-->
-<circle cx="4.50cm" cy="6.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 2-->
-<rect x="9.25cm" y="16.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 2-->
-<line x1="9.52cm" y1="16.75cm" x2="9.70cm" y2="18.50cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 2-->
-<line x1="9.70cm" y1="18.50cm" x2="10.09cm" y2="20.70cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 2-->
-<circle cx="10.09cm" cy="20.70cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 3-->
-<rect x="11.25cm" y="8.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 3-->
-<line x1="11.57cm" y1="8.26cm" x2="11.80cm" y2="7.50cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 3-->
-<line x1="11.80cm" y1="7.50cm" x2="11.63cm" y2="6.37cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 3-->
-<line x1="11.63cm" y1="6.37cm" x2="10.50cm" y2="6.00cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 3-->
-<circle cx="10.50cm" cy="6.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 4-->
-<rect x="7.25cm" y="18.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 4-->
-<line x1="7.68cm" y1="18.68cm" x2="8.00cm" y2="19.00cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 4-->
-<circle cx="8.00cm" cy="19.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="11.34cm" y="17.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="10.84cm" y="18.66cm" font-size="large" font-weight-absolute="bold" fill="black">2</text><text x="9.34cm" y="16.66cm" font-size="large" font-weight-absolute="bold" fill="black">3</text><text x="11.34cm" y="8.66cm" font-size="large" font-weight-absolute="bold" fill="black">4</text><text x="7.34cm" y="18.66cm" font-size="large" font-weight-absolute="bold" fill="black">5</text>
 <!-- Ball -->
 <circle cx="12.50cm" cy="38.00cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

@@ -7,10 +7,10 @@
 file: output_team/begin_situation_2d.svg
 
 
-	gamestate = Begin Position (5)
-	original_gamestate = Begin Position (5)
+	gamestate = Begin Position (3)
+	original_gamestate = Begin Position (3)
 	ball_status = "FREE"
-	Ball: position: x: 1.20 y: 1.96 z:0.00 rx:0.00 ry:0.00 rz:0.00 velocity: x: 0.33 y: -0.03 z:0.00 rx:0.00 ry:0.00 rz:0.00
+	Ball: position: x: 1.20 y: 1.96 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.33 y: -0.03 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = true x=1.14 y=1.97
 	pass_is_required: true
 	pass_data - valid false
@@ -20,63 +20,52 @@ file: output_team/begin_situation_2d.svg
 	pickup ball ts: 80550.73
 
 	team:
-		R04 = x: -0.72 y: -2.66 z:0.00 rx:0.00 ry:0.00 rz:-0.44 vel: x: 0.99 y: -0.64 z:0.00 rx:0.00 ry:0.00 rz:0.13 label: 4 type = FIELD_PLAYER (1)
+		R04 = x: -0.72 y: -2.66 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.44 vel: x: 0.99 y: -0.64 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.13 trackingId: 4 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: BEGIN_POSITION end-pos x: -1.00 y: -3.39 target: unknown target (ERROR situation) ts: 80550.60
-		R01 = x: 0.95 y: -3.36 z:0.00 rx:0.00 ry:0.00 rz:-0.04 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 1 type = FIELD_PLAYER (1)
+			prev result:  true role: UNDEFINED end-pos x: -1.00 y: -3.39 target: Goto ball ts: 80550.60
+		R01 = x: 0.95 y: -3.36 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.04 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: BEGIN_POSITION end-pos x: 1.00 y: -3.39 target: unknown target (ERROR situation) ts: 80550.70
-		R02 = x: -1.14 y: -3.39 z:0.00 rx:0.00 ry:0.00 rz:-0.41 vel: x: 0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 2 type = FIELD_PLAYER (1)
+			prev result:  true role: UNDEFINED end-pos x: 1.00 y: -3.39 target: Goto ball ts: 80550.70
+		R02 = x: -1.14 y: -3.39 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.41 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: BEGIN_POSITION end-pos x: -1.00 y: -3.39 target: unknown target (ERROR situation) ts: 80550.70
-		R03 = x: 3.49 y: -4.83 z:0.00 rx:0.00 ry:0.00 rz:0.34 vel: x: -0.00 y: 0.00 z:0.00 rx:0.00 ry:0.00 rz:0.00 label: 3 type = FIELD_PLAYER (1)
+			prev result:  true role: UNDEFINED end-pos x: -1.00 y: -3.39 target: Goto ball ts: 80550.70
+		R03 = x: 3.49 y: -4.83 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.34 vel: x: -0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
 			control-ball: false passBall: false role: BEGIN_POSITION time-own-PA: 0.00 time-opp-PA: 0.00
-			prev result:  true role: BEGIN_POSITION end-pos x: 3.54 y: -4.84 target: unknown target (ERROR situation) ts: 80550.70
+			prev result:  true role: UNDEFINED end-pos x: 3.54 y: -4.84 target: Goto ball ts: 80550.70
 	opponents:
 paths:
 
 Player 0 (id: 4) : 
-	Dynamic-role: BEGIN_POSITION
+	role: BEGIN_POSITION
 	Game State: Begin Position
 	Target position : x: -3.54 y: -4.84
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140157176953512 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[0]: x: -0.72 y: -2.66 cost: 0.00 target: goto target position (7)
-Path[0]: x: -0.05 y: -3.36 cost: 2.97 target: goto target position (7)
-Path[0]: x: -0.64 y: -4.25 cost: 5.95 target: goto target position (7)
-Path[0]: x: -1.14 y: -4.99 cost: 7.67 target: goto target position (7)
-Path[0]: x: -3.54 y: -4.84 cost: 11.03 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 1 (id: 1) : 
-	Dynamic-role: BEGIN_POSITION
+	role: BEGIN_POSITION
 	Game State: Begin Position
 	Target position : x: 1.00 y: -3.39
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140157176953512 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[1]: x: 0.95 y: -3.36 cost: 0.00 target: goto target position (7)
-Path[1]: x: 1.00 y: -3.39 cost: 1.10 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 2 (id: 2) : 
-	Dynamic-role: BEGIN_POSITION
+	role: BEGIN_POSITION
 	Game State: Begin Position
 	Target position : x: -1.00 y: -3.39
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140157176953512 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[2]: x: -1.14 y: -3.39 cost: 0.00 target: goto target position (7)
-Path[2]: x: -1.00 y: -3.39 cost: 1.44 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 Player 3 (id: 3) : 
-	Dynamic-role: BEGIN_POSITION
+	role: BEGIN_POSITION
 	Game State: Begin Position
 	Target position : x: 3.54 y: -4.84
 	Planner target type  goto target position
-	Target_position_is_end_position_of_pass: false
-	Defend info valid:  true defending_id: 140157176953512 between_ball_and_defending_pos: true dist_from_defending_id: 0.00
-Path[3]: x: 3.49 y: -4.83 cost: 0.00 target: goto target position (7)
-Path[3]: x: 3.54 y: -4.84 cost: 1.06 target: goto target position (7)
+	Is pass_desitination: false
+	Defend info valid:  false
 
 	parameters:
 calculateAllPaths = 1
@@ -118,13 +107,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-nr_robots_needed_for_pass_play = 2
-nr_attack_support_during_defensive_period = 0
 wait_on_non_optimal_position_during_prepare_phase = 0
-priority_block_max_ball_y = 0
-priority_block_max_opponent_to_ball_dist = 3
-priority_block_check_ball_in_area = 1
-priority_block_check_opponent_close_to_ball = 1
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -132,7 +115,6 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-select_lowest_robot_nr_for_dynamic_role = 1
 previous_role_bonus_must_be_applied = 1
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
@@ -158,7 +140,6 @@ svgRobotPlanner = 0
 preferredSetplayKicker = 3
 preferredSetplayReceiver = 2
 setplay_margin_to_penalty_area_side = 0.75
-lobShotWhenPossible = 1
 min_y_for_lob_shot = 0.25
 outsideFieldMargin = 0.5
 kickoff_fp1 x = -1
@@ -177,7 +158,6 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-dedicatedSweeper = 0
 autoAssignGoalie = 0
 
 	field:
@@ -243,8 +223,6 @@ PARKING_DISTANCE_TO_LINE = -0.25
    minimumDistanceToEndPoint="3.000"
    minimumEdgeLength="0.300"
    move_to_ball_left_field_position="true"
-   nr_attack_support_during_defensive_period="0"
-   nr_robots_needed_for_pass_play="2"
    nrDynamicPlannerIterations="2"
    nrVerticesFirstCircle="6"
    nrVerticesSecondCircle="8"
@@ -275,14 +253,14 @@ PARKING_DISTANCE_TO_LINE = -0.25
   <tns:Field field_width="12.146" field_length="18.141" field_margin="1.00" goal_width="2.250" goal_length="0.500" goal_area_width="3.625" goal_area_length="0.945"
              penalty_area_present="true" penalty_area_width="6.625" penalty_area_length="2.256" center_circle_diameter="4.255" robot_size="0.520"
              ball_radius="0.110" field_markings_width="0.135" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
-             parking_distance_to_line="-0.250" corner_circle_diameter="0.935" penalty_spot_to_backline="3.130" />
+             parking_distance_to_line="-0.250" corner_circle_diameter="0.935" penalty_spot_to_backline="3.500" />
   <tns:GameState>Begin Position</tns:GameState>
   <tns:Ball x="1.20" y="1.96" velx="0.33" vely="-0.03"/>
   <tns:PreviousBall x="1.14" y="1.97"/>
-  <tns:Team id="4" label="4" x="-0.720" y="-2.657" rz="-0.438" velx="0.986" vely="-0.635" velrz="0.129"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="1" label="1" x="0.951" y="-3.358" rz="-0.044" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="2" label="2" x="-1.139" y="-3.386" rz="-0.408" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="-1" previous_result_y="-3.3875" previous_result_dynamic_role="BEGIN_POSITION"/>
-  <tns:Team id="3" label="3" x="3.492" y="-4.835" rz="0.344" velx="-0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="3.5365" previous_result_y="-4.83525" previous_result_dynamic_role="BEGIN_POSITION"/>
+  <tns:Team id="4" tracking="4" x="-0.720" y="-2.657" rz="-0.438" velx="0.986" vely="-0.635" velrz="0.129"     previous_result_present="true"  previous_result_ts="80550.6" previous_result_x="-1" previous_result_y="-3.3875" previous_result_role="UNDEFINED"/>
+  <tns:Team id="1" tracking="1" x="0.951" y="-3.358" rz="-0.044" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="1" previous_result_y="-3.3875" previous_result_role="UNDEFINED"/>
+  <tns:Team id="2" tracking="2" x="-1.139" y="-3.386" rz="-0.408" velx="0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="-1" previous_result_y="-3.3875" previous_result_role="UNDEFINED"/>
+  <tns:Team id="3" tracking="3" x="3.492" y="-4.835" rz="0.344" velx="-0.000" vely="0.000" velrz="0.000"     previous_result_present="true"  previous_result_ts="80550.7" previous_result_x="3.5365" previous_result_y="-4.83525" previous_result_role="UNDEFINED"/>
   <tns:PickupPosition x="0.000" y="0.000" ts="80550.734" valid="false" />
   <tns:SituationInfo passing_required="true" ball_status="FREE">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
@@ -303,16 +281,16 @@ PARKING_DISTANCE_TO_LINE = -0.25
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: BEGIN_POSITION</text>
 <text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.54 y: -4.84</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 11.028515</text>
+<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: unknown</text>
 <text x="14.25cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BEGIN_POSITION</text>
 <text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.00 y: -3.39</text>
-<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.098181</text>
+<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: unknown</text>
 <text x="14.25cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: BEGIN_POSITION</text>
 <text x="14.45cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -1.00 y: -3.39</text>
-<text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 1.444944</text>
+<text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: unknown</text>
 <text x="14.25cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: BEGIN_POSITION</text>
 <text x="14.45cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.54 y: -4.84</text>
-<text x="14.45cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 1.062448</text>
+<text x="14.45cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: unknown</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="3.76cm" y="1.00cm" width="6.62cm" height="2.26cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -333,51 +311,6 @@ PARKING_DISTANCE_TO_LINE = -0.25
 
 <!-- Teammate -->
 <rect x="10.30cm" y="14.65cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- player-path start 0-->
-<rect x="6.09cm" y="12.47cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 0-->
-<line x1="6.53cm" y1="12.92cm" x2="7.02cm" y2="13.43cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="7.02cm" y1="13.43cm" x2="6.43cm" y2="14.32cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="6.43cm" y1="14.32cm" x2="5.93cm" y2="15.06cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="5.93cm" y1="15.06cm" x2="3.54cm" y2="14.91cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 0-->
-<circle cx="3.54cm" cy="14.91cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 1-->
-<rect x="7.76cm" y="13.17cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 1-->
-<line x1="8.25cm" y1="13.56cm" x2="8.07cm" y2="13.46cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 1-->
-<circle cx="8.07cm" cy="13.46cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 2-->
-<rect x="5.67cm" y="13.20cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 2-->
-<line x1="6.19cm" y1="13.46cm" x2="6.07cm" y2="13.46cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 2-->
-<circle cx="6.07cm" cy="13.46cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 3-->
-<rect x="10.30cm" y="14.65cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 3-->
-<line x1="10.82cm" y1="14.91cm" x2="10.61cm" y2="14.91cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 3-->
-<circle cx="10.61cm" cy="14.91cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 <text x="6.18cm" y="12.90cm" font-size="large" font-weight-absolute="bold" fill="black">4</text><text x="7.86cm" y="13.60cm" font-size="large" font-weight-absolute="bold" fill="black">1</text><text x="5.77cm" y="13.63cm" font-size="large" font-weight-absolute="bold" fill="black">2</text><text x="10.40cm" y="15.07cm" font-size="large" font-weight-absolute="bold" fill="black">3</text>
 <!-- Ball -->
 <circle cx="8.27cm" cy="8.11cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />

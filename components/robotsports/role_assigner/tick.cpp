@@ -347,8 +347,15 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
 		}
 		assignment.mutable_target()->set_x(pp.target.x);
     	assignment.mutable_target()->set_y(pp.target.y);
-//		assignment.mutable_path()->
-//	    std::vector<path_piece_t> path = std::vector<path_piece_t>();
+        for (auto path_idx = 0u; path_idx < pp.path.size(); path_idx++) {
+            auto piece = pp.path[path_idx];
+            auto path_piece = MRA::RobotsportsRoleAssigner::PathPiece();
+            path_piece.set_cost(piece.cost);
+            path_piece.set_target(static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(piece.target));
+            path_piece.set_x(piece.x);
+            path_piece.set_y(piece.y);
+    		assignment.mutable_path()->Add()->CopyFrom(path_piece);
+        }
     	output.mutable_assignments()->Add()->CopyFrom(assignment);
     }
 

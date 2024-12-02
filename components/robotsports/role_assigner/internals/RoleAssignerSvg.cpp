@@ -211,7 +211,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const std::vector<RoleAssignerRe
         Xtext << "\tGame State: " << GameStateAsString(player_path.gamestate) << endl;
         Xtext << "\tTarget position : " << player_path.target.toString() << endl;
         Xtext << "\tPlanner target type  " << PlannerTargetAsString(player_path.planner_target) << endl;
-        Xtext << "\tIS pass_desitination: " << boolToString(player_path.is_pass_desitination) << endl;
+        Xtext << "\tIs pass_desitination: " << boolToString(player_path.is_pass_desitination) << endl;
         Xtext << "\tDefend info valid:  " << boolToString(player_path.defend_info.valid);
         if (player_path.defend_info.valid) {
             Xtext << " defending_id: " << player_path.defend_info.defending_id;

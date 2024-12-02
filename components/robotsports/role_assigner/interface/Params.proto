@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package MRA.RobotsportsRoleAssigner;
 
-//    static bool lobShotWhenPossible;
-
 // see https://msl.robocup.org/wp-content/uploads/2023/01/Rulebook_MSL2023_v24.1.pdf#section.1.1
 // for a picture with the letters included
 // defaults in [brackets] in meters according to official WorldCup size (large field)

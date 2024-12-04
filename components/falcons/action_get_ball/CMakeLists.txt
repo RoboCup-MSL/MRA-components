@@ -5,6 +5,7 @@ add_library(MRA-components-falcons-action-get-ball
     tick.cpp
 )
 target_include_directories(MRA-components-falcons-action-get-ball PUBLIC
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
@@ -18,7 +19,14 @@ add_executable(
     falcons_action_get_ball_test
     test.cpp
 )
-target_include_directories(falcons_action_get_ball_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
+target_include_directories(falcons_action_get_ball_test  
+    PRIVATE 
+        ${MRA_SOURCE_DIR}/base 
+        ${MRA_SOURCE_DIR}/libraries/logging
+        ${MRA_BINARY_DIR}
+    )
+
+
 target_link_libraries(
     falcons_action_get_ball_test
     MRA-components-falcons-action-get-ball

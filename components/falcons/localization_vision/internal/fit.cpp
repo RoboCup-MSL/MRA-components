@@ -23,9 +23,11 @@ void fitThreadFunction(FitCore& _fitCore, cv::Mat const &referenceFloor, std::ve
 
 void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, std::vector<Tracker> &trackers)
 {
-    int num_trackers_before = trackers.size();
     int num_threads = std::min(1, settings.numextrathreads());
+#ifdef MRA_LOGGING_ENABLED
+    int num_trackers_before = trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before, num_threads);
+#endif
 
     // multithreaded execution (main thread idle)
     {
@@ -37,16 +39,20 @@ void FitAlgorithm::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> c
         // wait via ~ThreadPool
     }
 
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers_after = trackers.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after);
+#endif
 }
 
 FitResult FitCore::run(cv::Mat const &referenceFloor, std::vector<cv::Point2f> const &rcsLinePoints, MRA::Geometry::Pose const &guess, MRA::Geometry::Pose const &step)
 {
-    int numpoints = rcsLinePoints.size();
     MRA::Datatypes::Pose guess_ = guess;
     MRA::Datatypes::Pose step_ = step;
+#ifdef MRA_LOGGING_ENABLED
+    int numpoints = rcsLinePoints.size();
     MRA_TRACE_FUNCTION_INPUTS(numpoints, guess_, step_);
+#endif
     FitResult result;
 
     // sanity checks
@@ -130,8 +136,10 @@ cv::Mat FitFunction::transform3dof(cv::Mat const &m, double x, double y, double 
 
 std::vector<cv::Point2f> FitFunction::transformPoints(const std::vector<cv::Point2f> &points, cv::Mat const tmat) const
 {
+#ifdef MRA_LOGGING_ENABLED
     int n = points.size();
     MRA_TRACE_FUNCTION_INPUTS(n, tmat);
+#endif
 
     // Nothing to do?
     if (points.size() == 0)

@@ -54,27 +54,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     role_assigner_data.previous_ball = r_state.previous_ball;
     role_assigner_data.previous_results = r_state.previous_results;
 
-    r_output.player_paths = assign(role_assigner_data);
 
-    // save for next calculation
-    r_state.previous_ball.present = role_assigner_data.ball.is_valid;
-    if (role_assigner_data.ball.is_valid) {
-    	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
-    	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
-    }
-    // todo add previous results
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-/*
- * Main method for dynamic role assignment.
- * Assign roles to team members based on game-situation and location of the players and the ball on the field.
- *
- * Internally the method will based on the game-situation call an other internal method which handles the specific game situation.
- */
-
-std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assigner_data)
-{
     for (auto idx = 0u; idx < role_assigner_data.team.size(); ++idx) {
         RoleAssignerAdminTeam tp_admin = {};
         tp_admin.assigned = false;
@@ -85,7 +65,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
 
 	std::vector<RoleAssignerResult> player_paths_in_correct_order = {};
     if (role_assigner_data.team.size() == 0) {
-    	return player_paths_in_correct_order;
+    	return;
     }
 
     role_assigner_data.original_gamestate = role_assigner_data.gamestate;
@@ -134,7 +114,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
             RoleAssignerResult player_result(role_assigner_data.gamestate);
             player_paths.push_back(player_result);
         }
-        return player_paths; // no path will be planned if game state is NONE
+        return; // no path will be planned if game state is NONE
     }
 
     bool playerPassedBall = false;
@@ -341,7 +321,7 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         {
             save_name = GetRoleAssignerSVGname(role_assigner_data.gamestate, "DYN_ROLE_NONE");
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, role_assigner_data, role_assigner_data.environment, save_name);
+        RoleAssignerSvg::role_assigner_data_to_svg(input, r_state, r_output, parameters, save_name);
 
         // create empty path for robot with a path that ends outside the field.
         std::vector<path_piece_t> path = player_paths[role_assigner_data.this_player_idx].path;
@@ -375,7 +355,12 @@ std::vector<RoleAssignerResult> RoleAssigner::assign(RoleAssignerData& role_assi
         player_paths_in_correct_order.push_back(role_assigner_data.team_admin[team_idx].result);
     }
 
-    return player_paths_in_correct_order;
+    // save for next calculation
+    r_state.previous_ball.present = role_assigner_data.ball.is_valid;
+    if (role_assigner_data.ball.is_valid) {
+    	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
+    	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------

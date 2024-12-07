@@ -85,14 +85,14 @@ target_link_libraries(xml_test
   
 
 # --- planner_regression_checker ---
-add_executable(planner_regression_checker
+add_executable(roleassigner_regression_checker
     test/roleassigner_regression_checker.cpp
     #test/xmlGlobalPathPlanner.cpp
     test/xmlRoleAssigner.cpp
     ${STRATEGY_TESTER_CPP}
   )
 
-target_include_directories(planner_regression_checker PUBLIC
+target_include_directories(roleassigner_regression_checker PUBLIC
     ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
     ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
     ${MRA_SOURCE_DIR}/libraries/logging
@@ -106,7 +106,7 @@ target_include_directories(planner_regression_checker PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/testdata
  )
 
-target_link_libraries(planner_regression_checker
+target_link_libraries(roleassigner_regression_checker
    MRA-components-robotsports-role-assigner
    MRA-components
    ${Boost_FILESYSTEM_LIBRARY}

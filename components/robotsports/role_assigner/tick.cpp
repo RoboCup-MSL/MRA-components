@@ -252,6 +252,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
 
 
     ra_parameters.auto_save_svg_period = params.auto_save_svg_period(); // -1 no save, otherwise interval for auto save svg
+    ra_parameters.svgOutputFileName = params.svgoutputfilename();
 
     // write output to svg file with the name, if empty ("") then no file is written.
 //    static std::string svgOutputFileName;
@@ -359,36 +360,9 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     	output.mutable_assignments()->Add()->CopyFrom(assignment);
     }
 
-    RoleAssignerData tpd = {};
-    tpd.parameters = ra_parameters;
-    tpd.environment = ra_input.environment;
-    tpd.formation = ra_input.formation;
-    tpd.gamestate = ra_input.gamestate;
-    tpd.original_gamestate  = ra_input.gamestate;
-    tpd.ball = ra_input.ball;
-    tpd.parking_positions = ra_input.parking_positions;
-    tpd.ball_pickup_position = ra_input.ball_pickup_position;
-    tpd.passIsRequired = ra_input.passIsRequired;
-    tpd.pass_data = ra_input.pass_data;
-    tpd.previous_ball = ra_state.previous_ball;
-    tpd.team = ra_input.team;
-    tpd.opponents = ra_input.opponents;
 
-    // inputs
-	for (auto idx = 0u; idx < ra_output.player_paths.size(); ++idx) {
-        RoleAssignerAdminTeam tp_admin = {};
-        tp_admin.robotId = ra_input.team[idx].robotId;
-        tp_admin.assigned = true;
-//TODO        tp_admin.result = ra_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
-        tpd.team_admin.push_back(tp_admin);
-	}
-    tpd.previous_ball = ra_state_org.previous_ball;
-	tpd.previous_results = ra_state_org.previous_results;
-
-    auto player_paths = ra_output.player_paths;
-
-    if (player_paths.size() > 0) {
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, ra_input.environment, "test.svg");
+    if (ra_output.player_paths.size() > 0) {
+        RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, "test.svg"); // TODO: needed ?
 
     } else {
         std::cerr << "<< XML: no path received" << std::endl << std::flush;

@@ -405,20 +405,21 @@ std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_
 
 
 
-static std::string RoleAssignerResultToString(const std::vector<RoleAssignerResult>& player_paths, const std::vector<RoleAssignerRobot>& team) {
+static std::string RoleAssignerResultToString(const RoleAssignerOutput& output, const RoleAssignerInput& input) {
     std::stringstream buffer;
-
-    for (unsigned player_idx = 0; player_idx != player_paths.size(); player_idx++) {
-        buffer << "path for player  " << player_idx <<  " id: " << team[player_idx].robotId <<  " -> " << RoleAsString(player_paths[player_idx].role) <<  endl;
-        if (player_paths[player_idx].defend_info.valid) {
-            buffer << " Defend info: valid: true id: "<< player_paths[player_idx].defend_info.defending_id;
-            buffer << " dist to id: " << player_paths[player_idx].defend_info.dist_from_defending_id;
-            buffer << " between ball and id: " << player_paths[player_idx].defend_info.between_ball_and_defending_pos << endl;
+    // TODO use only output
+    for (unsigned player_idx = 0; player_idx != output.player_paths.size(); player_idx++) {
+        buffer << "path for player  " << player_idx <<  " id: " << input.team[player_idx].robotId <<  " -> " 
+               << RoleAsString(output.player_paths[player_idx].role) <<  endl;
+        if (output.player_paths[player_idx].defend_info.valid) {
+            buffer << " Defend info: valid: true id: "<< output.player_paths[player_idx].defend_info.defending_id;
+            buffer << " dist to id: " << output.player_paths[player_idx].defend_info.dist_from_defending_id;
+            buffer << " between ball and id: " << output.player_paths[player_idx].defend_info.between_ball_and_defending_pos << endl;
         }
         else {
             buffer << " Defend info: valid: false" << endl;
         }
-        std::vector<path_piece_t> path = player_paths[player_idx].path;
+        std::vector<path_piece_t> path = output.player_paths[player_idx].path;
         for (unsigned int path_idx = 0; path_idx != path.size(); path_idx++) {
             buffer << "path piece [ " << path_idx << "]  = (" << path[path_idx].x << ", "<< path[path_idx].y << ")" << endl;
         }
@@ -903,70 +904,38 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
                                       robot_strategy_parameter_defense_formation);
 
 
-    RoleAssignerInput tp_input = {};
-    tp_input.gamestate = gameState;
-    tp_input.ball.status = ball_status;
-    tp_input.ball.position = ball_pos;
-    tp_input.ball.velocity = ball_vel;
-    tp_input.ball.is_valid = ball_is_valid;
+    RoleAssignerInput ra_input = {};
+    ra_input.gamestate = gameState;
+    ra_input.ball.status = ball_status;
+    ra_input.ball.position = ball_pos;
+    ra_input.ball.velocity = ball_vel;
+    ra_input.ball.is_valid = ball_is_valid;
 
-    tp_input.formation = formation;
-    tp_input.team = Team;
-    tp_input.opponents = Opponents;
-    tp_input.parking_positions = parking_positions;
-    tp_input.ball_pickup_position = pickup_pos;
-    tp_input.passIsRequired = passIsRequired;
-    tp_input.pass_data = pass_data;
-    tp_input.environment = environment;
+    ra_input.formation = formation;
+    ra_input.team = Team;
+    ra_input.opponents = Opponents;
+    ra_input.parking_positions = parking_positions;
+    ra_input.ball_pickup_position = pickup_pos;
+    ra_input.passIsRequired = passIsRequired;
+    ra_input.pass_data = pass_data;
+    ra_input.environment = environment;
 
-    RoleAssignerState tp_state;
-    tp_state.previous_ball = previous_ball;
-    tp_state.previous_results  = previous_results;
+    RoleAssignerState ra_state;
+    ra_state.previous_ball = previous_ball;
+    ra_state.previous_results  = previous_results;
 
-    RoleAssignerParameters tp_parameters = parameters;
-    RoleAssignerOutput tp_output = {};
-    auto tp_state_org = tp_state;
+    RoleAssignerParameters ra_parameters = parameters;
+    RoleAssignerOutput ra_output = {};
+    auto ra_state_org = ra_state;
 
-    xml_assign_roles(tp_input, tp_state, tp_output, tp_parameters);
+    xml_assign_roles(ra_input, ra_state, ra_output, ra_parameters);
 
-    RoleAssignerData tpd = {};
-    tpd.parameters = tp_parameters;
-    tpd.environment = tp_input.environment;
-    tpd.formation = tp_input.formation;
-    tpd.gamestate = tp_input.gamestate;
-    tpd.original_gamestate  = tp_input.gamestate;
-    tpd.ball = tp_input.ball;
-    tpd.parking_positions = tp_input.parking_positions;
-    tpd.ball_pickup_position = tp_input.ball_pickup_position;
-    tpd.passIsRequired = tp_input.passIsRequired;
-    tpd.pass_data = tp_input.pass_data;
-
-    tpd.team = tp_input.team;
-    tpd.opponents = tp_input.opponents;
-
-    // inputs
-    tpd.previous_ball = tp_state_org.previous_ball;
-//    tpd.previous_ball = tp_state.previous_ball;
-    tpd.previous_results = tp_state.previous_results;
-
-    for (auto idx = 0u; idx < tp_input.team.size(); ++idx) {
-    	RoleAssignerAdminTeam ta = {};
-    	ta.robotId = tp_input.team[idx].robotId;
-        ta.assigned = true;
-        ta.result = tp_output.player_paths[idx]; //(RoleAssignerData.team_admin[idx].result);
-        tpd.team_admin.push_back(ta);
-    }
-    player_paths = tp_output.player_paths;
-
-    RunData run_data (tpd, player_paths);
-    run_results.push_back(run_data);
-
-    if (player_paths.size() > 0) {
+    if (ra_output.player_paths.size() > 0) {
         if (not print_only_errors) {
             cerr << "<< XML: print received path " << endl << flush;
-            cerr << RoleAssignerResultToString(player_paths, tpd.team) << endl << flush;
+            cerr << RoleAssignerResultToString(ra_output, ra_input) << endl << flush;
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(player_paths, tpd, environment, run_filename);
+        RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

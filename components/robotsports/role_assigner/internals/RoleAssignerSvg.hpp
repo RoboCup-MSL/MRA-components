@@ -13,15 +13,18 @@
 
 namespace MRA {
 
-class RoleAssignerResult;
-class RoleAssignerData;
+class RoleAssignerState;
+class RoleAssignerInput;
+class RoleAssignerOutput;
+class RoleAssignerParameters;
 
 class RoleAssignerSvg {
 public:
-    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  rEnvironment,
-                                    const std::string& save_name);
-    static void role_assigner_data_to_svg(const std::vector<RoleAssignerResult>& player_paths, const RoleAssignerData& data, const Environment&  Environment,
-                                    const std::string& save_name, const std::vector<RoleAssignerResult>&  comparing_player_paths);
+    static void role_assigner_data_to_svg(const RoleAssignerInput& input,
+                const RoleAssignerState& r_state,
+                const RoleAssignerOutput& r_output,
+                const RoleAssignerParameters& parameters,
+                const std::string& save_name);
 
 private:
 

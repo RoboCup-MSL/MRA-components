@@ -33,8 +33,6 @@ public:
                 RoleAssignerOutput& r_output,
                 const RoleAssignerParameters& parameters);
 
-    std::vector<RoleAssignerResult> assign(RoleAssignerData& role_assigner_data);
-
 private:
     class AssignToTargetData {
     public:

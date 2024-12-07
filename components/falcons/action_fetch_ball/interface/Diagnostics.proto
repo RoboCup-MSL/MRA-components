@@ -4,5 +4,5 @@ package MRA.FalconsActionFetchBall;
 
 message Diagnostics
 {
-    string verdict = 1;
+    string failureReason = 1; // optional, set only if action failed
 }

@@ -13,7 +13,7 @@ using namespace MRA;
 #include <cmath>
 
 
-bool checkParams(FalconsActionFetchBall::ParamsType const &params, std::string &verdict);
+bool checkParams(FalconsActionFetchBall::ParamsType const &params, std::string &failureReason);
 
 int FalconsActionFetchBall::FalconsActionFetchBall::tick
 (
@@ -36,11 +36,11 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         diagnostics.Clear();
 
         // check params
-        std::string verdict;
-        if (!checkParams(params, verdict))
+        std::string failureReason;
+        if (!checkParams(params, failureReason))
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict(verdict);
+            diagnostics.set_failurereason(failureReason);
             return 0;
         }
 
@@ -58,7 +58,7 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         if (!ws.robot().active())
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("robot is inactive");
+            diagnostics.set_failurereason("robot is inactive");
             return error_value;
         }
 
@@ -66,7 +66,7 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         if (!ws.has_ball())
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("robot lost track of the ball");
+            diagnostics.set_failurereason("robot lost track of the ball");
             return error_value;
         }
 
@@ -76,7 +76,7 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
             if (teammember.hasball())
             {
                 output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-                diagnostics.set_verdict("teammate got the ball");
+                diagnostics.set_failurereason("teammate got the ball");
                 return error_value;
             }
         }
@@ -91,7 +91,7 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
         if (bpos.size() > action_radius)
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("ball too far away");
+            diagnostics.set_failurereason("ball too far away");
             return error_value;
         }
 
@@ -144,8 +144,9 @@ int FalconsActionFetchBall::FalconsActionFetchBall::tick
     return error_value;
 }
 
-bool checkParams(FalconsActionFetchBall::ParamsType const &params, std::string &verdict)
+bool checkParams(FalconsActionFetchBall::ParamsType const &params, std::string &failureReason)
 {
     // nothing to check for this action
     return true;
 }
+

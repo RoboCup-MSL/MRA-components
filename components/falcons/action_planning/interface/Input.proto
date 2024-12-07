@@ -3,23 +3,17 @@ syntax = "proto3";
 package MRA.FalconsActionPlanning;
 
 import "datatypes/Pose.proto";
-import "datatypes/PosVel.proto";
 import "datatypes/WorldState.proto";
 import "datatypes/ActionType.proto";
+import "components/falcons/action_get_ball/interface/Input.proto";
+import "components/falcons/action_stop/interface/Input.proto";
+import "components/falcons/action_move/interface/Input.proto";
+import "components/falcons/action_aimed_kick/interface/Input.proto";
+import "components/falcons/action_park/interface/Input.proto";
+import "components/falcons/action_catch_ball/interface/Input.proto";
+import "components/falcons/action_keeper/interface/Input.proto";
 
-message ActionStopInput
-{
-    bool ballHandlersEnabled = 1; // relay, i.e. pass on the setting
-}
-
-message ActionMoveInput
-{
-    MRA.Datatypes.PosVel motionTarget = 1; // in FCS
-    int32 motionType = 2; // relay, optionally set to dribble
-    bool ballHandlersEnabled = 3;
-}
-
-message ActionDashInput
+message ActionDashInput // TODO move
 {
     oneof target
     {
@@ -28,62 +22,11 @@ message ActionDashInput
     }
 }
 
-message ActionKickInput
+message ActionKickInput // TODO move
 {
-    float power = 1;
-    float height = 2;
+    double power = 1;
+    double height = 2;
     bool discharge = 3;
-}
-
-message ActionAimedKickInput
-{
-    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
-}
-
-message ActionGetBallInput
-{
-    int32 motionType = 1; // optional
-    float radius = 2; // optional
-}
-
-message ActionCatchInput
-{
-    float radius = 1; // optional
-}
-
-message ActionShieldInput
-{
-    // no inputs
-}
-
-message ActionTackleInput
-{
-    // no inputs
-}
-
-message ActionKeeperInput
-{
-    // no inputs
-}
-
-message ActionBumpInput
-{
-    MRA.Datatypes.PosVel target = 1; // typically only using pos.x and pos.y
-}
-
-message ActionParkInput
-{
-    // no inputs
-}
-
-message ActionPrepareInput
-{
-    // no inputs
-}
-
-message ActionAliveInput
-{
-    // no inputs
 }
 
 message ActionInputs
@@ -91,24 +34,24 @@ message ActionInputs
     MRA.Datatypes.ActionType type = 1; // enum
     oneof inputs
     {
-        // idle action has no inputs
-        ActionStopInput stop = 2;
-        ActionMoveInput move = 3;
-        ActionMoveInput dribble = 4; // dribble is a variant of move
-        ActionDashInput dash = 5;
+        MRA.FalconsActionStop.Input stop = 2;
+        MRA.FalconsActionMove.Input move = 3;
+        // TODO dribble = 4
+        // TODO dash = 5
         ActionKickInput kick = 6;
-        ActionAimedKickInput pass = 7;
-        ActionAimedKickInput shoot = 8;
-        ActionAimedKickInput lob = 9;
-        ActionGetBallInput getball = 10;
-        ActionCatchInput catch = 11;
-        ActionShieldInput shield = 12;
-        ActionTackleInput tackle = 13;
-        ActionKeeperInput keeper = 14;
-        ActionBumpInput bump = 15;
-        ActionParkInput park = 16;
-        ActionPrepareInput prepare = 17;
-        ActionAliveInput alive = 18;
+        MRA.FalconsActionAimedKick.Input pass = 7;
+        MRA.FalconsActionAimedKick.Input shoot = 8;
+        //ActionLobShotInput lob = 9;
+        MRA.FalconsActionGetBall.Input getball = 10;
+        MRA.FalconsActionCatchBall.Input catchball = 11;
+        //ActionShieldInput shield = 12;
+        // TODO tackle = 13
+        MRA.FalconsActionKeeper.Input keeper = 14;
+        // TODO bump = 15
+        MRA.FalconsActionPark.Input park = 16;
+        // TODO prepare = 17
+        // TODO alive = 18
+        // TODO follow = 19
     }
 }
 
@@ -117,4 +60,3 @@ message Input
     ActionInputs action = 1;
     MRA.Datatypes.WorldState worldState = 2;
 }
-

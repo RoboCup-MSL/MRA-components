@@ -130,8 +130,10 @@ void Floor::letterModelToShapes(StandardLetterModel const &model, std::vector<MR
             shapes.push_back(s);
         }
     }
+#ifdef MRA_LOGGING_ENABLED
     int numShapes = shapes.size();
     MRA_TRACE_FUNCTION_OUTPUT(numShapes);
+#endif
 }
 
 cv::Point Floor::pointFcsToPixel(MRA::Datatypes::Point const &p) const
@@ -221,8 +223,10 @@ int Floor::blurSinglePass(cv::Mat &image, std::vector<cv::Point> &whitePixels, f
 
 void Floor::shapesToCvMat(std::vector<MRA::Datatypes::Shape> const &shapes, cv::Mat &m) const
 {
+#ifdef MRA_LOGGING_ENABLED
     int numShapes = shapes.size();
     MRA_TRACE_FUNCTION_INPUTS(numShapes);
+#endif
     cv::Scalar color(255, 255, 255); // white
     for (auto const &s: shapes)
     {

@@ -8,6 +8,7 @@ add_library(MRA-libraries-geometry
     pose.cpp
     position.cpp
     velocity.cpp
+    intersect.cpp
 )
 
 target_include_directories(MRA-libraries-geometry PUBLIC

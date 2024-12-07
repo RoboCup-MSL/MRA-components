@@ -171,13 +171,14 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
     int n = result.size();
     // vector clipping
     int max_size = _params.solver().linepoints().maxcount();
-    int dropped = 0;
     if (n > max_size) {
-        dropped = max_size - n;
         result.resize(max_size);
         n = max_size;
     }
+#ifdef MRA_LOGGING_ENABLED
+    int dropped = max(0, max_size - n);
     MRA_TRACE_FUNCTION_OUTPUTS(n, dropped);
+#endif
     return result;
 }
 
@@ -215,15 +216,19 @@ std::vector<Tracker> Solver::createTrackers() const
     bool initial = (_state.tick() == 0);
     g.run(result, _params, initial);
 
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers = result.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers);
+#endif
     return result;
 }
 
 void Solver::runFitUpdateTrackers()
 {
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers = _trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers);
+#endif
     // run the fit algorithm (multithreaded, one per tracker) and update trackers
     _fitAlgorithm.run(_referenceFloorMat, _linePoints, _trackers);
 
@@ -239,31 +244,39 @@ void Solver::runFitUpdateTrackers()
         _fitResult.pose = tr.fitResult;
         _fitResult.score = tr.fitScore;
         _fitResult.path = tr.fitPath;
+#ifdef MRA_LOGGING_ENABLED
         MRA::Datatypes::Pose best_pose = _fitResult.pose;
         auto best_score = _fitResult.score;
         MRA_TRACE_FUNCTION_OUTPUTS(best_pose, best_score);
+#endif
     }
 }
 
 void Solver::cleanupBadTrackers()
 {
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers_before = _trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+#endif
 
     float scoreThreshold = _params.solver().scoring().thresholdkeepstate();
     _trackers.erase(std::remove_if(_trackers.begin(), _trackers.end(), [scoreThreshold](Tracker const &tr) { return tr.fitScore > scoreThreshold; }), _trackers.end());
-    int num_dropped = num_trackers_before - _trackers.size();
 
+#ifdef MRA_LOGGING_ENABLED
+    int num_dropped = num_trackers_before - _trackers.size();
     int num_trackers_after = _trackers.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+#endif
 }
 
 // check if two positions are almost the same, optionally also taking field symmetry into account
 #include "angles.hpp"
 bool positions_equal(MRA::Geometry::Position const &pos1, MRA::Geometry::Position const &pos2, double tol_xy, double tol_rz, bool also_sym = false)
 {
+#ifdef MRA_LOGGING_ENABLED
     MRA::Datatypes::Pose p1 = pos1, p2 = pos2;
     MRA_TRACE_FUNCTION_INPUTS(p1, p2);
+#endif
     // first try data as is
     double delta_x = pos1.x - pos2.x;
     double delta_y = pos1.y - pos2.y;
@@ -283,8 +296,10 @@ bool positions_equal(MRA::Geometry::Position const &pos1, MRA::Geometry::Positio
 
 void Solver::cleanupDuplicateTrackers()
 {
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers_before = _trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers_before);
+#endif
 
     if (_trackers.size() >= 2)
     {
@@ -305,9 +320,11 @@ void Solver::cleanupDuplicateTrackers()
         }
     }
 
+#ifdef MRA_LOGGING_ENABLED
     int num_dropped = num_trackers_before - _trackers.size();
     int num_trackers_after = _trackers.size();
     MRA_TRACE_FUNCTION_OUTPUTS(num_trackers_after, num_dropped);
+#endif
 }
 
 void Solver::setOutputsAndState()
@@ -445,15 +462,19 @@ void Solver::manualMode()
         _fitResult.path = fit.getPath();
         _fitResult.score = score;
     }
+#ifdef MRA_LOGGING_ENABLED
     auto pose = _fitResult.pose;
     auto score = _fitResult.score;
     MRA_TRACE_FUNCTION_OUTPUTS(pose.x, pose.y, pose.rz, score);
+#endif
 }
 
 int Solver::run()
 {
+#ifdef MRA_LOGGING_ENABLED
     int tick = _state.tick();
     MRA_TRACE_FUNCTION_INPUTS(tick);
+#endif
     // try to keep the design as simple as possible: minimize state, trackers over time (that is for worldModel to handle)
     // initially (and maybe also occasionally?) we should perhaps do some kind of grid search
     // that is handled in the FitAlgorithm, also optional multithreading and guessing / search space partitioning

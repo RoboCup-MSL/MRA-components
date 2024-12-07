@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package MRA.FalconsActionFetchBall;
+
+message Diagnostics
+{
+    string verdict = 1;
+}

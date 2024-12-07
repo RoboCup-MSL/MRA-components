@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package MRA.FalconsActionMove;
+
+import "datatypes/ActionResult.proto";
+import "datatypes/PosVel.proto";
+
+message Output
+{
+    MRA.Datatypes.ActionResult actionresult = 1;
+    MRA.Datatypes.PosVel motionTarget = 2; // in FCS
+    int32 motionType = 3;
+    // motionType 0 (default): unspecified, typically fast/normal robot capability
+    // motionType 1: dribble, typically requires special tuning and largely depends on ballHandlers capability
+    bool stop = 4; // optional at successful completion
+    bool ballHandlersEnabled = 5; // relay input
+}

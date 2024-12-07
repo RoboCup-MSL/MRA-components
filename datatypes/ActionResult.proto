@@ -4,8 +4,9 @@ package MRA.Datatypes;
 
 enum ActionResult
 {
-    FAILED = 0;
-    RUNNING = 1;
-    PASSED = 2;
+    INVALID = 0;
+    FAILED = 1;
+    RUNNING = 2;
+    PASSED = 3;
 }
 

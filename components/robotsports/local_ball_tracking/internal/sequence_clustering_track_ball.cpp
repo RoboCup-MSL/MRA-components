@@ -112,6 +112,7 @@ static sc_result_e init_hyp(hypothesis_t hypothesises[MAXHYP]) {
 }
 
 
+#ifdef MRA_LOGGING_ENABLED
 static std::string SC_result_to_string(sc_result_e result) {
     std::string result_string = "";
     switch (result) {
@@ -140,6 +141,7 @@ static std::string SC_result_to_string(sc_result_e result) {
 
     return result_string;
 }
+#endif
 
 static sc_result_e fbuf_add(hypothesis_t& r_hypothesis,
                             const ball_candidate_t& ball_candidate,

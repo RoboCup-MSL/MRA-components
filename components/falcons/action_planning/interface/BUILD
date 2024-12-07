@@ -11,7 +11,13 @@ proto_library(
     deps = [
         "@com_google_protobuf//:timestamp_proto",
         "//datatypes:MRA_proto",
-        
+        "//components/falcons/action_get_ball/interface:interface_proto",
+        "//components/falcons/action_stop/interface:interface_proto",
+        "//components/falcons/action_move/interface:interface_proto",
+        "//components/falcons/action_aimed_kick/interface:interface_proto",
+        "//components/falcons/action_park/interface:interface_proto",
+        "//components/falcons/action_catch_ball/interface:interface_proto",
+        "//components/falcons/action_keeper/interface:interface_proto",
     ],
 )
 

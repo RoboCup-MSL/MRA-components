@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package MRA.FalconsActionKeeper;
+
+message Params
+{
+    // only respond to ball trajectory if it is expected to come close enough
+    double captureRadius = 1; // [m]
+
+    // only respond to balls which are coming sufficiently fast
+    double ballSpeedThreshold = 2; // [m/s]
+
+    // y coordinate of the line on which to position
+    double baselineY = 3; // typically around -11m for large MSL field
+
+    // x limit coordinate on which to position
+    double maxMoveX = 4; // typically around 1m
+
+    // homing is intended for the initialization and sideline substitution
+    // if robot is too far away from homepos, which should be close to the goal area, then move to home
+    double homeDistance = 5;
+    double homePosYoffset = 6; // add to baselineY
+}

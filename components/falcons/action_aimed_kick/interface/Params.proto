@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package MRA.FalconsActionAimedKick;
+
+message Params
+{
+    double angleAccuracyThreshold = 1;
+    double maxCooldownDuration = 2;
+    double ballTargetProximity = 3;
+}

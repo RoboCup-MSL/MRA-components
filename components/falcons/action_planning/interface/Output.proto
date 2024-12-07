@@ -5,6 +5,8 @@ package MRA.FalconsActionPlanning;
 import "datatypes/ActionResult.proto";
 import "datatypes/PosVel.proto";
 import "datatypes/Pose.proto";
+import "components/falcons/action_aimed_kick/interface/Common.proto";
+import "components/falcons/action_keeper/interface/Output.proto";
 
 // TODO: are these setpoints generic enough to be moved to shared Datatypes?
 
@@ -21,14 +23,6 @@ message MoveSetpoint
     bool obstacleAvoidanceDisabled = 4; // optional, default enabled
 }
 
-enum ShootingPhase
-{
-    SHOOT_PHASE_INVALID = 0;
-    SHOOT_PHASE_PREPARE = 1; // moving the height actuator may take a while
-    SHOOT_PHASE_DISCHARGE = 2; // one moment actually, not really a phase
-    SHOOT_PHASE_COOLDOWN = 3; // give ball some time to leave before signaling success, perhaps evaluate shot result
-}
-
 enum ShootingType
 {
     // this affects the shot solver in ShootPlanning
@@ -40,31 +34,18 @@ enum ShootingType
 
 message ShootingSetpoint
 {
-    float pos_x = 1; // FCS coordinates
-    float pos_y = 2;
-    float pos_z = 3;
-    ShootingPhase phase = 4;
-    ShootingType type = 5; // settings for the shot solver
+    double pos_x = 1; // FCS coordinates
+    double pos_y = 2;
+    double pos_z = 3;
+    MRA.FalconsActionAimedKick.ShootingPhase phase = 4;
+    ShootingType type = 5;
 }
 
 message KickerSetpoint
 {
-    float power = 1;
-    float height = 2;
+    double power = 1;
+    double height = 2;
     bool discharge = 3; // trigger
-}
-
-enum KeeperFrameExtensionDirection
-{
-    KEEPER_FRAME_EXTEND_NONE = 0; // retract all, satisfy MSL rules
-    KEEPER_FRAME_EXTEND_TOP = 1;
-    KEEPER_FRAME_EXTEND_LEFT = 2; // from keeper perspective
-    KEEPER_FRAME_EXTEND_RIGHT = 3;
-}
-
-message KeeperExtensionSetpoint
-{
-    KeeperFrameExtensionDirection direction = 1;
 }
 
 message Setpoints
@@ -77,7 +58,7 @@ message Setpoints
     MRA.Datatypes.Pose velocity = 3;
     ShootingSetpoint shoot = 4;
     KickerSetpoint kick = 5;
-    KeeperExtensionSetpoint keeperExtension = 6;
+    MRA.FalconsActionKeeper.KeeperFrameSetpoint keeperFrame = 6;
 }
 
 message Output
@@ -85,4 +66,3 @@ message Output
     Setpoints setpoints = 1;
     MRA.Datatypes.ActionResult actionresult = 2;
 }
-

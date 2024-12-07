@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package MRA.FalconsGetballIntercept;
-
-message Params
-{
-    double actionRadius = 1; // don't bother if ball vector is too far away (return FAILED)
-}
-

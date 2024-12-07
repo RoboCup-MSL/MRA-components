@@ -30,10 +30,10 @@ namespace MRA::FalconsActionPlanning
 {
 
 typedef MRA::FalconsActionPlanning::Input InputType;
-typedef google::protobuf::Empty ParamsType; // no .proto -> unused
-typedef google::protobuf::Empty StateType; // no .proto -> unused
+typedef MRA::FalconsActionPlanning::Params ParamsType;
+typedef MRA::FalconsActionPlanning::State StateType;
 typedef MRA::FalconsActionPlanning::Output OutputType;
-typedef google::protobuf::Empty DiagnosticsType; // no .proto -> unused
+typedef MRA::FalconsActionPlanning::Diagnostics DiagnosticsType;
 
 
 class FalconsActionPlanning: public MRAInterface<InputType, ParamsType, StateType, OutputType, DiagnosticsType>

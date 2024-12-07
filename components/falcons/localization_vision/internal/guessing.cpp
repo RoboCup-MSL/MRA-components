@@ -36,8 +36,10 @@ std::optional<MRA::Geometry::Point> Guesser::tryGuess(std::vector<MRA::Geometry:
 
 void Guesser::run(std::vector<Tracker> &trackers, Params const &params, bool initial) const
 {
+#ifdef MRA_LOGGING_ENABLED
     int num_trackers = trackers.size();
     MRA_TRACE_FUNCTION_INPUTS(num_trackers, initial);
+#endif
 
     // if so configured, add new fit attempts (as trackers)
     // so that the fit algorithm can run them all

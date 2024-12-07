@@ -85,8 +85,10 @@ TEST(FalconsLocalizationVisionTest, referenceFloor)
 // Template for testing calculation/scoring function - 0.0 is perfect, 1.0 is worst
 double FalconsLocalizationVisionTestCalc(std::vector<cv::Point2f> const &points, double x, double y, double rz)
 {
+#ifdef MRA_LOGGING_ENABLED
     int n = points.size();
     MRA_TRACE_FUNCTION_INPUTS(n, x, y, rz);
+#endif
     // Arrange
     auto m = FalconsLocalizationVision::FalconsLocalizationVision();
     auto params = m.defaultParams();
@@ -113,8 +115,10 @@ std::vector<cv::Point2f> makeFieldPoints(double szx, double szy)
     result.push_back(cv::Point2f(-x, 0.0));
     result.push_back(cv::Point2f(0.0, y));
     result.push_back(cv::Point2f(0.0, -y));
+#ifdef MRA_LOGGING_ENABLED
     int n = result.size();
     MRA_TRACE_FUNCTION_OUTPUTS(n);
+#endif
     return result;
 }
 
@@ -134,8 +138,10 @@ std::vector<cv::Point2f> makeCirclePoints(double radius, bool diagonal)
         result.push_back(cv::Point2f(-s, s));
         result.push_back(cv::Point2f(-s, -s));
     }
+#ifdef MRA_LOGGING_ENABLED
     int n = result.size();
     MRA_TRACE_FUNCTION_OUTPUTS(n);
+#endif
     return result;
 }
 

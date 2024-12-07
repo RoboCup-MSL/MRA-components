@@ -83,6 +83,11 @@ protected:
         return output.actionresult();
     }
 
+    std::string getLastActionFailureReason()
+    {
+        return diagnostics.failurereason();
+    }
+
     FalconsActionPlanning::Diagnostics getDiagnostics()
     {
         return diagnostics;
@@ -308,10 +313,12 @@ TEST_F(TestActionPlanner, TickTestGetBallActionInactiveRobot)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // TODO: this does not make much sense and likely gets overruled at lower levels in Falcons SW
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "robot is inactive";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallActionNoBall)
@@ -320,6 +327,7 @@ TEST_F(TestActionPlanner, TickTestGetBallActionNoBall)
 
     // setup inputs
     Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
     testWorldState.clear_ball();
 
     FalconsActionPlanning::ActionInputs testActionInput;
@@ -336,10 +344,12 @@ TEST_F(TestActionPlanner, TickTestGetBallActionNoBall)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "robot lost track of the ball";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallActionTeammateHasBall)
@@ -348,6 +358,8 @@ TEST_F(TestActionPlanner, TickTestGetBallActionTeammateHasBall)
 
     // setup inputs
     Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_ball()->mutable_position()->set_x(0.0);
     auto teammate = testWorldState.add_teammates();
     teammate->set_hasball(true);
 
@@ -365,10 +377,12 @@ TEST_F(TestActionPlanner, TickTestGetBallActionTeammateHasBall)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // TODO: when accidentally scrumming with teammate, maybe better to disable?
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "teammate got the ball";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
@@ -401,10 +415,12 @@ TEST_F(TestActionPlanner, TickTestGetBallActionRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallFarNoRadiusFail)

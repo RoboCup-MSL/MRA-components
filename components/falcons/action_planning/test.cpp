@@ -132,10 +132,12 @@ TEST_F(TestActionPlanner, TickStopBhDisabled)
     expectedSetpoints.mutable_move()->set_stop(true);
     expectedSetpoints.mutable_bh()->set_enabled(false);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
+    std::string expectedFailureReason = "";
 
     // Check
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickStopBhEnabled)
@@ -156,10 +158,12 @@ TEST_F(TestActionPlanner, TickStopBhEnabled)
     expectedSetpoints.mutable_move()->set_stop(true);
     expectedSetpoints.mutable_bh()->set_enabled(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
+    std::string expectedFailureReason = "";
 
     // Check
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestMoveActionAtTarget)
@@ -191,10 +195,12 @@ TEST_F(TestActionPlanner, TickTestMoveActionAtTarget)
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_move()->set_stop(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
@@ -228,10 +234,12 @@ TEST_F(TestActionPlanner, TickTestMoveActionNotAtTarget)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5);
     expectedSetpoints.mutable_bh()->set_enabled(false);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestMoveActionDribble)
@@ -257,10 +265,12 @@ TEST_F(TestActionPlanner, TickTestMoveActionDribble)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_move()->set_motiontype(1);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallActionHasBall)
@@ -285,10 +295,12 @@ TEST_F(TestActionPlanner, TickTestGetBallActionHasBall)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::PASSED;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallActionInactiveRobot)
@@ -449,10 +461,12 @@ TEST_F(TestActionPlanner, TickTestGetBallFarNoRadiusFail)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "ball too far away";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
@@ -485,10 +499,12 @@ TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(2.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestGetBallRadiusClipping)
@@ -518,10 +534,12 @@ TEST_F(TestActionPlanner, TickTestGetBallRadiusClipping)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "ball too far away";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestPassActionNoBall)
@@ -548,10 +566,12 @@ TEST_F(TestActionPlanner, TickTestPassActionNoBall)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_INVALID);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "robot lost track of the ball";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestPassActionRunning)
@@ -590,10 +610,12 @@ TEST_F(TestActionPlanner, TickTestPassActionRunning)
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
@@ -632,10 +654,12 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // Check the outputs after the first tick
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // For second tick, update inputs to finish the robot rotation, so the action will advance to DISCHARGE phase and kick the ball
     testWorldState.mutable_robot()->mutable_position()->set_x(1.0);
@@ -652,6 +676,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     // Check the outputs after the second tick
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Tick: just check that the action transitions to COOLDOWN phase
     feedTick();
@@ -660,6 +685,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Tick: simulate that the ball has left the robot, action should still be RUNNING
     testWorldState.mutable_ball()->mutable_position()->set_x(3.0);
@@ -671,6 +697,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Tick: simulate that the ball has arrived at target, action should finish PASSED
     testWorldState.mutable_ball()->mutable_position()->set_x(5.0);
@@ -686,6 +713,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getDiagnostics(), EqualsProto(expectedDiagnostics));
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Alternate ending 1
     // Tick: simulate that the ball slightly missed target, check reported aim error
@@ -701,6 +729,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
     EXPECT_THAT(getDiagnostics(), EqualsProtoWithTolerance(expectedDiagnostics, 1e-9));
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Alternate ending 2
     // Tick: simulate that the ball did not arrive at target and the cooldown expired, action should finish FAILED
@@ -712,8 +741,10 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
 
     // Check the outputs
     expectedActionResult = Datatypes::ActionResult::FAILED;
+    expectedFailureReason = ""; // TODO: fill something in here
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionParkSuccess)
@@ -754,12 +785,13 @@ TEST_F(TestActionPlanner, TickTestActionParkSuccess)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(3.0); // center.y of TTA
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5 * M_PI); // facing the field
     expectedSetpoints.mutable_bh()->set_enabled(false);
-
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // Simulate robot arriving at the target position
     testWorldState.mutable_robot()->mutable_position()->set_x(7.0);
@@ -774,6 +806,7 @@ TEST_F(TestActionPlanner, TickTestActionParkSuccess)
 
     // check the outputs
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
@@ -822,12 +855,13 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(3.0);
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.5 * M_PI);
     expectedSetpoints.mutable_bh()->set_enabled(false);
-
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = ""; // TODO: fill something in here
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 
     // simulate that robot is nearby TTA, now check for blocked position
     testWorldState.mutable_robot()->mutable_position()->set_x(5.0);
@@ -843,12 +877,12 @@ TEST_F(TestActionPlanner, TickTestActionParkFailDueToObstacles)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.0); // No movement
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.0); // No movement
     expectedSetpoints.mutable_bh()->set_enabled(false);
-
     expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
 
     // check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionCatchRobotHasBall)
@@ -872,10 +906,12 @@ TEST_F(TestActionPlanner, TickTestActionCatchRobotHasBall)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true);
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::PASSED;
+    std::string expectedFailureReason = "";
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
@@ -918,12 +954,13 @@ TEST_F(TestActionPlanner, TickTestActionCatchGoodWeather)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.5); // Align to ball's y-axis
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.5 * M_PI); // Face the ball, ball is coming from positive x-axis
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
-
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
@@ -979,12 +1016,13 @@ TEST_F(TestActionPlanner, TickTestActionCatchEightDirections)
         expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(dx * c);
         expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(rz);
         expectedSetpoints.mutable_bh()->set_enabled(true);
-
         MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+        std::string expectedFailureReason = "";
 
         // Check the outputs
         EXPECT_THAT(getLastSetpoints(), EqualsProtoWithTolerance(expectedSetpoints, 1e-6));
         EXPECT_EQ(getLastActionResult(), expectedActionResult);
+        EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
     }
 }
 
@@ -1018,10 +1056,12 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallMovingAway)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "ball not moving towards robot";
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
@@ -1054,10 +1094,12 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
     FalconsActionPlanning::Setpoints expectedSetpoints;
     expectedSetpoints.mutable_bh()->set_enabled(true); // Ball handlers enabled
     MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
 
     // Check the outputs
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
 int main(int argc, char **argv)

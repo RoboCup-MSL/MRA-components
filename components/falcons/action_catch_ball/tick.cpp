@@ -10,7 +10,7 @@ using namespace MRA;
 #include "geometry.hpp"
 
 
-bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &verdict);
+bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &failureReason);
 int calc_intercept_strafe(FalconsActionCatchBall::InputType const &input, FalconsActionCatchBall::ParamsType const &params, FalconsActionCatchBall::OutputType &output, FalconsActionCatchBall::DiagnosticsType &diagnostics);
 
 int FalconsActionCatchBall::FalconsActionCatchBall::tick
@@ -34,11 +34,11 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         diagnostics.Clear();
 
         // check params
-        std::string verdict;
-        if (!checkParams(params, verdict))
+        std::string failureReason;
+        if (!checkParams(params, failureReason))
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict(verdict);
+            diagnostics.set_failurereason(failureReason);
             return 0;
         }
 
@@ -56,7 +56,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         if (!ws.robot().active())
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("robot is inactive");
+            diagnostics.set_failurereason("robot is inactive");
             return error_value;
         }
 
@@ -64,7 +64,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         if (!ws.has_ball())
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("robot lost track of the ball");
+            diagnostics.set_failurereason("robot lost track of the ball");
             return error_value;
         }
 
@@ -74,7 +74,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
             if (teammember.hasball())
             {
                 output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-                diagnostics.set_verdict("teammate got the ball");
+                diagnostics.set_failurereason("teammate got the ball");
                 return error_value;
             }
         }
@@ -90,7 +90,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
             if (state.ballwasmovingfastenough())
             {
                 output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-                diagnostics.set_verdict("ball not moving fast enough anymore");
+                diagnostics.set_failurereason("ball not moving fast enough anymore");
             }
             else
             {
@@ -109,7 +109,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         if (!ballmovingtowardsrobot)
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("ball not moving towards robot");
+            diagnostics.set_failurereason("ball not moving towards robot");
             return error_value;
         }
 
@@ -118,7 +118,7 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
         {
             //return calc_intercept_proactive(input, params, output, diagnostics);
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict("proactive intercept not yet implemented");
+            diagnostics.set_failurereason("proactive intercept not yet implemented");
         }
         else
         {
@@ -140,16 +140,16 @@ int FalconsActionCatchBall::FalconsActionCatchBall::tick
     return error_value;
 }
 
-bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &verdict)
+bool checkParams(FalconsActionCatchBall::ParamsType const &params, std::string &failureReason)
 {
     if (params.ballspeedthreshold() == 0)
     {
-        verdict = "invalid configuration parameter ballspeedthreshold: should be larger than zero";
+        failureReason = "invalid configuration parameter ballspeedthreshold: should be larger than zero";
         return false;
     }
     if (params.captureradius() == 0)
     {
-        verdict = "invalid configuration parameter captureradius: should be larger than zero";
+        failureReason = "invalid configuration parameter captureradius: should be larger than zero";
         return false;
     }
     return true;
@@ -198,7 +198,7 @@ int calc_intercept_strafe(
     if (!ballmovingwithincapturerange)
     {
         output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-        diagnostics.set_verdict("ball trajectory too far away");
+        diagnostics.set_failurereason("ball trajectory too far away");
         return 0;
     }
 

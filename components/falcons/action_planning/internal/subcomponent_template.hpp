@@ -75,6 +75,16 @@ int handleAction(
         stateRef->MutableMessage(state.mutable_action(), stateField)->CopyFrom(subcomponent_state);
         diagnosticsRef->MutableMessage(diagnostics.mutable_action(), diagnosticsField)->CopyFrom(subcomponent_diagnostics);
 
+        // copy diagnostics string failureReason if present
+        const google::protobuf::Descriptor* subcomponent_diagnosticsDesc = subcomponent_diagnostics.GetDescriptor();
+        const google::protobuf::Reflection* subcomponent_diagnosticsRef = subcomponent_diagnostics.GetReflection();
+        const google::protobuf::FieldDescriptor* failureReasonField = subcomponent_diagnosticsDesc->FindFieldByName("failureReason");
+        if (failureReasonField)
+        {
+            const std::string& failurereason = subcomponent_diagnosticsRef->GetString(subcomponent_diagnostics, failureReasonField);
+            diagnostics.set_failurereason(failurereason);
+        }
+
         // specific output mapping
         outputFunc(subcomponent_output, output.mutable_setpoints());
     }

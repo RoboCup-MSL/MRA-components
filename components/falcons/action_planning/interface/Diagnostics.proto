@@ -29,4 +29,6 @@ message ActionDiagnostics
 message Diagnostics
 {
     ActionDiagnostics action = 1;
+    string failureReason = 2; // optional, set only if action failed
 }
+

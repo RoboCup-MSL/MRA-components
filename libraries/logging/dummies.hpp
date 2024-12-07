@@ -6,7 +6,6 @@
 // the real definitions are in libraries/logging/macros.hpp
 
 #define MRA_LOG_TICK() do {} while (0)
-#define MRA_COMPONENT_NAME "undefined"
 #define MRA_LOG_CRITICAL(...) do {} while (0)
 #define MRA_LOG_ERROR(...) do {} while (0)
 #define MRA_LOG_WARNING(...) do {} while (0)

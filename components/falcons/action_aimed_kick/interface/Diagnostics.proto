@@ -6,5 +6,5 @@ message Diagnostics
 {
     double remainingRotationAngle = 1;
     double aimError = 2; // radians, evaluation after shot, fill in when PASSED
-    string verdict = 3;
+    string failureReason = 3;
 }

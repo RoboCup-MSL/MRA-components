@@ -44,6 +44,7 @@ message ActionHistory
     MRA.Datatypes.ActionType type = 1;
     repeated ActionSample samples = 2;
     Params params = 3; // at start of the running action (assuming no reconfiguration happens during action)
+    bool dirty = 4; // a clean action has only the final tick result as PASSED or FAILED, all other ticks RUNNING
 }
 
 message State

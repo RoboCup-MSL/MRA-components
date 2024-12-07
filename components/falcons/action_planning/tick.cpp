@@ -163,6 +163,39 @@ void replaceAll(std::string &s, const std::string &search, const std::string &re
     }
 }
 
+bool checkHistoryDirty(ActionHistory const &history)
+{
+    /*
+    A clean action has only the final tick result as PASSED or FAILED, all other ticks RUNNING.
+
+    A dirty action can be
+     * early PASSED/FAILED, continue to run anyway (teamplay protocol issue?)
+     * somewhere an INVALID tick occurred
+     * all ticks RUNNING, teamplay decided to switch to another action
+    */
+    bool dirty = false;
+    if (history.samples_size() == 0)
+    {
+        return false;
+    }
+    // each sample except the last should have actionresult RUNNING
+    for (int i = 0; i < history.samples_size() - 1; i++)
+    {
+        if (history.samples(i).output().actionresult() != MRA::Datatypes::ActionResult::RUNNING)
+        {
+            dirty = true;
+            break;
+        }
+    }
+    auto lastSample = history.samples(history.samples_size() - 1);
+    if (lastSample.output().actionresult() != MRA::Datatypes::ActionResult::FAILED &&
+        lastSample.output().actionresult() != MRA::Datatypes::ActionResult::PASSED)
+    {
+        dirty = true;
+    }
+    return dirty;
+}
+
 void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType const &params, StateType &state)
 {
     int num_ticks = state.history().samples_size();
@@ -216,6 +249,7 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
         state.Clear();
         state.mutable_action()->set_type(currentActionType);
         state.mutable_history()->set_type(currentActionType);
+        state.mutable_history()->set_dirty(checkHistoryDirty(state.history()));
         *state.mutable_history()->mutable_params() = params;
     }
 }

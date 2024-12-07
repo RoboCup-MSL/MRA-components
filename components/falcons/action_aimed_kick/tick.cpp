@@ -188,7 +188,6 @@ void ActionAimedKick::phaseCooldown()
     {
         // determine success
         // if ball ends up close to target, then PASSED
-        float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
         if (ballTargetDistance < _params.balltargetproximity())
         {
             _diagnostics.set_aimerror(calculateAimError());

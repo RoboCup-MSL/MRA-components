@@ -74,7 +74,7 @@ int ActionAimedKick::run()
     {
         _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
         _output.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_INVALID);
-        _diagnostics.set_verdict("robot lost track of the ball");
+        _diagnostics.set_failurereason("robot lost track of the ball");
         return 0;
     }
     // calculate angles and such
@@ -128,7 +128,7 @@ void ActionAimedKick::phasePrepare()
         // TODO: robustness: use state - it can happen that the robot kicked the ball away, but it takes a tick or more for the ball to actually leave?
         // in that case, functionally the shot was a success, so we should not produce FAILED
         _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-        _diagnostics.set_verdict("robot lost possession of the ball");
+        _diagnostics.set_failurereason("robot lost possession of the ball");
         return;
     }
     // check if phase ends

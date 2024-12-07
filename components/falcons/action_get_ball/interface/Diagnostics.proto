@@ -4,5 +4,5 @@ package MRA.FalconsActionGetBall;
 
 message Diagnostics
 {
-    string verdict = 1;
+    string failureReason = 1;
 }

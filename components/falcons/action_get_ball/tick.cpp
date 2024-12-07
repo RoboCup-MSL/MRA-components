@@ -43,7 +43,7 @@ int callSubcomponent(
         subcomponent_diagnostics
     );
     output.set_actionresult(subcomponent_output.actionresult());
-    diagnostics.set_verdict(subcomponent_diagnostics.verdict());
+    diagnostics.set_failurereason(subcomponent_diagnostics.failurereason());
     *state = subcomponent_state;
     if (subcomponent_output.has_motiontarget())
     {

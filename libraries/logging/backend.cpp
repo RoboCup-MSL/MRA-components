@@ -75,7 +75,7 @@ void logTickStart(
         // prepare strings for logging with INFO and TRACE levels
         // state and diagnostics may grow large -> these go to tracing, not info
         std::string infoStr = "\"tick\":" + std::to_string(counter)
-            + ",\"timestamp\":" + google::protobuf::util::TimeUtil::ToString(timestamp)
+            + ",\"timestamp\":" + "\"" + google::protobuf::util::TimeUtil::ToString(timestamp) + "\""
             + ",\"input\":" + inputStr
             + ",\"params\":" + paramsStr;
         std::string traceStr = infoStr + ",\"state_in\":" + stateStr;
@@ -122,6 +122,11 @@ void logTickEnd(
             + ",\"duration\":" + std::to_string(duration)
             + ",\"output\":" + outputStr;
         std::string traceStr = infoStr + ",\"state_out\":" + stateStr;
+        std::string diagStr = MRA::convert_proto_to_json_str(diag);
+        if (diagStr.size() < 10000)
+        {
+            traceStr += ",\"diagnostics\":" + diagStr;
+        }
         logger->log(loc, MRA::Logging::INFO, "end {%s}", infoStr.c_str());
         logger->log(loc, MRA::Logging::TRACE, "< {%s}", traceStr.c_str());
         // tick .bin dump

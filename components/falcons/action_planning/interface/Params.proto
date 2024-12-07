@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package MRA.FalconsActionPlanning;
+import "datatypes/ActionType.proto";
+import "components/falcons/action_get_ball/interface/Params.proto";
+import "components/falcons/action_stop/interface/Params.proto";
+import "components/falcons/action_move/interface/Params.proto";
+import "components/falcons/action_aimed_kick/interface/Params.proto";
+import "components/falcons/action_park/interface/Params.proto";
+import "components/falcons/action_catch_ball/interface/Params.proto";
+import "components/falcons/action_keeper/interface/Params.proto";
+
+message ActionParams
+{
+    MRA.Datatypes.ActionType type = 1;
+    MRA.FalconsActionStop.Params stop = 2;
+    MRA.FalconsActionMove.Params move = 3;
+    // TODO dribble = 4
+    // TODO dash = 5
+    // TODO kick = 6
+    MRA.FalconsActionAimedKick.Params pass = 7;
+    MRA.FalconsActionAimedKick.Params shoot = 8;
+    // TODO lob = 9
+    MRA.FalconsActionGetBall.Params getball = 10;
+    MRA.FalconsActionCatchBall.Params catchball = 11;
+    // TODO shield = 12
+    // TODO tackle = 13
+    MRA.FalconsActionKeeper.Params keeper = 14;
+    // TODO bump = 15
+    MRA.FalconsActionPark.Params park = 16;
+    // TODO prepare = 17
+    // TODO alive = 18
+    // TODO follow = 19
+}
+
+message HistoryParams
+{
+    bool enabled = 1;
+    int32 minimumTicks = 2;
+    string logFolder = 3;
+    string logFilePattern = 4;
+    // TODO: ignore list of actiontypes? MOVE is not very interesting for instance
+}
+
+message Params
+{
+    ActionParams action = 1;
+    HistoryParams history = 2;
+}
+

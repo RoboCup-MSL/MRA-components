@@ -39,10 +39,10 @@ http_archive(
 # gtest
 # https://github.com/google/googletest
 http_archive(
-  name = "com_google_googletest",
-  sha256 = "b976cf4fd57b318afdb1bdb27fc708904b3e4bed482859eb94ba2b4bdd077fe2",
-  urls = ["https://github.com/google/googletest/archive/f8d7d77c06936315286eb55f8de22cd23c188571.zip"],
-  strip_prefix = "googletest-f8d7d77c06936315286eb55f8de22cd23c188571",
+    name = "com_google_googletest",
+    sha256 = "b976cf4fd57b318afdb1bdb27fc708904b3e4bed482859eb94ba2b4bdd077fe2",
+    urls = ["https://github.com/google/googletest/archive/f8d7d77c06936315286eb55f8de22cd23c188571.zip"],
+    strip_prefix = "googletest-f8d7d77c06936315286eb55f8de22cd23c188571",
 )
 
 # opencv (as system dependency!)
@@ -113,7 +113,7 @@ git_repository(
 git_repository(
     name = "extendedlogging",
     remote = "https://github.com/janfeitsma/extendedlogging.git",
-    commit = "9e969e3b4dee599c506d8603f0e46edbd53a0f5f",
+    commit = "3bdbf19a54708c6503955344808ad1c16efc6926",
     build_file = "//dependencies/bazel:BUILD.extendedlogging",
 )
 

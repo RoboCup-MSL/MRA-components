@@ -39,7 +39,7 @@ def parse_args():
     # modify cli
     parser = ttvlib.ttviewer.make_parser(__doc__, EXAMPLE_TXT)
     parser.add_argument('--newest', help='newest number of files to take from folder, default guess (1 for any folder, except all for testsuite)', type=int)
-    parser.add_argument('folder', help='folder to analyze', nargs='?', default=DEFAULT_FOLDER)
+    parser.add_argument('data', help='folder or files to analyze', nargs='*', default=DEFAULT_FOLDER)
     return parser.parse_args()
 
 
@@ -54,16 +54,30 @@ def determine_filenames(folder, newest=1):
 
 def pid_tid_handler(filename, jsondata):
     for j in jsondata:
-        j['pid'] = os.path.basename(filename)
+        try:
+            int(j['pid'])
+            # only replace pids
+            j['pid'] = os.path.basename(filename)
+        except:
+            pass
 
 
 def main(**kwargs):
     # determine MRA tracing/logging files
-    newest = None
-    if not 'testsuite' in kwargs.get('folder'):
-        newest = 1
-    filenames = determine_filenames(kwargs.get('folder'), newest)
-    del kwargs['folder']
+    data = kwargs.get('data')
+    if not isinstance(data, list):
+        data = [data]
+    # newest option only applied to single provided folder
+    if len(data) == 1 and os.path.isdir(data[0]):
+        folder = data[0]
+        newest = None
+        if not 'testsuite' in folder:
+            newest = 1
+        filenames = determine_filenames(folder, newest)
+    else:
+        # just pass down all given filenames
+        filenames = data
+    del kwargs['data']
     del kwargs['newest']
     # feed filenames and run the viewer
     kwargs['filenames'] = filenames

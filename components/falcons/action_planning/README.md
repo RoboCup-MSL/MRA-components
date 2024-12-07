@@ -11,21 +11,21 @@ The `ActionPlanning` component covers a broad range of soccer-specific actions, 
 - **IDLE:** Idle, no action.
 - **STOP:** Stop the robot (actively braking).
 - **MOVE:** Navigate to a specified coordinate in the Field Coordinate System (FCS).
-- **DRIBBLE:** Like `MOVE`, but with ball control, including small kicks.
-- **DASH:** Move in a specified direction in the Robot Coordinate System (RCS).
-- **KICK:** Kick the ball immediately..
+- **DRIBBLE:** Like `MOVE`, but with ball control, including small kicks. (Not yet implemented!)
+- **DASH:** Move in a specified direction in the Robot Coordinate System (RCS). (Not yet implemented!)
+- **KICK:** Kick the ball immediately. (Not yet implemented!)
 - **PASS:** Aim and kick towards a target (typically a teammate) in FCS.
 - **SHOOT:** Aim and kick towards a target (typically the goal) in FCS, maximizing ball velocity.
-- **LOB:** Similar to `SHOOT`, but designed to maximize ball trajectory height.
+- **LOB:** Similar to `SHOOT`, but designed to maximize ball trajectory height. (Not yet implemented!)
 - **GETBALL:** Retrieve the ball, potentially involving catching, stealing, interception or sprinting.
-- **CATCH:** Intercept the ball using a basic strafing motion (previously known as `INTERCEPT`).
-- **SHIELD:** Maintain ball control while rotating away from an opponent.
-- **TACKLE:** Engage opponent having the ball, trying to dislodge it.
+- **CATCHBALL:** Intercept the ball using a basic strafing motion (previously known as `INTERCEPT`).
+- **SHIELD:** Maintain ball control while rotating away from an opponent. (Not yet implemented!)
+- **TACKLE:** Engage opponent having the ball, trying to dislodge it. (Not yet implemented!)
 - **KEEPER:** Act as goal keeper.
-- **BUMP:** Redirect the ball towards a target using a head or flat surface (a.k.a. `TIP-IN`).
+- **BUMP:** Redirect the ball towards a target using a head or flat surface (a.k.a. `TIP-IN`). (Not yet implemented!)
 - **PARK:** Move the robot to a designated parking position.
-- **PREPARE:** Move the robot safely into the field, typically from the Technical Team Area (TTA).
-- **ALIVE:** Prove to the referee that the robot is able to play.
+- **PREPARE:** Move the robot safely into the field, typically from the Technical Team Area (TTA). (Not yet implemented!)
+- **ALIVE:** Prove to the referee that the robot is able to play. (Not yet implemented!)
 
 ### Out of scope
 
@@ -61,6 +61,7 @@ TODO: reconsider responsibilities to reduce "multiple captain" situations (fold 
 
 Each action has its own semantics on `PASSED` / `FAILED`. For example, `GETBALL` fails when there is no ball in sight.
 What all actions have in common, is that `RUNNING` generally means that more ticks are needed to come to a `PASSED` or `FAILED` result.
+When an action fails, then a string at diagnostics field `verdict` explains why.
 
 ## Interface Details
 
@@ -79,9 +80,7 @@ For details on the communication interfaces, refer to the following files:
 
 ## Tooling and Extensions
 
-### Proposed Tools:
-1. **Python Keeper GUI:** Generalize the existing python keeper GUI to illustrate action implementations based on a general world state and action-specific parameters.
-2. **Post-Match Analysis Tools:**
-   - A tracing timeline to review the sequence of actions, their results, and pass/fail statistics using MRA tracing data.
-   - A Python tool to plot action `.bin` files, allowing for in-depth post-mortem analysis.
+The tool `plot.py` can take an action `.bin` file, print some basic info and draw the situation at any sample. Use left and right arrows to browse through samples. This is useful to investigate failed actions after a match.
+
+TODO: screenshot
 

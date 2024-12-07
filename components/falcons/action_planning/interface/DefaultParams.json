@@ -1,1 +1,66 @@
-{}
+{
+    "action": {
+        "move": {
+            "activeStop": true,
+            "tolerances": {
+                "xy": 0.01,
+                "rz": 0.001
+            }
+        },
+        "pass": {
+            "angleAccuracyThreshold": 0.03,
+            "maxCooldownDuration": 3.0,
+            "ballTargetProximity": 1.5
+        },
+        "shoot": {
+            "angleAccuracyThreshold": 0.01,
+            "maxCooldownDuration": 2.0,
+            "ballTargetProximity": 2.0
+        },
+        "getball": {
+            "ballSpeedFetchThreshold": 0.2,
+            "fetchBall": {
+                "ballSpeedThreshold": 0.35,
+                "ballSpeedScaling": 0.40,
+                "rotationOnlyDistance": 1.0,
+                "rotationOnlyAngle": 35.0,
+                "actionRadius": 5.0
+            },
+            "catchBall": {
+            }
+        },
+        "catchball": {
+            "captureRadius": 3.0,
+            "ballSpeedThreshold": 0.4,
+            "proactive": false,
+            "robotCatchSpeed": 1.5,
+            "ballVectorExtrapolation": 0.5
+        },
+        "keeper": {
+            "captureRadius": 3.0,
+            "ballSpeedThreshold": 0.4,
+            "baselineY": -8.8,
+            "maxMoveX": 0.7,
+            "homeDistance": 2.0,
+            "homePosYoffset": 0.9
+        },
+        "park": {
+            "tta": {
+                "size": {
+                    "x": 1.0,
+                    "y": 6.0
+                }
+            },
+            "robotRadius": 0.38,
+            "toleranceX": 0.2,
+            "preTargetXoffset": 2.0,
+            "preTargetDistance": 4.0
+        }
+    },
+    "history": {
+        "enabled": false,
+        "minimumTicks": 5,
+        "logFolder": "/tmp",
+        "logFilePattern": "ap_<action>_<actionresult>_<date>_<time>.bin"
+    }
+}

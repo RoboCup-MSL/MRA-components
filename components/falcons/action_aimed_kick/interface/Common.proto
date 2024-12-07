@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package MRA.FalconsActionAimedKick;
+
+enum ShootingPhase
+{
+    SHOOT_PHASE_INVALID = 0;
+    SHOOT_PHASE_PREPARE = 1; // moving the height actuator may take a while
+    SHOOT_PHASE_DISCHARGE = 2; // one moment actually, not really a phase
+    SHOOT_PHASE_COOLDOWN = 3; // give ball some time to leave before signaling SUCCESS, perhaps evaluate shot result
+}

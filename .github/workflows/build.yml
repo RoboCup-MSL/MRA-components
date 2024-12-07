@@ -7,10 +7,78 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # 
-  # TODO restore bazel buids: removed to avoid constant failing build. 
-  # Restore must be done before merge to main
-  #
+  build_bazel_Ubuntu_20_04:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+        sudo apt-get install -y libopencv-dev
+
+    - name: Run code generator
+      run: ./MRA-codegen.py -e
+
+    - name: Build and test with Bazel
+      run: ./MRA-build.py -t
+
+      # TODO: configure a cache?
+
+  build_bazel_Ubuntu_22_04:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+        sudo apt-get install -y libopencv-dev
+
+    - name: Run code generator
+      run: ./MRA-codegen.py -e
+
+    - name: Build and test with Bazel
+      run: ./MRA-build.py -t
+
+      # TODO: configure a cache?
+
+  build_bazel_Ubuntu_24_04:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+        sudo apt-get install -y libopencv-dev
+
+    - name: Run code generator
+      run: ./MRA-codegen.py -e
+
+    - name: Build and test with Bazel
+      run: ./MRA-build.py -t
+
+#      # TODO: configure a cache?
+
   build_cmake_Ubuntu_20_04:
     runs-on: ubuntu-20.04
 

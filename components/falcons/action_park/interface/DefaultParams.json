@@ -1,0 +1,13 @@
+{
+    "tta": {
+        "size": {
+            "x": 1.0,
+            "y": 6.0
+        }
+    },
+    "robotRadius": 0.38,
+    "toleranceX": 0.2,
+    "preTargetXoffset": 2.0,
+    "preTargetDistance": 4.0
+}
+

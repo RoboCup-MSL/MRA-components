@@ -1,0 +1,34 @@
+= prove-is-alive Robotsports Variant
+
+== Summary
+
+prove-is-alive is an action that proofs the robot is a live. (on requested of the referee)
+
+== Scope and context
+
+This action implements the prove-is-alive action as specified in the MSL-rules.
+
+== Interface details
+
+* **purpose**: prove that the player is a live (active) to the referee (mandatory function according to the MSL rules)
+* **inputs**: See link:./interface/Input.proto[Input.proto] for the exact definition.
+	** WorldState
+
+* **outputs**:  See link:./interface/Output.proto[Output.proto] for the exact definition.
+	** robot target set-point (type posvel in FCS) [to PathPlanning]
+	** actionResult [to Reasoning]
+
+* *parameters*:
+The action has some configuration parameters. 
+see link:./interface/Params.proto[Params.proto] and
+link:./interface/DefaultParams.json[DefaultParams.json].
+
+== Design
+
+The robot turns to the left (the angle is part of the parameters), when it at the left angle, it rotates the the right angle. 
+When it is at the right angle it will rotate back to the center (starting position)
+
+
+== History
+
+Created by Robotsports.

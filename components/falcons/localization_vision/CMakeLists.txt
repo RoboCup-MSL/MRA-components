@@ -20,21 +20,22 @@ target_include_directories(MRA-components-falcons-localization-vision PUBLIC
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
     ${MRA_SOURCE_DIR}/libraries/opencv_utils
+    ${MRA_SOURCE_DIR}/libraries/geometry
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/internal
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
-target_link_libraries(MRA-components-falcons-localization-vision MRA-libraries MRA-components-proto MRA-base nlohmann_json::nlohmann_json ${OpenCV_LIBRARIES})
+target_link_libraries(MRA-components-falcons-localization-vision MRA-libraries MRA-base nlohmann_json::nlohmann_json ${OpenCV_LIBRARIES})
 
 
 add_executable(
     falcons_localization_vision_test
     test.cpp
 )
-target_include_directories(falcons_localization_vision_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging)
+target_include_directories(falcons_localization_vision_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
 target_link_libraries(
     falcons_localization_vision_test
     MRA-components-falcons-localization-vision
-    MRA-libraries MRA-components-proto nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
 )
 
 

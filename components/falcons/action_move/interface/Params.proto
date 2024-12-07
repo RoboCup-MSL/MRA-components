@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package MRA.FalconsActionMove;
+
+message Tolerances
+{
+    double xy = 1;
+    double rz = 2;
+}
+
+message Params
+{
+    Tolerances tolerances = 1;
+    bool activeStop = 2;
+}

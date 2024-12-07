@@ -37,7 +37,7 @@ Velocity::Velocity(MRA::Geometry::Pose const &p)
 #include "tmp_vector2d.hpp" // TODO: get rid of this (comes from Falcons legacy), make it nicer or consider using Eigen
 
 // transform (planar) between RCS and FCS using reference pos in FCS
-Velocity& Velocity::transformRcsToFcs(Velocity const &refpos)
+Velocity& Velocity::transformRcsToFcs(MRA::Geometry::Position const &refpos)
 {
     double angle = refpos.rz;
     Vector2D xynew = Vector2D(x, y).rotate(angle);
@@ -46,7 +46,7 @@ Velocity& Velocity::transformRcsToFcs(Velocity const &refpos)
     return *this;
 }
 
-Velocity& Velocity::transformFcsToRcs(Velocity const &refpos)
+Velocity& Velocity::transformFcsToRcs(MRA::Geometry::Position const &refpos)
 {
     double angle = -refpos.rz;
     Vector2D xynew = Vector2D(x, y).rotate(angle);

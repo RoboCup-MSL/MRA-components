@@ -10,7 +10,7 @@ namespace MRA::Geometry
 class Point
 {
 private:
-    static const double EQUALITY_TOLERANCE;
+    constexpr static double DEFAULT_EQUALITY_TOLERANCE = 0.00001;
 public:
     // direct read/write to the data members
     double x;
@@ -39,11 +39,26 @@ public:
     virtual Point& operator/=(double f);
 
 
-    bool equals( const Point& c, double tolerance=EQUALITY_TOLERANCE) const;
+    // true if point is equal to point c within given tolerance
+    bool equals( const Point& c, double tolerance=DEFAULT_EQUALITY_TOLERANCE) const;
+
+    // get string representation of the point with 2 decimals
     std::string toString() const;
+
+    // get distance to point c
     double distanceTo(const Point& c) const;
-    double inproduct( const Point& point) const;
-    double angle( const Point& point) const;
+
+    // inner product with point p
+    double inproduct( const Point& p) const;
+
+    // get angle [rad] with to point p in the interval [-pi, +pi]
+    double angle( const Point& p) const;
+
+
+    /**
+     * Normalizes the point such that its norm is 1.0 and direction unchanged.
+     * @return Normalized point. When input point has length 0, the result is (1,0)
+     */
     void normalize();
 
 }; // class Point

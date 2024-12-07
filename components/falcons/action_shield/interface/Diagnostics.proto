@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package MRA.FalconsActionShield;
+
+message Diagnostics
+{
+    string failureReason = 1;
+}

@@ -8,6 +8,7 @@ import "components/falcons/action_move/interface/Params.proto";
 import "components/falcons/action_aimed_kick/interface/Params.proto";
 import "components/falcons/action_park/interface/Params.proto";
 import "components/falcons/action_catch_ball/interface/Params.proto";
+import "components/falcons/action_shield/interface/Params.proto";
 import "components/falcons/action_keeper/interface/Params.proto";
 
 message ActionParams
@@ -23,7 +24,7 @@ message ActionParams
     // TODO lob = 9
     MRA.FalconsActionGetBall.Params getball = 10;
     MRA.FalconsActionCatchBall.Params catchball = 11;
-    // TODO shield = 12
+    MRA.FalconsActionShield.Params shield = 12;
     // TODO tackle = 13
     MRA.FalconsActionKeeper.Params keeper = 14;
     // TODO bump = 15

@@ -17,6 +17,7 @@ using namespace MRA;
 #include "FalconsActionAimedKick.hpp"
 #include "FalconsActionPark.hpp"
 #include "FalconsActionCatchBall.hpp"
+#include "FalconsActionShield.hpp"
 #include "FalconsActionKeeper.hpp"
 
 
@@ -141,6 +142,11 @@ void outputToSetpointsActionCatchBall(MRA::FalconsActionCatchBall::OutputType co
 {
     *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
+}
+
+void outputToSetpointsActionShield(MRA::FalconsActionShield::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
 }
 
 void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &actionOutput, Setpoints *setpoints)
@@ -316,6 +322,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         error_value = handleAction<MRA::FalconsActionCatchBall::FalconsActionCatchBall>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionCatchBall, "catchball"
+        );
+    }
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_SHIELD)
+    {
+        error_value = handleAction<MRA::FalconsActionShield::FalconsActionShield>(
+            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionShield, "shield"
         );
     }
     else if (currentActionType == MRA::Datatypes::ActionType::ACTION_KEEPER)

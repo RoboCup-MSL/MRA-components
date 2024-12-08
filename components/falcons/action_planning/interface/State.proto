@@ -23,13 +23,13 @@ message ActionState
     {
         MRA.FalconsActionStop.State stop = 2;
         MRA.FalconsActionMove.State move = 3;
-        MRA.FalconsActionAimedKick.State pass = 5;
-        MRA.FalconsActionAimedKick.State shoot = 6;
-        MRA.FalconsActionGetBall.State getball = 8;
-        MRA.FalconsActionPark.State park = 12;
-        MRA.FalconsActionCatchBall.State catchball = 13;
-        MRA.FalconsActionShield.State shield = 11;
+        MRA.FalconsActionAimedKick.State pass = 7;
+        MRA.FalconsActionAimedKick.State shoot = 8;
+        MRA.FalconsActionGetBall.State getball = 10;
+        MRA.FalconsActionCatchBall.State catchball = 11;
+        MRA.FalconsActionShield.State shield = 12;
         MRA.FalconsActionKeeper.State keeper = 14;
+        MRA.FalconsActionPark.State park = 16;
     }
 }
 

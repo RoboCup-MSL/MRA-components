@@ -33,6 +33,7 @@ def parse_args(args: list) -> argparse.Namespace:
     class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
         pass
     parser = argparse.ArgumentParser(description=descriptionTxt, epilog=exampleTxt, formatter_class=CustomFormatter)
+    parser.add_argument('--ticks', '-t', action='store_true', help='print tick details in table format')
     parser.add_argument('datafiles', nargs='+', help='data file(s) to analyze')
     return parser.parse_args(args)
 
@@ -43,6 +44,8 @@ def main(args: argparse.Namespace) -> None:
         a = action.Action()
         a.load(f)
         a.print_info()
+        if args.ticks:
+            a.print_ticks()
         print("")
 
 

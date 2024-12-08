@@ -113,6 +113,30 @@ class Action:
         print(f'          end: {end_timestamp_str}')
         print(f'     duration: {duration:.3f} [s]')
 
+    def print_ticks(self):
+        """
+        Print the ticks in a table format.
+        """
+        print('        ticks:  sample    status  target.x  target.y target.rz   robot.x   robot.y  robot.rz    ball.x    ball.y    ball.v    obst.d')
+        for i, sample in enumerate(self.data.samples):
+            status = protobuf_enum2str(sample.output, 'actionresult')
+            target = sample.output.setpoints.move.target
+            target_str = f'{target.position.x:8.3f}  {target.position.y:8.3f}  {target.position.rz:8.3f}'
+            robot = sample.input.worldState.robot
+            robot_str = f'{robot.position.x:8.3f}  {robot.position.y:8.3f}  {robot.position.rz:8.3f}'
+            ball = sample.input.worldState.ball
+            ball_speed = (ball.velocity.x**2 + ball.velocity.y**2)**0.5
+            ball_str = f'{ball.position.x:8.3f}  {ball.position.y:8.3f}  {ball_speed:8.3f}'
+            # closest obstacle
+            obst_str = ''
+            obst_dist = 999
+            for obst in sample.input.worldState.obstacles:
+                dist = ((robot.position.x - obst.position.x)**2 + (robot.position.y - obst.position.y)**2)**0.5
+                if dist < obst_dist:
+                    obst_dist = dist
+                    obst_str = f'{dist:8.3f}'
+            print(f'                   {i+1:3d}  {status:>8s}  {target_str}  {robot_str}  {ball_str}  {obst_str}')
+
 
 class ActionTick:
     """

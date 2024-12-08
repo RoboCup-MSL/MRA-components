@@ -206,17 +206,39 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
 {
     int num_ticks = state.history().samples_size();
     MRA_TRACE_FUNCTION_INPUTS(state.action().type(), currentActionType, num_ticks);
+    if (num_ticks == 0)
+    {
+        return;
+    }
     if (state.action().type() != currentActionType)
     {
+        auto lastSample = state.history().samples(num_ticks - 1);
+        std::string actionTypeStr = MRA::Datatypes::ActionType_Name(lastSample.input().action().type());
+        std::string actionResultStr = MRA::Datatypes::ActionResult_Name(lastSample.output().actionresult());
         // flush history to file, if so configured
         bool do_flush = params.history().enabled() && (num_ticks >= params.history().minimumticks());
+        for (auto action : params.history().ignore().actions())
+        {
+            if (action == actionTypeStr)
+            {
+                do_flush = false;
+                break;
+            }
+        }
+        if (params.history().ignore().running() && actionResultStr == "RUNNING")
+        {
+            do_flush = false;
+        }
+        if (params.history().ignore().passed() && actionResultStr == "PASSED")
+        {
+            do_flush = false;
+        }
         if (do_flush)
         {
             std::string filename = params.history().logfolder() + "/" + params.history().logfilepattern();
             // replace <action> and <actionresult>, use last sample
-            auto lastSample = state.history().samples(num_ticks - 1);
-            replaceAll(filename, "<action>", MRA::Datatypes::ActionType_Name(lastSample.input().action().type()));
-            replaceAll(filename, "<actionresult>", MRA::Datatypes::ActionResult_Name(lastSample.output().actionresult()));
+            replaceAll(filename, "<action>", actionTypeStr);
+            replaceAll(filename, "<actionresult>", actionResultStr);
             // replace <date> and <time>
             std::time_t currentTime = std::time(nullptr);
             struct std::tm *timeinfo = std::localtime(&currentTime);

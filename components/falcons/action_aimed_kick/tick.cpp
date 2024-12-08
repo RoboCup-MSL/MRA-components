@@ -178,7 +178,7 @@ void ActionAimedKick::phaseCooldown()
     // use a little timeout to make sure this action is not "stuck" for too long
     auto elapsedDuration = _timestamp - _state.dischargetimestamp();
     float elapsedSeconds = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsedDuration);
-    // float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
+    float ballTargetDistance = _deltaBallTargetToCurrentBall.size();
     _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
     if (elapsedSeconds > _params.maxcooldownduration())
     {

@@ -103,6 +103,11 @@ int FalconsActionGetBall::FalconsActionGetBall::tick
         );
     }
 
+    // if FETCH and CATCH do not apply, then fail - teamplay should not have selected this action
+    // (for instance, a robot should not chase a ball after just having passed to teammate)
+    output.set_actionresult(Datatypes::ActionResult::FAILED);
+    diagnostics.set_failurereason("ball moving away from robot");
+
     // TODO: maybe chase/swerve after the ball?
 
     return error_value;

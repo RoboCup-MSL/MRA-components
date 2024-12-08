@@ -469,6 +469,42 @@ TEST_F(TestActionPlanner, TickTestGetBallFarNoRadiusFail)
     EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
+TEST_F(TestActionPlanner, TickTestGetBallMovingAwayFail)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_ball()->mutable_position()->set_x(1.0);
+    testWorldState.mutable_ball()->mutable_position()->set_y(1.0);
+    testWorldState.mutable_ball()->mutable_velocity()->set_x(1.0);
+    testWorldState.mutable_ball()->mutable_velocity()->set_y(1.0);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+
+    FalconsActionPlanning::ActionInputs testActionInput;
+    testActionInput.set_type(Datatypes::ActionType::ACTION_GETBALL);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInput);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "ball moving away from robot";
+
+    // check the outputs
+    EXPECT_EQ(getLastSetpoints().has_move(), false);
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
+}
+
 TEST_F(TestActionPlanner, TickTestGetBallFarRadiusRunning)
 {
     MRA_TRACE_TEST_FUNCTION();

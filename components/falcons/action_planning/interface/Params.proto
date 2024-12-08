@@ -8,6 +8,7 @@ import "components/falcons/action_move/interface/Params.proto";
 import "components/falcons/action_aimed_kick/interface/Params.proto";
 import "components/falcons/action_park/interface/Params.proto";
 import "components/falcons/action_catch_ball/interface/Params.proto";
+import "components/falcons/action_shield/interface/Params.proto";
 import "components/falcons/action_keeper/interface/Params.proto";
 
 message ActionParams
@@ -23,7 +24,7 @@ message ActionParams
     // TODO lob = 9
     MRA.FalconsActionGetBall.Params getball = 10;
     MRA.FalconsActionCatchBall.Params catchball = 11;
-    // TODO shield = 12
+    MRA.FalconsActionShield.Params shield = 12;
     // TODO tackle = 13
     MRA.FalconsActionKeeper.Params keeper = 14;
     // TODO bump = 15
@@ -33,13 +34,21 @@ message ActionParams
     // TODO follow = 19
 }
 
+message HistoryIgnoreParams
+{
+    repeated string actions = 1; // actions to ignore, for instance MOVE and STOP are not very interesting to diagnose
+    bool running = 2; // if set, then actions which end with result RUNNING are not written to disk
+    bool passed = 3; // if set, then actions which end with result PASSED are not written to disk
+    // no configuration option for failed actions, as these are always interesting
+}
+
 message HistoryParams
 {
     bool enabled = 1;
     int32 minimumTicks = 2;
     string logFolder = 3;
     string logFilePattern = 4;
-    // TODO: ignore list of actiontypes? MOVE is not very interesting for instance
+    HistoryIgnoreParams ignore = 5;
 }
 
 message Params

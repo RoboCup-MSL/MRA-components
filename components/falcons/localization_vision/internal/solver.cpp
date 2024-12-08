@@ -176,7 +176,7 @@ std::vector<cv::Point2f> Solver::createLinePoints() const
         n = max_size;
     }
 #ifdef MRA_LOGGING_ENABLED
-    int dropped = max(0, max_size - n);
+    int dropped = std::max(0, max_size - n);
     MRA_TRACE_FUNCTION_OUTPUTS(n, dropped);
 #endif
     return result;

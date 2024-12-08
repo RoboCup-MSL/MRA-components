@@ -80,7 +80,10 @@ void outputToSetpointsActionStop(MRA::FalconsActionStop::OutputType const &actio
 
 void outputToSetpointsActionMove(MRA::FalconsActionMove::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_move()->set_stop(actionOutput.stop());
     setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
     setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
@@ -132,7 +135,10 @@ void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const 
 
 void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_move()->set_stop(actionOutput.stop());
     setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
     setpoints->mutable_bh()->set_enabled(false);
@@ -140,13 +146,19 @@ void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actio
 
 void outputToSetpointsActionCatchBall(MRA::FalconsActionCatchBall::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
 }
 
 void outputToSetpointsActionShield(MRA::FalconsActionShield::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
 }
 
 void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &actionOutput, Setpoints *setpoints)

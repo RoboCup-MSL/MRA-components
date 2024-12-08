@@ -4,4 +4,5 @@ package MRA.FalconsActionShield;
 
 message Params
 {
+    double obstacleDistance = 1; // only consider obstacles within this distance
 }

@@ -1102,6 +1102,118 @@ TEST_F(TestActionPlanner, TickTestActionCatchBallStationary)
     EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
 }
 
+TEST_F(TestActionPlanner, TickTestActionShieldFailNoObstacles)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_robot()->set_hasball(true);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+
+    // set action
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_SHIELD);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "no obstacles detected anywhere";
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
+}
+
+TEST_F(TestActionPlanner, TickTestActionShieldFailNoObstacleCloseby)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_robot()->set_hasball(true);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+    // add 1 obstacle far away
+    auto obstacle1 = testWorldState.add_obstacles();
+    obstacle1->mutable_position()->set_x(10.0);
+
+    // set action
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_SHIELD);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::FAILED;
+    std::string expectedFailureReason = "no obstacles detected closeby";
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
+}
+
+TEST_F(TestActionPlanner, TickTestActionShieldPass)
+{
+    MRA_TRACE_TEST_FUNCTION();
+
+    // setup inputs
+    Datatypes::WorldState testWorldState;
+    testWorldState.mutable_robot()->set_active(true);
+    testWorldState.mutable_robot()->set_hasball(true);
+    testWorldState.mutable_robot()->mutable_position()->set_x(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_y(0.0);
+    testWorldState.mutable_robot()->mutable_position()->set_rz(0.0);
+    // add 1 obstacle closeby
+    auto obstacle1 = testWorldState.add_obstacles();
+    obstacle1->mutable_position()->set_x(1.0);
+    obstacle1->mutable_position()->set_y(1.0);
+
+    // set action
+    FalconsActionPlanning::ActionInputs testActionInputs;
+    testActionInputs.set_type(Datatypes::ActionType::ACTION_SHIELD);
+
+    // set inputs in the planner
+    setWorldState(testWorldState);
+    setActionInputs(testActionInputs);
+
+    // run tick
+    feedTick();
+
+    // setup expected outputs
+    FalconsActionPlanning::Setpoints expectedSetpoints;
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_x(0.0);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_y(0.0);
+    expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(0.75 * M_PI); // facing away from the obstacle
+    MRA::Datatypes::ActionResult expectedActionResult = MRA::Datatypes::ActionResult::RUNNING;
+    std::string expectedFailureReason = "";
+
+    // check the outputs
+    EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
+    EXPECT_EQ(getLastActionResult(), expectedActionResult);
+    EXPECT_EQ(getLastActionFailureReason(), expectedFailureReason);
+}
+
 int main(int argc, char **argv)
 {
     InitGoogleTest(&argc, argv);

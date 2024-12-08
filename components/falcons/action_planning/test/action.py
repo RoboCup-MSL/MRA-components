@@ -1,7 +1,9 @@
 # python modules
 import struct
+import json
 from datetime import datetime
 from matplotlib import pyplot as plt
+from google.protobuf.json_format import MessageToDict
 
 # MRA modules
 from libraries.logging.logdata import Data
@@ -94,7 +96,6 @@ class Action:
         action_type = self.data.type
         action_type_str = protobuf_enum2str(self.data, 'type')
         print(f'       action: {action_type_str} ({action_type})')
-        action_result = self.data.samples[-1].output.actionresult
         action_result_str = protobuf_enum2str(self.data.samples[-1].output, 'actionresult')
         resultDetails = ''
         if self.data.dirty:
@@ -117,16 +118,19 @@ class Action:
         """
         Print the ticks in a table format.
         """
-        print('        ticks:  sample    status  target.x  target.y target.rz   robot.x   robot.y  robot.rz    ball.x    ball.y    ball.v    obst.d')
+        print('        ticks:  sample    status  target.x  target.y target.rz   robot.x   robot.y  robot.rz    ball.x    ball.y    ball.v    ball.d    obst.d')
         for i, sample in enumerate(self.data.samples):
             status = protobuf_enum2str(sample.output, 'actionresult')
-            target = sample.output.setpoints.move.target
-            target_str = f'{target.position.x:8.3f}  {target.position.y:8.3f}  {target.position.rz:8.3f}'
+            target_str = '                            '
+            if sample.output.setpoints.HasField('move'):
+                target = sample.output.setpoints.move.target
+                target_str = f'{target.position.x:8.3f}  {target.position.y:8.3f}  {target.position.rz:8.3f}'
             robot = sample.input.worldState.robot
             robot_str = f'{robot.position.x:8.3f}  {robot.position.y:8.3f}  {robot.position.rz:8.3f}'
             ball = sample.input.worldState.ball
             ball_speed = (ball.velocity.x**2 + ball.velocity.y**2)**0.5
-            ball_str = f'{ball.position.x:8.3f}  {ball.position.y:8.3f}  {ball_speed:8.3f}'
+            ball_distance = ((robot.position.x - ball.position.x)**2 + (robot.position.y - ball.position.y)**2)**0.5
+            ball_str = f'{ball.position.x:8.3f}  {ball.position.y:8.3f}  {ball_speed:8.3f}  {ball_distance:8.3f}'
             # closest obstacle
             obst_str = ''
             obst_dist = 999
@@ -136,6 +140,12 @@ class Action:
                     obst_dist = dist
                     obst_str = f'{dist:8.3f}'
             print(f'                   {i+1:3d}  {status:>8s}  {target_str}  {robot_str}  {ball_str}  {obst_str}')
+
+    def print_json(self):
+        """
+        Print the data as json.
+        """
+        print(json.dumps(MessageToDict(self.data), sort_keys=True, indent=2))
 
 
 class ActionTick:
@@ -179,5 +189,6 @@ class ActionTick:
         Only plot input and output.
         """
         plot_worldstate(ax, input.worldState)
-        targetpos = output.setpoints.move.target
-        plot_target(ax, targetpos, input.worldState.robot)
+        if output.HasField('setpoints') and output.setpoints.HasField('move'):
+            targetpos = output.setpoints.move.target
+            plot_target(ax, targetpos, input.worldState.robot)

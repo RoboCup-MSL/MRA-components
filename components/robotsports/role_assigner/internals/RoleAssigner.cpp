@@ -225,12 +225,6 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
                 MRA::Geometry::Point rolePosition = RolePosition::determineDynamicRolePosition(role_assigner_data.defend_info, planner_target, m_gridFileNumber,
                                                     role_DEFENDER_GENERIC, role_assigner_data, playerPassedBall, role_position_is_end_position_of_pass);
 
-                cout << "size :" << role_assigner_data.formation.size() << endl;
-                cout << role_assigner_data.formation[ap_idx] << endl;
-                cout << role_position_is_end_position_of_pass << endl;
-                cout << planner_target << endl;
-                cout << rolePosition.toString() << endl;
-                cout << role_assigner_data.toString() << endl;
                 assignAnyToPosition(role_assigner_data, role_DEFENDER_GENERIC, rolePosition, planner_target, role_position_is_end_position_of_pass,
                                     role_assigner_data.formation[ap_idx]);
             }
@@ -351,8 +345,9 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     role_assigner_data.team = restored_order_team;
     role_assigner_data.team_admin = restored_order_team_admin;
 
+    r_output.player_paths = {};
     for (unsigned team_idx = 0; team_idx < role_assigner_data.team_admin.size(); team_idx++) {
-        player_paths_in_correct_order.push_back(role_assigner_data.team_admin[team_idx].result);
+        r_output.player_paths.push_back(role_assigner_data.team_admin[team_idx].result);
     }
 
     // save for next calculation
@@ -528,6 +523,7 @@ bool RoleAssigner::AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assig
     if (foundPlayer != -1) {
         // robot claimed role+position and that robot has lower id than this robot.
         role_assigner_data.team_admin[foundPlayer].result = RoleAssignerResult(
+            role_assigner_data.team[foundPlayer].robotId,
             role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
@@ -572,6 +568,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
             if (role_assigner_data.team[idx].robotId == role_assigner_data.pass_data.target_id) {
                 /* this player is destination of the pass */
                 role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                    role_assigner_data.team[idx].robotId,
                     role_assigner_data.gamestate,
                     role,
                     role_assigner_data.incrementAndGetRank(),
@@ -677,6 +674,7 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
     if (found) {
         // fill best robot data in planner result.
         role_assigner_data.team_admin[bestPlayerIdx].result = RoleAssignerResult(
+            role_assigner_data.team[bestPlayerIdx].robotId,
             role_assigner_data.gamestate,
             role,
             role_assigner_data.incrementAndGetRank(),
@@ -812,6 +810,7 @@ void RoleAssigner::assignGoalie(RoleAssignerData& role_assigner_data)
         role_assigner_data.team_admin[keeper_idx].assigned = true;
         defend_info_t defend_info = {.valid = false, .defending_id = -1, .dist_from_defending_id = 0.0, .between_ball_and_defending_pos = 1};
         role_assigner_data.team_admin[keeper_idx].result = RoleAssignerResult(
+            role_assigner_data.team[keeper_idx].robotId,
             role_assigner_data.gamestate,
             role_assigner_data.gamestate == game_state_e::PARKING ? DynamicRoleToRole(dr_PARKING, role_GOALKEEPER) : DynamicRoleToRole(dr_GOALKEEPER, role_GOALKEEPER),
             role_assigner_data.incrementAndGetRank(),
@@ -856,6 +855,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                            role_assigner_data.team[idx].robotId,
                             role_assigner_data.gamestate,
                             DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                             role_assigner_data.incrementAndGetRank(),
@@ -886,6 +886,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                         }
                         role_assigner_data.team_admin[idx].assigned = true;
                         role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                                                    role_assigner_data.team[idx].robotId,
                                                     role_assigner_data.gamestate,
                                                     DynamicRoleToRole(dr_DEFENDER, role_DEFENDER_GENERIC),
                                                     role_assigner_data.incrementAndGetRank(),
@@ -1080,6 +1081,7 @@ void RoleAssigner::assignParkingPositions(RoleAssignerData& role_assigner_data) 
         if (role_assigner_data.team[idx].player_type != player_type_e::GOALIE) {
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                role_assigner_data.team[idx].robotId,
                 role_assigner_data.gamestate,
                 role_assigner_data.formation[idx],
                 role_assigner_data.incrementAndGetRank(),
@@ -1139,6 +1141,7 @@ void RoleAssigner::assignBeginPositions(RoleAssignerData& role_assigner_data) {
 
             // fill best robot data in planner result.
             role_assigner_data.team_admin[idx].result = RoleAssignerResult(
+                role_assigner_data.team[idx].robotId,
                 role_assigner_data.gamestate,
                 role_assigner_data.formation[idx],
                 role_assigner_data.incrementAndGetRank(),

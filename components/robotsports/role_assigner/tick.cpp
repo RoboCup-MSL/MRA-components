@@ -311,28 +311,6 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     auto ra_state_org = ra_state;
     teamplay.assign(ra_input, ra_state, ra_output, ra_parameters);
 
-
-
-//    message Assignment {
-//        int32 robotId = 1;  // robotId of robot for the assignment
-//        DynamicRole role = 2;   // assigned role
-//        MRA.Datatypes.Point target = 4; // target position for player
-//        repeated PathPiece path = 5;    // rough x-y path to target
-//        int32 role_rank = 6;  // order of role assignment (discuss: can be removed if list of assignments is in order of assignment
-//        PathPurpose purpose = 7;  // purpose of path (intension how to execute the path
-//        DefendInfo defend_info = 8; // object to defend, this field can be absent
-//        bool is_pass_desitination = 9; // is player the destination of a pass
-//        // GameState gamestate;   TODO: discuss game-state can be extracted from the input or added to ensure gamestate and intended position are connected.
-//    };
-//
-//    message Output
-//    {
-//        repeated Assignment assignments = 1;
-//    }
-//class RoleAssignerOutput {
-//    public:
-//        std::vector<RoleAssignerResult> player_paths;
-//
     for (auto p_idx = 0u; p_idx < ra_output.player_paths.size(); p_idx++) {
     	auto pp = ra_output.player_paths[p_idx];
     	auto assignment = MRA::RobotsportsRoleAssigner::Assignment();
@@ -365,13 +343,8 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, "test.svg"); // TODO: needed ?
 
     } else {
-        std::cerr << "<< XML: no path received" << std::endl << std::flush;
+        std::cerr << "<< XML: no path received at:" << __func__ << std::endl << std::flush;
     }
-//    if (not print_only_errors) {
-        std::cerr << "<< Assign roles" << std::endl << std::flush;
-//    }
-
-
     return error_value;
 }
 

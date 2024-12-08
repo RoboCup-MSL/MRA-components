@@ -29,6 +29,21 @@ std::string RoleAssignerBall::toString(bool print_complete) const {
     return buffer.str();
 }
 
+
+std::string RoleAssignerOutput::pathToString() {
+    std::stringstream buffer;
+    buffer << "paths: " << this->player_paths.size() << std::endl;
+    for (auto idx = 0u; idx < this->player_paths.size(); idx++) {
+        buffer << "[" << idx << "] = robotId:" << player_paths[idx].robotId << endl;
+        buffer << "\trole: " << RoleAsString(this->player_paths[idx].role) << " (" << this->player_paths[idx].role << ")" << endl;
+        buffer << "\trank: " << player_paths[idx].role_rank << endl;;
+        buffer << "\ttarget-pos: "<< player_paths[idx].target.toString() << endl;
+    }
+    buffer << "paths: " << this->player_paths.size() << std::endl;
+    return buffer.str();
+}
+
+
 std::string RoleAssignerData::toString() const
 {
     std::stringstream buffer;
@@ -161,3 +176,5 @@ int RoleAssignerData::incrementAndGetRank() {
 bool RoleAssignerData::teamControlsBall() const {
     return isOneOf(ball.status, {OWNED_BY_PLAYER, OWNED_BY_TEAM});
 }
+
+

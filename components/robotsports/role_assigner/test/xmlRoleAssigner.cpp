@@ -342,6 +342,15 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         		result.defend_info.between_ball_and_defending_pos = assignement.defend_info().between_ball_and_defending_pos();
         	}
         	result.path = std::vector<path_piece_t>();
+            for (auto path_idx = 0; path_idx < assignement.path_size(); path_idx++) {
+                auto proto_path = assignement.path(path_idx);
+                auto piece = path_piece_t();
+                piece.cost = proto_path.cost();
+                piece.target = static_cast<MRA::planner_target_e>(proto_path.target());
+                piece.x = proto_path.x();
+                piece.y = proto_path.y();
+                result.path.push_back(piece);
+            }
         	ra_output.player_paths.push_back(result);
         }
     }
@@ -882,9 +891,6 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
         filename.replace(filename.end() - 4, filename.end(), buffer);
     }
     parameters.svgOutputFileName = filename;
-    if (not print_only_errors) {
-        cerr << ">>>> Assign roles" << endl << flush;
-    }
 
     if (!pickup_pos_set) {
         pickup_pos.x = ball_pos.x;
@@ -895,9 +901,6 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
 
     std::vector<RunData> run_results = {};
     string run_filename = parameters.svgOutputFileName;
-    if (not print_only_errors) {
-        cout <<" xmlPlanner Fill DATA" << endl;
-    }
     auto formation = getListWithRoles(gameState, ball_status,
                                       robot_strategy_parameter_no_defender_main_during_setplay,
                                       robot_strategy_parameter_attack_formation,
@@ -932,16 +935,12 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
 
     if (ra_output.player_paths.size() > 0) {
         if (not print_only_errors) {
-            cerr << "<< XML: print received path " << endl << flush;
             cerr << RoleAssignerResultToString(ra_output, ra_input) << endl << flush;
         }
         RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;
-    }
-    if (not print_only_errors) {
-        cerr << "<< Assign roles" << endl << flush;
     }
 
     auto finish = std::chrono::system_clock::now();

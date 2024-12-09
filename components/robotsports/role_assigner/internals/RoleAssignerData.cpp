@@ -15,6 +15,84 @@
 using namespace std;
 using namespace MRA;
 
+
+
+std::string RoleAssignerInput::toString() const {
+    std::stringstream buffer;
+    buffer << std::fixed << std::setprecision(2)
+           << "gamestate: " << GameStateAsString(this->gamestate) << std::endl;
+    buffer << "ball: " << this->ball.toString(true) << std::endl;
+    buffer << "formation: " << endl;
+    for (auto idx = 0u; idx < this->formation.size(); idx++) {
+        buffer << "\t[" << idx << "] = " << RoleAsString(this->formation[idx]) << endl;
+    }
+    buffer << "team: " << endl;
+    for (auto idx = 0u; idx < this->team.size(); idx++) {
+        buffer << "\t[" << idx << "] = " << this->team[idx].toString() << endl;
+    }
+    buffer << "opponents: " << endl;
+    for (auto idx = 0u; idx < this->opponents.size(); idx++) {
+        buffer << "\t[" << idx << "] = " << this->opponents[idx].toString() << endl;
+    }
+    buffer << "no_opponent_obstacles: " << endl;
+    for (auto idx = 0u; idx < this->no_opponent_obstacles.size(); idx++) {
+        buffer << "\t[" << idx << "] = " << this->no_opponent_obstacles[idx].toString() << endl;
+    }
+    buffer << "parking_positions: " << endl;
+    for (auto idx = 0u; idx < this->parking_positions.size(); idx++) {
+        buffer << "\t[" << idx << "] = " << this->parking_positions[idx].toString() << endl;
+    }
+    buffer << "ball_pickup_position: - valid " <<  this->ball_pickup_position.valid << endl;
+    if (this->ball_pickup_position.valid) {
+        buffer << "\tpickup ball x: "  <<  this->ball_pickup_position.x << endl;
+        buffer << "\tpickup ball y: "  <<  this->ball_pickup_position.y << endl;
+        buffer << "\tpickup ball ts: " << this->ball_pickup_position.ts << endl;
+        buffer << endl;
+    }
+    buffer << "passIsRequired: " << passIsRequired << endl;
+    buffer << "\tpass_data - valid " <<  this->pass_data.valid << endl;
+    if (this->pass_data.valid) {
+        buffer << "\torigin_x=" << this->pass_data.origin_pos.x;
+        buffer << "\torigin_y= " << this->pass_data.origin_pos.y;
+        buffer << "\ttarget_x= " << this->pass_data.target_pos.x;
+        buffer << "\ttarget_y= " << this->pass_data.target_pos.y;
+        buffer << "\tvelocity= " << this->pass_data.velocity;
+        buffer << "\tangle= " << this->pass_data.angle;
+        buffer << "\tts= " << this->pass_data.ts;
+        buffer << endl;
+    }
+    buffer << "environment: " << environment.toString() << endl;
+    buffer << endl;
+
+
+    return buffer.str();
+}
+
+std::string RoleAssignerState::toString() const {
+    std::stringstream buffer;
+    buffer << "\tprevious_ball = " << this->previous_ball.present << endl;
+    if (this->previous_ball.present) {
+        buffer << " x= " << this->previous_ball.x << " y: " << this->previous_ball.y;
+    }
+    buffer << endl;
+    for (auto idx = 0u; idx < previous_results.size(); idx++) {
+        auto prev_res = this->previous_results[idx];
+        buffer << "\t\t\tprev result [" << idx << "]: " << prev_res.present;
+        if (prev_res.present)
+        {
+            buffer << " role: " << RoleAsString(prev_res.role)
+                    << " end-pos x: " << prev_res.end_position.x
+                    << " y:  " << prev_res.end_position.y
+                    << "target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target))
+                    << "ts: " << prev_res.ts << endl;
+        }
+        buffer << "\n";
+    }
+    return buffer.str();
+}
+
+
+
 std::string RoleAssignerBall::toString(bool print_complete) const {
     std::stringstream buffer;
     buffer << std::fixed << std::setprecision(2)
@@ -30,16 +108,32 @@ std::string RoleAssignerBall::toString(bool print_complete) const {
 }
 
 
-std::string RoleAssignerOutput::pathToString() {
+std::string RoleAssignerOutput::toString() {
     std::stringstream buffer;
     buffer << "paths: " << this->player_paths.size() << std::endl;
     for (auto idx = 0u; idx < this->player_paths.size(); idx++) {
         buffer << "[" << idx << "] = robotId:" << player_paths[idx].robotId << endl;
+        buffer << "\tgamestate: " << GameStateAsString(this->player_paths[idx].gamestate) << endl;;
         buffer << "\trole: " << RoleAsString(this->player_paths[idx].role) << " (" << this->player_paths[idx].role << ")" << endl;
-        buffer << "\trank: " << player_paths[idx].role_rank << endl;;
-        buffer << "\ttarget-pos: "<< player_paths[idx].target.toString() << endl;
+        buffer << "\trank: " << this->player_paths[idx].role_rank << endl;;
+        buffer << "\ttarget-pos: "<< this->player_paths[idx].target.toString() << endl;
+        buffer << "\tis_pass_desitination: "<< this->player_paths[idx].is_pass_desitination << endl;
+        buffer << "\tplanner_target: "<< PlannerTargetAsString(this->player_paths[idx].planner_target) << endl;
+        buffer << "\tdefend_info.valid = " << player_paths[idx].defend_info.valid<< endl;
+        if (this->player_paths[idx].defend_info.valid) {
+            buffer << "\t\tdefending_id: " << this->player_paths[idx].defend_info.defending_id;
+            buffer << "\t\tbetween_ball_and_defending_pos: " << this->player_paths[idx].defend_info.between_ball_and_defending_pos;
+            buffer << "\t\tdist_from_defending_id: " << this->player_paths[idx].defend_info.dist_from_defending_id << endl;
+        }
+        for (unsigned long p_idx = 0; p_idx < this->player_paths[idx].path.size(); p_idx++) {
+            buffer << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << this->player_paths[idx].path[p_idx].x <<
+                    " y: " << this->player_paths[idx].path[p_idx].y <<
+                    " cost: " << this->player_paths[idx].path[p_idx].cost;
+            std::string targetString = PlannerTargetAsString(static_cast<planner_target_e>(this->player_paths[idx].path[p_idx].target));
+            buffer << " target: " << targetString << " (" << this->player_paths[idx].path[p_idx].target<< ")"<<  std::endl;
+        }
     }
-    buffer << "paths: " << this->player_paths.size() << std::endl;
+
     return buffer.str();
 }
 

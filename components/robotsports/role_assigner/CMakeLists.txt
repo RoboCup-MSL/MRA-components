@@ -21,6 +21,7 @@ add_library(MRA-components-robotsports-role-assigner
     internals/RoleAssignerSvg.cpp
     internals/RoleAssignerData.cpp
     internals/RoleAssignerExport.cpp
+    internals/RoleAssignerOpponent.cpp
     internals/RoleAssignerParameters.cpp
     internals/RoleAssignerRobot.cpp
     internals/RoleAssigner.cpp

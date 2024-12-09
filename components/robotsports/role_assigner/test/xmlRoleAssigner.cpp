@@ -43,6 +43,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                       const RoleAssignerParameters& ra_parameters) {
 
     bool useProto = true;
+    std::cout << "USING PROTO: " << useProto << std::endl;
 
     if (useProto) {
         auto m = RobotsportsRoleAssigner::RobotsportsRoleAssigner();
@@ -55,30 +56,28 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         RobotsportsRoleAssigner::DiagnosticsType proto_diagnostics;  // diagnostics data, type generated from Diagnostics.proto
 
         proto_input.set_gamestate(static_cast<MRA::RobotsportsRoleAssigner::Input_GameState>(ra_input.gamestate));
-
+    
         if (ra_input.ball.is_valid) {
-            if (ra_input.ball.status) {
-                proto_input.mutable_ball()->mutable_position()->set_x(ra_input.ball.position.x);
-                proto_input.mutable_ball()->mutable_position()->set_y(ra_input.ball.position.y);
-                proto_input.mutable_ball()->mutable_position()->set_z(ra_input.ball.position.z);
-                proto_input.mutable_ball()->mutable_position()->set_rx(ra_input.ball.position.rx);
-                proto_input.mutable_ball()->mutable_position()->set_ry(ra_input.ball.position.ry);
-                proto_input.mutable_ball()->mutable_position()->set_rz(ra_input.ball.position.rz);
-                proto_input.mutable_ball()->mutable_velocity()->set_x(ra_input.ball.velocity.x);
-                proto_input.mutable_ball()->mutable_velocity()->set_y(ra_input.ball.velocity.y);
-                proto_input.mutable_ball()->mutable_velocity()->set_z(ra_input.ball.velocity.z);
-                proto_input.mutable_ball()->mutable_velocity()->set_rx(ra_input.ball.velocity.rx);
-                proto_input.mutable_ball()->mutable_velocity()->set_ry(ra_input.ball.velocity.ry);
-                proto_input.mutable_ball()->mutable_velocity()->set_rz(ra_input.ball.velocity.rz);
-                if (ra_input.ball.status == ball_status_e::FREE) {
-                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::FREE);
-                }
-                else if (ra_input.ball.status == ball_status_e::OWNED_BY_PLAYER) {
-                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_TEAM);
-                }
-                else {
-                	proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT);
-                }
+            proto_input.mutable_ball()->mutable_position()->set_x(ra_input.ball.position.x);
+            proto_input.mutable_ball()->mutable_position()->set_y(ra_input.ball.position.y);
+            proto_input.mutable_ball()->mutable_position()->set_z(ra_input.ball.position.z);
+            proto_input.mutable_ball()->mutable_position()->set_rx(ra_input.ball.position.rx);
+            proto_input.mutable_ball()->mutable_position()->set_ry(ra_input.ball.position.ry);
+            proto_input.mutable_ball()->mutable_position()->set_rz(ra_input.ball.position.rz);
+            proto_input.mutable_ball()->mutable_velocity()->set_x(ra_input.ball.velocity.x);
+            proto_input.mutable_ball()->mutable_velocity()->set_y(ra_input.ball.velocity.y);
+            proto_input.mutable_ball()->mutable_velocity()->set_z(ra_input.ball.velocity.z);
+            proto_input.mutable_ball()->mutable_velocity()->set_rx(ra_input.ball.velocity.rx);
+            proto_input.mutable_ball()->mutable_velocity()->set_ry(ra_input.ball.velocity.ry);
+            proto_input.mutable_ball()->mutable_velocity()->set_rz(ra_input.ball.velocity.rz);
+            if (ra_input.ball.status == ball_status_e::FREE) {
+                proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::FREE);
+            }
+            else if (ra_input.ball.status == ball_status_e::OWNED_BY_PLAYER) {
+                proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_TEAM);
+            }
+            else {
+                proto_input.mutable_ball()->set_possesion(MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT);
             }
         }
         proto_input.clear_formation();
@@ -416,9 +415,8 @@ std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_
 
 static std::string RoleAssignerResultToString(const RoleAssignerOutput& output, const RoleAssignerInput& input) {
     std::stringstream buffer;
-    // TODO use only output
     for (unsigned player_idx = 0; player_idx != output.player_paths.size(); player_idx++) {
-        buffer << "path for player  " << player_idx <<  " id: " << input.team[player_idx].robotId <<  " -> " 
+        buffer << "path for player  " << player_idx <<  " id: " << output.player_paths[player_idx].robotId <<  " -> " 
                << RoleAsString(output.player_paths[player_idx].role) <<  endl;
         if (output.player_paths[player_idx].defend_info.valid) {
             buffer << " Defend info: valid: true id: "<< output.player_paths[player_idx].defend_info.defending_id;
@@ -913,7 +911,6 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     ra_input.ball.position = ball_pos;
     ra_input.ball.velocity = ball_vel;
     ra_input.ball.is_valid = ball_is_valid;
-
     ra_input.formation = formation;
     ra_input.team = Team;
     ra_input.opponents = Opponents;

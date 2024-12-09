@@ -90,6 +90,8 @@ public:
     bool passIsRequired;
     pass_data_t pass_data;
     MRA::Environment environment;
+
+    std::string toString() const;
 };
 
 
@@ -98,13 +100,15 @@ class RoleAssignerState {
 public:
     previous_used_ball_by_role_assinger_t previous_ball;
     std::vector<previous_role_assigner_result_t> previous_results;
+
+    std::string toString() const;
 };
 
 // class with outputs (data for Output.proto)
 class RoleAssignerOutput {
 public:
     std::vector<RoleAssignerResult> player_paths;
-    std::string pathToString();
+    std::string toString();
 };
 
 //-----------------------------------------------------------------------

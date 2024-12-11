@@ -317,6 +317,19 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 			proto_state.mutable_previous_ball()->set_x(ra_state.previous_ball.x);
 			proto_state.mutable_previous_ball()->set_y(ra_state.previous_ball.y);
 		}
+		for (auto prev_idx = 0u; prev_idx < ra_state.previous_results.size(); prev_idx++) {
+            auto proto_prev_result = MRA::RobotsportsRoleAssigner::PreviousResult();
+            auto prev_res = ra_state.previous_results[prev_idx];
+            google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(prev_res.ts * 1000);
+            proto_prev_result.mutable_timestamp()->CopyFrom(timestamp);
+            proto_prev_result.mutable_end_position()->set_x(prev_res.end_position.x);
+            proto_prev_result.mutable_end_position()->set_y(prev_res.end_position.y);
+            proto_prev_result.mutable_end_position()->set_cost(prev_res.end_position.cost);
+            proto_prev_result.mutable_end_position()->set_target(
+            proto_prev_result.set_role(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(prev_res.role));
+                static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(prev_res.end_position.target));
+            proto_state.mutable_previous_result()->Add()->CopyFrom(proto_prev_result);
+        }
 
         int error_value = m.tick(timestamp, proto_input, proto_params, proto_state, proto_output, proto_diagnostics);
         if (error_value != 0) {
@@ -358,8 +371,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         teamplay.assign(ra_input, ra_state, ra_output, ra_parameters);
     }
 }
-
-
 
 
 
@@ -842,6 +853,9 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
             previous_ball.x = c->PreviousBall()->x();
             previous_ball.y = c->PreviousBall()->y();
         }
+        else {
+            previous_ball.present = false;
+        }
 
         if (c->ParkingInfo()) {
             auto parkpos_list = c->ParkingInfo().get().ParkingPosition();
@@ -934,7 +948,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
         if (not print_only_errors) {
             cerr << RoleAssignerResultToString(ra_output, ra_input) << endl << flush;
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, run_filename);
+        RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state_org, ra_output, ra_parameters, run_filename);
 
     } else {
         cerr << "<< XML: no path received" << endl << flush;

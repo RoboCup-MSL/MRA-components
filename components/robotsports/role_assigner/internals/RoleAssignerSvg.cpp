@@ -178,14 +178,15 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
                 rbt.trackingId,
                 PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
                 rbt.player_type );
-        // TODO: lookup id in player paths it should matching 
-        if (r_output.player_paths.size() > idx) {
-            // TODO 
-            auto dr_role = RoleToDynamicRole(r_output.player_paths[idx].role, r_input.gamestate, r_input.ball.status);
-            fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
-                    boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(dr_role).c_str(),
-                    rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
+        auto dr_role = RoleToDynamicRole(role_UNDEFINED, r_input.gamestate, r_input.ball.status);
+        for (auto res_idx = 0u; res_idx < r_output.player_paths.size(); res_idx++) {
+            if (r_output.player_paths[res_idx].robotId ==  rbt.robotId) {
+                dr_role = RoleToDynamicRole(r_output.player_paths[res_idx].role, r_input.gamestate, r_input.ball.status);
+            }
         }
+        fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
+                boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(dr_role).c_str(),
+                rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
         auto prev_res = r_state.previous_results[idx];
         fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
         if (prev_res.present)
@@ -206,8 +207,8 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
 
 
     for (unsigned long p_idx = 0; p_idx < r_output.player_paths.size(); p_idx++) {
-        long robotId = r_input.team[p_idx].robotId; // TODO get id from player_paths
         auto player_path = r_output.player_paths[p_idx];
+        long robotId = player_path.robotId;
         Xtext << std::fixed << std::setprecision(2) << endl<< "Player " << p_idx << " (id: " << robotId<< ") : " << std::endl;
         auto dr_role = RoleToDynamicRole(player_path.role, r_input.gamestate, r_input.ball.status);
         Xtext << "\trole: " << DynamicRoleAsString(dr_role) << endl;
@@ -643,7 +644,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
     string compare_last_path_element_color = "yellow";
     string compare_path_color = "blue";
 
-    // put player-id on top of the players -- // TODO use id in output
+    // put player-id on top of the players 
     for(auto bar_idx = 0u; bar_idx < r_input.team.size(); bar_idx++) {
         Geometry::Point bar_pos = r_input.team[bar_idx].position;
         long robotId = r_input.team[bar_idx].robotId;

@@ -35,6 +35,16 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
             RoleAssignerState& r_state,
             RoleAssignerOutput& r_output,
             const RoleAssignerParameters& parameters) {
+
+
+    std::cout << "INPUT:\n" << input.toString() << std::endl;
+    std::cout << "STATE:\n" << r_state.toString() << std::endl;
+    std::cout << "PARAMS:\n" << parameters.toString() << std::endl;
+
+    if (input.team.size() == 0) {
+    	return;
+    }
+
     // convert to role_assigner_data;
     RoleAssignerData role_assigner_data = {};
     role_assigner_data.parameters = parameters;
@@ -50,6 +60,19 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     role_assigner_data.team = input.team;
     role_assigner_data.opponents = input.opponents;
 
+    // ---------------------------------------------------------------------------------------------
+    // sort team of role_assigner data by robotId. Remember order to have output in the original order
+    // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
+    // Then also putting them back in the correct order at the end of this function can be removed.
+    // first sort RoleAssignerTeam on robotId
+    sort(role_assigner_data.team.begin(),role_assigner_data.team.end(), RoleAssignerRobot::CompareRobotId);
+    sort(role_assigner_data.team_admin.begin(),role_assigner_data.team_admin.end(), RoleAssignerAdminTeam::CompareRobotId);
+    for (auto idx = 0u; idx< role_assigner_data.team.size(); idx++) {
+        if (role_assigner_data.team[idx].robotId == role_assigner_data.this_player_robotId) {
+            role_assigner_data.this_player_idx = idx;
+        }
+    }
+
     // inputs
     role_assigner_data.previous_ball = r_state.previous_ball;
     role_assigner_data.previous_results = r_state.previous_results;
@@ -59,35 +82,15 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
         RoleAssignerAdminTeam tp_admin = {};
         tp_admin.assigned = false;
         tp_admin.result = {};
+        tp_admin.result.robotId = role_assigner_data.team[idx].robotId;
         tp_admin.result.defend_info.valid = false;
         role_assigner_data.team_admin.push_back(tp_admin);
     }
 
-	std::vector<RoleAssignerResult> player_paths_in_correct_order = {};
-    if (role_assigner_data.team.size() == 0) {
-    	return;
-    }
 
     role_assigner_data.original_gamestate = role_assigner_data.gamestate;
     role_assigner_data.this_player_robotId = role_assigner_data.team[0].robotId;
 
-    // ---------------------------------------------------------------------------------------------
-    // sort team of role_assigner data by robotId. Remember order to have output in the original order
-    // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
-    // Then also putting them back in the correct order at the end of this function can be removed.
-    std::vector<long> orginal_order_robotIds = std::vector<long>();
-
-    for (auto idx = 0u; idx < role_assigner_data.team.size(); idx++) {
-        orginal_order_robotIds.push_back(role_assigner_data.team[idx].robotId);
-    }
-    // first sort RoleAssignerTeam on robotId
-    sort(role_assigner_data.team.begin(),role_assigner_data.team.end(), RoleAssignerRobot::CompareRobotId);
-    sort(role_assigner_data.team_admin.begin(),role_assigner_data.team_admin.end(), RoleAssignerAdminTeam::CompareRobotId);
-    for (auto idx = 0u; idx< role_assigner_data.team.size(); idx++) {
-        if (role_assigner_data.team[idx].robotId == role_assigner_data.this_player_robotId) {
-            role_assigner_data.this_player_idx = idx;
-        }
-    }
     // <<< END sort team of role assigner data by robotId
 
     role_assigner_data.teamFormation = role_assigner_data.formation;// getListWithRoles(role_assigner_data);
@@ -334,17 +337,6 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     std::vector<RoleAssignerRobot> restored_order_team = {};
     std::vector<RoleAssignerAdminTeam> restored_order_team_admin = {};
 
-    for (auto org_idx = 0u; org_idx < orginal_order_robotIds.size(); org_idx++) {
-        for (unsigned team_idx = 0; team_idx < role_assigner_data.team.size(); team_idx++) {
-            if (role_assigner_data.team[team_idx].robotId == orginal_order_robotIds[org_idx]) {
-                restored_order_team.push_back(role_assigner_data.team[team_idx]);
-                restored_order_team_admin.push_back(role_assigner_data.team_admin[team_idx]);
-            }
-        }
-    }
-    role_assigner_data.team = restored_order_team;
-    role_assigner_data.team_admin = restored_order_team_admin;
-
     r_output.player_paths = {};
     for (unsigned team_idx = 0; team_idx < role_assigner_data.team_admin.size(); team_idx++) {
         r_output.player_paths.push_back(role_assigner_data.team_admin[team_idx].result);
@@ -356,6 +348,9 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
     	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
     }
+
+    std::cout << "OUTPUT:\n" << r_output.toString() << std::endl;
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------

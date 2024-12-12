@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRobotStrategy;
+
+import "datatypes/DynamicRole.proto";
+
+message Output
+{
+    // list of the field player roles to be assigned ordered on importance (first role is most important).
+    // no keeper is assigned
+    repeated MRA.Datatypes.DynamicRole dynamic_roles = 1;
+}

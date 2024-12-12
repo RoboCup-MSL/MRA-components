@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRobotStrategy;
+
+message Params
+{
+    enum TeamFormation  {
+        FORMATION_112 = 0; // 1 player before the ball (offensive), 1 player on the ball, 2 players behind the ball (defensive)
+        FORMATION_013 = 1; // no player before the ball (offensive), 1 player on the ball, 3 players behind the ball (defensive)
+        FORMATION_211 = 2; // 2 players before the ball (offensive), 1 player on the ball, 1 player behind the ball (defensive)
+        FORMATION_310 = 3; // 3 players before the ball (offensive), 1 player on the ball, no player behind the ball (defensive)
+        FORMATION_ONLY_GOALKEEPER = 4;       // formation with only the role GOALKEEPER (test-purposes)
+        FORMATION_ONLY_ATTACKER_MAIN = 5;    // formation with only the role ATTACKER_MAIN (test-purposes)
+        FORMATION_ONLY_ATTACKER_ASSIST = 6;  // formation with only the role ATTACKER_ASSIST (test-purposes)
+        FORMATION_ONLY_ATTACKER_GENERIC = 7; // formation with only the role ATTACKER_GENERIC (test-purposes)
+        FORMATION_ONLY_DEFENDER_MAIN = 8;    // formation with only the role DEFENDER_MAIN (test-purposes)
+        FORMATION_ONLY_DEFENDER_GENERIC = 9; // formation with only the role DEFENDER_GENERIC (test-purposes)
+        FORMATION_ONLY_DISABLED_OUT = 10;    // formation with only the role DISABLED_OUT (test-purposes)
+        FORMATION_ONLY_DISABLED_IN = 11;     // formation with only the role DISABLED_IN (test-purposes)
+
+    }
+
+    bool no_defender_main_during_setplay = 1; // must main-defender be assigned during setplay favor (kickoff, freekick etc).
+    TeamFormation attack_formation = 2;  // formation during offensive phase (ball is under control by the team)
+    TeamFormation defense_formation = 3; // formation during defensing phase
+}

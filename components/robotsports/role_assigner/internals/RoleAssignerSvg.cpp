@@ -137,6 +137,11 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
 
     std::stringstream Xtext;
 
+    fprintf(fp, "INPUT:\n%s\n", r_input.toString().c_str());
+    fprintf(fp, "STATE:\n%s\n", r_state.toString().c_str());
+    fprintf(fp, "PARAMS:\n%s\n",r_parameters.toString().c_str());
+    fprintf(fp, "OUTPUT:\n%s\n", r_output.toString().c_str());
+
 
     // print input data to svg file
     fprintf(fp, "\n\n");
@@ -187,13 +192,22 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
         fprintf(fp, "\t\t\tcontrol-ball: %s passBall: %s role: %s time-own-PA: %4.2f time-opp-PA: %4.2f\n",
                 boolToString(rbt.controlBall).c_str(), boolToString(rbt.passBall).c_str(), DynamicRoleAsString(dr_role).c_str(),
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
-        auto prev_res = r_state.previous_results[idx];
-        fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
-        if (prev_res.present)
-        {
-            fprintf(fp, " role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
-                    RoleAsString(prev_res.role).c_str(), prev_res.end_position.x, prev_res.end_position.y,
-                    PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)).c_str(), prev_res.ts);
+        bool prev_found = false;
+        for (auto p_idx = 0u; p_idx < r_state.previous_results.size(); p_idx++) {
+            auto prev_res = r_state.previous_results[idx];
+            if (prev_res.robotId == rbt.robotId) {
+                fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
+                if (prev_res.present)
+                {
+                    prev_found = true;
+                    fprintf(fp, " robotId: %ld role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
+                            prev_res.robotId, RoleAsString(prev_res.role).c_str(), prev_res.end_position.x, prev_res.end_position.y,
+                            PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)).c_str(), prev_res.ts);
+                }
+            }
+        }
+        if (not prev_found) {
+                fprintf(fp, "\t\t\tprev result:  false");
         }
         fprintf(fp, "\n");
     }
@@ -356,20 +370,22 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
         {
             passedBallString = "passedBall=\"true\"";
         }
-        if (r_state.previous_results[idx].present)
-        {
-            auto previous_result = r_state.previous_results[idx];
-            std::stringstream previous_result_Xtext;
-            previous_result_Xtext << " previous_result_present=\"true\" "
-                    <<" previous_result_ts=\""  << previous_result.ts << "\""
-                    <<" previous_result_x=\""   << previous_result.end_position.x << "\""
-                    <<" previous_result_y=\""   << previous_result.end_position.y << "\""
-                    <<" previous_result_role=\""
-                    << RoleAsString(previous_result.role)
-                    <<"\"";
+        for (auto p_idx = 0u; p_idx < r_state.previous_results.size(); p_idx++) {
+            auto prev_res = r_state.previous_results[idx];
+            if (prev_res.robotId == r_input.team[idx].robotId) {
+                auto previous_result = r_state.previous_results[idx];
+                std::stringstream previous_result_Xtext;
+                previous_result_Xtext << " previous_result_present=\"true\" "
+                        <<" previous_result_ts=\""  << previous_result.ts << "\""
+                        <<" previous_result_x=\""   << previous_result.end_position.x << "\""
+                        <<" previous_result_y=\""   << previous_result.end_position.y << "\""
+                        <<" previous_result_role=\""
+                        << RoleAsString(previous_result.role)
+                        <<"\"";
 
-            previous_result_string= previous_result_Xtext.str();;
+                previous_result_string= previous_result_Xtext.str();;
 
+            }
         }
         fprintf(fp, "  <tns:Team %s %s x=\"%4.3f\" y=\"%4.3f\" rz=\"%4.3f\" velx=\"%4.3f\" vely=\"%4.3f\" velrz=\"%4.3f\" %s %s %s %s/>\n",
                 idString.c_str(), trackingString.c_str(),

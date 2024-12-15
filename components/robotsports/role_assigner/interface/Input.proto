@@ -47,7 +47,6 @@ message PassData {
    MRA.Datatypes.Pose  origin_pos = 6; // field coordinates of origin
    MRA.Datatypes.Pose  target_pos = 7; // field coordinates of target
    google.protobuf.Timestamp timestamp = 8; // timestamp of update
-   google.protobuf.Timestamp eta = 9; // estimated time of arrival at target
 };
 
 message Opponent {

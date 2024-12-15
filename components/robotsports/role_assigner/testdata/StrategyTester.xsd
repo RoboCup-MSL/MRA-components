@@ -74,6 +74,7 @@
         <attribute name="velocity" type="double" default="0.0">    <annotation> <documentation>intended ball velocity</documentation> </annotation> </attribute>
         <attribute name="angle" type="double" default="0.0">    <annotation> <documentation>intended ball velocity</documentation> </annotation> </attribute>
         <attribute name="valid" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
+        <attribute name="kicked" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
         <attribute name="target_id" type="int" default="0"> <annotation> <documentation>target id for pass, 0 = goal else robot-id</documentation> </annotation></attribute>
     </complexType>
     <complexType name="OptionsType"> <annotation> <documentation>moving object </documentation> </annotation>

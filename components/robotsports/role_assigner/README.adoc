@@ -6,8 +6,6 @@ Documentation:
 REMAINING WORK (TODO list) - to create first version:
 ==================================================== 
 
-* Use Protobuf on the interface
-* regression test as normal test
 * Clean up interfaces
 ** document inputs and outputs properly
 * updated based on known issues in original code

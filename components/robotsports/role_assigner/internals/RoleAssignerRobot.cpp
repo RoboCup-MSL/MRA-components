@@ -32,7 +32,7 @@ std::string RoleAssignerRobot::toString() const {
            << " time_in_opponent_penalty_area: " << this->time_in_opponent_penalty_area << endl;
     return buffer.str();
 }
-
+    
 
 // compare function to sort vector of the class on the member robotId
 bool RoleAssignerRobot::CompareRobotId(const RoleAssignerRobot& r1, const RoleAssignerRobot& r2)

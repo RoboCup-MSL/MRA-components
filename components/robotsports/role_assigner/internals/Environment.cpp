@@ -250,27 +250,7 @@ void Environment::getEnvironmentParameters(EnvironmentParameters& env_params) co
 }
 
 string Environment::toString() const {
-    std::stringstream buffer;
-    buffer << "FIELD_LENGTH = " << getFieldLength() << endl;
-    buffer << "FIELD_WIDTH = " << getFieldWidth() << endl;
-    buffer << "FIELD_MARGIN = " << getFieldMargin() << endl;
-    buffer << "GOAL_WIDTH = " << getGoalWidth() << endl;
-    buffer << "GOAL_LENGTH = " << getGoalLength() << endl;
-    buffer << "CENTER_CIRCLE_DIAMETER = " << getCenterCirleDiameter() << endl;
-    buffer << "GOAL_AREA_WIDTH = " << getGoalAreaWidth() << endl;
-    buffer << "GOAL_AREA_LENGTH = " << getGoalAreaLength() << endl;
-    buffer << "PENALTY_AREA_PRESENT = " << isPenaltyAreaPresent() << endl;
-    buffer << "PENALTY_AREA_WIDTH = " << getPenaltyAreaWidth() << endl;
-    buffer << "PENALTY_AREA_LENGTH = " << getPenaltyAreaLength() << endl;
-    buffer << "ROBOTSIZE = " << getRobotSize() << endl;
-    buffer << "BALL_RADIUS = " << getBallRadius() << endl;
-    buffer << "FIELD_MARKINGS_WIDTH = " << getFieldMarkingsWidth() << endl;
-    buffer << "PARKING_AREA_WIDTH = " << getParkingAreaWidth() << endl;
-    buffer << "PARKING_AREA_LENGTH = " << getParkingAreaLength() << endl;
-    buffer << "PARKING_DISTANCE_BETWEEN_ROBOTS = " << getParkingDistanceBetweenPlayers() << endl;
-    buffer << "PARKING_DISTANCE_TO_LINE = " << getParkingDistanceToLine() << endl;
-
-    return buffer.str();
+    return m_env_params.toString();
 }
 
 Environment FillDefaultEnvironment() {

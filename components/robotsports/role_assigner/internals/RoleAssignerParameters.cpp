@@ -240,7 +240,5 @@ std::string RoleAssignerParameters::toString() const  {
 }
 
 
-
-
 } // namespace
 

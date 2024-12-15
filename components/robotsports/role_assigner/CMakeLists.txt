@@ -12,6 +12,7 @@ add_library(MRA-components-robotsports-role-assigner
     internals/Dynamics.cpp
     internals/Edge.cpp
     internals/Environment.cpp
+    internals/EnvironmentParameters.cpp
     internals/GlobalPathPlanner.cpp
     internals/GlobalPathDynamicPlanner.cpp
     internals/GridHeuristic.cpp

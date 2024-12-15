@@ -18,9 +18,10 @@ import "components/robotsports/role_assigner/interface/Output.proto";
 //};
 
 message PreviousResult {
-    google.protobuf.Timestamp timestamp = 1;
-    PathPiece end_position = 2;
-    DynamicRole role = 3;
+    int32 robotId = 1;  
+    google.protobuf.Timestamp timestamp = 2;
+    PathPiece end_position = 3;
+    DynamicRole role = 4;
 };
 
 message PreviousBall {

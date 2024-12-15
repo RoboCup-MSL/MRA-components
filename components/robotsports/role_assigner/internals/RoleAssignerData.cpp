@@ -16,6 +16,10 @@ using namespace std;
 using namespace MRA;
 
 
+    // ball_pickup_position_t ball_pickup_position;
+    // bool passIsRequired;
+    // pass_data_t pass_data;
+    // MRA::Environment environment;
 
 std::string RoleAssignerInput::toString() const {
     std::stringstream buffer;
@@ -30,17 +34,29 @@ std::string RoleAssignerInput::toString() const {
     for (auto idx = 0u; idx < this->team.size(); idx++) {
         buffer << "\t[" << idx << "] = " << this->team[idx].toString() << endl;
     }
+    if (this->team.size() == 0) {
+        buffer << "\t<NONE>" << endl;
+    }
     buffer << "opponents: " << endl;
     for (auto idx = 0u; idx < this->opponents.size(); idx++) {
         buffer << "\t[" << idx << "] = " << this->opponents[idx].toString() << endl;
+    }
+    if (this->opponents.size() == 0) {
+        buffer << "\t<NONE>" << endl;
     }
     buffer << "no_opponent_obstacles: " << endl;
     for (auto idx = 0u; idx < this->no_opponent_obstacles.size(); idx++) {
         buffer << "\t[" << idx << "] = " << this->no_opponent_obstacles[idx].toString() << endl;
     }
+    if (this->no_opponent_obstacles.size() == 0) {
+        buffer << "\t<NONE>" << endl;
+    }
     buffer << "parking_positions: " << endl;
     for (auto idx = 0u; idx < this->parking_positions.size(); idx++) {
         buffer << "\t[" << idx << "] = " << this->parking_positions[idx].toString() << endl;
+    }
+    if (this->parking_positions.size() == 0) {
+        buffer << "\t<NONE>" << endl;
     }
     buffer << "ball_pickup_position: - valid " <<  this->ball_pickup_position.valid << endl;
     if (this->ball_pickup_position.valid) {
@@ -52,13 +68,13 @@ std::string RoleAssignerInput::toString() const {
     buffer << "passIsRequired: " << passIsRequired << endl;
     buffer << "\tpass_data - valid " <<  this->pass_data.valid << endl;
     if (this->pass_data.valid) {
-        buffer << "\torigin_x=" << this->pass_data.origin_pos.x;
-        buffer << "\torigin_y= " << this->pass_data.origin_pos.y;
-        buffer << "\ttarget_x= " << this->pass_data.target_pos.x;
-        buffer << "\ttarget_y= " << this->pass_data.target_pos.y;
+        buffer << "\torigin =" << this->pass_data.origin_pos.toString();
+        buffer << "\ttarget = " << this->pass_data.target_pos.toString();
         buffer << "\tvelocity= " << this->pass_data.velocity;
         buffer << "\tangle= " << this->pass_data.angle;
         buffer << "\tts= " << this->pass_data.ts;
+        buffer << "\tkicked= " << this->pass_data.kicked;
+        buffer << "\ttarget_id= " << this->pass_data.kicked;
         buffer << endl;
     }
     buffer << "environment: " << environment.toString() << endl;
@@ -80,11 +96,13 @@ std::string RoleAssignerState::toString() const {
         buffer << "\t\t\tprev result [" << idx << "]: " << prev_res.present;
         if (prev_res.present)
         {
-            buffer << " role: " << RoleAsString(prev_res.role)
-                    << " end-pos x: " << prev_res.end_position.x
-                    << " y:  " << prev_res.end_position.y
-                    << "target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target))
-                    << "ts: " << prev_res.ts << endl;
+            buffer << " robotId: " << prev_res.robotId
+                   << " role: " << RoleAsString(prev_res.role)
+                   << " ts: " << prev_res.ts << endl
+                   << " end-pos\n\tx: " << prev_res.end_position.x  << " y:  " << prev_res.end_position.y 
+                   << " cost: " << prev_res.end_position.cost  
+                   << " target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)) 
+                   << std::endl;
         }
         buffer << "\n";
     }
@@ -92,23 +110,26 @@ std::string RoleAssignerState::toString() const {
 }
 
 
-
 std::string RoleAssignerBall::toString(bool print_complete) const {
     std::stringstream buffer;
+    if (not print_complete) {
     buffer << std::fixed << std::setprecision(2)
             << " x: " << this->position.x
             << " y: " << this->position.y;
-    if (print_complete) {
+    }
+    else {
+
         buffer << std::fixed << std::setprecision(2)
-               << " vx: " << this->velocity.x
-               << " vy: " << this->velocity.y
-               << " valid: " << (int) this->is_valid;
+               << " status: " << ballStatusAsString(this->status) 
+               << " position: " << this->position.toString() 
+               << " velocity: " << this->velocity.toString() 
+               << " is_valid: " << (int) this->is_valid;
     }
     return buffer.str();
 }
 
 
-std::string RoleAssignerOutput::toString() {
+std::string RoleAssignerOutput::toString() const {
     std::stringstream buffer;
     buffer << "paths: " << this->player_paths.size() << std::endl;
     for (auto idx = 0u; idx < this->player_paths.size(); idx++) {
@@ -136,7 +157,6 @@ std::string RoleAssignerOutput::toString() {
 
     return buffer.str();
 }
-
 
 std::string RoleAssignerData::toString() const
 {
@@ -208,7 +228,7 @@ std::string RoleAssignerData::toString() const
         buffer <<" role: " << RoleAsString(this->team_admin[idx].result.role);
         buffer << "time-own-PA: " << rbt.time_in_own_penalty_area;
         buffer << "time-opp-PA: " << rbt.time_in_opponent_penalty_area << endl;
-        auto prev_res = this->previous_results[idx];
+        auto prev_res = this->getPreviousResultForPlayer(this->team[idx].robotId);
         buffer << "\t\t\tprev result:  " << prev_res.present;
         if (prev_res.present)
         {
@@ -272,3 +292,14 @@ bool RoleAssignerData::teamControlsBall() const {
 }
 
 
+previous_role_assigner_result_t RoleAssignerData::getPreviousResultForPlayer(int robotId) const {
+    previous_role_assigner_result_t previous_result = { .present=false };
+
+    for (auto idx = 0u; idx < this->previous_results.size(); idx++) {
+        if (this->previous_results[idx].robotId == robotId) {
+           previous_result = this->previous_results[idx];
+        }
+    }
+
+    return previous_result;
+}

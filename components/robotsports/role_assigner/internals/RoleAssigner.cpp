@@ -31,34 +31,34 @@ RoleAssigner::RoleAssigner() : m_gridFileNumber(0) {
 
 }
 
-void RoleAssigner::assign(const RoleAssignerInput& input,
+void RoleAssigner::assign(const RoleAssignerInput& r_input,
             RoleAssignerState& r_state,
             RoleAssignerOutput& r_output,
-            const RoleAssignerParameters& parameters) {
+            const RoleAssignerParameters& r_parameters) {
 
 
-    std::cout << "INPUT:\n" << input.toString() << std::endl;
+    // std::cout << "INPUT:\n" << r_input.toString() << std::endl;
     std::cout << "STATE:\n" << r_state.toString() << std::endl;
-    std::cout << "PARAMS:\n" << parameters.toString() << std::endl;
+    // std::cout << "PARAMS:\n" << r_parameters.toString() << std::endl;
 
-    if (input.team.size() == 0) {
+    if (r_input.team.size() == 0) {
     	return;
     }
 
     // convert to role_assigner_data;
     RoleAssignerData role_assigner_data = {};
-    role_assigner_data.parameters = parameters;
-    role_assigner_data.environment = input.environment;
-    role_assigner_data.formation = input.formation;
-    role_assigner_data.gamestate = input.gamestate;
-    role_assigner_data.ball = input.ball;
-    role_assigner_data.parking_positions = input.parking_positions;
-    role_assigner_data.ball_pickup_position = input.ball_pickup_position;
-    role_assigner_data.passIsRequired = input.passIsRequired;
-    role_assigner_data.pass_data = input.pass_data;
+    role_assigner_data.parameters = r_parameters;
+    role_assigner_data.environment = r_input.environment;
+    role_assigner_data.formation = r_input.formation;
+    role_assigner_data.gamestate = r_input.gamestate;
+    role_assigner_data.ball = r_input.ball;
+    role_assigner_data.parking_positions = r_input.parking_positions;
+    role_assigner_data.ball_pickup_position = r_input.ball_pickup_position;
+    role_assigner_data.passIsRequired = r_input.passIsRequired;
+    role_assigner_data.pass_data = r_input.pass_data;
     role_assigner_data.previous_ball = r_state.previous_ball;
-    role_assigner_data.team = input.team;
-    role_assigner_data.opponents = input.opponents;
+    role_assigner_data.team = r_input.team;
+    role_assigner_data.opponents = r_input.opponents;
 
     // ---------------------------------------------------------------------------------------------
     // sort team of role_assigner data by robotId. Remember order to have output in the original order
@@ -318,7 +318,7 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
         {
             save_name = GetRoleAssignerSVGname(role_assigner_data.gamestate, "DYN_ROLE_NONE");
         }
-        RoleAssignerSvg::role_assigner_data_to_svg(input, r_state, r_output, parameters, save_name);
+        RoleAssignerSvg::role_assigner_data_to_svg(r_input, r_state, r_output, parameters, save_name);
 
         // create empty path for robot with a path that ends outside the field.
         std::vector<path_piece_t> path = player_paths[role_assigner_data.this_player_idx].path;
@@ -341,6 +341,15 @@ void RoleAssigner::assign(const RoleAssignerInput& input,
     for (unsigned team_idx = 0; team_idx < role_assigner_data.team_admin.size(); team_idx++) {
         r_output.player_paths.push_back(role_assigner_data.team_admin[team_idx].result);
     }
+
+#if USEPROTO
+    RoleAssignerSvg::role_assigner_data_to_svg(r_input, r_state, r_output, r_parameters, "proto_yes.svg");
+    cout << "saved proto_yes.svg" << endl;
+#else
+    RoleAssignerSvg::role_assigner_data_to_svg(r_input, r_state, r_output, r_parameters, "proto_no.svg");
+    cout << "saved proto_no.svg" << endl;
+#endif
+
 
     // save for next calculation
     r_state.previous_ball.present = role_assigner_data.ball.is_valid;
@@ -624,10 +633,11 @@ bool RoleAssigner::assignAnyToPosition(RoleAssignerData&  role_assigner_data, ro
 
             player.distToPreviousTarget = 0.0;
             // calculate previous target position distance-threshold.
-            if (role_assigner_data.previous_results[idx].present and role_assigner_data.previous_results[idx].role == role)
+            auto previous_result = role_assigner_data.getPreviousResultForPlayer(role_assigner_data.team[idx].robotId);
+            if (previous_result.present and previous_result.role == role)
             {
-                Geometry::Point previousEndPos = Geometry::Point(role_assigner_data.previous_results[idx].end_position.x,
-                                                                 role_assigner_data.previous_results[idx].end_position.y);
+                Geometry::Point previousEndPos = Geometry::Point(previous_result.end_position.x,
+                                                                 previous_result.end_position.y);
                 if (currentEndPos.distanceTo(previousEndPos) < role_assigner_data.parameters.previous_role_end_pos_threshold) {
                     player.distToPreviousTarget = role_assigner_data.parameters.previous_role_bonus_end_pos_radius;
                 }

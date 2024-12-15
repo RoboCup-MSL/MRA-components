@@ -17,6 +17,8 @@
 #include "RoleAssignerResult.hpp"
 #include "RoleAssignerRobot.hpp"
 
+#define USEPROTO 1
+
 namespace MRA {
 
 inline std::string PlayerTypeAsString(player_type_e player_type) {
@@ -46,15 +48,15 @@ public:
 
 // part of  input data
 typedef struct pass_data_s {
-    bool   valid; // 1: if data is valid; 0 otherwise
-    bool   kicked; // 1: if pass/shot has been made; 0: otherwise
-    long   target_id; // destination of kick, where 0 is goal
-    double velocity; // [m/s]
-    double angle; // upwards angle
-    MRA::Geometry::Position  origin_pos; // field coordinates of origin
-    MRA::Geometry::Position  target_pos; // field coordinates of target
-    double ts; // timestamp of update
-    double eta; // estimated time of arrival at target
+    bool   valid = false; // true: if data is valid; false otherwise
+    bool   kicked = false; // 1: if pass/shot has been made; false: otherwise
+    long   target_id = 0; // destination-id of the kick, where goal has id 0
+    double velocity = std::numeric_limits<double>::infinity(); // [m/s]
+    double angle = std::numeric_limits<double>::infinity(); // upwards angle
+    MRA::Geometry::Position  origin_pos = {}; // field coordinates of origin
+    MRA::Geometry::Position  target_pos  = {}; // field coordinates of target
+    double ts = std::numeric_limits<double>::infinity(); // timestamp of update
+    //double eta = std::numeric_limits<double>::infinity(); // estimated time of arrival at target (can be calculated)
 } pass_data_t;
 
 // class with state data (data for State.proto)
@@ -77,19 +79,19 @@ public:
 class RoleAssignerInput {
 public:
     RoleAssignerInput() {};
-    game_state_e gamestate;
-    RoleAssignerBall ball;
+    game_state_e gamestate = game_state_e::NONE;
+    RoleAssignerBall ball = {};
 
-    std::vector<role_e> formation;
-    std::vector<RoleAssignerRobot> team;
-    std::vector<RoleAssignerOpponent> opponents;
-    std::vector<RoleAssignerOpponent> no_opponent_obstacles;
+    std::vector<role_e> formation = {};
+    std::vector<RoleAssignerRobot> team = {};
+    std::vector<RoleAssignerOpponent> opponents = {};
+    std::vector<RoleAssignerOpponent> no_opponent_obstacles = {};
 
-    std::vector<MRA::Geometry::Point> parking_positions;
-    ball_pickup_position_t ball_pickup_position;
-    bool passIsRequired;
-    pass_data_t pass_data;
-    MRA::Environment environment;
+    std::vector<MRA::Geometry::Point> parking_positions = {};
+    ball_pickup_position_t ball_pickup_position = {};
+    bool passIsRequired = false;
+    pass_data_t pass_data = {};
+    MRA::Environment environment = {}; 
 
     std::string toString() const;
 };
@@ -98,8 +100,8 @@ public:
 // class with state data (data for State.proto)
 class RoleAssignerState {
 public:
-    previous_used_ball_by_role_assinger_t previous_ball;
-    std::vector<previous_role_assigner_result_t> previous_results;
+    previous_used_ball_by_role_assinger_t previous_ball = {};
+    std::vector<previous_role_assigner_result_t> previous_results = {};
 
     std::string toString() const;
 };
@@ -108,7 +110,7 @@ public:
 class RoleAssignerOutput {
 public:
     std::vector<RoleAssignerResult> player_paths;
-    std::string toString();
+    std::string toString() const;
 };
 
 //-----------------------------------------------------------------------
@@ -154,6 +156,8 @@ public:
     bool teamControlsBall() const;
 
     std::string toString() const;
+
+    previous_role_assigner_result_t getPreviousResultForPlayer(int robotId) const;
 };
 
 } // namespace

@@ -11,8 +11,6 @@ using namespace MRA;
 #include "internals/RoleAssigner.hpp"
 #include "internals/RoleAssignerData.hpp"
 
-#include "RoleAssignerSvg.hpp" // TODO remove later
-
 // helper function for adding some seconds to a google timestamp
 google::protobuf::Timestamp timeFromDouble(google::protobuf::Timestamp const &t0, double dt)
 {
@@ -37,28 +35,12 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     RoleAssigner teamplay = RoleAssigner();
     RoleAssignerInput ra_input = {};
     ra_input.gamestate = (MRA::game_state_e) input.gamestate();
-    ra_input.ball = {};
-    ra_input.ball.is_valid = input.has_ball();
-    if (ra_input.ball.is_valid) {
-        MRA::Datatypes::BallPossession bp = input.ball().possesion();
-        if (bp == MRA::Datatypes::BallPossession::FREE) {
-            ra_input.ball.status = ball_status_e::FREE;
-        }
-        else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
-            ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
-            // OWNED_BY_TEAM = 2,  // TODO check if undercontrol by a player otherwise owned_by_team
-        }
-        else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
-            ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
-        }
-        ra_input.ball.position = input.ball().position();
-        ra_input.ball.velocity = input.ball().velocity();
-    }
     ra_input.formation = {};
     for (auto idx = 0; idx <  input.formation_size(); idx++) {
         ra_input.formation.push_back(static_cast<role_e>(input.formation(idx))); // enums have the same values
     }
 
+    bool a_player_has_ball = false;
     for (auto idx = 0; idx <  input.team_size(); idx++) {
         auto input_team =  input.team(idx);
         if (input_team.active()) {
@@ -69,6 +51,9 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
             rbt.human = input_team.human();
             rbt.trackingId = input_team.trackingid();
             rbt.controlBall = input_team.hasball();
+            if (rbt.controlBall) {
+                a_player_has_ball = true;
+            }
             rbt.passBall = input_team.passed_ball();
             if (input_team.is_keeper()) {
                 rbt.player_type = player_type_e::GOALIE;
@@ -88,6 +73,30 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
             ra_input.team.push_back(rbt);
         }
     }
+
+    ra_input.ball = {};
+    ra_input.ball.is_valid = input.has_ball();
+    if (ra_input.ball.is_valid) {
+        MRA::Datatypes::BallPossession bp = input.ball().possesion();
+        if (bp == MRA::Datatypes::BallPossession::FREE) {
+            ra_input.ball.status = ball_status_e::FREE;
+        }
+        else if (bp == MRA::Datatypes::BallPossession::OWNED_BY_TEAM) {
+            if (a_player_has_ball) {
+                ra_input.ball.status = ball_status_e::OWNED_BY_PLAYER;
+            }
+            else {
+                ra_input.ball.status = ball_status_e::OWNED_BY_TEAM;
+
+            }
+        }
+        else if (bp ==  MRA::Datatypes::BallPossession::OWNED_BY_OPPONENT) {
+            ra_input.ball.status = ball_status_e::OWNED_BY_OPPONENT;
+        }
+        ra_input.ball.position = input.ball().position();
+        ra_input.ball.velocity = input.ball().velocity();
+    }
+
 
     for (auto idx = 0; idx <  input.no_opponent_obstacles_size(); idx++) {
         auto obstacle =  input.no_opponent_obstacles(idx);
@@ -133,7 +142,6 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         ra_input.pass_data.origin_pos = input.pass_data().origin_pos();
         ra_input.pass_data.target_pos = input.pass_data().target_pos();
         ra_input.pass_data.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().timestamp()) / 1000.0;
-        ra_input.pass_data.eta = google::protobuf::util::TimeUtil::TimestampToMilliseconds(input.pass_data().eta()) / 1000.0;
     }
     EnvironmentParameters env_parms = {};
     env_parms.SLM.A = params.environment().model().a();
@@ -174,22 +182,19 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         ra_state.previous_ball.y = state.previous_ball().y();
     }
 
-    for (auto idx = 0; idx <  input.team_size(); idx++) {
-    	if (idx  < state.previous_result_size()) {
-            auto result = state.previous_result(idx);
-            previous_role_assigner_result_t prev_res = {};
-            prev_res.present = true;
-            prev_res.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(result.timestamp()) / 1000.0;
-            prev_res.end_position.x = result.end_position().x();
-            prev_res.end_position.y = result.end_position().y();
-            prev_res.role = (MRA::role_e) result.role();
-            ra_state.previous_results.push_back(prev_res);
-    	}
-    	else {
-            previous_role_assigner_result_t prev_res = {.present = false};
-            ra_state.previous_results.push_back(prev_res);
+    for (auto idx = 0; idx < state.previous_result_size(); idx++) {
+        auto result = state.previous_result(idx);
+        previous_role_assigner_result_t prev_res = {};
+        prev_res.present = true;
+        prev_res.robotId = result.robotid();
+        prev_res.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(result.timestamp()) / 1000.0;
+        prev_res.end_position.x = result.end_position().x();
+        prev_res.end_position.y = result.end_position().y();
+        prev_res.role = (MRA::role_e) result.role();
+        std::cout << __func__ << " : " << __LINE__ << " : present: " << prev_res.present 
+                 << " robotId: " << prev_res.robotId  << " role: " << RoleAsString(prev_res.role) << "\n";
 
-    	}
+        ra_state.previous_results.push_back(prev_res);
     }
 
     RoleAssignerParameters ra_parameters = {}; //    parameters;
@@ -250,61 +255,45 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     ra_parameters.setplay_against_dist_to_opponent  = params.setplay_against_dist_to_opponent();
     ra_parameters.move_to_ball_left_field_position  = params.move_to_ball_left_field_position();
 
-
     ra_parameters.auto_save_svg_period = params.auto_save_svg_period(); // -1 no save, otherwise interval for auto save svg
     ra_parameters.svgOutputFileName = params.svgoutputfilename();
+    ra_parameters.svgDefaultTargetColor = params.svgdefaulttargetcolor();
+    ra_parameters.svgBallColor = params.svgballcolor();
+    ra_parameters.svgOriginalTargetColor = params.svgoriginaltargetcolor();
+    ra_parameters.svgTeamColor = params.svgteamcolor();
+    ra_parameters.svgOpponentColor = params.svgopponentcolor();
+    ra_parameters.svgDrawVelocity = params.svgdrawvelocity();
+    ra_parameters.svgDrawEdges = params.svgdrawedges();
+    ra_parameters.saveGridDataToFile = params.savegriddatatofile();
+    ra_parameters.svgRobotPlanner = params.svgrobotplanner();
+    ra_parameters.preferredSetplayKicker = params.preferredsetplaykicker();
+    ra_parameters.preferredSetplayReceiver = params.preferredsetplayreceiver();
+    ra_parameters.setplay_margin_to_penalty_area_side = params.setplay_margin_to_penalty_area_side();
+    ra_parameters.interceptor_assign_use_ball_velocity = params.interceptor_assign_use_ball_velocity();
+    ra_parameters.interceptor_assign_min_velocity_for_calculate_interception_position  
+                    = params.interceptor_assign_min_velocity_for_calculate_interception_position();
 
-    // write output to svg file with the name, if empty ("") then no file is written.
-//    static std::string svgOutputFileName;
-//
-//    static std::string svgDefaultTargetColor;
-//    static std::string svgBallColor;
-//    static std::string svgOriginalTargetColor;
-//
-//    static std::string svgTeamColor;
-//    static std::string svgOpponentColor;
-//    ra_parameters.svgDrawVelocity; // draw velocity vectors
-//
-//    ra_parameters.svgDrawEdges; // draw edges
-//
-//    /**
-//     * if true, grid data is saved to file, for debugging purposes.
-//     * file-names will be constructed from the svgOutputFileName or using a generic name if that is not available.
-//     */
-//    ra_parameters.saveGridDataToFile;
-//
-//    /**
-//     * if true, robot planner will write its output to a svg file, for debugging purposes.
-//     * file-names will be constructed from the svgOutputFileName or using a generic name if that is not available.
-//     */
-//    ra_parameters.svgRobotPlanner;
-//
-//    ra_parameters.preferredSetplayKicker;
-//    ra_parameters.preferredSetplayReceiver;
-//    ra_parameters.setplay_margin_to_penalty_area_side;  // min distance for setplay receiver to side of penalty area
-//    ra_parameters.interceptor_assign_use_ball_velocity; // use ball velocity to determine the interceptor
-//    ra_parameters.interceptor_assign_min_velocity_for_calculate_interception_position; // minimum ball velocity needed to calculate interception position for interceptor role assignment
-//    ra_parameters.autoAssignGoalie;
-//    ra_parameters.min_y_for_lob_shot;
-//    ra_parameters.outsideFieldMargin;
-//
-//    ra_parameters.kickoff_fp1_x;
-//    ra_parameters.kickoff_fp1_y;
-//    ra_parameters.kickoff_fp2_x;
-//    ra_parameters.kickoff_fp2_y;
-//    ra_parameters.kickoff_fp3_x;
-//    ra_parameters.kickoff_fp3_y;
-//    ra_parameters.kickoff_fp4_x;
-//    ra_parameters.kickoff_fp4_y;
-//
-//    ra_parameters.kickoff_against_fp1_x;
-//    ra_parameters.kickoff_against_fp1_y;
-//    ra_parameters.kickoff_against_fp2_x;
-//    ra_parameters.kickoff_against_fp2_y;
-//    ra_parameters.kickoff_against_fp3_x;
-//    ra_parameters.kickoff_against_fp3_y;
-//    ra_parameters.kickoff_against_fp4_x;
-//    ra_parameters.kickoff_against_fp4_y;
+    ra_parameters.autoAssignGoalie = params.autoassigngoalie();
+    ra_parameters.min_y_for_lob_shot = params.min_y_for_lob_shot();
+    ra_parameters.outsideFieldMargin = params.outsidefieldmargin();
+
+    ra_parameters.kickoff_fp1_x = params.kickoff_fp1_x();
+    ra_parameters.kickoff_fp1_y = params.kickoff_fp1_y();
+    ra_parameters.kickoff_fp2_x = params.kickoff_fp2_x();
+    ra_parameters.kickoff_fp2_y = params.kickoff_fp2_y();
+    ra_parameters.kickoff_fp3_x = params.kickoff_fp3_x();
+    ra_parameters.kickoff_fp3_y = params.kickoff_fp3_y();
+    ra_parameters.kickoff_fp4_x = params.kickoff_fp4_x();
+    ra_parameters.kickoff_fp4_y = params.kickoff_fp4_y();
+
+    ra_parameters.kickoff_against_fp1_x = params.kickoff_against_fp1_x();
+    ra_parameters.kickoff_against_fp1_y = params.kickoff_against_fp1_y();
+    ra_parameters.kickoff_against_fp2_x = params.kickoff_against_fp2_x();
+    ra_parameters.kickoff_against_fp2_y = params.kickoff_against_fp2_y();
+    ra_parameters.kickoff_against_fp3_x = params.kickoff_against_fp3_x();
+    ra_parameters.kickoff_against_fp3_y = params.kickoff_against_fp3_y();
+    ra_parameters.kickoff_against_fp4_x = params.kickoff_against_fp4_x();
+    ra_parameters.kickoff_against_fp4_y = params.kickoff_against_fp4_y();
 
 
     RoleAssignerOutput ra_output = {};
@@ -339,10 +328,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     }
 
 
-    if (ra_output.player_paths.size() > 0) {
-        RoleAssignerSvg::role_assigner_data_to_svg(ra_input, ra_state, ra_output, ra_parameters, "test.svg"); // TODO: needed ?
-
-    } else {
+    if (ra_output.player_paths.size() == 0) {
         std::cerr << "<< XML: no path received at:" << __func__ << std::endl << std::flush;
     }
     return error_value;

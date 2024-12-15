@@ -8,7 +8,6 @@ file: output_team/European_Open_2022_10.svg
 
 
 	gamestate = Freekick Against (7)
-	original_gamestate = Freekick Against (7)
 	ball_status = "OWNED_BY_OPPONENT"
 	Ball: position: x: -6.00 y: 2.25 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

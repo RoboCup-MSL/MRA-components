@@ -8,7 +8,6 @@ file: output_team/throwin_1.svg
 
 
 	gamestate = Throwin (10)
-	original_gamestate = Throwin (10)
 	ball_status = "OWNED_BY_TEAM"
 	Ball: position: x: -6.00 y: 2.75 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.50 y: 0.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

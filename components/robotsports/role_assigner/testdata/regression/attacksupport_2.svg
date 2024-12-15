@@ -8,7 +8,6 @@ file: output_team/attacksupport_2.svg
 
 
 	gamestate = Normal (1)
-	original_gamestate = Normal (1)
 	ball_status = "OWNED_BY_PLAYER"
 	Ball: position: x: -3.90 y: -3.40 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

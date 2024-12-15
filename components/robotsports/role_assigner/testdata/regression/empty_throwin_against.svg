@@ -8,7 +8,6 @@ file: output_team/empty_throwin_against.svg
 
 
 	gamestate = Throwin Against (11)
-	original_gamestate = Throwin Against (11)
 	ball_status = "OWNED_BY_OPPONENT"
 	Ball: position: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

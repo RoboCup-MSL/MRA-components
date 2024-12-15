@@ -8,7 +8,6 @@ file: output_team/throwin_3.svg
 
 
 	gamestate = Throwin (10)
-	original_gamestate = Throwin (10)
 	ball_status = "OWNED_BY_PLAYER"
 	Ball: position: x: 5.80 y: -1.33 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: -0.11 y: 0.05 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false
@@ -35,26 +34,26 @@ file: output_team/throwin_3.svg
 		player[1] = position x: 2.62 y: -0.78 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: -0.09 y: 0.09 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 paths:
 
-Player 0 (id: 3) : 
-	role: SETPLAY_RECEIVER
-	Game State: Throwin
-	Target position : x: 3.30 y: -1.33
-	Planner target type  Prepare restart
-	Is pass_desitination: false
-	Defend info valid:  false
-Path[0]: x: 2.96 y: -3.77 cost: 0.00 target: Prepare restart (4)
-Path[0]: x: 3.27 y: -1.91 cost: 4.36 target: Prepare restart (4)
-Path[0]: x: 3.30 y: -1.33 cost: 6.17 target: Prepare restart (4)
-
-Player 1 (id: 1) : 
+Player 0 (id: 1) : 
 	role: GOALKEEPER
 	Game State: Throwin
 	Target position : x: 0.50 y: -8.50
 	Planner target type  Goalie
 	Is pass_desitination: false
 	Defend info valid:  false
-Path[1]: x: 0.22 y: -8.45 cost: 0.00 target: Goalie (9)
-Path[1]: x: 0.50 y: -8.50 cost: 1.05 target: Goalie (9)
+Path[0]: x: 0.22 y: -8.45 cost: 0.00 target: Goalie (9)
+Path[0]: x: 0.50 y: -8.50 cost: 1.04 target: Goalie (9)
+
+Player 1 (id: 3) : 
+	role: SETPLAY_RECEIVER
+	Game State: Throwin
+	Target position : x: 3.30 y: -1.33
+	Planner target type  Prepare restart
+	Is pass_desitination: false
+	Defend info valid:  false
+Path[1]: x: 2.96 y: -3.77 cost: 0.00 target: Prepare restart (4)
+Path[1]: x: 3.27 y: -1.91 cost: 4.46 target: Prepare restart (4)
+Path[1]: x: 3.30 y: -1.33 cost: 6.29 target: Prepare restart (4)
 
 Player 2 (id: 4) : 
 	role: SETPLAY_KICKER
@@ -279,12 +278,12 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
 <text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Throwin</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_player</text>
-<text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: SETPLAY_RECEIVER</text>
-<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.30 y: -1.33</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 6.172842</text>
-<text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: GOALKEEPER</text>
-<text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.50 y: -8.50</text>
-<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.047174</text>
+<text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: GOALKEEPER</text>
+<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.50 y: -8.50</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.042375</text>
+<text x="15.10cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: SETPLAY_RECEIVER</text>
+<text x="15.30cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.30 y: -1.33</text>
+<text x="15.30cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 6.293017</text>
 <text x="15.10cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: SETPLAY_KICKER</text>
 <text x="15.30cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 6.60 y: -1.33</text>
 <text x="15.30cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 10.923570</text>
@@ -313,25 +312,25 @@ PARKING_DISTANCE_TO_LINE = 0.5
 <rect x="13.33cm" y="11.80cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- player-path start 0-->
-<rect x="10.21cm" y="14.02cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 0-->
-<line x1="10.50cm" y1="14.02cm" x2="10.77cm" y2="12.41cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="10.77cm" y1="12.41cm" x2="10.80cm" y2="11.83cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 0-->
-<circle cx="10.80cm" cy="11.83cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-
-<!-- player-path start 1-->
 <rect x="7.47cm" y="18.70cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
-<!-- path player 1-->
+<!-- path player 0-->
 <line x1="7.96cm" y1="18.99cm" x2="8.00cm" y2="19.00cm" stroke-width="0.125cm"  stroke="blue" />
 
-<!-- path-end player 1-->
+<!-- path-end player 0-->
 <circle cx="8.00cm" cy="19.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
+
+<!-- player-path start 1-->
+<rect x="10.21cm" y="14.02cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+
+<!-- path player 1-->
+<line x1="10.50cm" y1="14.02cm" x2="10.77cm" y2="12.41cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path player 1-->
+<line x1="10.77cm" y1="12.41cm" x2="10.80cm" y2="11.83cm" stroke-width="0.125cm"  stroke="blue" />
+
+<!-- path-end player 1-->
+<circle cx="10.80cm" cy="11.83cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
 
 <!-- player-path start 2-->
 <rect x="13.33cm" y="11.80cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>

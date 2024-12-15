@@ -8,7 +8,6 @@ file: output_team/freekick_against_4.svg
 
 
 	gamestate = Freekick Against (7)
-	original_gamestate = Freekick Against (7)
 	ball_status = "OWNED_BY_OPPONENT"
 	Ball: position: x: 3.25 y: -7.75 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

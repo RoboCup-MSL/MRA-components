@@ -8,7 +8,6 @@ file: output_team/setplay_positioning_at_own_side_4.svg
 
 
 	gamestate = Freekick (6)
-	original_gamestate = Freekick (6)
 	ball_status = "OWNED_BY_TEAM"
 	Ball: position: x: 2.50 y: -2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

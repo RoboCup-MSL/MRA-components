@@ -8,7 +8,6 @@ file: output_team/auto_assing_keeper_04.svg
 
 
 	gamestate = Normal (1)
-	original_gamestate = Normal (1)
 	ball_status = "FREE"
 	Ball: position: x: -2.00 y: 2.75 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.50 y: 0.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false

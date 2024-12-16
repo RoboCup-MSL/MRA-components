@@ -4,9 +4,6 @@ set(STRATEGY_TESTER_XSD testdata/StrategyTester.xsd)
 set(STRATEGY_TESTER_H StrategyTester_generated.h)
 set(STRATEGY_TESTER_CPP StrategyTester_generated.cpp)
 
-# system dependencies
-find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread QUIET)
-
 add_library(MRA-components-robotsports-role-assigner
     tick.cpp
     internals/Dynamics.cpp
@@ -159,10 +156,6 @@ target_link_libraries(
     rt 
     GTest::gtest_main 
     gmock
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
     xerces-c
 )
 

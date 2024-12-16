@@ -22,6 +22,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y python3-dev
         sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Run code generator
       run: ./MRA-codegen.py -e
@@ -46,6 +47,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y python3-dev
         sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Run code generator
       run: ./MRA-codegen.py -e
@@ -70,6 +72,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y python3-dev
         sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Run code generator
       run: ./MRA-codegen.py -e
@@ -94,7 +97,10 @@ jobs:
 
     - name: Set up dependencies
       run: |
-        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+        sudo apt-get install -y protobuf-compiler 
+        sudo apt-get install -y libgtest-dev 
+        sudo apt-get install -y libopencv-dev 
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Create build folder
       run: mkdir build
@@ -116,7 +122,10 @@ jobs:
 
     - name: Set up dependencies
       run: |
-        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+        sudo apt-get install -y protobuf-compiler 
+        sudo apt-get install -y libgtest-dev 
+        sudo apt-get install -y libopencv-dev 
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Create build folder
       run: mkdir build
@@ -138,7 +147,10 @@ jobs:
 
     - name: Set up dependencies
       run: |
-        sudo apt-get install -y protobuf-compiler libgtest-dev libopencv-dev
+        sudo apt-get install -y protobuf-compiler 
+        sudo apt-get install -y libgtest-dev 
+        sudo apt-get install -y libopencv-dev 
+        sudo apt-get install -y libxerces-c-dev
 
     - name: Create build folder
       run: mkdir build

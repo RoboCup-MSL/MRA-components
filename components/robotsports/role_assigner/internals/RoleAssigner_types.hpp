@@ -7,6 +7,7 @@
 #ifndef PLANNER_TYPES_HPP
 #define PLANNER_TYPES_HPP 1
 
+#include <limits>
 #include <string>
 
 namespace MRA {

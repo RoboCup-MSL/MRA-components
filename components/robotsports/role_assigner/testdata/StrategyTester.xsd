@@ -66,15 +66,16 @@
         <attribute name="ball_status" type="tns:BallStatusType"> <annotation> <documentation>ball occupation status</documentation> </annotation> </attribute>
     </complexType>
     <complexType name="PassDataType">  <annotation>  <documentation>pass information</documentation>   </annotation>
+        <attribute name="valid" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
+        <attribute name="kicked" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
         <attribute name="origin_x" type="double" default="0.0"> <annotation> <documentation>pass from position x</documentation>    </annotation>  </attribute>
         <attribute name="origin_y" type="double" default="0.0">    <annotation> <documentation>pass from position y</documentation>    </annotation>  </attribute>
         <attribute name="target_x" type="double" default="0.0">    <annotation> <documentation>pass to position x</documentation> </annotation> </attribute>
         <attribute name="target_y" type="double" default="0.0">    <annotation> <documentation>pass to position y</documentation> </annotation> </attribute>
-        <attribute name="ts" type="double" default="0.0">  <annotation> <documentation>pass time in seconds</documentation>     </annotation> </attribute>
         <attribute name="velocity" type="double" default="0.0">    <annotation> <documentation>intended ball velocity</documentation> </annotation> </attribute>
         <attribute name="angle" type="double" default="0.0">    <annotation> <documentation>intended ball velocity</documentation> </annotation> </attribute>
-        <attribute name="valid" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
-        <attribute name="kicked" type="boolean" default="false">    <annotation> <documentation>indicator if pass data is valid</documentation> </annotation></attribute>
+        <attribute name="ts" type="double" default="0.0">  <annotation> <documentation>pass time in seconds</documentation>     </annotation> </attribute>
+        <attribute name="eta" type="double" default="0.0">  <annotation> <documentation>arrival time in seconds</documentation>     </annotation> </attribute>
         <attribute name="target_id" type="int" default="0"> <annotation> <documentation>target id for pass, 0 = goal else robot-id</documentation> </annotation></attribute>
     </complexType>
     <complexType name="OptionsType"> <annotation> <documentation>moving object </documentation> </annotation>

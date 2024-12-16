@@ -88,6 +88,7 @@ target_link_libraries(xml_test
 
 # --- planner_regression_checker ---
 add_executable(roleassigner_regression_checker
+    test/roleassigner_regression_checker_main.cpp
     test/roleassigner_regression_checker.cpp
     #test/xmlGlobalPathPlanner.cpp
     test/xmlRoleAssigner.cpp
@@ -130,6 +131,7 @@ target_link_libraries(roleassigner_regression_checker
 # system dependencies
 add_executable(
     robotsports_role_assigner_test
+    test.cpp
     test/xmlRoleAssigner.cpp
     test/roleassigner_regression_checker.cpp
     ${STRATEGY_TESTER_CPP}
@@ -164,10 +166,11 @@ target_link_libraries(
     xerces-c
 )
 
+# WORKING_DIRECTORY ${MRA_SOURCE_DIR}
 
 gtest_discover_tests(
-    xml_test
-    WORKING_DIRECTORY ${MRA_SOURCE_DIR}
+    robotsports_role_assigner_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTIES ENVIRONMENT "MRA_LOGGER_CONTEXT=unittest"
 )
 

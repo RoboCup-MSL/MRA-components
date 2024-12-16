@@ -47,6 +47,7 @@ message PassData {
    MRA.Datatypes.Pose  origin_pos = 6; // field coordinates of origin
    MRA.Datatypes.Pose  target_pos = 7; // field coordinates of target
    google.protobuf.Timestamp timestamp = 8; // timestamp of update
+   google.protobuf.Timestamp eta = 9; // timestamp of estiminated arrival
 };
 
 message Opponent {
@@ -103,6 +104,6 @@ message Input
 };
     
 // TODO add game info to allow decision based on score and time remaining etc.
-// Usage of MRA vector class
+// Usage of MRA vector class (mathematics)
 // Opponents is same as Player, but has different attributes
 

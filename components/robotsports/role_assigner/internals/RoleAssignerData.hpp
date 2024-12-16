@@ -56,7 +56,7 @@ typedef struct pass_data_s {
     MRA::Geometry::Position  origin_pos = {}; // field coordinates of origin
     MRA::Geometry::Position  target_pos  = {}; // field coordinates of target
     double ts = std::numeric_limits<double>::infinity(); // timestamp of update
-    //double eta = std::numeric_limits<double>::infinity(); // estimated time of arrival at target (can be calculated)
+    double eta = std::numeric_limits<double>::infinity(); // estimated time of arrival at target (can be calculated)
 } pass_data_t;
 
 // class with state data (data for State.proto)

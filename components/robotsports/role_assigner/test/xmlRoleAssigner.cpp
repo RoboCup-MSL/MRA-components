@@ -139,7 +139,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         	opponent.set_trackingid(input_opponent.trackingId);
         	proto_input.mutable_opponents()->Add()->CopyFrom(opponent);
         }
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
 
         for (auto idx = 0u; idx < ra_input.no_opponent_obstacles.size(); idx++) {
         	auto input_obstacle = ra_input.no_opponent_obstacles[idx];
@@ -159,7 +158,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         	obstacle.set_trackingid(input_obstacle.trackingId);
         	proto_input.mutable_no_opponent_obstacles()->Add()->CopyFrom(obstacle);
         }
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
 
         if (ra_input.ball_pickup_position.valid) {
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.ball_pickup_position.ts * 1000);
@@ -168,17 +166,15 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
             proto_input.mutable_pickup()->mutable_position()->set_y(ra_input.ball_pickup_position.y);
         }
 
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
         proto_input.set_passisrequired(ra_input.passIsRequired);
 
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
         for (auto idx = 0u; idx < ra_input.parking_positions.size(); idx++) {
         	auto park_pose = MRA::Datatypes::Pose();
         	park_pose.set_x(ra_input.parking_positions[idx].x);
         	park_pose.set_y(ra_input.parking_positions[idx].y);
         	proto_input.mutable_parking_positions()->Add()->CopyFrom(park_pose);
         }
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
+    
         if (ra_input.pass_data.valid) {
         	auto pass_data = MRA::RobotsportsRoleAssigner::PassData();
         	pass_data.set_angle(ra_input.pass_data.angle);
@@ -192,10 +188,11 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         	pass_data.mutable_target_pos()->set_y(ra_input.pass_data.target_pos.y);
             google::protobuf::Timestamp timestamp = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.pass_data.ts * 1000);
         	pass_data.mutable_timestamp()->CopyFrom(timestamp);
+            google::protobuf::Timestamp eta = google::protobuf::util::TimeUtil::MillisecondsToTimestamp(ra_input.pass_data.eta * 1000);
+        	pass_data.mutable_timestamp()->CopyFrom(eta);
         	proto_input.mutable_pass_data()->CopyFrom(pass_data);
         }
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
-
+    
         auto proto_env_params =  MRA::RobotsportsRoleAssigner::Environment_Parameters();
         EnvironmentParameters env_params = {};
         ra_input.environment.getEnvironmentParameters(env_params);
@@ -321,8 +318,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 		proto_params.set_kickoff_against_fp4_x(ra_parameters.kickoff_against_fp4_x);
 		proto_params.set_kickoff_against_fp4_y(ra_parameters.kickoff_against_fp4_y);
 
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
-		if (ra_state.previous_ball.present) {
+    	if (ra_state.previous_ball.present) {
 			proto_state.mutable_previous_ball()->set_x(ra_state.previous_ball.x);
 			proto_state.mutable_previous_ball()->set_y(ra_state.previous_ball.y);
 		}
@@ -344,7 +340,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                     << " robotId: " << prev_res.robotId  << " role: " << RoleAsString(prev_res.role) << "\n";
             }
         }
-    std::cerr << __func__ << " : " << __LINE__ << std::endl;
 
         int error_value = m.tick(timestamp, proto_input, proto_params, proto_state, proto_output, proto_diagnostics);
         if (error_value != 0) {
@@ -772,6 +767,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     if (not print_only_errors) {
         cout << "reading file : " << filename << endl;
     }
+    cout << __func__ << " with: output_base_directory: " << output_base_directory << endl;
 
     bool robot_strategy_parameter_no_defender_main_during_setplay = true;
     team_formation_e robot_strategy_parameter_attack_formation = FORMATION_013;
@@ -857,11 +853,13 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
             ball_status = ball_status_to_enum(c->SituationInfo()->ball_status());
             if (c->SituationInfo()->PassData() != 0) {
                 pass_data.ts = c->SituationInfo()->PassData()->ts();
+                pass_data.eta = c->SituationInfo()->PassData()->eta();
                 pass_data.origin_pos.x = c->SituationInfo()->PassData()->origin_x();
                 pass_data.origin_pos.y = c->SituationInfo()->PassData()->origin_y();
                 pass_data.target_pos.x = c->SituationInfo()->PassData()->target_x();
                 pass_data.target_pos.y = c->SituationInfo()->PassData()->target_y();
                 pass_data.valid = c->SituationInfo()->PassData()->valid();
+                pass_data.kicked = c->SituationInfo()->PassData()->kicked();
                 pass_data.target_id = c->SituationInfo()->PassData()->target_id();
             }
         }
@@ -917,10 +915,11 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     sprintf(buffer, ".svg");
     filename = orginal_svgOutputFileName;
     if (filename.size() > 4) {
+        filename = output_base_directory + filename;
         filename.replace(filename.end() - 4, filename.end(), buffer);
     }
     parameters.svgOutputFileName = filename;
-
+    cout << "parameters.svgOutputFileName = " << parameters.svgOutputFileName << endl;
     if (!pickup_pos_set) {
         pickup_pos.x = ball_pos.x;
         pickup_pos.y = ball_pos.y;

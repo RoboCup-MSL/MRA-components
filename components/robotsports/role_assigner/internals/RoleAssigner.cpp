@@ -37,10 +37,6 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
             const RoleAssignerParameters& r_parameters) {
 
 
-    // std::cout << "INPUT:\n" << r_input.toString() << std::endl;
-    std::cout << "STATE:\n" << r_state.toString() << std::endl;
-    // std::cout << "PARAMS:\n" << r_parameters.toString() << std::endl;
-
     if (r_input.team.size() == 0) {
     	return;
     }
@@ -342,23 +338,12 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
         r_output.player_paths.push_back(role_assigner_data.team_admin[team_idx].result);
     }
 
-#if USEPROTO
-    RoleAssignerSvg::role_assigner_data_to_svg(r_input, r_state, r_output, r_parameters, "proto_yes.svg");
-    cout << "saved proto_yes.svg" << endl;
-#else
-    RoleAssignerSvg::role_assigner_data_to_svg(r_input, r_state, r_output, r_parameters, "proto_no.svg");
-    cout << "saved proto_no.svg" << endl;
-#endif
-
-
     // save for next calculation
     r_state.previous_ball.present = role_assigner_data.ball.is_valid;
     if (role_assigner_data.ball.is_valid) {
     	r_state.previous_ball.x  = role_assigner_data.ball.position.x;
     	r_state.previous_ball.y  = role_assigner_data.ball.position.y;
     }
-
-    std::cout << "OUTPUT:\n" << r_output.toString() << std::endl;
 
 }
 

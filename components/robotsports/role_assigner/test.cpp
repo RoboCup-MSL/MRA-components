@@ -43,9 +43,8 @@ TEST(RobotsportsRoleAssignerTest, xmlTest)
         role_assigner_with_xml_input(input_filename, output_base_directory);
     }
     std::string regression_folder = MRA_base_directory.string() + "/components/robotsports/role_assigner/testdata/regression";
-    // auto nr_failures = validate_regression(regression_folder, output_base_directory + "output_team/");
-    validate_regression(regression_folder, output_base_directory + "output_team/");
-    // EXPECT_EQ(nr_failures, 0); TODO
+    auto nr_failures = validate_regression(regression_folder, output_base_directory + "output_team/");
+    EXPECT_EQ(nr_failures, 0); 
 }
 
 

@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
         if (argc != 2) {
             cout << "usage:" << endl;
             cout << "\t" << argv[0] << " <input-file>" << endl;
-
         }
         std::string input_file = argv[1];
         // call xml planner with the received parameters

@@ -113,9 +113,9 @@ typedef enum {
 
 
 typedef struct path_piece {
-    double x = std::numeric_limits<double>::infinity();
-    double y = std::numeric_limits<double>::infinity();
-    double cost = std::numeric_limits<double>::infinity();
+    double x = 0.0;
+    double y = 0.0;
+    double cost = 0.0;
     long target = 0; // from enum-type planner_target_e
 } path_piece_t;
 
@@ -130,22 +130,22 @@ typedef struct defend_info {
 typedef struct previous_role_assigner_result  {
     bool present = false;
     long robotId = -1;
-    double ts = std::numeric_limits<double>::infinity();
+    double ts = 0.0;
     path_piece_t end_position ={};
     role_e role = role_e::role_UNDEFINED;
 } previous_role_assigner_result_t;
 
 typedef struct  previous_used_ball_by_role_assinger  {
     bool   present = false;
-    double x = std::numeric_limits<double>::infinity();
-    double y = std::numeric_limits<double>::infinity();
+    double x = 0.0;
+    double y = 0.0;
 } previous_used_ball_by_role_assinger_t;
 
 typedef struct ball_pickup_position_s {
-    double x = std::numeric_limits<double>::infinity();
-    double y = std::numeric_limits<double>::infinity();
+    double x = 0.0;
+    double y = 0.0;
     bool valid = false;
-    double ts = std::numeric_limits<double>::infinity();
+    double ts = 0.0;
 } ball_pickup_position_t;
 
 

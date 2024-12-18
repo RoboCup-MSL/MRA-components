@@ -27,7 +27,7 @@ if [ $RUN_VALGRIND -eq "1" ]
 then
 # argument 1 : -v
 # argument 2 : <input-file>
-    valgrind --leak-check=full --track-origins=yes --dsymutil=yes --error-exitcode=42 --exit-on-first-error=yes ~/MRA-components/build/components/robotsports/role_assigner/xml_test --input-file $INPUTFILE 
+    valgrind --leak-check=full --track-origins=yes --dsymutil=yes --error-exitcode=42 --exit-on-first-error=yes ~/MRA-components/build/components/robotsports/role_assigner/xml_test $INPUTFILE 
 else
-    ~/MRA-components/build/components/robotsports/role_assigner/xml_test --input-file $INPUTFILE
+    ~/MRA-components/build/components/robotsports/role_assigner/xml_test $INPUTFILE
 fi

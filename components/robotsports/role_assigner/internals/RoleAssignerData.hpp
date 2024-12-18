@@ -51,12 +51,12 @@ typedef struct pass_data_s {
     bool   valid = false; // true: if data is valid; false otherwise
     bool   kicked = false; // 1: if pass/shot has been made; false: otherwise
     long   target_id = 0; // destination-id of the kick, where goal has id 0
-    double velocity = std::numeric_limits<double>::infinity(); // [m/s]
-    double angle = std::numeric_limits<double>::infinity(); // upwards angle
+    double velocity = 0.0; // [m/s]
+    double angle = 0.0; // upwards angle
     MRA::Geometry::Position  origin_pos = {}; // field coordinates of origin
     MRA::Geometry::Position  target_pos  = {}; // field coordinates of target
-    double ts = std::numeric_limits<double>::infinity(); // timestamp of update
-    double eta = std::numeric_limits<double>::infinity(); // estimated time of arrival at target (can be calculated)
+    double ts = 0.0; // timestamp of update
+    double eta = 0.0; // estimated time of arrival at target (can be calculated)
 } pass_data_t;
 
 // class with state data (data for State.proto)

@@ -191,8 +191,6 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         prev_res.end_position.x = result.end_position().x();
         prev_res.end_position.y = result.end_position().y();
         prev_res.role = (MRA::role_e) result.role();
-        std::cout << __func__ << " : " << __LINE__ << " : present: " << prev_res.present 
-                 << " robotId: " << prev_res.robotId  << " role: " << RoleAsString(prev_res.role) << "\n";
 
         ra_state.previous_results.push_back(prev_res);
     }

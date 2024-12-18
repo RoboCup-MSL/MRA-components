@@ -47,7 +47,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
 #else
     bool useProto = false;
 #endif
-    std::cout << "USING PROTO: " << useProto << std::endl;
 
     if (useProto) {
         auto m = RobotsportsRoleAssigner::RobotsportsRoleAssigner();
@@ -336,8 +335,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                     static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(prev_res.end_position.target));
                 proto_prev_result.set_role(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(prev_res.role));
                 proto_state.mutable_previous_result()->Add()->CopyFrom(proto_prev_result);
-                cout << __func__ << " : " << __LINE__ << " : present: " << prev_res.present 
-                    << " robotId: " << prev_res.robotId  << " role: " << RoleAsString(prev_res.role) << "\n";
             }
         }
 
@@ -763,11 +760,10 @@ void fillOpponents(std::vector<RoleAssignerOpponent>& Opponents, unique_ptr<robo
 
 void role_assigner_with_xml_input(const std::string& input_filename, const std::string& output_base_directory) {
     string filename = input_filename;
-    bool print_only_errors = false;
+    bool print_only_errors = true;
     if (not print_only_errors) {
         cout << "reading file : " << filename << endl;
     }
-    cout << __func__ << " with: output_base_directory: " << output_base_directory << endl;
 
     bool robot_strategy_parameter_no_defender_main_during_setplay = true;
     team_formation_e robot_strategy_parameter_attack_formation = FORMATION_013;
@@ -919,7 +915,6 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
         filename.replace(filename.end() - 4, filename.end(), buffer);
     }
     parameters.svgOutputFileName = filename;
-    cout << "parameters.svgOutputFileName = " << parameters.svgOutputFileName << endl;
     if (!pickup_pos_set) {
         pickup_pos.x = ball_pos.x;
         pickup_pos.y = ball_pos.y;

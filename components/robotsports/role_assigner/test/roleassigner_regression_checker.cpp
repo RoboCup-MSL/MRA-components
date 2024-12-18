@@ -352,6 +352,24 @@ int validate_regression(const std::string& regression_dir, const std::string& ou
                     }
                     fs::copy_file(fs::path(regression_dir) / fs::path(reg_file), compare_old / fs::path(reg_file), fs::copy_options::overwrite_existing);
                     fs::copy_file(fs::path(output_dir) / fs::path(reg_file), compare_new / fs::path(reg_file), fs::copy_options::overwrite_existing);
+                    
+                    string text;
+                    ifstream org_ifs(fs::path(regression_dir) / fs::path(reg_file));
+                    cout << ">>> MISMATCHED original file: " << fs::path(regression_dir) / fs::path(reg_file) << endl;
+                    while (!org_ifs.eof()) {
+                        getline(org_ifs, text);
+                        cerr << text << endl;
+                    }
+                    cout << "<<< MISMATCHED original file: " << fs::path(regression_dir) / fs::path(reg_file) << endl;
+
+                    ifstream new_ifs(fs::path(output_dir) / fs::path(reg_file));
+                    cout << ">>> MISMATCHED new file: " << fs::path(output_dir) / fs::path(reg_file) << endl;
+                    while (!new_ifs.eof()) {
+                        getline(new_ifs, text);
+                        cerr << text << endl;
+                    }
+                    cout << "<<< MISMATCHED new file: " << fs::path(output_dir) / fs::path(reg_file) << endl;
+                    
                     nr_failed++;
                 }
             }

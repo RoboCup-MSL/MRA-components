@@ -45,7 +45,7 @@ parking_positions:
 ball_pickup_position: - valid 0
 passIsRequired: 0
 	pass_data - valid 1
-	origin =x: 0.74 y: 2.26 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00	target = x: 2.44 y: 0.10 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00	velocity= inf	angle= inf	ts= 37194.67	eta= inf	kicked= 0	target_id= 0
+	origin =x: 0.74 y: 2.26 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00	target = x: 2.44 y: 0.10 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00	velocity= 0.00	angle= 0.00	ts= 37194.67	kicked= 1	target_id= 1
 environment: StandardLetterModel: 
 	A = 18.141
 	B = 12.146
@@ -82,15 +82,15 @@ STATE:
  x= 1 y: 2
 			prev result [0]: 1 robotId: -1 role: ATTACKER_GENERIC ts: 37194.6
  end-pos
-	x: -4.5 y:  3.75 cost: inf target: Goto ball
+	x: -4.5 y:  3.75 cost: 0 target: Goto ball
 
 			prev result [1]: 1 robotId: -1 role: ATTACKER_ASSIST ts: 37194.7
  end-pos
-	x: 2.6217 y:  0.273594 cost: inf target: Goto ball
+	x: 2.6217 y:  0.273594 cost: 0 target: Goto ball
 
 			prev result [2]: 1 robotId: -1 role: ATTACKER_MAIN ts: 37194.7
  end-pos
-	x: 0.362251 y:  2.67878 cost: inf target: Goto ball
+	x: 0.362251 y:  2.67878 cost: 0 target: Goto ball
 
 
 PARAMS:
@@ -224,11 +224,11 @@ Path[2]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
 	previous_ball = true x=1.00 y=2.00
 	pass_is_required: false
 	pass_data - valid true
-	 PassData origin_x=0.738 origin_y=2.259 target_x=2.437 target_y=0.100 velocity= inf angle=  inf ts=37194.673/>
+	 PassData origin_x=0.738 origin_y=2.259 target_x=2.437 target_y=0.100 velocity=0.000 angle= 0.000 ts=37194.673/>
 	pickup ball valid: false
-	pickup ball x:  inf
-	pickup ball y:  inf
-	pickup ball ts:  inf
+	pickup ball x: 0.00
+	pickup ball y: 0.00
+	pickup ball ts: 0.00
 
 	team:
 		R01 = x: -4.58 y: 3.63 z: 0.00 rx: 0.00 ry: 0.00 rz: -1.86 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.04 trackingId: 1 type = FIELD_PLAYER (1)
@@ -473,9 +473,9 @@ ball_radius = 0.11
   <tns:Team id="1" tracking="1" x="-4.585" y="3.635" rz="-1.857" velx="0.000" vely="0.000" velrz="0.036"    />
   <tns:Team id="2" tracking="2" x="2.440" y="0.098" rz="0.648" velx="-0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="3" tracking="3" x="0.743" y="2.250" rz="-2.397" velx="0.113" vely="-0.113" velrz="0.000"   controlBall="true"   />
-  <tns:PickupPosition x=" inf" y=" inf" ts=" inf" valid="false" />
+  <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_PLAYER">
-    <tns:PassData valid="true" origin_x="0.738" origin_y="2.259" target_x="2.437" target_y="0.100" velocity=" inf" angle=" inf" ts="37194.673" target_id="2"/>
+    <tns:PassData valid="true" origin_x="0.738" origin_y="2.259" target_x="2.437" target_y="0.100" velocity="0.000" angle="0.000" ts="37194.673" target_id="2"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
     <tns:ParkingPosition x="-6.38" y="-0.25"/>

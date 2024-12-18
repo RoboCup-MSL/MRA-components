@@ -107,23 +107,23 @@ STATE:
 
 			prev result [0]: 1 robotId: -1 role: DEFENDER_GENERIC ts: 0.125
  end-pos
-	x: 1.11774 y:  0.786896 cost: inf target: Goto ball
+	x: 1.11774 y:  0.786896 cost: 0 target: Goto ball
 
 			prev result [1]: 1 robotId: -1 role: ATTACKER_GENERIC ts: 0.125
  end-pos
-	x: 3.12814 y:  3.7794 cost: inf target: Goto ball
+	x: 3.12814 y:  3.7794 cost: 0 target: Goto ball
 
 			prev result [2]: 1 robotId: -1 role: ATTACKER_MAIN ts: 0.125
  end-pos
-	x: 0.194687 y:  0.359508 cost: inf target: Goto ball
+	x: 0.194687 y:  0.359508 cost: 0 target: Goto ball
 
 			prev result [3]: 1 robotId: -1 role: DEFENDER_MAIN ts: 0.125
  end-pos
-	x: -2.51261 y:  0.21531 cost: inf target: Goto ball
+	x: -2.51261 y:  0.21531 cost: 0 target: Goto ball
 
 			prev result [4]: 1 robotId: -1 role: GOALKEEPER ts: 0.125
  end-pos
-	x: -0.5 y:  -8.5 cost: inf target: Goto ball
+	x: -0.5 y:  -8.5 cost: 0 target: Goto ball
 
 
 PARAMS:
@@ -297,9 +297,9 @@ Path[1]: x: -0.50 y: -8.50 cost: 1.87 target: Goalie (9)
 	pass_is_required: false
 	pass_data - valid false
 	pickup ball valid: false
-	pickup ball x:  inf
-	pickup ball y:  inf
-	pickup ball ts:  inf
+	pickup ball x: 0.00
+	pickup ball y: 0.00
+	pickup ball ts: 0.00
 
 	team:
 		R01 = x: 1.00 y: -3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
@@ -596,9 +596,9 @@ ball_radius = 0.11
   <tns:Opponent id="3" trackingId="3" x="2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:Opponent id="4" trackingId="4" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:Opponent id="5" trackingId="5" x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:PickupPosition x=" inf" y=" inf" ts=" inf" valid="false" />
+  <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT">
-    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity=" inf" angle=" inf" ts=" inf" target_id="0"/>
+    <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
     <tns:ParkingPosition x="-6.38" y="-0.25"/>

@@ -194,7 +194,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
                 rbt.time_in_own_penalty_area, rbt.time_in_opponent_penalty_area);
         bool prev_found = false;
         for (auto p_idx = 0u; p_idx < r_state.previous_results.size(); p_idx++) {
-            auto prev_res = r_state.previous_results[idx];
+            auto prev_res = r_state.previous_results[p_idx];
             if (prev_res.robotId == rbt.robotId) {
                 fprintf(fp, "\t\t\tprev result:  %s", boolToString(prev_res.present).c_str());
                 if (prev_res.present)
@@ -371,19 +371,18 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
             passedBallString = "passedBall=\"true\"";
         }
         for (auto p_idx = 0u; p_idx < r_state.previous_results.size(); p_idx++) {
-            auto prev_res = r_state.previous_results[idx];
+            auto prev_res = r_state.previous_results[p_idx];
             if (prev_res.robotId == r_input.team[idx].robotId) {
-                auto previous_result = r_state.previous_results[idx];
                 std::stringstream previous_result_Xtext;
                 previous_result_Xtext << " previous_result_present=\"true\" "
-                        <<" previous_result_ts=\""  << previous_result.ts << "\""
-                        <<" previous_result_x=\""   << previous_result.end_position.x << "\""
-                        <<" previous_result_y=\""   << previous_result.end_position.y << "\""
+                        <<" previous_result_ts=\""  << prev_res.ts << "\""
+                        <<" previous_result_x=\""   << prev_res.end_position.x << "\""
+                        <<" previous_result_y=\""   << prev_res.end_position.y << "\""
                         <<" previous_result_role=\""
-                        << RoleAsString(previous_result.role)
+                        << RoleAsString(prev_res.role)
                         <<"\"";
 
-                previous_result_string= previous_result_Xtext.str();;
+                previous_result_string = previous_result_Xtext.str();;
 
             }
         }

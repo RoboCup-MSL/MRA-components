@@ -98,6 +98,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     }
 
 
+    ra_input.no_opponent_obstacles = {};
     for (auto idx = 0; idx <  input.no_opponent_obstacles_size(); idx++) {
         auto obstacle =  input.no_opponent_obstacles(idx);
         RoleAssignerOpponent no_opponent_obstacle = {};
@@ -105,10 +106,9 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         no_opponent_obstacle.velocity = obstacle.velocity();
         no_opponent_obstacle.trackingId = obstacle.trackingid();
         ra_input.no_opponent_obstacles.push_back(no_opponent_obstacle);
-
     }
 
-
+    ra_input.opponents = {};
     for (auto idx = 0; idx <  input.opponents_size(); idx++) {
         auto input_opponent =  input.opponents(idx);
         RoleAssignerOpponent opponent = {};
@@ -118,6 +118,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         ra_input.opponents.push_back(opponent);
     }
 
+    ra_input.parking_positions = {};
     for (auto idx = 0; idx <  input.parking_positions_size(); idx++) {
         auto parking_pos = input.parking_positions(idx);
         ra_input.parking_positions.push_back(MRA::Geometry::Point(parking_pos.x(), parking_pos.y()));

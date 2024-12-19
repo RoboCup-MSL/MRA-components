@@ -190,7 +190,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 4
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_ASSIST (3)
 	rank: 1
@@ -204,7 +204,7 @@ Path[2]: x: 3.68 y: 0.68 cost: 7.26 target: Prepare restart (4)
 Path[3]: x: 5.63 y: -1.95 cost: 12.09 target: Prepare restart (4)
 Path[4]: x: 5.80 y: -3.08 cost: 14.11 target: Prepare restart (4)
 Path[5]: x: 4.62 y: -3.19 cost: 21.84 target: Prepare restart (4)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_MAIN (2)
 	rank: 2
@@ -215,7 +215,7 @@ Path[5]: x: 4.62 y: -3.19 cost: 21.84 target: Prepare restart (4)
 Path[0]: x: 4.50 y: -3.08 cost: 0.00 target: Prepare restart (4)
 Path[1]: x: 3.72 y: -3.19 cost: 8.20 target: Prepare restart (4)
 Path[2]: x: 2.33 y: -3.96 cost: 13.15 target: Prepare restart (4)
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_GENERIC (4)
 	rank: 4
@@ -229,7 +229,7 @@ Path[2]: x: 2.12 y: -1.59 cost: 7.39 target: Attack support (3)
 Path[3]: x: 3.68 y: 0.68 cost: 12.55 target: Attack support (3)
 Path[4]: x: 3.68 y: 2.68 cost: 15.29 target: Attack support (3)
 Path[5]: x: 4.50 y: 6.00 cost: 19.34 target: Attack support (3)
-[3] = robotId:4
+[3] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_GENERIC (4)
 	rank: 3
@@ -258,23 +258,23 @@ Path[4]: x: -1.50 y: 6.00 cost: 11.25 target: Attack support (3)
 
 	team:
 		R01 = x: -0.24 y: 0.42 z: 0.00 rx: 0.00 ry: 0.00 rz: -2.53 vel: x: 1.40 y: 0.82 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.32 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: 4.50 y: -3.08 z: 0.00 rx: 0.00 ry: 0.00 rz: 1.61 vel: x: 0.00 y: -0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SETPLAY_KICKER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: 1.12 y: -3.21 z: 0.00 rx: 0.00 ry: 0.00 rz: -1.54 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R04 = x: -3.97 y: -1.43 z: 0.00 rx: 0.00 ry: 0.00 rz: -1.84 vel: x: -0.65 y: 0.73 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 4 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 		player[0] = position x: -0.51 y: -2.20 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: -1.22 y: -0.67 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 		player[1] = position x: -0.48 y: -1.18 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.08 y: 0.06 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: SETPLAY_RECEIVER
 	Game State: Freekick
 	Target position : x: 4.62 y: -3.19
@@ -288,7 +288,7 @@ Path[0]: x: 5.63 y: -1.95 cost: 12.09 target: Prepare restart (4)
 Path[0]: x: 5.80 y: -3.08 cost: 14.11 target: Prepare restart (4)
 Path[0]: x: 4.62 y: -3.19 cost: 21.84 target: Prepare restart (4)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: SETPLAY_KICKER
 	Game State: Freekick
 	Target position : x: 2.33 y: -3.96
@@ -299,7 +299,7 @@ Path[1]: x: 4.50 y: -3.08 cost: 0.00 target: Prepare restart (4)
 Path[1]: x: 3.72 y: -3.19 cost: 8.20 target: Prepare restart (4)
 Path[1]: x: 2.33 y: -3.96 cost: 13.15 target: Prepare restart (4)
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: ATTACKSUPPORTER
 	Game State: Freekick
 	Target position : x: 4.50 y: 6.00
@@ -313,7 +313,7 @@ Path[2]: x: 3.68 y: 0.68 cost: 12.55 target: Attack support (3)
 Path[2]: x: 3.68 y: 2.68 cost: 15.29 target: Attack support (3)
 Path[2]: x: 4.50 y: 6.00 cost: 19.34 target: Attack support (3)
 
-Player 3 (id: 4) : 
+Player 3 (id: -1) : 
 	role: ATTACKSUPPORTER
 	Game State: Freekick
 	Target position : x: -1.50 y: 6.00

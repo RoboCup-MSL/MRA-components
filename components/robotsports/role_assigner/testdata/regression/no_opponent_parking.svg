@@ -192,7 +192,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 5
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Parking
 	role: ATTACKER_MAIN (2)
 	rank: 2
@@ -205,7 +205,7 @@ Path[1]: x: -0.87 y: -4.13 cost: 4.21 target: goto target position slow (7)
 Path[2]: x: -2.00 y: -4.60 cost: 6.23 target: goto target position slow (7)
 Path[3]: x: -3.13 y: -4.13 cost: 8.20 target: goto target position slow (7)
 Path[4]: x: -6.38 y: -3.25 cost: 12.45 target: goto target position slow (7)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Parking
 	role: ATTACKER_GENERIC (4)
 	rank: 3
@@ -216,7 +216,7 @@ Path[4]: x: -6.38 y: -3.25 cost: 12.45 target: goto target position slow (7)
 Path[0]: x: -2.00 y: 4.00 cost: 0.00 target: goto target position slow (7)
 Path[1]: x: -4.25 y: 0.75 cost: 5.72 target: goto target position slow (7)
 Path[2]: x: -6.38 y: -2.25 cost: 10.82 target: goto target position slow (7)
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Parking
 	role: DEFENDER_MAIN (5)
 	rank: 4
@@ -229,7 +229,7 @@ Path[1]: x: 0.00 y: 1.60 cost: 4.24 target: goto target position slow (7)
 Path[2]: x: -1.13 y: 1.13 cost: 6.32 target: goto target position slow (7)
 Path[3]: x: -4.25 y: 0.75 cost: 10.86 target: goto target position slow (7)
 Path[4]: x: -6.38 y: -1.25 cost: 15.46 target: goto target position slow (7)
-[3] = robotId:4
+[3] = robotId:-1
 	gamestate: Parking
 	role: DEFENDER_GENERIC (6)
 	rank: 5
@@ -241,7 +241,7 @@ Path[0]: x: -2.00 y: -3.00 cost: 0.00 target: goto target position slow (7)
 Path[1]: x: -4.25 y: -1.25 cost: 5.33 target: goto target position slow (7)
 Path[2]: x: -5.72 y: -0.12 cost: 8.87 target: goto target position slow (7)
 Path[3]: x: -6.38 y: -0.25 cost: 10.36 target: goto target position slow (7)
-[4] = robotId:5
+[4] = robotId:-1
 	gamestate: Parking
 	role: GOALKEEPER (1)
 	rank: 1
@@ -286,7 +286,7 @@ Path[3]: x: -6.38 y: -4.25 cost: 11.73 target: goto target position slow (7)
 	opponents:
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: PARKING
 	Game State: Parking
 	Target position : x: -6.38 y: -3.25
@@ -299,7 +299,7 @@ Path[0]: x: -2.00 y: -4.60 cost: 6.23 target: goto target position slow (7)
 Path[0]: x: -3.13 y: -4.13 cost: 8.20 target: goto target position slow (7)
 Path[0]: x: -6.38 y: -3.25 cost: 12.45 target: goto target position slow (7)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: PARKING
 	Game State: Parking
 	Target position : x: -6.38 y: -2.25
@@ -310,7 +310,7 @@ Path[1]: x: -2.00 y: 4.00 cost: 0.00 target: goto target position slow (7)
 Path[1]: x: -4.25 y: 0.75 cost: 5.72 target: goto target position slow (7)
 Path[1]: x: -6.38 y: -2.25 cost: 10.82 target: goto target position slow (7)
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: PARKING
 	Game State: Parking
 	Target position : x: -6.38 y: -1.25
@@ -323,7 +323,7 @@ Path[2]: x: -1.13 y: 1.13 cost: 6.32 target: goto target position slow (7)
 Path[2]: x: -4.25 y: 0.75 cost: 10.86 target: goto target position slow (7)
 Path[2]: x: -6.38 y: -1.25 cost: 15.46 target: goto target position slow (7)
 
-Player 3 (id: 4) : 
+Player 3 (id: -1) : 
 	role: PARKING
 	Game State: Parking
 	Target position : x: -6.38 y: -0.25
@@ -335,7 +335,7 @@ Path[3]: x: -4.25 y: -1.25 cost: 5.33 target: goto target position slow (7)
 Path[3]: x: -5.72 y: -0.12 cost: 8.87 target: goto target position slow (7)
 Path[3]: x: -6.38 y: -0.25 cost: 10.36 target: goto target position slow (7)
 
-Player 4 (id: 5) : 
+Player 4 (id: -1) : 
 	role: PARKING
 	Game State: Parking
 	Target position : x: -6.38 y: -4.25

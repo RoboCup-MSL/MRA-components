@@ -178,7 +178,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 3
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Normal
 	role: GOALKEEPER (1)
 	rank: 1
@@ -188,7 +188,7 @@ paths: 3
 	defend_info.valid = 0
 Path[0]: x: 0.10 y: -8.46 cost: 0.00 target: Goalie (9)
 Path[1]: x: 0.00 y: -8.50 cost: 0.96 target: Goalie (9)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Normal
 	role: ATTACKER_MAIN (2)
 	rank: 2
@@ -203,7 +203,7 @@ Path[3]: x: 1.40 y: 3.75 cost: 7.38 target: Goto ball (0)
 Path[4]: x: 1.18 y: 7.58 cost: 12.04 target: Goto ball (0)
 Path[5]: x: 1.18 y: 8.42 cost: 12.95 target: Goto ball (0)
 Path[6]: x: 0.76 y: 8.00 cost: 84.83 target: Goto ball (0)
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Normal
 	role: ATTACKER_GENERIC (4)
 	rank: 3
@@ -232,18 +232,18 @@ Path[4]: x: 3.00 y: 3.75 cost: 13.64 target: Attack support (3)
 
 	team:
 		R02 = x: 1.32 y: -1.20 z: 0.00 rx: 0.00 ry: 0.00 rz: -1.59 vel: x: 0.37 y: -0.01 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R01 = x: 0.10 y: -8.46 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.17 vel: x: -0.06 y: -0.08 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = GOALIE (2)
-			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: 2.64 y: -3.28 z: 0.00 rx: 0.00 ry: 0.00 rz: 1.82 vel: x: -1.17 y: -1.61 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: GOALKEEPER
 	Game State: Normal
 	Target position : x: 0.00 y: -8.50
@@ -253,7 +253,7 @@ Player 0 (id: 1) :
 Path[0]: x: 0.10 y: -8.46 cost: 0.00 target: Goalie (9)
 Path[0]: x: 0.00 y: -8.50 cost: 0.96 target: Goalie (9)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: INTERCEPTOR
 	Game State: Normal
 	Target position : x: 0.76 y: 8.00
@@ -268,7 +268,7 @@ Path[1]: x: 1.18 y: 7.58 cost: 12.04 target: Goto ball (0)
 Path[1]: x: 1.18 y: 8.42 cost: 12.95 target: Goto ball (0)
 Path[1]: x: 0.76 y: 8.00 cost: 84.83 target: Goto ball (0)
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: ATTACKSUPPORTER
 	Game State: Normal
 	Target position : x: 3.00 y: 3.75

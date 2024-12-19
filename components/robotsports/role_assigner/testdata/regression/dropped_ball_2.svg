@@ -206,7 +206,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 5
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Dropped Ball
 	role: DEFENDER_MAIN (5)
 	rank: 3
@@ -218,7 +218,7 @@ Path[0]: x: -5.00 y: -3.00 cost: 0.00 target: Sweeper (6)
 Path[1]: x: -4.35 y: -3.13 cost: 2.39 target: Sweeper (6)
 Path[2]: x: -2.25 y: -3.25 cost: 5.74 target: Sweeper (6)
 Path[3]: x: 0.75 y: -4.50 cost: 10.32 target: Sweeper (6)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Dropped Ball
 	role: ATTACKER_MAIN (2)
 	rank: 2
@@ -230,7 +230,7 @@ Path[0]: x: -5.00 y: 4.00 cost: 0.00 target: Goto ball (0)
 Path[1]: x: -2.25 y: 4.75 cost: 5.65 target: Goto ball (0)
 Path[2]: x: -0.25 y: 4.75 cost: 9.39 target: Goto ball (0)
 Path[3]: x: 1.50 y: 3.75 cost: 14.52 target: Goto ball (0)
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Dropped Ball
 	role: DEFENDER_GENERIC (6)
 	rank: 4
@@ -243,7 +243,7 @@ Path[0]: x: -5.00 y: 1.00 cost: 0.00 target: Defense support (2)
 Path[1]: x: -4.25 y: 0.75 cost: 2.39 target: Defense support (2)
 Path[2]: x: -2.00 y: 0.40 cost: 7.33 target: Defense support (2)
 Path[3]: x: 0.86 y: 0.51 cost: 14.81 target: Defense support (2)
-[3] = robotId:4
+[3] = robotId:-1
 	gamestate: Dropped Ball
 	role: ATTACKER_GENERIC (4)
 	rank: 5
@@ -257,7 +257,7 @@ Path[2]: x: -3.70 y: 1.00 cost: 8.08 target: Attack support (3)
 Path[3]: x: -3.60 y: 2.00 cost: 10.76 target: Attack support (3)
 Path[4]: x: -3.13 y: 3.13 cost: 14.08 target: Attack support (3)
 Path[5]: x: -2.25 y: 5.25 cost: 19.01 target: Attack support (3)
-[4] = robotId:5
+[4] = robotId:-1
 	gamestate: Dropped Ball
 	role: GOALKEEPER (1)
 	rank: 1
@@ -283,19 +283,19 @@ Path[1]: x: 0.00 y: -8.50 cost: 1.61 target: Goalie (9)
 
 	team:
 		R01 = x: -5.00 y: -3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SWEEPER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: -5.00 y: 4.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: -5.00 y: 1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: DEFENDER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R04 = x: -5.00 y: -2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 4 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R05 = x: 0.00 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 5 type = GOALIE (2)
-			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 		player[0] = position x: 1.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
@@ -305,7 +305,7 @@ Path[1]: x: 0.00 y: -8.50 cost: 1.61 target: Goalie (9)
 		player[4] = position x: 4.00 y: 5.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: SWEEPER
 	Game State: Dropped Ball
 	Target position : x: 0.75 y: -4.50
@@ -317,7 +317,7 @@ Path[0]: x: -4.35 y: -3.13 cost: 2.39 target: Sweeper (6)
 Path[0]: x: -2.25 y: -3.25 cost: 5.74 target: Sweeper (6)
 Path[0]: x: 0.75 y: -4.50 cost: 10.32 target: Sweeper (6)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: INTERCEPTOR
 	Game State: Dropped Ball
 	Target position : x: 1.50 y: 3.75
@@ -329,7 +329,7 @@ Path[1]: x: -2.25 y: 4.75 cost: 5.65 target: Goto ball (0)
 Path[1]: x: -0.25 y: 4.75 cost: 9.39 target: Goto ball (0)
 Path[1]: x: 1.50 y: 3.75 cost: 14.52 target: Goto ball (0)
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: DEFENDER
 	Game State: Dropped Ball
 	Target position : x: 0.86 y: 0.51
@@ -341,7 +341,7 @@ Path[2]: x: -4.25 y: 0.75 cost: 2.39 target: Defense support (2)
 Path[2]: x: -2.00 y: 0.40 cost: 7.33 target: Defense support (2)
 Path[2]: x: 0.86 y: 0.51 cost: 14.81 target: Defense support (2)
 
-Player 3 (id: 4) : 
+Player 3 (id: -1) : 
 	role: ATTACKSUPPORTER
 	Game State: Dropped Ball
 	Target position : x: -2.25 y: 5.25
@@ -355,7 +355,7 @@ Path[3]: x: -3.60 y: 2.00 cost: 10.76 target: Attack support (3)
 Path[3]: x: -3.13 y: 3.13 cost: 14.08 target: Attack support (3)
 Path[3]: x: -2.25 y: 5.25 cost: 19.01 target: Attack support (3)
 
-Player 4 (id: 5) : 
+Player 4 (id: -1) : 
 	role: GOALKEEPER
 	Game State: Dropped Ball
 	Target position : x: 0.00 y: -8.50

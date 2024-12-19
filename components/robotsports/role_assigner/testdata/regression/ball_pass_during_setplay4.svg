@@ -188,7 +188,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 3
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_GENERIC (4)
 	rank: 3
@@ -199,7 +199,7 @@ paths: 3
 Path[0]: x: -4.58 y: 3.63 cost: 0.00 target: Attack support (3)
 Path[1]: x: -2.32 y: 4.68 cost: 3.76 target: Attack support (3)
 Path[2]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_ASSIST (3)
 	rank: 1
@@ -207,7 +207,7 @@ Path[2]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
 	is_pass_desitination: 0
 	planner_target: Prepare restart
 	defend_info.valid = 0
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_MAIN (2)
 	rank: 2
@@ -232,18 +232,18 @@ Path[2]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
 
 	team:
 		R01 = x: -4.58 y: 3.63 z: 0.00 rx: 0.00 ry: 0.00 rz: -1.86 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.04 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: 2.44 y: 0.10 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.65 vel: x: -0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: 0.74 y: 2.25 z: 0.00 rx: 0.00 ry: 0.00 rz: -2.40 vel: x: 0.11 y: -0.11 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
-			control-ball: true passBall: false role: SETPLAY_KICKER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: true passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: ATTACKSUPPORTER
 	Game State: Freekick
 	Target position : x: 0.00 y: 6.00
@@ -254,7 +254,7 @@ Path[0]: x: -4.58 y: 3.63 cost: 0.00 target: Attack support (3)
 Path[0]: x: -2.32 y: 4.68 cost: 3.76 target: Attack support (3)
 Path[0]: x: 0.00 y: 6.00 cost: 6.86 target: Attack support (3)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: SETPLAY_RECEIVER
 	Game State: Freekick
 	Target position : x: 2.71 y: 0.25
@@ -262,7 +262,7 @@ Player 1 (id: 2) :
 	Is pass_desitination: false
 	Defend info valid:  false
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: SETPLAY_KICKER
 	Game State: Freekick
 	Target position : x: 0.39 y: 2.60

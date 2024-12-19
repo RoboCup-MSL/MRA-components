@@ -178,7 +178,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 3
-[0] = robotId:1
+[0] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_ASSIST (3)
 	rank: 2
@@ -190,7 +190,7 @@ Path[0]: x: 2.00 y: 3.00 cost: 0.00 target: Prepare restart (4)
 Path[1]: x: 1.75 y: 0.75 cost: 3.50 target: Prepare restart (4)
 Path[2]: x: 1.75 y: -1.25 cost: 5.75 target: Prepare restart (4)
 Path[3]: x: 2.50 y: -5.00 cost: 10.42 target: Prepare restart (4)
-[1] = robotId:2
+[1] = robotId:-1
 	gamestate: Freekick
 	role: ATTACKER_MAIN (2)
 	rank: 3
@@ -202,7 +202,7 @@ Path[0]: x: -2.00 y: 2.00 cost: 0.00 target: Prepare restart (4)
 Path[1]: x: -2.25 y: -1.25 cost: 4.66 target: Prepare restart (4)
 Path[2]: x: -1.13 y: -3.87 cost: 8.29 target: Prepare restart (4)
 Path[3]: x: -0.80 y: -5.00 cost: 10.79 target: Prepare restart (4)
-[2] = robotId:3
+[2] = robotId:-1
 	gamestate: Freekick
 	role: GOALKEEPER (1)
 	rank: 1
@@ -229,18 +229,18 @@ Path[2]: x: 0.00 y: -8.50 cost: 3.79 target: Goalie (9)
 
 	team:
 		R01 = x: 2.00 y: 3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: -2.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: SETPLAY_KICKER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: 0.00 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = GOALIE (2)
-			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: 1) : 
+Player 0 (id: -1) : 
 	role: SETPLAY_RECEIVER
 	Game State: Freekick
 	Target position : x: 2.50 y: -5.00
@@ -252,7 +252,7 @@ Path[0]: x: 1.75 y: 0.75 cost: 3.50 target: Prepare restart (4)
 Path[0]: x: 1.75 y: -1.25 cost: 5.75 target: Prepare restart (4)
 Path[0]: x: 2.50 y: -5.00 cost: 10.42 target: Prepare restart (4)
 
-Player 1 (id: 2) : 
+Player 1 (id: -1) : 
 	role: SETPLAY_KICKER
 	Game State: Freekick
 	Target position : x: -0.80 y: -5.00
@@ -264,7 +264,7 @@ Path[1]: x: -2.25 y: -1.25 cost: 4.66 target: Prepare restart (4)
 Path[1]: x: -1.13 y: -3.87 cost: 8.29 target: Prepare restart (4)
 Path[1]: x: -0.80 y: -5.00 cost: 10.79 target: Prepare restart (4)
 
-Player 2 (id: 3) : 
+Player 2 (id: -1) : 
 	role: GOALKEEPER
 	Game State: Freekick
 	Target position : x: 0.00 y: -8.50

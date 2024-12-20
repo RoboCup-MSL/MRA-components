@@ -17,7 +17,7 @@
 #include "RoleAssignerResult.hpp"
 #include "RoleAssignerRobot.hpp"
 
-#define USEPROTO 0
+#define USEPROTO 1
 
 namespace MRA {
 
@@ -50,7 +50,7 @@ public:
 typedef struct pass_data_s {
     bool   valid = false; // true: if data is valid; false otherwise
     bool   kicked = false; // 1: if pass/shot has been made; false: otherwise
-    long   target_id = 0; // destination-id of the kick, where goal has id 0
+    int    target_id = 0; // destination-id of the kick, where goal has id 0
     double velocity = 0.0; // [m/s]
     double angle = 0.0; // upwards angle
     MRA::Geometry::Position  origin_pos = {}; // field coordinates of origin
@@ -63,7 +63,7 @@ typedef struct pass_data_s {
 class RoleAssignerAdminTeam {
 public:
     bool assigned = false;
-    long robotId = -1;
+    int robotId = -1;
     RoleAssignerResult result = {};
     // compare function to sort vector of the class on the member robotId
     static inline bool CompareRobotId(const RoleAssignerAdminTeam& r1, const RoleAssignerAdminTeam& r2) { return (r1.robotId < r2.robotId);    };
@@ -109,7 +109,7 @@ public:
 // class with outputs (data for Output.proto)
 class RoleAssignerOutput {
 public:
-    std::vector<RoleAssignerResult> player_paths;
+    std::vector<RoleAssignerResult> player_paths = {};
     std::string toString() const;
 };
 
@@ -118,29 +118,29 @@ public:
 
 class RoleAssignerData {
 public:
-    RoleAssignerData() {};
+    // RoleAssignerData() {};
     /* inputs */
-    std::vector<role_e> formation;
-    game_state_e gamestate;
-    RoleAssignerBall ball;
-    std::vector<MRA::Geometry::Point> parking_positions;
-    ball_pickup_position_t ball_pickup_position;
-    bool passIsRequired;
-    pass_data_t pass_data;
-    MRA::Environment environment;
-    RoleAssignerParameters parameters;
+    std::vector<role_e> formation = {};
+    game_state_e gamestate = game_state_e::NONE;
+    RoleAssignerBall ball = {};
+    std::vector<MRA::Geometry::Point> parking_positions = {};
+    ball_pickup_position_t ball_pickup_position = {};
+    bool passIsRequired = false;
+    pass_data_t pass_data = {};
+    MRA::Environment environment = {};
+    RoleAssignerParameters parameters = {};
 
 
     // based on inputs
-    std::vector<role_e> teamFormation;
-    bool ballIsObstacle;
-    bool searchForBall;
-    defend_info_t defend_info;
+    std::vector<role_e> teamFormation = {};
+    bool ballIsObstacle = false;
+    bool searchForBall = false;
+    defend_info_t defend_info = {};
     previous_used_ball_by_role_assinger_t previous_ball = {};
     std::vector<previous_role_assigner_result_t> previous_results = {};
 
     // internal administration
-    game_state_e original_gamestate;
+    game_state_e original_gamestate = game_state_e::NONE;
     std::vector<RoleAssignerRobot> team = {}; // Team will be sorted on robotId inside the role assigner (deterministic order)
     std::vector<RoleAssignerAdminTeam> team_admin = {};
     std::vector<RoleAssignerOpponent> opponents = {};

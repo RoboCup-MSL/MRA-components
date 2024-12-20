@@ -12,10 +12,10 @@ namespace MRA {
 
 class RoleAssignerOpponent {
 public:
-    MRA::Geometry::Position position;
-    MRA::Geometry::Position velocity;
+    MRA::Geometry::Position position = {};
+    MRA::Geometry::Position velocity  = {};
     bool assigned = false;
-    int trackingId;
+    int trackingId  = -1;
 
     std::string toString() const;
 };

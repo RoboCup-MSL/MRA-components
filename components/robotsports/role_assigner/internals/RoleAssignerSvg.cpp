@@ -200,7 +200,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
                 if (prev_res.present)
                 {
                     prev_found = true;
-                    fprintf(fp, " robotId: %ld role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
+                    fprintf(fp, " robotId: %d role: %s end-pos x: %4.2f y: %4.2f target: %s ts: %4.2f",
                             prev_res.robotId, RoleAsString(prev_res.role).c_str(), prev_res.end_position.x, prev_res.end_position.y,
                             PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)).c_str(), prev_res.ts);
                 }
@@ -426,7 +426,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
     {
         pass_data_valid_str = "valid=\"true\"";
     }
-    fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\" target_id=\"%ld\"/>\n",
+    fprintf(fp, "    <tns:PassData %s origin_x=\"%4.3f\" origin_y=\"%4.3f\" target_x=\"%4.3f\" target_y=\"%4.3f\" velocity=\"%4.3f\" angle=\"%4.3f\" ts=\"%4.3f\" target_id=\"%d\"/>\n",
             pass_data_valid_str.c_str(), r_input.pass_data.origin_pos.x, r_input.pass_data.origin_pos.y, 
             r_input.pass_data.target_pos.x, r_input.pass_data.target_pos.y, 
             r_input.pass_data.velocity, r_input.pass_data.angle, r_input.pass_data.ts, r_input.pass_data.target_id);

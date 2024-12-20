@@ -116,20 +116,20 @@ typedef struct path_piece {
     double x = 0.0;
     double y = 0.0;
     double cost = 0.0;
-    long target = 0; // from enum-type planner_target_e
+    int target = 0; // from enum-type planner_target_e
 } path_piece_t;
 
 typedef struct defend_info {
     bool valid = false;
-    long defending_id;
-    double dist_from_defending_id;
-    long between_ball_and_defending_pos; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
+    int defending_id = -1;
+    double dist_from_defending_id = 0.0;
+    bool between_ball_and_defending_pos = true; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
 } defend_info_t;
 
 
 typedef struct previous_role_assigner_result  {
     bool present = false;
-    long robotId = -1;
+    int robotId = -1;
     double ts = 0.0;
     path_piece_t end_position ={};
     role_e role = role_e::role_UNDEFINED;

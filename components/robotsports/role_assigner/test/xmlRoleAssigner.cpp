@@ -120,6 +120,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
             }
         }
 
+        proto_input.mutable_opponents()->Clear();
         for (auto idx = 0u; idx < ra_input.opponents.size(); idx++) {
         	auto input_opponent = ra_input.opponents[idx];
             auto opponent = MRA::RobotsportsRoleAssigner::Opponent();
@@ -139,6 +140,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         	proto_input.mutable_opponents()->Add()->CopyFrom(opponent);
         }
 
+        proto_input.mutable_no_opponent_obstacles()->Clear();
         for (auto idx = 0u; idx < ra_input.no_opponent_obstacles.size(); idx++) {
         	auto input_obstacle = ra_input.no_opponent_obstacles[idx];
             auto obstacle = MRA::RobotsportsRoleAssigner::Opponent();

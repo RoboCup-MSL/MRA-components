@@ -17,7 +17,7 @@
 #include "RoleAssignerResult.hpp"
 #include "RoleAssignerRobot.hpp"
 
-#define USEPROTO 1
+#define USEPROTO 0
 
 namespace MRA {
 

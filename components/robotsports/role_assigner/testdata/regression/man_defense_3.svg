@@ -172,7 +172,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 1
-[0] = robotId:-1
+[0] = robotId:4
 	gamestate: Normal
 	role: ATTACKER_MAIN (2)
 	rank: 1
@@ -198,7 +198,7 @@ Path[1]: x: 1.50 y: -1.11 cost: 1.68 target: Priority Block (8)
 
 	team:
 		R04 = x: 0.82 y: -0.98 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.41 vel: x: 1.00 y: 0.01 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.14 trackingId: 4 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 		player[0] = position x: -4.38 y: 2.39 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 0.07 y: 0.64 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
@@ -206,7 +206,7 @@ Path[1]: x: 1.50 y: -1.11 cost: 1.68 target: Priority Block (8)
 		player[2] = position x: 1.72 y: 0.08 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity x: 1.09 y: 0.29 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 paths:
 
-Player 0 (id: -1) : 
+Player 0 (id: 4) : 
 	role: INTERCEPTOR
 	Game State: Normal
 	Target position : x: 1.50 y: -1.11

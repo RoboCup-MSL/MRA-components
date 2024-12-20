@@ -171,7 +171,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 2
-[0] = robotId:-1
+[0] = robotId:1
 	gamestate: Normal
 	role: ATTACKER_GENERIC (4)
 	rank: 2
@@ -183,7 +183,7 @@ Path[0]: x: 0.42 y: -0.38 cost: 0.00 target: Attack support (3)
 Path[1]: x: 0.38 y: -1.30 cost: 1.16 target: Attack support (3)
 Path[2]: x: 1.75 y: 0.75 cost: 4.03 target: Attack support (3)
 Path[3]: x: 2.25 y: 3.75 cost: 7.18 target: Attack support (3)
-[1] = robotId:-1
+[1] = robotId:2
 	gamestate: Normal
 	role: ATTACKER_MAIN (2)
 	rank: 1
@@ -210,15 +210,15 @@ Path[2]: x: 0.69 y: -3.58 cost: 46.68 target: Goto ball (0)
 
 	team:
 		R01 = x: 0.42 y: -0.38 z: 0.00 rx: 0.00 ry: 0.00 rz: -3.07 vel: x: 0.05 y: -1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: 0.38 y: -2.90 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.47 vel: x: 0.05 y: -1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: -1) : 
+Player 0 (id: 1) : 
 	role: ATTACKSUPPORTER
 	Game State: Normal
 	Target position : x: 2.25 y: 3.75
@@ -230,7 +230,7 @@ Path[0]: x: 0.38 y: -1.30 cost: 1.16 target: Attack support (3)
 Path[0]: x: 1.75 y: 0.75 cost: 4.03 target: Attack support (3)
 Path[0]: x: 2.25 y: 3.75 cost: 7.18 target: Attack support (3)
 
-Player 1 (id: -1) : 
+Player 1 (id: 2) : 
 	role: INTERCEPTOR
 	Game State: Normal
 	Target position : x: 0.69 y: -3.58

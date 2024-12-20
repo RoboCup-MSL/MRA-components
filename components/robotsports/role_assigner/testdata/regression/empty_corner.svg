@@ -164,7 +164,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 1
-[0] = robotId:-1
+[0] = robotId:1
 	gamestate: Corner
 	role: ATTACKER_ASSIST (3)
 	rank: 1
@@ -189,12 +189,12 @@ Path[0]: x: -5.00 y: 8.00 cost: inf target: goto target position (5)
 
 	team:
 		R01 = x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: SETPLAY_RECEIVER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: -1) : 
+Player 0 (id: 1) : 
 	role: SETPLAY_RECEIVER
 	Game State: Corner
 	Target position : x: -5.00 y: 8.00

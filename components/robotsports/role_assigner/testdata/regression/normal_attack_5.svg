@@ -187,7 +187,7 @@ autoAssignGoalie = 0
 
 OUTPUT:
 paths: 3
-[0] = robotId:-1
+[0] = robotId:1
 	gamestate: Normal
 	role: ATTACKER_GENERIC (4)
 	rank: 2
@@ -201,7 +201,7 @@ Path[2]: x: 4.72 y: -5.83 cost: 5.68 target: Attack support (3)
 Path[3]: x: 5.19 y: -4.70 cost: 7.58 target: Attack support (3)
 Path[4]: x: 4.72 y: -3.57 cost: 9.44 target: Attack support (3)
 Path[5]: x: 3.75 y: -0.75 cost: 13.10 target: Attack support (3)
-[1] = robotId:-1
+[1] = robotId:2
 	gamestate: Normal
 	role: DEFENDER_MAIN (5)
 	rank: 3
@@ -211,7 +211,7 @@ Path[5]: x: 3.75 y: -0.75 cost: 13.10 target: Attack support (3)
 	defend_info.valid = 0
 Path[0]: x: 2.16 y: -6.04 cost: 0.00 target: Sweeper (6)
 Path[1]: x: 2.25 y: -6.00 cost: 1.22 target: Sweeper (6)
-[2] = robotId:-1
+[2] = robotId:3
 	gamestate: Normal
 	role: ATTACKER_MAIN (2)
 	rank: 1
@@ -238,18 +238,18 @@ Path[2]: x: 3.79 y: -5.31 cost: 37.84 target: Goto ball (0)
 
 	team:
 		R01 = x: 2.35 y: -7.46 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.53 vel: x: -0.00 y: -0.05 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.05 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: ATTACKSUPPORTER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R02 = x: 2.16 y: -6.04 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.95 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 2 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: false passBall: false role: SWEEPER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 		R03 = x: 3.59 y: -4.70 z: 0.00 rx: 0.00 ry: 0.00 rz: -2.10 vel: x: -0.40 y: -0.38 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 3 type = FIELD_PLAYER (1)
-			control-ball: true passBall: false role: NONE time-own-PA: 0.00 time-opp-PA: 0.00
+			control-ball: true passBall: false role: BALLPLAYER time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
-Player 0 (id: -1) : 
+Player 0 (id: 1) : 
 	role: ATTACKSUPPORTER
 	Game State: Normal
 	Target position : x: 3.75 y: -0.75
@@ -263,7 +263,7 @@ Path[0]: x: 5.19 y: -4.70 cost: 7.58 target: Attack support (3)
 Path[0]: x: 4.72 y: -3.57 cost: 9.44 target: Attack support (3)
 Path[0]: x: 3.75 y: -0.75 cost: 13.10 target: Attack support (3)
 
-Player 1 (id: -1) : 
+Player 1 (id: 2) : 
 	role: SWEEPER
 	Game State: Normal
 	Target position : x: 2.25 y: -6.00
@@ -273,7 +273,7 @@ Player 1 (id: -1) :
 Path[1]: x: 2.16 y: -6.04 cost: 0.00 target: Sweeper (6)
 Path[1]: x: 2.25 y: -6.00 cost: 1.22 target: Sweeper (6)
 
-Player 2 (id: -1) : 
+Player 2 (id: 3) : 
 	role: BALLPLAYER
 	Game State: Normal
 	Target position : x: 1.59 y: -1.59

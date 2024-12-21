@@ -64,29 +64,23 @@ message Input
     {
         NONE = 0;
         NORMAL = 1;
-        NORMAL_ATTACK = 2;
-        NORMAL_DEFEND = 3;
-        PARKING = 4;
-        BEGIN_POSITION = 5;
-        KICKOFF = 6;
-        KICKOFF_AGAINST = 7;
-        FREEKICK = 8;
-        FREEKICK_AGAINST = 9;
-        GOALKICK = 10;
-        GOALKICK_AGAINST = 11;
-        THROWIN = 12;
-        THROWIN_AGAINST = 13;
-        CORNER = 14;
-        CORNER_AGAINST = 15;
-        PENALTY = 16;
-        PENALTY_AGAINST = 17;
-        PENALTY_SHOOTOUT = 18;
-        PENALTY_SHOOTOUT_AGAINST = 19;
-        DROPPED_BALL = 20;
-        YELLOW_CARD_AGAINST = 21;
-        RED_CARD_AGAINST = 22;
-        GOAL = 23;
-        GOAL_AGAINST = 24;
+        PARKING = 2;
+        BEGIN_POSITION = 3;
+        KICKOFF = 4;
+        KICKOFF_AGAINST = 5;
+        FREEKICK = 6;
+        FREEKICK_AGAINST = 7;
+        GOALKICK = 8;
+        GOALKICK_AGAINST = 9;
+        THROWIN = 10;
+        THROWIN_AGAINST = 11;
+        CORNER = 12;
+        CORNER_AGAINST = 13;
+        PENALTY = 14;
+        PENALTY_AGAINST = 15;
+        PENALTY_SHOOTOUT = 16;
+        PENALTY_SHOOTOUT_AGAINST = 17;
+        DROPPED_BALL = 18;
     }
 
     GameState gamestate = 2;

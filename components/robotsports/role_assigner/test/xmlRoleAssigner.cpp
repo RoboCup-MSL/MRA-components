@@ -37,6 +37,142 @@ using namespace std;
 using namespace robotsports;
 
 
+static MRA::RobotsportsRobotStrategy::Input_GameState GameStateEToInputGameState(MRA::game_state_e gamestate) {
+    MRA::RobotsportsRobotStrategy::Input_GameState gs = MRA::RobotsportsRobotStrategy::Input_GameState_NONE;
+    switch(gamestate) {
+    case MRA::game_state_e::NONE:
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_NONE;
+        break;
+    case MRA::game_state_e::NORMAL: // = 1
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_NORMAL;
+        break;
+    case MRA::game_state_e::PARKING: // = 2
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_PARKING;
+        break;
+    case MRA::game_state_e::BEGIN_POSITION: // = 4
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_BEGIN_POSITION;
+        break;
+    case MRA::game_state_e::KICKOFF:  // = 4
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_KICKOFF;
+        break;
+    case MRA::game_state_e::KICKOFF_AGAINST:  // = 5
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_KICKOFF_AGAINST;
+        break;
+    case MRA::game_state_e::FREEKICK: // = 6
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_FREEKICK;
+        break;
+    case MRA::game_state_e::FREEKICK_AGAINST: // = 7
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_FREEKICK_AGAINST;
+        break;
+    case MRA::game_state_e::GOALKICK: // = 8
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_GOALKICK;
+        break;
+    case MRA::game_state_e::GOALKICK_AGAINST: // = 9
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_GOALKICK_AGAINST;
+        break;
+    case MRA::game_state_e::THROWIN: // = 10
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_THROWIN;
+        break;
+    case MRA::game_state_e::THROWIN_AGAINST:  // = 11
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_THROWIN_AGAINST;
+        break;
+    case MRA::game_state_e::CORNER: // = 12
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_CORNER;
+        break;
+    case MRA::game_state_e::CORNER_AGAINST: // = 13
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_CORNER_AGAINST;
+        break;
+    case MRA::game_state_e::PENALTY: // = 14
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_PENALTY;
+        break;
+    case MRA::game_state_e::PENALTY_AGAINST: // = 15
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_PENALTY_AGAINST;
+        break;
+    case MRA::game_state_e::PENALTY_SHOOTOUT:  // = 16
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_PENALTY_SHOOTOUT;
+        break;
+    case MRA::game_state_e::PENALTY_SHOOTOUT_AGAINST:  // = 17
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_PENALTY_SHOOTOUT_AGAINST;
+        break;
+    case MRA::game_state_e::DROPPED_BALL:   // = 18
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_DROPPED_BALL;
+        break;
+    default:
+        gs = MRA::RobotsportsRobotStrategy::Input_GameState_NONE;
+        //
+    }
+
+    return gs;
+}
+
+// static MRA::game_state_e InputGameStateToGameStateE(MRA::RobotsportsRoleAssigner::Input_GameState  gamestate) {
+//     MRA::game_state_e gs = MRA::game_state_e::NONE;
+//     switch(gamestate) {
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_NONE:
+//         gs = MRA::game_state_e::NONE;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_NORMAL: // = 1
+//         gs = MRA::game_state_e::NORMAL;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_PARKING: // = 2
+//         gs = MRA::game_state_e::PARKING;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_BEGIN_POSITION: // = 4
+//         gs = MRA::game_state_e::BEGIN_POSITION;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_KICKOFF:  // = 4
+//         gs = MRA::game_state_e::KICKOFF;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_KICKOFF_AGAINST:  // = 5
+//         gs = MRA::game_state_e::KICKOFF_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_FREEKICK: // = 6
+//         gs = MRA::game_state_e::FREEKICK;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_FREEKICK_AGAINST: // = 7
+//         gs = MRA::game_state_e::FREEKICK_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_GOALKICK: // = 8
+//         gs = MRA::game_state_e::GOALKICK;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_GOALKICK_AGAINST: // = 9
+//         gs = MRA::game_state_e::GOALKICK_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_THROWIN: // = 10
+//         gs = MRA::game_state_e::THROWIN;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_THROWIN_AGAINST:  // = 11
+//         gs = MRA::game_state_e::THROWIN_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_CORNER: // = 12
+//         gs = MRA::game_state_e::CORNER;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_CORNER_AGAINST: // = 13
+//         gs = MRA::game_state_e::CORNER_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY: // = 14
+//         gs = MRA::game_state_e::PENALTY;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_AGAINST: // = 15 
+//         gs = MRA::game_state_e::PENALTY_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_SHOOTOUT:  // = 16
+//         gs = MRA::game_state_e::PENALTY_SHOOTOUT;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_PENALTY_SHOOTOUT_AGAINST:  // = 17
+//         gs = MRA::game_state_e::PENALTY_SHOOTOUT_AGAINST;
+//         break;
+//     case MRA::RobotsportsRoleAssigner::Input_GameState_DROPPED_BALL:   // = 18
+//         gs = MRA::game_state_e::DROPPED_BALL;
+//         break;
+//     default:
+//         gs = MRA::game_state_e::NONE;
+//         //
+//     }
+//     return gs;
+// }
+
+
 static void xml_assign_roles(const RoleAssignerInput& ra_input,
                       RoleAssignerState& ra_state,
                       RoleAssignerOutput& ra_output,
@@ -412,7 +548,7 @@ std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_
     robot_strategy_params.set_attack_formation((RobotsportsRobotStrategy::Params_TeamFormation)attack_formation);
     robot_strategy_params.set_defense_formation((RobotsportsRobotStrategy::Params_TeamFormation)defense_formation);
 
-    MRA::RobotsportsRobotStrategy::Input_GameState gs = (MRA::RobotsportsRobotStrategy::Input_GameState) (gameState);
+    MRA::RobotsportsRobotStrategy::Input_GameState gs = GameStateEToInputGameState(gameState);
     robot_strategy_input.set_game_state(gs);
     robot_strategy_input.set_ball_status((MRA::RobotsportsRobotStrategy::Input_BallStatus) ball_status);
 

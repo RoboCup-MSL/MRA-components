@@ -100,9 +100,9 @@ typedef enum {
     PENALTY_AGAINST = 15,
     PENALTY_SHOOTOUT = 16,
     PENALTY_SHOOTOUT_AGAINST = 17,
-    DROPPED_BALL = 18,
-    GAME_STATE_NR_ITEMS = 19
+    DROPPED_BALL = 18
 } game_state_e;
+
 
 typedef enum {
     FREE = 0,

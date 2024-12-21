@@ -239,7 +239,6 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                 player.set_is_keeper(input_team.player_type == player_type_e::GOALIE);
                 player.set_time_in_own_penalty_area(input_team.time_in_own_penalty_area);
                 player.set_time_in_opponent_penalty_area(input_team.time_in_opponent_penalty_area);
-                player.set_trackingid(input_team.trackingId);
                 player.mutable_position()->set_x(input_team.position.x);
                 player.mutable_position()->set_y(input_team.position.y);
                 player.mutable_position()->set_z(input_team.position.z);
@@ -891,7 +890,7 @@ void fillOpponents(std::vector<RoleAssignerOpponent>& Opponents, unique_ptr<robo
         RoleAssignerOpponent opponent;
         opponent.position = Geometry::Position(*opponent_iter->x(), *opponent_iter->y(), 0.0, 0.0, 0.0, opponent_iter->rz());
         opponent.velocity= Geometry::Position(opponent_iter->velx(), opponent_iter->vely(), 0.0, 0.0, 0.0, opponent_iter->velrz());
-        opponent.trackingId = playerId;
+        opponent.trackingId = trackingId;
         Opponents.push_back(opponent);
     }
 }

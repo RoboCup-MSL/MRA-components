@@ -61,6 +61,7 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
     // Can be removed if data is provided by caller: in fixed order and indicator which is this robot
     // Then also putting them back in the correct order at the end of this function can be removed.
     // first sort RoleAssignerTeam on robotId
+    role_assigner_data.this_player_robotId = role_assigner_data.team[0].robotId;
     sort(role_assigner_data.team.begin(),role_assigner_data.team.end(), RoleAssignerRobot::CompareRobotId);
     sort(role_assigner_data.team_admin.begin(),role_assigner_data.team_admin.end(), RoleAssignerAdminTeam::CompareRobotId);
     for (auto idx = 0u; idx< role_assigner_data.team.size(); idx++) {

@@ -304,7 +304,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     	auto assignment = MRA::RobotsportsRoleAssigner::Assignment();
     	assignment.set_is_pass_desitination(pp.is_pass_desitination);
 		assignment.set_role_rank(pp.role_rank);
-		assignment.set_robotid(ra_input.team[p_idx].robotId);
+		assignment.set_robotid(pp.robotId);
 		assignment.set_role(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(pp.role));
 		assignment.set_purpose(static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(pp.planner_target));
 		if (pp.defend_info.valid) {

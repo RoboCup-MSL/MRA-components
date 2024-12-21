@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRoleAssigner;
+
+import "google/protobuf/timestamp.proto";
+import "datatypes/Pose.proto";
+import "datatypes/Point.proto";
+import "datatypes/Ball.proto";
+import "datatypes/Obstacle.proto";
+import "components/robotsports/role_assigner/interface/Output.proto";
+
+
+
+message Player
+{
+    // typically on the floor, so z,rx,ry unused
+    int32 id = 1; // T-shirt number
+    bool active = 2; // participating in the game (robot may be inactive when figuring out where it is)
+    bool human = 3;
+    MRA.Datatypes.Pose position = 4;
+    MRA.Datatypes.Pose velocity = 5;
+    bool hasball = 6;
+    bool passed_ball = 7;
+    bool is_keeper = 8;
+    double time_in_own_penalty_area = 9;
+    double time_in_opponent_penalty_area = 10;
+    // double energy, competence? Reasoning should take it account when choosing player to pass to
+    // radius?
+    //    DynamicRole dynamic_role = 11;
+    int32 trackingId = 12; // id of object tracking
+}
+
+message PickUpPosition
+{
+    MRA.Datatypes.Pose position = 1; // pickup position
+    google.protobuf.Timestamp timestamp = 2; // timestamp of pickup
+}
+
+
+// part of  input data
+message PassData {
+   bool  valid = 1; // 1: if data is valid; 0 otherwise
+   bool   kicked = 2; // 1: if pass/shot has been made; 0: otherwise
+   int32   target_id =3;  // destination of kick, where 0 is goal
+   double velocity = 4; // [m/s]
+   double angle = 5 ; // upwards angle
+   MRA.Datatypes.Pose  origin_pos = 6; // field coordinates of origin
+   MRA.Datatypes.Pose  target_pos = 7; // field coordinates of target
+   google.protobuf.Timestamp timestamp = 8; // timestamp of update
+   google.protobuf.Timestamp eta = 9; // timestamp of estiminated arrival
+};
+
+message Opponent {
+    MRA.Datatypes.Pose position = 1;
+    MRA.Datatypes.Pose velocity = 2;
+    int32 trackingId = 3;
+}
+
+// class with inp
+
+message Input
+{
+    enum GameState
+    {
+        NONE = 0;
+        NORMAL = 1;
+        PARKING = 2;
+        BEGIN_POSITION = 3;
+        KICKOFF = 4;
+        KICKOFF_AGAINST = 5;
+        FREEKICK = 6;
+        FREEKICK_AGAINST = 7;
+        GOALKICK = 8;
+        GOALKICK_AGAINST = 9;
+        THROWIN = 10;
+        THROWIN_AGAINST = 11;
+        CORNER = 12;
+        CORNER_AGAINST = 13;
+        PENALTY = 14;
+        PENALTY_AGAINST = 15;
+        PENALTY_SHOOTOUT = 16;
+        PENALTY_SHOOTOUT_AGAINST = 17;
+        DROPPED_BALL = 18;
+    }
+
+    GameState gamestate = 2;
+    MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
+
+    repeated DynamicRole formation = 11; // ordered list of dynamic roles to be assigned.
+
+    repeated Player team = 4;   // players in the team (own player is first in the list)
+    repeated Opponent opponents = 5; // opponents participating in the games
+    repeated Opponent no_opponent_obstacles = 12; // detected obstacles which are not a team-mate or opponent
+    PickUpPosition pickup = 6; // pickup position
+    bool passIsRequired = 7;  // is pass required to make valid goal
+    repeated MRA.Datatypes.Pose parking_positions = 8; // location of the parking positions (later: only in case of no technical area)
+    PassData pass_data = 10; // information over a pass (if present)
+};
+    
+// TODO add game info to allow decision based on score and time remaining etc.
+// Usage of MRA vector class (mathematics)
+// Opponents is same as Player, but has different attributes
+

@@ -4,18 +4,18 @@
 <desc>MSL field path</desc>
 <!-- 
 
-file: output_team/auto_assing_keeper_05.svg
+file: output_team/empty_kickoff_against.svg
 INPUT:
-gamestate: Normal
-ball:  status: FREE position: x: -2.00 y: 2.75 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.50 y: 0.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 is_valid: 1
+gamestate: Kickoff Against
+ball:  status: OWNED_BY_OPPONENT position: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 is_valid: 0
 formation: 
 	[0] = ATTACKER_MAIN
-	[1] = ATTACKER_GENERIC
-	[2] = DEFENDER_MAIN
-	[3] = DEFENDER_GENERIC
+	[1] = DEFENDER_MAIN
+	[2] = DEFENDER_GENERIC
+	[3] = ATTACKER_GENERIC
 team: 
 	[0] = robotId: 1 player-type: FIELD_PLAYER active: true
-Pos: x: -2.00 y: 4.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+Pos: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
  control ball: false pass is on its way: false
 human: false trackingId: 1
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
@@ -31,7 +31,7 @@ parking_positions:
 	[3] = x: -6.38 y: -3.25
 	[4] = x: -6.38 y: -4.25
 ball_pickup_position: - valid false
-passIsRequired: true
+passIsRequired: false
 	pass_data - valid false
 environment: StandardLetterModel: 
 	A = 18
@@ -129,18 +129,18 @@ dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = true
 auto_save_svg_period = 10
-svgOutputFileName = output_team/auto_assing_keeper_05.svg
+svgOutputFileName = output_team/empty_kickoff_against.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
 svgDrawVelocity = true
-svgDrawEdges = false
+svgDrawEdges = true
 saveGridDataToFile = true
 svgRobotPlanner = false
-preferredSetplayKicker = 1
-preferredSetplayReceiver = 2
+preferredSetplayKicker = 0
+preferredSetplayReceiver = 0
 setplay_margin_to_penalty_area_side = 0.75
 min_y_for_lob_shot = 0.25
 outsideFieldMargin = 0.5
@@ -160,35 +160,30 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = true
+autoAssignGoalie = false
 
 OUTPUT:
 paths: 1
 
 	[0] : 
 	robotId: 1
-	gamestate: Normal
-	role: GOALKEEPER (1)
+	gamestate: Kickoff Against
+	role: ATTACKER_MAIN (2)
 	rank: 1
-	target-pos: x: 0.00 y: -8.50
+	target-pos: x: 1.87 y: -1.87
 	is_pass_desitination: false
-	planner_target: Goalie
+	planner_target: goto target position
 	defend_info.valid = false
 	Path:
-		[0]: x: -2.00 y: 4.00 cost: 0.00 target: Goalie (9)
-		[1]: x: -0.25 y: 0.75 cost: 4.69 target: Goalie (9)
-		[2]: x: -0.25 y: -1.25 cost: 6.69 target: Goalie (9)
-		[3]: x: -0.25 y: -3.25 cost: 8.69 target: Goalie (9)
-		[4]: x: -0.25 y: -5.25 cost: 10.69 target: Goalie (9)
-		[5]: x: 0.00 y: -8.50 cost: 13.95 target: Goalie (9)
+		[0]: x: 1.87 y: -1.87 cost: inf target: goto target position (5)
 
 
 
-	gamestate = Normal (1)
-	ball_status = "FREE"
-	Ball: position: x: -2.00 y: 2.75 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.50 y: 0.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
+	gamestate = Kickoff Against (5)
+	ball_status = "OWNED_BY_OPPONENT"
+	Ball: position: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false
-	pass_is_required: true
+	pass_is_required: false
 	pass_data - valid false
 	pickup ball valid: false
 	pickup ball x: 0.00
@@ -196,25 +191,20 @@ paths: 1
 	pickup ball ts: 0.00
 
 	team:
-		R01 = x: -2.00 y: 4.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
-			control-ball: false passBall: false role: GOALKEEPER time-own-PA: 0.00 time-opp-PA: 0.00
+		R01 = x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 trackingId: 1 type = FIELD_PLAYER (1)
+			control-ball: false passBall: false role: INTERCEPTOR time-own-PA: 0.00 time-opp-PA: 0.00
 			prev result:  false
 	opponents:
 paths:
 
 Player 0 (id: 1) : 
-	role: GOALKEEPER
-	Game State: Normal
-	Target position : x: 0.00 y: -8.50
-	Planner target type  Goalie
+	role: INTERCEPTOR
+	Game State: Kickoff Against
+	Target position : x: 1.87 y: -1.87
+	Planner target type  goto target position
 	Is pass_desitination: false
 	Defend info valid:  false
-Path[0]: x: -2.00 y: 4.00 cost: 0.00 target: Goalie (9)
-Path[0]: x: -0.25 y: 0.75 cost: 4.69 target: Goalie (9)
-Path[0]: x: -0.25 y: -1.25 cost: 6.69 target: Goalie (9)
-Path[0]: x: -0.25 y: -3.25 cost: 8.69 target: Goalie (9)
-Path[0]: x: -0.25 y: -5.25 cost: 10.69 target: Goalie (9)
-Path[0]: x: 0.00 y: -8.50 cost: 13.95 target: Goalie (9)
+Path[0]: x: 1.87 y: -1.87 cost: inf target: goto target position (5)
 
 	parameters:
 calculateAllPaths = true
@@ -276,18 +266,18 @@ dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = true
 auto_save_svg_period = 10
-svgOutputFileName = output_team/auto_assing_keeper_05.svg
+svgOutputFileName = output_team/empty_kickoff_against.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
 svgDrawVelocity = true
-svgDrawEdges = false
+svgDrawEdges = true
 saveGridDataToFile = true
 svgRobotPlanner = false
-preferredSetplayKicker = 1
-preferredSetplayReceiver = 2
+preferredSetplayKicker = 0
+preferredSetplayReceiver = 0
 setplay_margin_to_penalty_area_side = 0.75
 min_y_for_lob_shot = 0.25
 outsideFieldMargin = 0.5
@@ -307,7 +297,7 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = true
+autoAssignGoalie = false
 
 	field:
 StandardLetterModel: 
@@ -342,12 +332,12 @@ ball_radius = 0.11
 
 <?xml version="1.0" encoding="utf-8"?>
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
-<tns:Description>xml from svg-file: output_team/auto_assing_keeper_05.svg</tns:Description>
-<tns:Options svgOutputFileName="output_team/auto_assing_keeper_05.svg_NEW"
+<tns:Description>xml from svg-file: output_team/empty_kickoff_against.svg</tns:Description>
+<tns:Options svgOutputFileName="output_team/empty_kickoff_against.svg_NEW"
    addBallApproachVertices="true"
    addBarierVertices="true"
    addUniformVertices="true"
-   autoAssignGoalie="true"
+   autoAssignGoalie="false"
    ballApproachNumberOfVertices="8"
    ballApproachVerticesRadius="0.600"
    calculateAllPaths="true"
@@ -385,8 +375,8 @@ ball_radius = 0.11
    nrDynamicPlannerIterations="2"
    nrVerticesFirstCircle="6"
    nrVerticesSecondCircle="8"
-   preferredSetplayKicker="1"
-   preferredSetplayReceiver="2"
+   preferredSetplayKicker="0"
+   preferredSetplayReceiver="0"
    previous_role_end_pos_threshold="1.500"
    previous_role_bonus_end_pos_radius="5.000"
    priority_block_min_distance="0.500"
@@ -413,11 +403,10 @@ ball_radius = 0.11
              penalty_area_present="true" penalty_area_width="6.500" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.500"
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
-  <tns:GameState>Normal</tns:GameState>
-  <tns:Ball x="-2.00" y="2.75" velx="0.50" vely="0.50"/>
-  <tns:Team id="1" tracking="1" x="-2.000" y="4.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
+  <tns:GameState>Kickoff Against</tns:GameState>
+  <tns:Team id="1" tracking="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
-  <tns:SituationInfo passing_required="true" ball_status="FREE">
+  <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>
   </tns:SituationInfo>
   <tns:ParkingInfo>
@@ -432,11 +421,11 @@ ball_radius = 0.11
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Normal</text>
-<text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
-<text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: GOALKEEPER</text>
-<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 0.00 y: -8.50</text>
-<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 13.950807</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Kickoff Against</text>
+<text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_opponent</text>
+<text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: INTERCEPTOR</text>
+<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.87 y: -1.87</text>
+<text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: inf</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="4.25cm" y="1.50cm" width="6.50cm" height="2.25cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -447,32 +436,8 @@ ball_radius = 0.11
 <rect x="6.50cm" y="19.50cm" width="2.00cm" height="0.50cm"  fill="powderblue" stroke="white" stroke-width="0.125cm"/>
 <text x="7.10cm" y="19.88cm" fill="darkred">OWN</text>
 <!-- ME -->
-<rect x="5.25cm" y="6.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<rect x="7.25cm" y="10.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- player-path start 0-->
-<rect x="5.25cm" y="6.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
-
-<!-- path player 0-->
-<line x1="5.62cm" y1="6.72cm" x2="7.25cm" y2="9.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="7.25cm" y1="9.75cm" x2="7.25cm" y2="11.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="7.25cm" y1="11.75cm" x2="7.25cm" y2="13.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="7.25cm" y1="13.75cm" x2="7.25cm" y2="15.75cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path player 0-->
-<line x1="7.25cm" y1="15.75cm" x2="7.50cm" y2="19.00cm" stroke-width="0.125cm"  stroke="blue" />
-
-<!-- path-end player 0-->
-<circle cx="7.50cm" cy="19.00cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />
-<text x="5.34cm" y="6.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text>
-<!-- Ball -->
-<circle cx="5.50cm" cy="7.75cm" r="0.11cm" fill="orange" stroke="orange" stroke-width="0.125cm"  />
-
-<!-- velocity line -->
-<line x1="5.50cm" y1="7.75cm" x2="6.00cm" y2="7.25cm" stroke-width="0.125cm"  stroke="red"/>
-</svg>
+<rect x="9.12cm" y="12.12cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<text x="7.34cm" y="10.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text></svg>

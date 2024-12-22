@@ -4,7 +4,7 @@
 <desc>MSL field path</desc>
 <!-- 
 
-file: ./output_team/attack_support_8b.svg
+file: ./output_team/attacksupport_8b.svg
 INPUT:
 gamestate: Freekick
 ball:  status: OWNED_BY_TEAM position: x: 2.12 y: -3.19 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 is_valid: 1
@@ -155,7 +155,7 @@ dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = true
 auto_save_svg_period = 10
-svgOutputFileName = ./output_team/attack_support_8b.svg
+svgOutputFileName = ./output_team/attacksupport_8b.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
 svgOriginalTargetColor = darkred
@@ -398,7 +398,7 @@ dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
 move_to_ball_left_field_position = true
 auto_save_svg_period = 10
-svgOutputFileName = ./output_team/attack_support_8b.svg
+svgOutputFileName = ./output_team/attacksupport_8b.svg
 svgDefaultTargetColor  = red
 svgBallColor = orange
 svgOriginalTargetColor = darkred
@@ -464,8 +464,8 @@ ball_radius = 0.11
 
 <?xml version="1.0" encoding="utf-8"?>
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
-<tns:Description>xml from svg-file: ./output_team/attack_support_8b.svg</tns:Description>
-<tns:Options svgOutputFileName="./output_team/attack_support_8b.svg_NEW"
+<tns:Description>xml from svg-file: ./output_team/attacksupport_8b.svg</tns:Description>
+<tns:Options svgOutputFileName="./output_team/attacksupport_8b.svg_NEW"
    addBallApproachVertices="true"
    addBarierVertices="true"
    addUniformVertices="true"

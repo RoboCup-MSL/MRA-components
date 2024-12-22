@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
   <tns:Description>test auto assign goalie with 4 players</tns:Description>
-  <tns:Options svgOutputFileName="output_team/auto_assing_keeper_01.svg" 
+  <tns:Options svgOutputFileName="output_team/auto_assign_keeper_01.svg" 
                autoAssignGoalie="true" 
                preferredSetplayKicker="0" 
                preferredSetplayReceiver="0" />

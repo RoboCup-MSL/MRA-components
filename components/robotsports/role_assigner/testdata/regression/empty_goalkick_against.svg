@@ -6,7 +6,7 @@
 
 file: output_team/empty_goalkick_against.svg
 INPUT:
-gamestate: Kickoff Against
+gamestate: Goalkick Against
 ball:  status: OWNED_BY_OPPONENT position: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 is_valid: 0
 formation: 
 	[0] = ATTACKER_MAIN
@@ -167,19 +167,19 @@ paths: 1
 
 	[0] : 
 	robotId: 1
-	gamestate: Kickoff Against
+	gamestate: Goalkick Against
 	role: ATTACKER_MAIN (2)
 	rank: 1
-	target-pos: x: 1.87 y: -1.87
+	target-pos: x: -3.00 y: 6.25
 	is_pass_desitination: false
 	planner_target: goto target position
 	defend_info.valid = false
 	Path:
-		[0]: x: 1.87 y: -1.87 cost: inf target: goto target position (5)
+		[0]: x: -3.00 y: 6.25 cost: inf target: goto target position (5)
 
 
 
-	gamestate = Kickoff Against (5)
+	gamestate = Goalkick Against (9)
 	ball_status = "OWNED_BY_OPPONENT"
 	Ball: position: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 velocity: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 	previous_ball = false
@@ -199,12 +199,12 @@ paths:
 
 Player 0 (id: 1) : 
 	role: INTERCEPTOR
-	Game State: Kickoff Against
-	Target position : x: 1.87 y: -1.87
+	Game State: Goalkick Against
+	Target position : x: -3.00 y: 6.25
 	Planner target type  goto target position
 	Is pass_desitination: false
 	Defend info valid:  false
-Path[0]: x: 1.87 y: -1.87 cost: inf target: goto target position (5)
+Path[0]: x: -3.00 y: 6.25 cost: inf target: goto target position (5)
 
 	parameters:
 calculateAllPaths = true
@@ -403,7 +403,7 @@ ball_radius = 0.11
              penalty_area_present="true" penalty_area_width="6.500" penalty_area_length="2.250" center_circle_diameter="4.000" robot_size="0.500"
              ball_radius="0.110" field_markings_width="0.125" parking_area_width="0.500" parking_area_length="4.500" parking_distance_between_robots="1.000"
              parking_distance_to_line="0.500" corner_circle_diameter="0.750" penalty_spot_to_backline="3.000" />
-  <tns:GameState>Kickoff Against</tns:GameState>
+  <tns:GameState>Goalkick Against</tns:GameState>
   <tns:Team id="1" tracking="1" x="0.000" y="0.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT">
@@ -421,10 +421,10 @@ ball_radius = 0.11
 -->
 <rect x="0cm" y="0cm" width="15.00cm" height="21.00cm" fill="green" stroke-width="0.02cm" />
 <rect x="15.00cm" y="0cm" width="6.00cm" height="21.00cm" fill="white" stroke-width="0.02cm" />
-<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Kickoff Against</text>
+<text x="15.10cm" y="1.00cm" font-size="14" font-weight-absolute="bold" fill="black">Game-state: Goalkick Against</text>
 <text x="15.10cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: owned_by_opponent</text>
 <text x="15.10cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: INTERCEPTOR</text>
-<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.87 y: -1.87</text>
+<text x="15.30cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.00 y: 6.25</text>
 <text x="15.30cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: inf</text>
 <rect x="1.50cm" y="1.50cm" width="12.00cm" height="18.00cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.50cm" y1="10.50cm" x2="13.50cm" y2="10.50cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.50cm" cy="10.50cm" r="2.00cm" fill="none" stroke="white" stroke-width="0.125cm"  />
@@ -439,5 +439,5 @@ ball_radius = 0.11
 <rect x="7.25cm" y="10.25cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- player-path start 0-->
-<rect x="9.12cm" y="12.12cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
+<rect x="4.25cm" y="4.00cm" width="0.50cm" height="0.50cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 <text x="7.34cm" y="10.66cm" font-size="large" font-weight-absolute="bold" fill="black">1</text></svg>

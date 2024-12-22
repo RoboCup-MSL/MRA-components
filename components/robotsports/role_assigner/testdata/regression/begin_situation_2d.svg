@@ -14,28 +14,28 @@ formation:
 	[2] = DEFENDER_MAIN
 	[3] = DEFENDER_GENERIC
 team: 
-	[0] = robotId: 4 player-type: FIELD_PLAYER active: 1
+	[0] = robotId: 4 player-type: FIELD_PLAYER active: true
 Pos: x: -0.72 y: -2.66 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.44 Vel: x: 0.99 y: -0.64 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.13
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 4
+ control ball: false pass is on its way: false
+human: false trackingId: 4
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[1] = robotId: 1 player-type: FIELD_PLAYER active: 1
+	[1] = robotId: 1 player-type: FIELD_PLAYER active: true
 Pos: x: 0.95 y: -3.36 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.04 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 1
+ control ball: false pass is on its way: false
+human: false trackingId: 1
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[2] = robotId: 2 player-type: FIELD_PLAYER active: 1
+	[2] = robotId: 2 player-type: FIELD_PLAYER active: true
 Pos: x: -1.14 y: -3.39 z: 0.00 rx: 0.00 ry: 0.00 rz: -0.41 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 2
+ control ball: false pass is on its way: false
+human: false trackingId: 2
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[3] = robotId: 3 player-type: FIELD_PLAYER active: 1
+	[3] = robotId: 3 player-type: FIELD_PLAYER active: true
 Pos: x: 3.49 y: -4.83 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.34 Vel: x: -0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 3
+ control ball: false pass is on its way: false
+human: false trackingId: 3
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
 opponents: 
@@ -48,9 +48,9 @@ parking_positions:
 	[2] = x: -6.38 y: -2.25
 	[3] = x: -6.38 y: -3.25
 	[4] = x: -6.38 y: -4.25
-ball_pickup_position: - valid 0
-passIsRequired: 1
-	pass_data - valid 0
+ball_pickup_position: - valid false
+passIsRequired: true
+	pass_data - valid false
 environment: StandardLetterModel: 
 	A = 18.141
 	B = 12.146
@@ -69,8 +69,8 @@ environment: StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3.5
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2.25
 goal_length = 0.5
 parking_area_width = 0.5
@@ -83,27 +83,27 @@ ball_radius = 0.11
 
 
 STATE:
-	previous_ball = 1
+	previous_ball: present = true
  x= 1.14 y: 1.97
-			prev result [0]: 1 robotId: -1 role: UNDEFINED ts: 80550.6
- end-pos
-	x: -1 y:  -3.3875 cost: 0 target: Goto ball
+	prev result [0]: present = true	 robotId: -1	 role: UNDEFINED	 ts: 80550.6
+	 end-pos
+	x: -1 y:  -3.3875	 cost: 0	 target: Goto ball
 
-			prev result [1]: 1 robotId: -1 role: UNDEFINED ts: 80550.7
- end-pos
-	x: 1 y:  -3.3875 cost: 0 target: Goto ball
+	prev result [1]: present = true	 robotId: -1	 role: UNDEFINED	 ts: 80550.7
+	 end-pos
+	x: 1 y:  -3.3875	 cost: 0	 target: Goto ball
 
-			prev result [2]: 1 robotId: -1 role: UNDEFINED ts: 80550.7
- end-pos
-	x: -1 y:  -3.3875 cost: 0 target: Goto ball
+	prev result [2]: present = true	 robotId: -1	 role: UNDEFINED	 ts: 80550.7
+	 end-pos
+	x: -1 y:  -3.3875	 cost: 0	 target: Goto ball
 
-			prev result [3]: 1 robotId: -1 role: UNDEFINED ts: 80550.7
- end-pos
-	x: 3.5365 y:  -4.83525 cost: 0 target: Goto ball
+	prev result [3]: present = true	 robotId: -1	 role: UNDEFINED	 ts: 80550.7
+	 end-pos
+	x: 3.5365 y:  -4.83525	 cost: 0	 target: Goto ball
 
 
 PARAMS:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -112,15 +112,15 @@ firstCircleRadius = 1
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 0
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = false
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 1.5
-addBallApproachVertices  = 0
+addBallApproachVertices  = false
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -142,7 +142,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -150,17 +150,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/begin_situation_2d.svg
 svgDefaultTargetColor  = red
@@ -168,10 +168,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 0
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = false
+svgRobotPlanner = false
 preferredSetplayKicker = 3
 preferredSetplayReceiver = 2
 setplay_margin_to_penalty_area_side = 0.75
@@ -193,53 +193,65 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 OUTPUT:
 paths: 4
-[0] = robotId:1
+
+	[0] : 
+	robotId: 1
 	gamestate: Begin Position
 	role: ATTACKER_MAIN (2)
 	rank: 1
 	target-pos: x: 1.00 y: -3.39
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: goto target position
-	defend_info.valid = 0
-Path[0]: x: 0.95 y: -3.36 cost: 0.00 target: goto target position (5)
-Path[1]: x: 1.00 y: -3.39 cost: 1.10 target: goto target position (5)
-[1] = robotId:2
+	defend_info.valid = false
+	Path:
+		[0]: x: 0.95 y: -3.36 cost: 0.00 target: goto target position (5)
+		[1]: x: 1.00 y: -3.39 cost: 1.10 target: goto target position (5)
+
+	[1] : 
+	robotId: 2
 	gamestate: Begin Position
 	role: ATTACKER_GENERIC (4)
 	rank: 2
 	target-pos: x: -1.00 y: -3.39
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: goto target position
-	defend_info.valid = 0
-Path[0]: x: -1.14 y: -3.39 cost: 0.00 target: goto target position (5)
-Path[1]: x: -1.00 y: -3.39 cost: 1.43 target: goto target position (5)
-[2] = robotId:3
+	defend_info.valid = false
+	Path:
+		[0]: x: -1.14 y: -3.39 cost: 0.00 target: goto target position (5)
+		[1]: x: -1.00 y: -3.39 cost: 1.44 target: goto target position (5)
+
+	[2] : 
+	robotId: 3
 	gamestate: Begin Position
 	role: DEFENDER_MAIN (5)
 	rank: 3
 	target-pos: x: 3.54 y: -4.84
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: goto target position
-	defend_info.valid = 0
-Path[0]: x: 3.49 y: -4.83 cost: 0.00 target: goto target position (5)
-Path[1]: x: 3.54 y: -4.84 cost: 1.06 target: goto target position (5)
-[3] = robotId:4
+	defend_info.valid = false
+	Path:
+		[0]: x: 3.49 y: -4.83 cost: 0.00 target: goto target position (5)
+		[1]: x: 3.54 y: -4.84 cost: 1.06 target: goto target position (5)
+
+	[3] : 
+	robotId: 4
 	gamestate: Begin Position
 	role: DEFENDER_GENERIC (6)
 	rank: 4
 	target-pos: x: -3.54 y: -4.84
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: goto target position
-	defend_info.valid = 0
-Path[0]: x: -0.72 y: -2.66 cost: 0.00 target: goto target position (5)
-Path[1]: x: -0.18 y: -2.23 cost: 4.06 target: goto target position (5)
-Path[2]: x: -1.14 y: -1.79 cost: 6.72 target: goto target position (5)
-Path[3]: x: -2.27 y: -2.25 cost: 9.37 target: goto target position (5)
-Path[4]: x: -3.54 y: -4.84 cost: 14.45 target: goto target position (5)
+	defend_info.valid = false
+	Path:
+		[0]: x: -0.72 y: -2.66 cost: 0.00 target: goto target position (5)
+		[1]: x: -0.05 y: -3.36 cost: 2.97 target: goto target position (5)
+		[2]: x: -0.64 y: -4.25 cost: 5.95 target: goto target position (5)
+		[3]: x: -1.14 y: -4.99 cost: 7.67 target: goto target position (5)
+		[4]: x: -3.54 y: -4.84 cost: 11.03 target: goto target position (5)
 
 
 
@@ -288,7 +300,7 @@ Player 1 (id: 2) :
 	Is pass_desitination: false
 	Defend info valid:  false
 Path[1]: x: -1.14 y: -3.39 cost: 0.00 target: goto target position (5)
-Path[1]: x: -1.00 y: -3.39 cost: 1.43 target: goto target position (5)
+Path[1]: x: -1.00 y: -3.39 cost: 1.44 target: goto target position (5)
 
 Player 2 (id: 3) : 
 	role: BEGIN_POSITION
@@ -308,13 +320,13 @@ Player 3 (id: 4) :
 	Is pass_desitination: false
 	Defend info valid:  false
 Path[3]: x: -0.72 y: -2.66 cost: 0.00 target: goto target position (5)
-Path[3]: x: -0.18 y: -2.23 cost: 4.06 target: goto target position (5)
-Path[3]: x: -1.14 y: -1.79 cost: 6.72 target: goto target position (5)
-Path[3]: x: -2.27 y: -2.25 cost: 9.37 target: goto target position (5)
-Path[3]: x: -3.54 y: -4.84 cost: 14.45 target: goto target position (5)
+Path[3]: x: -0.05 y: -3.36 cost: 2.97 target: goto target position (5)
+Path[3]: x: -0.64 y: -4.25 cost: 5.95 target: goto target position (5)
+Path[3]: x: -1.14 y: -4.99 cost: 7.67 target: goto target position (5)
+Path[3]: x: -3.54 y: -4.84 cost: 11.03 target: goto target position (5)
 
 	parameters:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -323,15 +335,15 @@ firstCircleRadius = 1
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 0
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = false
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 1.5
-addBallApproachVertices  = 0
+addBallApproachVertices  = false
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -353,7 +365,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -361,17 +373,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/begin_situation_2d.svg
 svgDefaultTargetColor  = red
@@ -379,10 +391,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 0
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = false
+svgRobotPlanner = false
 preferredSetplayKicker = 3
 preferredSetplayReceiver = 2
 setplay_margin_to_penalty_area_side = 0.75
@@ -404,7 +416,7 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 	field:
 StandardLetterModel: 
@@ -425,8 +437,8 @@ StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3.5
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2.25
 goal_length = 0.5
 parking_area_width = 0.5
@@ -537,16 +549,16 @@ ball_radius = 0.11
 <text x="14.25cm" y="1.50cm" font-size="14" font-weight-absolute="bold" fill="black">Ball status: free</text>
 <text x="14.25cm" y="3.50cm" font-size="14" font-weight-absolute="bold" fill="black">R04: BEGIN_POSITION</text>
 <text x="14.45cm" y="4.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 1.00 y: -3.39</text>
-<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.095639</text>
+<text x="14.45cm" y="4.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 1 costs: 1.098181</text>
 <text x="14.25cm" y="5.50cm" font-size="14" font-weight-absolute="bold" fill="black">R01: BEGIN_POSITION</text>
 <text x="14.45cm" y="6.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -1.00 y: -3.39</text>
-<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 1.427953</text>
+<text x="14.45cm" y="6.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 2 costs: 1.444944</text>
 <text x="14.25cm" y="7.50cm" font-size="14" font-weight-absolute="bold" fill="black">R02: BEGIN_POSITION</text>
 <text x="14.45cm" y="8.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: 3.54 y: -4.84</text>
-<text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 1.061553</text>
+<text x="14.45cm" y="8.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 3 costs: 1.062448</text>
 <text x="14.25cm" y="9.50cm" font-size="14" font-weight-absolute="bold" fill="black">R03: BEGIN_POSITION</text>
 <text x="14.45cm" y="10.00cm" font-size="14" font-weight-absolute="bold" fill="black">target-pos: x: -3.54 y: -4.84</text>
-<text x="14.45cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 14.454860</text>
+<text x="14.45cm" y="10.50cm" font-size="14" font-weight-absolute="bold" fill="black">role-rank: 4 costs: 11.028515</text>
 <rect x="1.00cm" y="1.00cm" width="12.15cm" height="18.14cm" fill="none" stroke="white" stroke-width="0.125cm"/><line x1="1.00cm" y1="10.07cm" x2="13.15cm" y2="10.07cm" stroke-width="0.125cm"  stroke="white"/>
 <circle cx="7.07cm" cy="10.07cm" r="2.13cm" fill="none" stroke="white" stroke-width="0.125cm"  />
 <rect x="3.76cm" y="1.00cm" width="6.62cm" height="2.26cm" fill="green" stroke="white" stroke-width="0.125cm"/>
@@ -599,16 +611,16 @@ ball_radius = 0.11
 <rect x="6.09cm" y="12.47cm" width="0.52cm" height="0.52cm" fill="magenta" stroke="magenta" stroke-width="0.125cm"/>
 
 <!-- path player 3-->
-<line x1="6.56cm" y1="12.57cm" x2="6.89cm" y2="12.30cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="6.53cm" y1="12.92cm" x2="7.02cm" y2="13.43cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path player 3-->
-<line x1="6.89cm" y1="12.30cm" x2="5.93cm" y2="11.86cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="7.02cm" y1="13.43cm" x2="6.43cm" y2="14.32cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path player 3-->
-<line x1="5.93cm" y1="11.86cm" x2="4.80cm" y2="12.33cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="6.43cm" y1="14.32cm" x2="5.93cm" y2="15.06cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path player 3-->
-<line x1="4.80cm" y1="12.33cm" x2="3.54cm" y2="14.91cm" stroke-width="0.125cm"  stroke="blue" />
+<line x1="5.93cm" y1="15.06cm" x2="3.54cm" y2="14.91cm" stroke-width="0.125cm"  stroke="blue" />
 
 <!-- path-end player 3-->
 <circle cx="3.54cm" cy="14.91cm" r="0.17cm" fill="yellow" stroke="yellow" stroke-width="0.125cm"  />

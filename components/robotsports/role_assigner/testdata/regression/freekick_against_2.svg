@@ -14,50 +14,50 @@ formation:
 	[2] = DEFENDER_GENERIC
 	[3] = ATTACKER_GENERIC
 team: 
-	[0] = robotId: 1 player-type: FIELD_PLAYER active: 1
+	[0] = robotId: 1 player-type: FIELD_PLAYER active: true
 Pos: x: 1.00 y: -3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 1
+ control ball: false pass is on its way: false
+human: false trackingId: 1
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[1] = robotId: 2 player-type: FIELD_PLAYER active: 1
+	[1] = robotId: 2 player-type: FIELD_PLAYER active: true
 Pos: x: -2.00 y: 4.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 2
+ control ball: false pass is on its way: false
+human: false trackingId: 2
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[2] = robotId: 3 player-type: FIELD_PLAYER active: 1
+	[2] = robotId: 3 player-type: FIELD_PLAYER active: true
 Pos: x: 2.00 y: 1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 3
+ control ball: false pass is on its way: false
+human: false trackingId: 3
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[3] = robotId: 4 player-type: FIELD_PLAYER active: 1
+	[3] = robotId: 4 player-type: FIELD_PLAYER active: true
 Pos: x: -2.00 y: -3.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 4
+ control ball: false pass is on its way: false
+human: false trackingId: 4
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[4] = robotId: 5 player-type: GOALIE active: 1
+	[4] = robotId: 5 player-type: GOALIE active: true
 Pos: x: 0.00 y: -8.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 5
+ control ball: false pass is on its way: false
+human: false trackingId: 5
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
 opponents: 
-	[0] = trackingId: 1assigned: 0
+	[0] = trackingId: 11 assigned: false
 Pos: x: 1.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
-	[1] = trackingId: 2assigned: 0
+	[1] = trackingId: 12 assigned: false
 Pos: x: -2.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
-	[2] = trackingId: 3assigned: 0
+	[2] = trackingId: 13 assigned: false
 Pos: x: 2.00 y: 2.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
-	[3] = trackingId: 4assigned: 0
+	[3] = trackingId: 14 assigned: false
 Pos: x: 0.25 y: 8.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
-	[4] = trackingId: 5assigned: 0
+	[4] = trackingId: 15 assigned: false
 Pos: x: 4.00 y: 5.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
 no_opponent_obstacles: 
@@ -68,9 +68,9 @@ parking_positions:
 	[2] = x: -6.38 y: -2.25
 	[3] = x: -6.38 y: -3.25
 	[4] = x: -6.38 y: -4.25
-ball_pickup_position: - valid 0
-passIsRequired: 0
-	pass_data - valid 0
+ball_pickup_position: - valid false
+passIsRequired: false
+	pass_data - valid false
 environment: StandardLetterModel: 
 	A = 18
 	B = 12
@@ -89,8 +89,8 @@ environment: StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2
 goal_length = 0.5
 parking_area_width = 0.5
@@ -103,31 +103,31 @@ ball_radius = 0.11
 
 
 STATE:
-	previous_ball = 0
+	previous_ball: present = false
 
-			prev result [0]: 1 robotId: -1 role: DEFENDER_MAIN ts: 0.125
- end-pos
-	x: -1.73167 y:  -0.600805 cost: 0 target: Goto ball
+	prev result [0]: present = true	 robotId: -1	 role: DEFENDER_MAIN	 ts: 0.125
+	 end-pos
+	x: -1.73167 y:  -0.600805	 cost: 0	 target: Goto ball
 
-			prev result [1]: 1 robotId: -1 role: DEFENDER_GENERIC ts: 0.125
- end-pos
-	x: 1.27569 y:  3.02643 cost: 0 target: Goto ball
+	prev result [1]: present = true	 robotId: -1	 role: DEFENDER_GENERIC	 ts: 0.125
+	 end-pos
+	x: 1.27569 y:  3.02643	 cost: 0	 target: Goto ball
 
-			prev result [2]: 1 robotId: -1 role: ATTACKER_MAIN ts: 0.125
- end-pos
-	x: 0.669786 y:  0.863803 cost: 0 target: Goto ball
+	prev result [2]: present = true	 robotId: -1	 role: ATTACKER_MAIN	 ts: 0.125
+	 end-pos
+	x: 0.669786 y:  0.863803	 cost: 0	 target: Goto ball
 
-			prev result [3]: 1 robotId: -1 role: ATTACKER_GENERIC ts: 0.125
- end-pos
-	x: 2.22051 y:  4.47331 cost: 0 target: Goto ball
+	prev result [3]: present = true	 robotId: -1	 role: ATTACKER_GENERIC	 ts: 0.125
+	 end-pos
+	x: 2.22051 y:  4.47331	 cost: 0	 target: Goto ball
 
-			prev result [4]: 1 robotId: -1 role: GOALKEEPER ts: 0.125
- end-pos
-	x: 0 y:  -8.5 cost: 0 target: Goto ball
+	prev result [4]: present = true	 robotId: -1	 role: GOALKEEPER	 ts: 0.125
+	 end-pos
+	x: 0 y:  -8.5	 cost: 0	 target: Goto ball
 
 
 PARAMS:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -136,15 +136,15 @@ firstCircleRadius = 1.3
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 1
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = true
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 1
-addBallApproachVertices  = 1
+addBallApproachVertices  = true
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -166,7 +166,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -174,17 +174,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/freekick_against_2.svg
 svgDefaultTargetColor  = red
@@ -192,10 +192,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 1
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = true
+svgRobotPlanner = false
 preferredSetplayKicker = 0
 preferredSetplayReceiver = 0
 setplay_margin_to_penalty_area_side = 0.75
@@ -217,72 +217,87 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 OUTPUT:
 paths: 5
-[0] = robotId:1
+
+	[0] : 
+	robotId: 1
 	gamestate: Freekick Against
 	role: DEFENDER_MAIN (5)
 	rank: 3
 	target-pos: x: -1.73 y: -0.60
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Sweeper
-	defend_info.valid = 1
-		defending_id: 2		between_ball_and_defending_pos: 1		dist_from_defending_id: 2.61461
-Path[0]: x: 1.00 y: -3.00 cost: 0.00 target: Sweeper (6)
-Path[1]: x: -1.73 y: -0.60 cost: 7.54 target: Sweeper (6)
-[1] = robotId:2
+	defend_info.valid = true
+		defending_id: 12		between_ball_and_defending_pos: true		dist_from_defending_id: 2.61461
+	Path:
+		[0]: x: 1.00 y: -3.00 cost: 0.00 target: Sweeper (6)
+		[1]: x: -1.73 y: -0.60 cost: 7.54 target: Sweeper (6)
+
+	[1] : 
+	robotId: 2
 	gamestate: Freekick Against
 	role: DEFENDER_GENERIC (6)
 	rank: 4
 	target-pos: x: 1.27 y: 3.01
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Defense support
-	defend_info.valid = 1
-		defending_id: 3		between_ball_and_defending_pos: 1		dist_from_defending_id: 1.25
-Path[0]: x: -2.00 y: 4.00 cost: 0.00 target: Defense support (2)
-Path[1]: x: -1.12 y: 3.88 cost: 3.34 target: Defense support (2)
-Path[2]: x: 1.27 y: 3.01 cost: 11.52 target: Defense support (2)
-[2] = robotId:3
+	defend_info.valid = true
+		defending_id: 13		between_ball_and_defending_pos: true		dist_from_defending_id: 1.25
+	Path:
+		[0]: x: -2.00 y: 4.00 cost: 0.00 target: Defense support (2)
+		[1]: x: -1.12 y: 3.88 cost: 3.34 target: Defense support (2)
+		[2]: x: 1.27 y: 3.01 cost: 11.52 target: Defense support (2)
+
+	[2] : 
+	robotId: 3
 	gamestate: Freekick Against
 	role: ATTACKER_MAIN (2)
 	rank: 2
 	target-pos: x: 0.66 y: 0.84
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Goto ball
-	defend_info.valid = 1
-		defending_id: 1		between_ball_and_defending_pos: 1		dist_from_defending_id: 1.21
-Path[0]: x: 2.00 y: 1.00 cost: 0.00 target: Goto ball (0)
-Path[1]: x: 1.65 y: 0.87 cost: 2.70 target: Goto ball (0)
-Path[2]: x: 0.66 y: 0.84 cost: 6.93 target: Goto ball (0)
-[3] = robotId:4
+	defend_info.valid = true
+		defending_id: 11		between_ball_and_defending_pos: true		dist_from_defending_id: 1.21
+	Path:
+		[0]: x: 2.00 y: 1.00 cost: 0.00 target: Goto ball (0)
+		[1]: x: 1.65 y: 0.87 cost: 2.70 target: Goto ball (0)
+		[2]: x: 0.66 y: 0.84 cost: 6.93 target: Goto ball (0)
+
+	[3] : 
+	robotId: 4
 	gamestate: Freekick Against
 	role: ATTACKER_GENERIC (4)
 	rank: 5
 	target-pos: x: 2.21 y: 4.49
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Attack support
-	defend_info.valid = 1
-		defending_id: 5		between_ball_and_defending_pos: 1		dist_from_defending_id: 1.86
-Path[0]: x: -2.00 y: -3.00 cost: 0.00 target: Attack support (3)
-Path[1]: x: 0.35 y: -1.87 cost: 6.49 target: Attack support (3)
-Path[2]: x: 1.75 y: -1.25 cost: 10.32 target: Attack support (3)
-Path[3]: x: 3.13 y: -0.13 cost: 14.73 target: Attack support (3)
-Path[4]: x: 3.60 y: 1.00 cost: 18.06 target: Attack support (3)
-Path[5]: x: 3.75 y: 2.75 cost: 23.14 target: Attack support (3)
-Path[6]: x: 2.87 y: 3.87 cost: 27.60 target: Attack support (3)
-Path[7]: x: 2.21 y: 4.49 cost: 30.48 target: Attack support (3)
-[4] = robotId:5
+	defend_info.valid = true
+		defending_id: 15		between_ball_and_defending_pos: true		dist_from_defending_id: 1.86
+	Path:
+		[0]: x: -2.00 y: -3.00 cost: 0.00 target: Attack support (3)
+		[1]: x: 0.35 y: -1.87 cost: 6.49 target: Attack support (3)
+		[2]: x: 1.75 y: -1.25 cost: 10.32 target: Attack support (3)
+		[3]: x: 3.13 y: -0.13 cost: 14.73 target: Attack support (3)
+		[4]: x: 3.60 y: 1.00 cost: 18.06 target: Attack support (3)
+		[5]: x: 3.75 y: 2.75 cost: 23.14 target: Attack support (3)
+		[6]: x: 2.87 y: 3.87 cost: 27.60 target: Attack support (3)
+		[7]: x: 2.21 y: 4.49 cost: 30.48 target: Attack support (3)
+
+	[4] : 
+	robotId: 5
 	gamestate: Freekick Against
 	role: GOALKEEPER (1)
 	rank: 1
 	target-pos: x: 0.00 y: -8.50
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Goalie
-	defend_info.valid = 0
-Path[0]: x: 0.00 y: -8.00 cost: 0.00 target: Goalie (9)
-Path[1]: x: 0.00 y: -8.50 cost: 1.60 target: Goalie (9)
+	defend_info.valid = false
+	Path:
+		[0]: x: 0.00 y: -8.00 cost: 0.00 target: Goalie (9)
+		[1]: x: 0.00 y: -8.50 cost: 1.60 target: Goalie (9)
 
 
 
@@ -327,7 +342,7 @@ Player 0 (id: 1) :
 	Target position : x: -1.73 y: -0.60
 	Planner target type  Sweeper
 	Is pass_desitination: false
-	Defend info valid:  true defending_id: 2 between_ball_and_defending_pos: true dist_from_defending_id: 2.61
+	Defend info valid:  true defending_id: 12 between_ball_and_defending_pos: true dist_from_defending_id: 2.61
 Path[0]: x: 1.00 y: -3.00 cost: 0.00 target: Sweeper (6)
 Path[0]: x: -1.73 y: -0.60 cost: 7.54 target: Sweeper (6)
 
@@ -337,7 +352,7 @@ Player 1 (id: 2) :
 	Target position : x: 1.27 y: 3.01
 	Planner target type  Defense support
 	Is pass_desitination: false
-	Defend info valid:  true defending_id: 3 between_ball_and_defending_pos: true dist_from_defending_id: 1.25
+	Defend info valid:  true defending_id: 13 between_ball_and_defending_pos: true dist_from_defending_id: 1.25
 Path[1]: x: -2.00 y: 4.00 cost: 0.00 target: Defense support (2)
 Path[1]: x: -1.12 y: 3.88 cost: 3.34 target: Defense support (2)
 Path[1]: x: 1.27 y: 3.01 cost: 11.52 target: Defense support (2)
@@ -348,7 +363,7 @@ Player 2 (id: 3) :
 	Target position : x: 0.66 y: 0.84
 	Planner target type  Goto ball
 	Is pass_desitination: false
-	Defend info valid:  true defending_id: 1 between_ball_and_defending_pos: true dist_from_defending_id: 1.21
+	Defend info valid:  true defending_id: 11 between_ball_and_defending_pos: true dist_from_defending_id: 1.21
 Path[2]: x: 2.00 y: 1.00 cost: 0.00 target: Goto ball (0)
 Path[2]: x: 1.65 y: 0.87 cost: 2.70 target: Goto ball (0)
 Path[2]: x: 0.66 y: 0.84 cost: 6.93 target: Goto ball (0)
@@ -359,7 +374,7 @@ Player 3 (id: 4) :
 	Target position : x: 2.21 y: 4.49
 	Planner target type  Attack support
 	Is pass_desitination: false
-	Defend info valid:  true defending_id: 5 between_ball_and_defending_pos: true dist_from_defending_id: 1.86
+	Defend info valid:  true defending_id: 15 between_ball_and_defending_pos: true dist_from_defending_id: 1.86
 Path[3]: x: -2.00 y: -3.00 cost: 0.00 target: Attack support (3)
 Path[3]: x: 0.35 y: -1.87 cost: 6.49 target: Attack support (3)
 Path[3]: x: 1.75 y: -1.25 cost: 10.32 target: Attack support (3)
@@ -380,7 +395,7 @@ Path[4]: x: 0.00 y: -8.00 cost: 0.00 target: Goalie (9)
 Path[4]: x: 0.00 y: -8.50 cost: 1.60 target: Goalie (9)
 
 	parameters:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -389,15 +404,15 @@ firstCircleRadius = 1.3
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 1
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = true
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 1
-addBallApproachVertices  = 1
+addBallApproachVertices  = true
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -419,7 +434,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -427,17 +442,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/freekick_against_2.svg
 svgDefaultTargetColor  = red
@@ -445,10 +460,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 1
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = true
+svgRobotPlanner = false
 preferredSetplayKicker = 0
 preferredSetplayReceiver = 0
 setplay_margin_to_penalty_area_side = 0.75
@@ -470,7 +485,7 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 	field:
 StandardLetterModel: 
@@ -491,8 +506,8 @@ StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2
 goal_length = 0.5
 parking_area_width = 0.5
@@ -583,11 +598,11 @@ ball_radius = 0.11
   <tns:Team id="3" tracking="3" x="2.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="4" tracking="4" x="-2.000" y="-3.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
   <tns:Team id="5" tracking="5" x="0.000" y="-8.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"  isGoalie="true"    />
-  <tns:Opponent id="1" trackingId="1" x="1.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="2" trackingId="2" x="-2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="3" trackingId="3" x="2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="4" trackingId="4" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="5" trackingId="5" x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="1" trackingId="11" x="1.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="2" trackingId="12" x="-2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="3" trackingId="13" x="2.000" y="2.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="4" trackingId="14" x="0.250" y="8.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="5" trackingId="15" x="4.000" y="5.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="0.000" y="0.000" ts="0.000" valid="false" />
   <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_OPPONENT">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>

@@ -14,23 +14,23 @@ formation:
 	[2] = DEFENDER_MAIN
 	[3] = DEFENDER_GENERIC
 team: 
-	[0] = robotId: 1 player-type: FIELD_PLAYER active: 1
+	[0] = robotId: 1 player-type: FIELD_PLAYER active: true
 Pos: x: 5.20 y: 0.25 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 1 pass is on its way: 0
-human: 0 trackingId: 1
+ control ball: true pass is on its way: false
+human: false trackingId: 1
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
-	[1] = robotId: 2 player-type: FIELD_PLAYER active: 1
+	[1] = robotId: 2 player-type: FIELD_PLAYER active: true
 Pos: x: 4.00 y: -2.50 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
- control ball: 0 pass is on its way: 0
-human: 0 trackingId: 2
+ control ball: false pass is on its way: false
+human: false trackingId: 2
 time_in_own_penalty_area:0 time_in_opponent_penalty_area: 0
 
 opponents: 
-	[0] = trackingId: 1assigned: 0
+	[0] = trackingId: 11 assigned: false
 Pos: x: 4.00 y: 1.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
-	[1] = trackingId: 2assigned: 0
+	[1] = trackingId: 12 assigned: false
 Pos: x: 2.50 y: 6.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00 Vel: x: 0.00 y: 0.00 z: 0.00 rx: 0.00 ry: 0.00 rz: 0.00
 
 no_opponent_obstacles: 
@@ -41,13 +41,13 @@ parking_positions:
 	[2] = x: -6.38 y: -2.25
 	[3] = x: -6.38 y: -3.25
 	[4] = x: -6.38 y: -4.25
-ball_pickup_position: - valid 1
+ball_pickup_position: - valid true
 	pickup ball x: 5.00
 	pickup ball y: 0.00
 	pickup ball ts: 0.10
 
-passIsRequired: 1
-	pass_data - valid 0
+passIsRequired: true
+	pass_data - valid false
 environment: StandardLetterModel: 
 	A = 18
 	B = 12
@@ -66,8 +66,8 @@ environment: StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2
 goal_length = 0.5
 parking_area_width = 0.5
@@ -80,13 +80,13 @@ ball_radius = 0.11
 
 
 STATE:
-	previous_ball = 0
+	previous_ball: present = false
 
-			prev result [0]: 0
-			prev result [1]: 0
+	prev result [0]: present = false
+	prev result [1]: present = false
 
 PARAMS:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -95,15 +95,15 @@ firstCircleRadius = 1.3
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 1
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = true
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 12
-addBallApproachVertices  = 1
+addBallApproachVertices  = true
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -125,7 +125,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -133,17 +133,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/attacksupport_3.svg
 svgDefaultTargetColor  = red
@@ -151,10 +151,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 1
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = true
+svgRobotPlanner = false
 preferredSetplayKicker = 1
 preferredSetplayReceiver = 2
 setplay_margin_to_penalty_area_side = 0.75
@@ -176,34 +176,40 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 OUTPUT:
 paths: 2
-[0] = robotId:1
+
+	[0] : 
+	robotId: 1
 	gamestate: Normal
 	role: ATTACKER_MAIN (2)
 	rank: 1
 	target-pos: x: 2.92 y: -0.86
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Dribble
-	defend_info.valid = 0
-Path[0]: x: 5.20 y: 0.25 cost: 0.00 target: Goto ball (0)
-Path[1]: x: 5.00 y: 0.50 cost: 1.79 target: Goto ball (0)
-[1] = robotId:2
+	defend_info.valid = false
+	Path:
+		[0]: x: 5.20 y: 0.25 cost: 0.00 target: Goto ball (0)
+		[1]: x: 5.00 y: 0.50 cost: 1.79 target: Goto ball (0)
+
+	[1] : 
+	robotId: 2
 	gamestate: Normal
 	role: ATTACKER_GENERIC (4)
 	rank: 2
 	target-pos: x: 4.50 y: 4.50
-	is_pass_desitination: 0
+	is_pass_desitination: false
 	planner_target: Attack support
-	defend_info.valid = 0
-Path[0]: x: 4.00 y: -2.50 cost: 0.00 target: Attack support (3)
-Path[1]: x: 5.75 y: -1.25 cost: 4.61 target: Attack support (3)
-Path[2]: x: 5.85 y: -0.88 cost: 5.35 target: Attack support (3)
-Path[3]: x: 5.85 y: 1.38 cost: 12.22 target: Attack support (3)
-Path[4]: x: 5.75 y: 2.75 cost: 14.83 target: Attack support (3)
-Path[5]: x: 4.50 y: 4.50 cost: 18.17 target: Attack support (3)
+	defend_info.valid = false
+	Path:
+		[0]: x: 4.00 y: -2.50 cost: 0.00 target: Attack support (3)
+		[1]: x: 5.75 y: -1.25 cost: 4.61 target: Attack support (3)
+		[2]: x: 5.85 y: -0.88 cost: 5.35 target: Attack support (3)
+		[3]: x: 5.85 y: 1.38 cost: 12.22 target: Attack support (3)
+		[4]: x: 5.75 y: 2.75 cost: 14.83 target: Attack support (3)
+		[5]: x: 4.50 y: 4.50 cost: 18.17 target: Attack support (3)
 
 
 
@@ -255,7 +261,7 @@ Path[1]: x: 5.75 y: 2.75 cost: 14.83 target: Attack support (3)
 Path[1]: x: 4.50 y: 4.50 cost: 18.17 target: Attack support (3)
 
 	parameters:
-calculateAllPaths = 1
+calculateAllPaths = true
 minimumEdgeLength = 0.3
 maximumEdgeLength = 4
 minimumDistanceToEndPoint = 3
@@ -264,15 +270,15 @@ firstCircleRadius = 1.3
 VerticesSecondCircle  = 8
 secondCircleRadius  = 1.6
 safetyFactor  = 1
-addBarierVertices  = 1
-addUniformVertices  = 1
-manDefenseBetweenBallAndPlayer = 1
+addBarierVertices  = true
+addUniformVertices  = true
+manDefenseBetweenBallAndPlayer = true
 dist_before_penalty_area_for_sweeper = 0.75
 uniform_x_interval  = 2
 uniform_y_interval  = 2
 startingVelocityPenaltyFactor = 1
 distToapplyBallApproachVertices  = 12
-addBallApproachVertices  = 1
+addBallApproachVertices  = true
 ballApproachVerticesRadius  = 0.6
 ballApproachNumberOfVertices  = 8
 grid_size  = 0.75
@@ -294,7 +300,7 @@ grid_opponent_goal_clearance_x = 7
 grid_opponent_goal_clearance_y = 2.5
 grid_own_goal_clearance_x = 3
 grid_own_goal_clearance_y = 0.75
-wait_on_non_optimal_position_during_prepare_phase = 0
+wait_on_non_optimal_position_during_prepare_phase = false
 priority_block_min_distance = 0.5
 priority_block_max_distance = 1.5
 priority_block_max_distance_to_defense_line = 0.25
@@ -302,17 +308,17 @@ attack_supporter_extra_distance_to_stay_from_sideline = 0.75
 restart_receiver_ball_dist = 2.5
 restart_shooter_ball_dist = 0.8
 equality_cost_threshold = 1.5
-previous_role_bonus_must_be_applied = 1
+previous_role_bonus_must_be_applied = true
 previous_role_end_pos_threshold = 1.5
 previous_role_bonus_end_pos_radius = 5
-use_pass_to_position_for_attack_support = 1
-interceptor_assign_use_ball_velocity = 1
+use_pass_to_position_for_attack_support = true
+interceptor_assign_use_ball_velocity = true
 interceptor_assign_min_velocity_for_calculate_interception_position = 0.5
-man_to_man_defense_during_normal_play = 1
-man_to_man_defense_during_setplay_against = 1
+man_to_man_defense_during_normal_play = true
+man_to_man_defense_during_setplay_against = true
 dist_to_goal_to_mark_opponent_as_goalie = 1.5
 setplay_against_dist_to_opponent = 1.5
-move_to_ball_left_field_position = 1
+move_to_ball_left_field_position = true
 auto_save_svg_period = 10
 svgOutputFileName = output_team/attacksupport_3.svg
 svgDefaultTargetColor  = red
@@ -320,10 +326,10 @@ svgBallColor = orange
 svgOriginalTargetColor = darkred
 svgTeamColor =  magenta
 svgOpponentColor =  = cyan
-svgDrawVelocity = 1
-svgDrawEdges = 0
-saveGridDataToFile = 1
-svgRobotPlanner = 0
+svgDrawVelocity = true
+svgDrawEdges = false
+saveGridDataToFile = true
+svgRobotPlanner = false
 preferredSetplayKicker = 1
 preferredSetplayReceiver = 2
 setplay_margin_to_penalty_area_side = 0.75
@@ -345,7 +351,7 @@ kickoff_against_fp3 x = 3.5
 kickoff_against_fp3 y = -0.4
 kickoff_against_fp4 x = -3.5
 kickoff_against_fp4 y = -0.4
-autoAssignGoalie = 0
+autoAssignGoalie = false
 
 	field:
 StandardLetterModel: 
@@ -366,8 +372,8 @@ StandardLetterModel:
 	O = 1
 	P = 0.5
 	Q = 3
-penalty_area_present = 1
-technical_team_area_present = 1
+penalty_area_present = true
+technical_team_area_present = true
 goal_width = 2
 goal_length = 0.5
 parking_area_width = 0.5
@@ -455,8 +461,8 @@ ball_radius = 0.11
   <tns:Ball x="5.00" y="0.50" velx="0.00" vely="0.00"/>
   <tns:Team id="1" tracking="1" x="5.200" y="0.250" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"   controlBall="true"   />
   <tns:Team id="2" tracking="2" x="4.000" y="-2.500" rz="0.000" velx="0.000" vely="0.000" velrz="0.000"    />
-  <tns:Opponent id="1" trackingId="1" x="4.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
-  <tns:Opponent id="2" trackingId="2" x="2.500" y="6.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="1" trackingId="11" x="4.000" y="1.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
+  <tns:Opponent id="2" trackingId="12" x="2.500" y="6.000" rz="0.000" velx="0.000" vely="0.000" velrz="0.000" />
   <tns:PickupPosition x="5.000" y="0.000" ts="0.100" valid="true" />
   <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_PLAYER">
     <tns:PassData valid="false" origin_x="0.000" origin_y="0.000" target_x="0.000" target_y="0.000" velocity="0.000" angle="0.000" ts="0.000" target_id="0"/>

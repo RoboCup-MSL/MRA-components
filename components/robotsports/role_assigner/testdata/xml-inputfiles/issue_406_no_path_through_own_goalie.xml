@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+  <tns:Description>issue #406: no path through own goalie</tns:Description>
+  <tns:Options svgOutputFileName="output_team/issue_406_no_path_through_own_goalie.svg" svgRobotPlanner="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-5.5" y="-8.5" velx="0" vely="0"/>
+  <tns:Team id="1" trackingId="1" x="1.5" y="-8.75"/>
+  <tns:Team id="2" trackingId="2" x="0.0" y="-8.5" isGoalie= "true"/>
+  <tns:Opponent trackingId="11" x="-6.5" y="-4.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
+</tns:Situation>

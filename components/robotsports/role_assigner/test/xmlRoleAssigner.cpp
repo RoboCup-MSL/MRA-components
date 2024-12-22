@@ -1067,6 +1067,23 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
         pass_data = {};
     }
 
+    auto base_input = input_filename.substr(0, input_filename.length() - 4);
+    auto last_slash_pos = base_input.rfind('/');
+    if (last_slash_pos != std::string::npos) {
+        base_input = base_input.substr(last_slash_pos + 1);
+    }
+    auto base_output = orginal_svgOutputFileName.substr(0, orginal_svgOutputFileName.length() - 4);
+    last_slash_pos = base_output.rfind('/');
+    if (last_slash_pos != std::string::npos) {
+        base_output = base_output.substr(last_slash_pos + 1);
+    }
+    if (base_output != base_input) {
+        cout << "FILENAME INCONSISTENT:" << endl;
+        cout << "input_filename: " << input_filename << endl;
+        cout << "svgOutputFileName: " << orginal_svgOutputFileName << endl;
+        exit(1);
+    }
+
     std::vector<RunData> run_results = {};
     string run_filename = parameters.svgOutputFileName;
     auto formation = getListWithRoles(gameState, ball_status,
@@ -1097,6 +1114,7 @@ void role_assigner_with_xml_input(const std::string& input_filename, const std::
     RoleAssignerParameters ra_parameters = parameters;
     RoleAssignerOutput ra_output = {};
     auto ra_state_org = ra_state;
+
 
     xml_assign_roles(ra_input, ra_state, ra_output, ra_parameters);
 

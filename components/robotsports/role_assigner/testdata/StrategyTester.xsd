@@ -16,7 +16,8 @@
             <element name="Ball" type="tns:BallType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>Structure contains Information about the ball.</documentation> </annotation> </element>
             <element name="PreviousBall" type="tns:PreviousBallType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>Structure contains Information about the previous ball.</documentation> </annotation> </element>
             <element name="Team" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="1"> <annotation> <documentation>own players</documentation> </annotation> </element>
-            <element name="Opponent" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0"> <annotation> <documentation>own players</documentation> </annotation> </element>
+            <element name="Opponent" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0"> <annotation> <documentation>opponents</documentation> </annotation> </element>
+            <element name="Obstacles" type="tns:PlayerType" maxOccurs="unbounded" minOccurs="0"> <annotation> <documentation>obstacles (no opponents)</documentation> </annotation> </element>
             <element name="PickupPosition" type="tns:PickupPositionType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>Pickup ball information.</documentation> </annotation> </element>
             <element name="SituationInfo" type="tns:SituationInfoType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>situation info, team related.</documentation> </annotation> </element>
             <element name="ParkingInfo" type="tns:ParkingInfoType" maxOccurs="1" minOccurs="0"> <annotation> <documentation>parking positions.</documentation> </annotation> </element>

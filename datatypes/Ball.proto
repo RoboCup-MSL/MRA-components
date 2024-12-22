@@ -4,11 +4,20 @@ package MRA.Datatypes;
 
 import "datatypes/Pose.proto";
 
+
+enum  BallPossession {
+    FREE = 0;
+    OWNED_BY_TEAM = 1;
+    OWNED_BY_OPPONENT = 2;
+}
+
+
 message Ball
 {
     // typically rx,ry,rz unused
     Pose position = 1;
     Pose velocity = 2;
+    BallPossession possesion = 3;
     // TODO: type/color? should functionally not matter, after it has been identified
 }
 

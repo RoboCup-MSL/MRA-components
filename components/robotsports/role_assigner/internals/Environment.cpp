@@ -201,15 +201,15 @@ bool Environment::isInOwnGoalArea(double x, double y)  const {
     bool inGoalArea = false;
     /* check if point is in the goal */
     double field_length = getFieldLength();
-    const double m_minimum_distance_to_goal_area = 0.25; // TODO make parameter
-    if ((y <= -(field_length/2)) && (y >= -(field_length/2) - (getGoalLength() + m_minimum_distance_to_goal_area)) &&
-        (fabs(x) <= (getGoalWidth()/2 + m_minimum_distance_to_goal_area))) {
+    double minimum_distance_to_goal_area = m_env_params.minimum_distance_to_goal_area;
+    if ((y <= -(field_length/2)) && (y >= -(field_length/2) - (getGoalLength() + minimum_distance_to_goal_area)) &&
+        (fabs(x) <= (getGoalWidth()/2 + minimum_distance_to_goal_area))) {
         inGoalArea = true;
     }
     /* check if point is in the goal-area */
-    else if ((y <= -(field_length/2) + getGoalAreaLength() + m_minimum_distance_to_goal_area) &&
+    else if ((y <= -(field_length/2) + getGoalAreaLength() + minimum_distance_to_goal_area) &&
              (y >= -(field_length/2)) &&
-                (fabs(x) <= (getGoalAreaWidth()/2 + m_minimum_distance_to_goal_area))) {
+                (fabs(x) <= (getGoalAreaWidth()/2 + minimum_distance_to_goal_area))) {
         inGoalArea = true;
     }
     return inGoalArea;
@@ -283,6 +283,7 @@ Environment FillDefaultEnvironment() {
     environment_params.parking_distance_to_line = 0.5;
     environment_params.parking_area_width =  0.5;
     environment_params.parking_area_length = (NRPLAYERS-1)*environment_params.parking_distance_between_robots + environment_params.robot_size;
+    environment_params.minimum_distance_to_goal_area = 0.25; 
 
     return Environment(environment_params);
 }

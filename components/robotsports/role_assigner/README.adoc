@@ -6,19 +6,16 @@ Documentation:
 REMAINING WORK (TODO list) - to create first version:
 ==================================================== 
 
-* Clean up interfaces
-** document inputs and outputs properly
 * updated based on known issues in original code
-** filter objects to defined: only inside the playing field (including goal) or (max X from ball)
+** no opponent obstacles: add test-case, fill in data via xml
 ** apply additional cost of edges outside the playing field (scaled with distance to outerlines of the playing field)
 ** fix overshoot in graphs
 ** restructure: split role assignment and calculate rough path (optional)
 * Bazel support
-* remove TODOs
-* Create generic types / library functions (candidates):
-** Environment
-** MathUtils
 * Review
+** discuss interfaces
+** discuss Environment as generic library ?
+** discuss MathUtils  as generic library ?
 
 
 Future development:

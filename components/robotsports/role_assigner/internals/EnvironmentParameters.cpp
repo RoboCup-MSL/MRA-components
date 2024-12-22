@@ -33,5 +33,6 @@ std::string MRA::EnvironmentParameters::toString() const {
     buffer << "parking_distance_to_line = " << this->parking_distance_to_line << std::endl;
     buffer << "robot_size = " << this->robot_size << std::endl;;
     buffer << "ball_radius = " << this->ball_radius << std::endl;
+    buffer << "minimum_distance_to_goal_area = " << this->minimum_distance_to_goal_area << std::endl;
     return buffer.str();
 }

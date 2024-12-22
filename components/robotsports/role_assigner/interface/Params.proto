@@ -38,6 +38,8 @@ message Environment_Parameters {
     double parking_distance_to_line = 9;  // [m] distance to side line when parking : 0 is on the line, negative is outside playing field
     double robot_size = 10; // [m] max robot size as defined in MSL rules
     double ball_radius = 11; // [m] radius of the ball as defined in the MSL rules
+    double minimum_distance_to_goal_area = 12; // [m] distance to goal-area to consider as in goal-area
+
 };
 
 message Params
@@ -248,10 +250,10 @@ message Params
      */
     bool svgRobotPlanner = 76;
 
-    // TODO
+    // id of the preferred player for kicking during setplay.  Avoid assign to player which has trouble to kick the ball.
     int32 preferredSetplayKicker = 77;
 
-    // TODO
+    // id of the preferred player for receiving during setplay.  Avoid assign to player which has trouble to receive the ball.
     int32 preferredSetplayReceiver = 78;
 
     // min distance for setplay receiver to side of penalty area
@@ -263,16 +265,14 @@ message Params
     // minimum ball velocity needed to calculate interception position for interceptor role assignment
     double interceptor_assign_min_velocity_for_calculate_interception_position = 81;
 
-    // TODO
+    // when True the goalie role will be assigned to a field player if there is not player of type: goalie present
     bool autoAssignGoalie = 83;
 
-    // TODO
+    // minimum distance to make a lob shot (shoot over opponent)
     double min_y_for_lob_shot = 85;
-
-    // TODO
     double outsideFieldMargin = 86;
 
-    // TODO
+    // coordinates of the fixed kick off position fors the field players
     double kickoff_fp1_x = 87;
     double kickoff_fp1_y = 88;
     double kickoff_fp2_x = 89;
@@ -282,7 +282,7 @@ message Params
     double kickoff_fp4_x = 93;
     double kickoff_fp4_y = 94;
 
-    // TODO
+    // coordinates of the fixed kick off against positions for the field players
     double kickoff_against_fp1_x = 95;
     double kickoff_against_fp1_y = 96;
     double kickoff_against_fp2_x = 97;

@@ -114,6 +114,7 @@
         "parkingDistanceBetweenRobots":1,
         "parkingDistanceToLine":-0.25,
         "robotSize":0.52,
-        "ballRadius":0.11
+        "ballRadius":0.11,
+        "minimum_distance_to_goal_area": 0.25
     }
 }

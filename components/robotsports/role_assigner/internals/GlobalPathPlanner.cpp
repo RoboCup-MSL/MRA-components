@@ -67,8 +67,6 @@ double distanceIntegral(const MRA::Geometry::Point& c, const MRA::Geometry::Poin
 }
 
 
-static int svgId = -1;
-
 /**
  * Constructs a visibility graph
  *
@@ -87,7 +85,7 @@ GlobalPathPlanner::GlobalPathPlanner(const Environment& rEnvironment)  :
     m_target(std::vector<Vertex *>()),
     m_vertices(std::vector<Vertex *>()),
     m_teammates(std::vector<MRA::Geometry::Position>()),
-    m_opponents(std::vector<MRA::Geometry::Position>()),
+    m_obstacles(std::vector<MRA::Geometry::Position>()),
     m_approachVertices(std::vector<Vertex*>()),
     m_addPoints(std::vector<Vertex*>()),
     m_options(RoleAssignerParameters()),
@@ -131,6 +129,7 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
                                     const RoleAssignerBall& ball,
                                     const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                                     const std::vector<RoleAssignerOpponent>& opponents,
+                                    const std::vector<RoleAssignerOpponent>& no_opponent_obstacles,
         const std::vector<MRA::Vertex>& targetPos,
         planner_target_e targetFunction,
         bool ballIsObstacleAndValid,
@@ -177,7 +176,11 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
         }
         for (auto opponent: opponents) {
             addObstacle(opponent.position, false, stayInPlayingField);
-            m_opponents.push_back(opponent.position);
+            m_obstacles.push_back(opponent.position);
+        }
+        for (auto no_opponent_obstacle: no_opponent_obstacles) {
+            addObstacle(no_opponent_obstacle.position, false, stayInPlayingField);
+            m_obstacles.push_back(no_opponent_obstacle.position);
         }
         // add team as obstacles, except your self
         for (auto teammate: teammates) {
@@ -311,29 +314,30 @@ vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& 
     }
     std::reverse(path2.begin(), path2.end());
 
-    if (m_options.svgRobotPlanner) {
-        // Save svgRobotData
-        svgId++;
-        string org_svgOutputFileName = m_options.svgOutputFileName;
-        char buffer[250];
-        sprintf(buffer, "_robotplanner_%02d.svg", svgId);
-        string filename = m_options.svgOutputFileName;
-        if (filename.size() > 4) {
-            filename.replace(filename.end()-4,filename.end(), buffer);
-        }
-        m_options.svgOutputFileName = filename;
-//        save_graph_as_svg(role_assigner_data, path2);
-        m_options.svgOutputFileName = org_svgOutputFileName; // restore svg name
-    }
+//     if (m_options.svgRobotPlanner) {
+//         // Save svgRobotData
+//         static int svgId = -1;
+//         svgId++;
+//         string org_svgOutputFileName = m_options.svgOutputFileName;
+//         char buffer[250];
+//         sprintf(buffer, "_robotplanner_%02d.svg", svgId);
+//         string filename = m_options.svgOutputFileName;
+//         if (filename.size() > 4) {
+//             filename.replace(filename.end()-4,filename.end(), buffer);
+//         }
+//         m_options.svgOutputFileName = filename;
+// //        save_graph_as_svg(role_assigner_data, path2);
+//         m_options.svgOutputFileName = org_svgOutputFileName; // restore svg name
+//     }
     return path2;
 }
 
-void GlobalPathPlanner::addObstacle(const MRA::Geometry::Position& opponent, bool skipFirstRadius, bool stayInPlayingField) {
-    MRA::Geometry::Position v(opponent);
+void GlobalPathPlanner::addObstacle(const MRA::Geometry::Position& obstacle, bool skipFirstRadius, bool stayInPlayingField) {
+    MRA::Geometry::Position v(obstacle);
     double x = v.x;
     double y = v.y;
 
-    // Opponents that are far from any reasonable path from start to
+    // Obstacles that are far from any reasonable path from start to
     // target are not added.
     if (nearPath(v)) {
         if (!skipFirstRadius) {
@@ -356,7 +360,7 @@ void GlobalPathPlanner::addObstacle(const MRA::Geometry::Position& opponent, boo
     }
     // TODO: prevent a path from going through the goal, or have
     // another process guard such a route?
-    m_opponents.push_back(v);
+    m_obstacles.push_back(v);
 }
 
 /**
@@ -552,7 +556,7 @@ double GlobalPathPlanner::ownVelocityPenalty(Vertex* v) {
  */
 double GlobalPathPlanner::barrierCosts(Vertex* v1, Vertex* v2) {
     double safetyCost = 0.0;
-    for (auto barrier : m_opponents) {
+    for (auto barrier : m_obstacles) {
         double cost = distanceIntegral(barrier, v1->m_coordinate, v2->m_coordinate);
         safetyCost += cost;
         if (not std::isfinite(safetyCost)) {

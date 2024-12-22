@@ -38,7 +38,7 @@ private:
     std::vector<Vertex *> m_target;
     std::vector<Vertex *> m_vertices;
     std::vector<MRA::Geometry::Position> m_teammates;
-    std::vector<MRA::Geometry::Position> m_opponents;
+    std::vector<MRA::Geometry::Position> m_obstacles;
     std::vector<Vertex* > m_approachVertices;
     std::vector<Vertex* > m_addPoints;
     RoleAssignerParameters m_options;
@@ -70,6 +70,7 @@ public:
                      const RoleAssignerBall& ball,
                      const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                      const std::vector<RoleAssignerOpponent>& opponents,
+                     const std::vector<RoleAssignerOpponent>& no_opponent_obstacles,
                      const std::vector<MRA::Vertex>& targetPos,
                      planner_target_e targetFunction,
                      bool ballIsObstacleAndValid,
@@ -97,7 +98,7 @@ private:
 
     bool equalToTarget(const Vertex* v);
 
-    void addObstacle(const MRA::Geometry::Position& opponent, bool skipFirstRadius, bool stayInPlayingField); // TODO rename to moving obstacle
+    void addObstacle(const MRA::Geometry::Position& obstacle, bool skipFirstRadius, bool stayInPlayingField); 
 
     bool nearPath(const MRA::Geometry::Position& v);
 

@@ -52,7 +52,6 @@ message Assignment {
     PathPurpose purpose = 7;  // purpose of path (intension how to execute the path
     DefendInfo defend_info = 8; // object to defend, this field can be absent
     bool is_pass_desitination = 9; // is player the destination of a pass
-    // GameState gamestate;   TODO: discuss game-state can be extracted from the input or added to ensure gamestate and intended position are connected.
 };
 
 message Output

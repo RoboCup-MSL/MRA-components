@@ -92,18 +92,6 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
 
     role_assigner_data.teamFormation = role_assigner_data.formation;// getListWithRoles(role_assigner_data);
 
-    // printAssignInputs(role_assigner_data);  // for debug purposes
-    role_assigner_data.original_opponents = role_assigner_data.opponents;
-    role_assigner_data.opponents = {};
-    for (unsigned idx = 0; idx < role_assigner_data.original_opponents.size(); idx++) {
-        MRA::Geometry::Point opponent_pos = role_assigner_data.original_opponents[idx].position;
-        bool behind_own_backline = (fabs(opponent_pos.x) < role_assigner_data.environment.getMaxFieldX()-1)  // 1 meter from side
-                        and opponent_pos.y < -role_assigner_data.environment.getMaxFieldY(); // behind backline
-        if (role_assigner_data.environment.isInReachableField(opponent_pos) and not behind_own_backline) {
-            role_assigner_data.opponents.push_back(role_assigner_data.original_opponents[idx]);
-        }
-    }
-
     std::vector<RoleAssignerResult> player_paths = {};
     if (role_assigner_data.gamestate != game_state_e::NONE) {
         // printAssignInputs(gamestate, ball, Team, Opponents, parameters,  parking_positions, ball_pickup_position, passIsRequired, pass_data);
@@ -376,7 +364,7 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     targetPos.push_back (Vertex (r_role_assigner_data.team_admin[idx].result.target, 0));
     visibilityGraph.createGraph (r_role_assigner_data.team[idx].position, r_role_assigner_data.team[idx].velocity, r_role_assigner_data.ball,
-                                 myTeam, r_role_assigner_data.opponents,
+                                 myTeam, r_role_assigner_data.opponents,  r_role_assigner_data.no_opponent_obstacles,
                                  targetPos,r_role_assigner_data.team_admin[idx].result.planner_target,
                                  r_role_assigner_data.ballIsObstacle,
                                  avoidBallPath, stay_in_playing_field, BallTargetPos);
@@ -855,7 +843,7 @@ void RoleAssigner::assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_ass
                             role_assigner_data.defend_info);
                     }
                 }
-                if (role_assigner_data.team[idx].time_in_opponent_penalty_area > TIME_TOO_LONG_IN_PENALTY_AREA_THRESHOLD) { // TODO
+                if (role_assigner_data.team[idx].time_in_opponent_penalty_area > TIME_TOO_LONG_IN_PENALTY_AREA_THRESHOLD) { 
                     // player not assigned and too long in penalty area
                     MRA::Geometry::Point pos = role_assigner_data.team[idx].position;
                     if (role_assigner_data.environment.isInOpponentPenaltyArea(pos.x, pos.y)) {
@@ -1013,7 +1001,8 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         vector<RoleAssignerRobot> myTeam = getTeamMates(role_assigner_data, interceptorIdx, false);
         bool stay_in_playing_field = stayInPlayingField (role_assigner_data.gamestate);
         visibilityGraph.createGraph(role_assigner_data.team[interceptorIdx].position,
-                                    role_assigner_data.team[interceptorIdx].velocity, role_assigner_data.ball, myTeam, role_assigner_data.opponents,
+                                    role_assigner_data.team[interceptorIdx].velocity, role_assigner_data.ball, myTeam, 
+                                    role_assigner_data.opponents, role_assigner_data.no_opponent_obstacles,
                 targetPos, planner_target_e::GOTO_BALL, role_assigner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
         path = visibilityGraph.getShortestPath(role_assigner_data);
     } else {
@@ -1040,7 +1029,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.environment);
         visibilityGraph.setOptions(role_assigner_data.parameters);
         visibilityGraph.createGraph(role_assigner_data.team[interceptorIdx].position, role_assigner_data.team[interceptorIdx].velocity,
-                                    role_assigner_data.ball, myTeam, role_assigner_data.opponents,
+                                    role_assigner_data.ball, myTeam, role_assigner_data.opponents, role_assigner_data.no_opponent_obstacles,
                 roleTargetPos, planner_target_e::GOTO_BALL, role_assigner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
         path = visibilityGraph.getShortestPath(role_assigner_data);
     }

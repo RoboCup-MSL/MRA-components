@@ -145,8 +145,9 @@ public:
     std::vector<RoleAssignerAdminTeam> team_admin = {};
     std::vector<RoleAssignerOpponent> opponents = {};
     std::vector<RoleAssignerAdminOpponent> opponents_admin  = {};
-    std::vector<RoleAssignerOpponent> original_opponents  = {};
     int nr_players_assigned = 0;
+
+    std::vector<RoleAssignerOpponent> no_opponent_obstacles = {};
 
     unsigned this_player_idx = 0; // index of this robot: Team will be sorted on RobotId.
     unsigned this_player_robotId = 0; // robotId of this robot: Team will be sorted on RobotId.

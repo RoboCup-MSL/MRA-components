@@ -23,7 +23,7 @@ using namespace MRA;
 
 std::string RoleAssignerInput::toString() const {
     std::stringstream buffer;
-    buffer << std::fixed << std::setprecision(2)
+    buffer << std::fixed << std::setprecision(2) <<  std::boolalpha
            << "gamestate: " << GameStateAsString(this->gamestate) << std::endl;
     buffer << "ball: " << this->ball.toString(true) << std::endl;
     buffer << "formation: " << endl;
@@ -58,7 +58,7 @@ std::string RoleAssignerInput::toString() const {
     if (this->parking_positions.size() == 0) {
         buffer << "\t<NONE>" << endl;
     }
-    buffer << "ball_pickup_position: - valid " <<  this->ball_pickup_position.valid << endl;
+    buffer << "ball_pickup_position: - valid " << this->ball_pickup_position.valid << endl;
     if (this->ball_pickup_position.valid) {
         buffer << "\tpickup ball x: "  <<  this->ball_pickup_position.x << endl;
         buffer << "\tpickup ball y: "  <<  this->ball_pickup_position.y << endl;
@@ -86,22 +86,22 @@ std::string RoleAssignerInput::toString() const {
 
 std::string RoleAssignerState::toString() const {
     std::stringstream buffer;
-    buffer << "\tprevious_ball = " << this->previous_ball.present << endl;
+    buffer <<  std::boolalpha << "\tprevious_ball: present = " << this->previous_ball.present << endl;
     if (this->previous_ball.present) {
         buffer << " x= " << this->previous_ball.x << " y: " << this->previous_ball.y;
     }
     buffer << endl;
     for (auto idx = 0u; idx < previous_results.size(); idx++) {
         auto prev_res = this->previous_results[idx];
-        buffer << "\t\t\tprev result [" << idx << "]: " << prev_res.present;
+        buffer << "\tprev result [" << idx << "]: present = " << prev_res.present;
         if (prev_res.present)
         {
-            buffer << " robotId: " << prev_res.robotId
-                   << " role: " << RoleAsString(prev_res.role)
-                   << " ts: " << prev_res.ts << endl
-                   << " end-pos\n\tx: " << prev_res.end_position.x  << " y:  " << prev_res.end_position.y 
-                   << " cost: " << prev_res.end_position.cost  
-                   << " target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)) 
+            buffer << "\t robotId: " << prev_res.robotId
+                   << "\t role: " << RoleAsString(prev_res.role)
+                   << "\t ts: " << prev_res.ts << endl
+                   << "\t end-pos\n\tx: " << prev_res.end_position.x  << " y:  " << prev_res.end_position.y 
+                   << "\t cost: " << prev_res.end_position.cost  
+                   << "\t target: " << PlannerTargetAsString(static_cast<planner_target_e>(prev_res.end_position.target)) 
                    << std::endl;
         }
         buffer << "\n";
@@ -113,13 +113,13 @@ std::string RoleAssignerState::toString() const {
 std::string RoleAssignerBall::toString(bool print_complete) const {
     std::stringstream buffer;
     if (not print_complete) {
-    buffer << std::fixed << std::setprecision(2)
+    buffer << std::fixed << std::setprecision(2) <<  std::boolalpha
             << " x: " << this->position.x
             << " y: " << this->position.y;
     }
     else {
 
-        buffer << std::fixed << std::setprecision(2)
+        buffer << std::fixed << std::setprecision(2) <<  std::boolalpha
                << " status: " << ballStatusAsString(this->status) 
                << " position: " << this->position.toString() 
                << " velocity: " << this->velocity.toString() 
@@ -131,9 +131,11 @@ std::string RoleAssignerBall::toString(bool print_complete) const {
 
 std::string RoleAssignerOutput::toString() const {
     std::stringstream buffer;
-    buffer << "paths: " << this->player_paths.size() << std::endl;
+    buffer <<  std::boolalpha << "paths: " << this->player_paths.size() << std::endl;
     for (auto idx = 0u; idx < this->player_paths.size(); idx++) {
-        buffer << "[" << idx << "] = robotId:" << player_paths[idx].robotId << endl;
+        buffer << std::endl;
+        buffer << "\t[" << idx << "] : " << std::endl;
+        buffer << "\trobotId: " << player_paths[idx].robotId << endl;
         buffer << "\tgamestate: " << GameStateAsString(this->player_paths[idx].gamestate) << endl;;
         buffer << "\trole: " << RoleAsString(this->player_paths[idx].role) << " (" << this->player_paths[idx].role << ")" << endl;
         buffer << "\trank: " << this->player_paths[idx].role_rank << endl;;
@@ -146,8 +148,9 @@ std::string RoleAssignerOutput::toString() const {
             buffer << "\t\tbetween_ball_and_defending_pos: " << this->player_paths[idx].defend_info.between_ball_and_defending_pos;
             buffer << "\t\tdist_from_defending_id: " << this->player_paths[idx].defend_info.dist_from_defending_id << endl;
         }
+        buffer << "\tPath:" << endl;
         for (unsigned long p_idx = 0; p_idx < this->player_paths[idx].path.size(); p_idx++) {
-            buffer << std::fixed << setprecision(2) << "Path[" << p_idx << "]: x: " << this->player_paths[idx].path[p_idx].x <<
+            buffer << std::fixed << setprecision(2) << "\t\t[" << p_idx << "]: x: " << this->player_paths[idx].path[p_idx].x <<
                     " y: " << this->player_paths[idx].path[p_idx].y <<
                     " cost: " << this->player_paths[idx].path[p_idx].cost;
             std::string targetString = PlannerTargetAsString(static_cast<planner_target_e>(this->player_paths[idx].path[p_idx].target));

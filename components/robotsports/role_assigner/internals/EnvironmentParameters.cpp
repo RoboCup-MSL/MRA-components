@@ -4,6 +4,7 @@
 
 std::string MRA::EnvironmentParameters::toString() const {
     std::stringstream buffer;
+    buffer << std::boolalpha;
     buffer << "StandardLetterModel: " << std::endl;
     buffer << "\tA = " << this->SLM.A << std::endl;
     buffer << "\tB = " << this->SLM.B << std::endl;

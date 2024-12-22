@@ -22,7 +22,8 @@ using namespace MRA;
 
 std::string RoleAssignerRobot::toString() const {
     std::stringstream buffer;
-    buffer << "robotId: " << this->robotId   << " player-type: " << PlayerTypeAsString(this->player_type) 
+    buffer << std::boolalpha
+           << "robotId: " << this->robotId   << " player-type: " << PlayerTypeAsString(this->player_type) 
            <<  " active: " << this->active << endl
            << "Pos: " << this->position.toString() 
            << " Vel: " << this->velocity.toString() << endl

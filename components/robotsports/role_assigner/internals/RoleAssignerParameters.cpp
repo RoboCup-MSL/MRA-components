@@ -140,6 +140,7 @@ std::string FormationAsString(team_formation_e formation) {
 
 std::string RoleAssignerParameters::toString() const  {
     std::stringstream buffer;
+    buffer << boolalpha;
     buffer << "calculateAllPaths = " << calculateAllPaths << std::endl;
     buffer << "minimumEdgeLength = " << minimumEdgeLength  << std::endl;
     buffer << "maximumEdgeLength = " << maximumEdgeLength  << std::endl;

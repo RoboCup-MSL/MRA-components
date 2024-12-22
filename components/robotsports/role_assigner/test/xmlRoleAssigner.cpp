@@ -484,6 +484,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         for (auto idx= 0; idx < proto_output.assignments_size(); idx++) {
         	auto assignement = proto_output.assignments(idx);
         	RoleAssignerResult result = {};
+        	result.robotId = assignement.robotid();
         	result.role = static_cast<MRA::role_e>(assignement.role());
         	result.role_rank = assignement.role_rank();
         	result.gamestate = ra_input.gamestate;

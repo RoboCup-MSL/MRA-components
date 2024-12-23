@@ -41,7 +41,7 @@ public:
      */
     std::vector<path_piece_t> planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
                                           const std::vector<RoleAssignerRobot>& r_teammates, const RoleAssignerData& r_roleAssignerData,
-                                          const std::vector<MRA::Vertex>& r_targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+                                          const MRA::Vertex& r_targetPos, planner_target_e targetFunction, bool ballIsObstacle,
                                           double maxSpeed, int nrIterations, bool stayInPlayingField);
 
 private:

@@ -362,10 +362,10 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     bool stay_in_playing_field = stayInPlayingField (r_role_assigner_data.gamestate);
 
-    targetPos.push_back (Vertex (r_role_assigner_data.team_admin[idx].result.target, 0));
+    auto target = Vertex (r_role_assigner_data.team_admin[idx].result.target, 0);
     visibilityGraph.createGraph (r_role_assigner_data.team[idx].position, r_role_assigner_data.team[idx].velocity, r_role_assigner_data.ball,
                                  myTeam, r_role_assigner_data.opponents,  r_role_assigner_data.no_opponent_obstacles,
-                                 targetPos,r_role_assigner_data.team_admin[idx].result.planner_target,
+                                 target,r_role_assigner_data.team_admin[idx].result.planner_target,
                                  r_role_assigner_data.ballIsObstacle,
                                  avoidBallPath, stay_in_playing_field, BallTargetPos);
 
@@ -984,8 +984,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         role_assigner_data.parameters.addBallApproachVertices = false;
     }
 
-    vector<MRA::Vertex> targetPos = vector<MRA::Vertex>();
-    targetPos.push_back(Vertex(role_assigner_data.ball.position, 0));
+    MRA::Vertex targetPos = Vertex(role_assigner_data.ball.position, 0);
     std::vector<path_piece_t> path;
 
     vector<RoleAssignerRobot> myTeam = getTeamMates(role_assigner_data, interceptorIdx, true);
@@ -1021,8 +1020,7 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
                                                             role_assigner_data.team_admin[interceptorIdx].result.role,
                                                             original_role_position, role_assigner_data.environment);
 
-        vector<MRA::Vertex> roleTargetPos = vector<MRA::Vertex>();
-        roleTargetPos.push_back(Vertex(role_position, 0));
+        MRA::Vertex roleTargetPos = Vertex(role_position, 0);
 
         bool avoidBallPath = false; // intercept should never avoid a passing ball.
         MRA::Geometry::Point BallTargetPos;

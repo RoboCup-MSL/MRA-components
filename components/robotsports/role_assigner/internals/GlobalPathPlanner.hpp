@@ -35,7 +35,7 @@ private:
     Environment m_Environment;
     Vertex * m_start;
     MRA::Geometry::Position m_startVelocity;
-    std::vector<Vertex *> m_target;
+    Vertex * m_target;
     std::vector<Vertex *> m_vertices;
     std::vector<MRA::Geometry::Position> m_teammates;
     std::vector<MRA::Geometry::Position> m_obstacles;
@@ -71,7 +71,7 @@ public:
                      const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                      const std::vector<RoleAssignerOpponent>& opponents,
                      const std::vector<RoleAssignerOpponent>& no_opponent_obstacles,
-                     const std::vector<MRA::Vertex>& targetPos,
+                     const MRA::Vertex& targetPos,
                      planner_target_e targetFunction,
                      bool ballIsObstacleAndValid,
                      bool avoidBallPath,

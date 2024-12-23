@@ -82,7 +82,7 @@ GlobalPathPlanner::GlobalPathPlanner(const Environment& rEnvironment)  :
     m_Environment(rEnvironment),
     m_start(0),
     m_startVelocity(0),
-    m_target(std::vector<Vertex *>()),
+    m_target(nullptr),
     m_vertices(std::vector<Vertex *>()),
     m_teammates(std::vector<MRA::Geometry::Position>()),
     m_obstacles(std::vector<MRA::Geometry::Position>()),
@@ -99,10 +99,9 @@ GlobalPathPlanner::GlobalPathPlanner(const Environment& rEnvironment)  :
 GlobalPathPlanner::~GlobalPathPlanner() {
     delete m_start;
     clearApproachVertices();
-    for(std::vector<Vertex *>::size_type idx = 0; idx != m_target.size(); idx++) {
-        delete m_target[idx];
+    if (m_target != nullptr) {
+        delete m_target;
     }
-    m_target.clear();
     for(std::vector<Vertex *>::size_type idx = 0; idx != m_addPoints.size(); idx++) {
         delete m_addPoints[idx];
     }
@@ -130,7 +129,7 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
                                     const std::vector<RoleAssignerRobot>& teammates, /* filtered based on robot to calculate the graph for */
                                     const std::vector<RoleAssignerOpponent>& opponents,
                                     const std::vector<RoleAssignerOpponent>& no_opponent_obstacles,
-        const std::vector<MRA::Vertex>& targetPos,
+        const MRA::Vertex& targetPos,
         planner_target_e targetFunction,
         bool ballIsObstacleAndValid,
         bool avoidBallPath,
@@ -144,11 +143,8 @@ void GlobalPathPlanner::createGraph(const MRA::Geometry::Position& start_pose, c
     m_startVelocity = start_vel;
     m_vertices.push_back(m_start);
     m_targetFunction = targetFunction;
-    for(std::vector<Vertex>::size_type pos_idx = 0; pos_idx != targetPos.size(); pos_idx++) {
-        Vertex* pTarget = new Vertex(targetPos[pos_idx]);
-        m_target.push_back(pTarget);
-        m_vertices.push_back(pTarget);
-    }
+    m_target = new Vertex(targetPos);
+    m_vertices.push_back(m_target);
 
     m_maxFieldX = m_Environment.getMaxFieldX();
     m_maxFieldY = m_Environment.getMaxFieldY();
@@ -212,17 +208,15 @@ vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& 
     std::list<MRA::Vertex*> sortedList = std::list<MRA::Vertex*>();
     sortedList.push_back(m_start);
     // check if start is not on target location
-    for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
-        if (m_start->equals(*(m_target[idx]))) {
-            vector < path_piece_t> p = vector<path_piece_t>();
-            path_piece_t piece;
-            piece.x = m_target[idx]->m_coordinate.x;
-            piece.y = m_target[idx]->m_coordinate.y;
-            piece.cost = 0; // no costs
-            piece.target = static_cast<long>(m_targetFunction);
-            p.push_back(piece);
-            return p; // shortest path found
-        }
+    if (m_start->equals(*(m_target))) {
+        vector < path_piece_t> p = vector<path_piece_t>();
+        path_piece_t piece;
+        piece.x = m_target->m_coordinate.x;
+        piece.y = m_target->m_coordinate.y;
+        piece.cost = 0; // no costs
+        piece.target = static_cast<long>(m_targetFunction);
+        p.push_back(piece);
+        return p; // shortest path found
     }
 
     // check if start is less than minimum threshold from any target
@@ -230,13 +224,11 @@ vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& 
     double nearTargetThreshold = 0.01; // 1 [mm]: if start is near any target: cost is only distance to target
     double nearTargetCost = std::numeric_limits<double>::infinity();
     MRA::Geometry::Point nearestTarget;
-    for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
-        double distStartToTarget = m_start->m_coordinate.distanceTo(m_target[idx]->m_coordinate);
-        if  (distStartToTarget <  nearTargetThreshold) {
-            nearTarget = true;
-            if (distStartToTarget < nearTargetCost) {
-                nearestTarget = m_target[idx]->m_coordinate;
-            }
+    double distStartToTarget = m_start->m_coordinate.distanceTo(m_target->m_coordinate);
+    if  (distStartToTarget <  nearTargetThreshold) {
+        nearTarget = true;
+        if (distStartToTarget < nearTargetCost) {
+            nearestTarget = m_target->m_coordinate;
         }
     }
     if (nearTarget) {
@@ -253,9 +245,7 @@ vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& 
 
 
     std::vector<Vertex *> unreached_target = std::vector<Vertex *>();
-    for(std::vector<Vertex*>::size_type idx = 0; idx != m_target.size(); idx++) {
-        unreached_target.push_back(m_target[idx]);
-    }
+    unreached_target.push_back(m_target);
 
     while (!sortedList.empty()) {
         Vertex* u = sortedList.front();
@@ -285,32 +275,19 @@ vector<path_piece_t> GlobalPathPlanner::getShortestPath(const RoleAssignerData& 
         }
     }
 
-    bool bestTargetFound = false;
-    std::vector<Vertex>::size_type bestTarget_idx = 0;
-    double bestTargetMinDist = std::numeric_limits<double>::infinity();
-    for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-        if (m_target[idx]->totalCosts() <= bestTargetMinDist) {
-            bestTargetMinDist = m_target[idx]->totalCosts();
-            bestTarget_idx = idx;
-            bestTargetFound = true;
-        }
-    }
     // only 1 target has a path.
-    std::vector<Vertex>::size_type idx  = bestTarget_idx;
     vector < path_piece_t> path2 = vector<path_piece_t>();
 
-    if (bestTargetFound) {
-        int piece_nr = 0;
-        for (Vertex* vertex = m_target[idx]; vertex != 0 && piece_nr < 20; vertex = vertex->m_pPrevious) {
-            piece_nr++;
-            path_piece_t piece;
-            piece.x = vertex->m_coordinate.x;
-            piece.y = vertex->m_coordinate.y;
-            piece.cost = vertex->m_minDistance;
-            piece.target = static_cast<long>(m_targetFunction);
+    int piece_nr = 0;
+    for (Vertex* vertex = m_target; vertex != 0 && piece_nr < 20; vertex = vertex->m_pPrevious) {
+        piece_nr++;
+        path_piece_t piece;
+        piece.x = vertex->m_coordinate.x;
+        piece.y = vertex->m_coordinate.y;
+        piece.cost = vertex->m_minDistance;
+        piece.target = static_cast<long>(m_targetFunction);
 
-            path2.push_back(piece);
-        }
+        path2.push_back(piece);
     }
     std::reverse(path2.begin(), path2.end());
 
@@ -376,14 +353,12 @@ void GlobalPathPlanner::addObstacle(const MRA::Geometry::Position& obstacle, boo
 bool GlobalPathPlanner::nearPath(const MRA::Geometry::Position& v) {
     bool res = false;
 
-    if (!res)
-        for (std::vector<Vertex *>::iterator it = m_target.begin();
-                it != m_target.end() && !res; ++it) {
-            res = (((*it)->m_coordinate.x - v.x) * (m_start->m_coordinate.x - v.x)
-                    + ((*it)->m_coordinate.y - v.y) * (m_start->m_coordinate.y - v.y) <= 0
-                    || v.distanceTo((*it)->m_coordinate) < m_options.minimumDistanceToEndPoint ||
-                    v.distanceTo(m_start->m_coordinate) < m_options.minimumDistanceToEndPoint);
-        }
+    if (!res) {
+        res = ((m_target->m_coordinate.x - v.x) * (m_start->m_coordinate.x - v.x)
+               + (m_target->m_coordinate.y - v.y) * (m_start->m_coordinate.y - v.y) <= 0
+               || v.distanceTo(m_target->m_coordinate) < m_options.minimumDistanceToEndPoint ||
+               v.distanceTo(m_start->m_coordinate) < m_options.minimumDistanceToEndPoint);
+    }
     return res;
 }
 
@@ -495,13 +470,7 @@ void GlobalPathPlanner::addEdges(bool avoidBallPath, const MRA::Geometry::Point&
 
 /* is give vertex any target vertex ? */
 bool GlobalPathPlanner::equalToTarget(const Vertex* pV) {
-    bool res = false;
-    for(std::vector<Vertex>::size_type idx = 0; idx != m_target.size(); idx++) {
-        res = pV->equals(*(m_target[idx]));
-        if (res == true) {
-            break;
-        }
-    }
+    bool res = pV->equals(*(m_target));
     return res;
 }
 /**
@@ -609,27 +578,23 @@ void GlobalPathPlanner::addUniformVertices(bool stayInPlayingField) {
 void GlobalPathPlanner::addBallApproachVertices() {
     clearApproachVertices();
 
-    for (std::vector<Vertex*>::iterator it = m_target.begin();
-            it != m_target.end(); ++it) {
+    double x = m_target->m_coordinate.x;
+    double y = m_target->m_coordinate.y;
+    double distToTarget = m_target->m_coordinate.distanceTo(m_start->m_coordinate);
+    double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
+    double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
 
-        double x = (*it)->m_coordinate.x;
-        double y = (*it)->m_coordinate.y;
-        double distToTarget = (*it)->m_coordinate.distanceTo(m_start->m_coordinate);
-        double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
-        double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
-
-        if ((distToTarget > m_options.ballApproachVerticesRadius)
-                && ((fabs(x) > approachXLimit) || (fabs(y) > approachYLimit))) {
-            double angleOffset = (2 * M_PI) / m_options.ballApproachNumberOfVertices;
-            for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
-                double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
-                double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
-                if (m_Environment.isInReachableField(x1, y1)) {
-                    MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
-                    Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
-                    m_vertices.push_back(vertex);
-                    m_approachVertices.push_back(vertex);
-                }
+    if ((distToTarget > m_options.ballApproachVerticesRadius)
+            && ((fabs(x) > approachXLimit) || (fabs(y) > approachYLimit))) {
+        double angleOffset = (2 * M_PI) / m_options.ballApproachNumberOfVertices;
+        for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
+            double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
+            double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
+            if (m_Environment.isInReachableField(x1, y1)) {
+                MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
+                Vertex* vertex = new Vertex(point, point.distanceTo(m_target->m_coordinate));
+                m_vertices.push_back(vertex);
+                m_approachVertices.push_back(vertex);
             }
         }
     }
@@ -641,29 +606,25 @@ void GlobalPathPlanner::addBallApproachVertices() {
 void GlobalPathPlanner::addEnemyGoalApproachVertices() {
     clearApproachVertices();
 
-    for (std::vector<Vertex*>::iterator it = m_target.begin();
-            it != m_target.end(); ++it) {
+    double x = m_target->m_coordinate.x;
+    double y = m_target->m_coordinate.y;
+    double distToTarget = m_target->m_coordinate.distanceTo(m_start->m_coordinate);
+    double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
+    double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
 
-        double x = (*it)->m_coordinate.x;
-        double y = (*it)->m_coordinate.y;
-        double distToTarget = (*it)->m_coordinate.distanceTo(m_start->m_coordinate);
-        double approachXLimit = fabs(m_maxFieldX - m_options.distToapplyBallApproachVertices);
-        double approachYLimit = fabs(m_maxFieldY - m_options.distToapplyBallApproachVertices);
+    if ((distToTarget > m_options.ballApproachVerticesRadius)
+            && ((fabs(x) > approachXLimit) || (fabs(y) > approachYLimit))) {
+        double angleOffset = (2 * M_PI) / m_options.ballApproachNumberOfVertices;
+        for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
+            double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
+            double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
+            if (m_Environment.isInReachableField(x1, y1)) {
+                MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
 
-        if ((distToTarget > m_options.ballApproachVerticesRadius)
-                && ((fabs(x) > approachXLimit) || (fabs(y) > approachYLimit))) {
-            double angleOffset = (2 * M_PI) / m_options.ballApproachNumberOfVertices;
-            for (int i = 0; i < m_options.ballApproachNumberOfVertices; i++) {
-                double x1 = x + m_options.ballApproachVerticesRadius * cos(i * angleOffset);
-                double y1 = y + m_options.ballApproachVerticesRadius * sin(i * angleOffset);
-                if (m_Environment.isInReachableField(x1, y1)) {
-                    MRA::Geometry::Position point = MRA::Geometry::Position(x1, y1);
-
-                    //logger.info("Add point "+ i + " pos: " + point);
-                    Vertex* vertex = new Vertex(point, point.distanceTo((*it)->m_coordinate));
-                    m_vertices.push_back(vertex);
-                    m_approachVertices.push_back(vertex);
-                }
+                //logger.info("Add point "+ i + " pos: " + point);
+                Vertex* vertex = new Vertex(point, point.distanceTo(m_target->m_coordinate));
+                m_vertices.push_back(vertex);
+                m_approachVertices.push_back(vertex);
             }
         }
     }
@@ -697,11 +658,9 @@ void GlobalPathPlanner::addPoint(const MRA::Geometry::Position& point, bool stay
 
     double shortestDistanceToAnyTarget = std::numeric_limits<double>::infinity();
 
-    for (std::vector<Vertex *>::iterator it = m_target.begin(); it != m_target.end(); ++it) {
-        double dist = point.distanceTo((*it)->m_coordinate);
-        if (dist <= shortestDistanceToAnyTarget) {
-            dist = shortestDistanceToAnyTarget;
-        }
+    double dist = point.distanceTo(m_target->m_coordinate);
+    if (dist <= shortestDistanceToAnyTarget) {
+        dist = shortestDistanceToAnyTarget;
     }
     Vertex* vertex = new Vertex(point, shortestDistanceToAnyTarget);
     m_addPoints.push_back(vertex);

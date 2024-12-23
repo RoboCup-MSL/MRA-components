@@ -36,7 +36,7 @@ using namespace MRA;
  */
 std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry::Position& start_pose, const MRA::Geometry::Position& start_vel,
                                                    const std::vector<RoleAssignerRobot>& filtered_teammates, const RoleAssignerData& r_role_assigner_data,
-                                                   const std::vector<MRA::Vertex>& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
+                                                   const MRA::Vertex& targetPos, planner_target_e targetFunction, bool ballIsObstacle,
                                                    double maxSpeed, int nrIterations,  bool stayInPlayingField)
 {
     bool logDynamicPlanner = false;
@@ -69,11 +69,10 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
 
     int iteration = 1;
 
-    std::vector<MRA::Vertex> target_vect;
-    target_vect.push_back(Vertex(intercept_data.intercept_position, 0));
+    auto target = Vertex(intercept_data.intercept_position, 0);
     visibilityGraph.createGraph(start_pose, start_vel, r_role_assigner_data.ball, filtered_teammates, 
                                 r_role_assigner_data.opponents, r_role_assigner_data.no_opponent_obstacles,
-                                target_vect, targetFunction, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);
+                                target, targetFunction, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);
 
     std::vector<path_piece_t> path = visibilityGraph.getShortestPath(r_role_assigner_data);
 
@@ -105,13 +104,12 @@ std::vector<path_piece_t> GlobalPathDynamicPlanner::planPath(const MRA::Geometry
             newInterceptPosition.y = interceptPoint.y;
         }
 
-        target_vect.clear();
-        target_vect.push_back(Vertex(newInterceptPosition, 0));
+        target = Vertex(newInterceptPosition, 0);
         GlobalPathPlanner visibilityGraph2 = GlobalPathPlanner(r_role_assigner_data.environment); // create new visibility-graph to avoid dynamic memory issues
         visibilityGraph2.setOptions(r_role_assigner_data.parameters);
         visibilityGraph2.createGraph(start_pose, start_vel, r_role_assigner_data.ball, filtered_teammates, 
                                      r_role_assigner_data.opponents,  r_role_assigner_data.no_opponent_obstacles,
-                                     target_vect, targetFunction, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);
+                                     target, targetFunction, ballIsObstacle, avoidBallPath, stayInPlayingField, BallTargetPos);
         path = visibilityGraph2.getShortestPath(r_role_assigner_data);
         if (logDynamicPlanner) {
             MRA_LOG_INFO("New path of length: %d", path.size());

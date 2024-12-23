@@ -17,9 +17,9 @@
 #include <cstddef>
 #include <filesystem>
 
-#include "../internals/RoleAssigner.hpp"
-#include "../internals/RoleAssigner_types.hpp"
-#include "../internals/RoleAssignerResult.hpp"
+#include "RoleAssigner.hpp"
+#include "RoleAssigner_types.hpp"
+#include "RoleAssignerResult.hpp"
 #include "RobotsportsRobotStrategy.hpp"  // include robot strategy to get list of roles to assign
 #include "RobotsportsRoleAssigner.hpp"
 
@@ -28,9 +28,9 @@
 #include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
 
-#include "../internals/Environment.hpp"
-#include "../internals/RoleAssignerSvg.hpp"
-#include "../internals/RoleAssignerData.hpp"
+#include "Environment.hpp"
+#include "RoleAssignerSvg.hpp"
+#include "RoleAssignerData.hpp"
 
 using namespace MRA;
 using namespace std;

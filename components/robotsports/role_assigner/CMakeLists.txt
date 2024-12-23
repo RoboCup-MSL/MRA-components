@@ -1,6 +1,6 @@
 # this file was produced by MRA-codegen.py from template_CMakeLists.txt
 # it should NOT be modified by user
-set(STRATEGY_TESTER_XSD testdata/StrategyTester.xsd)
+set(STRATEGY_TESTER_XSD test/StrategyTester.xsd)
 set(STRATEGY_TESTER_H StrategyTester_generated.h)
 set(STRATEGY_TESTER_CPP StrategyTester_generated.cpp)
 

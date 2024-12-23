@@ -8,8 +8,8 @@ using namespace MRA;
 
 // custom includes, if any
 // ...
-#include "internals/RoleAssigner.hpp"
-#include "internals/RoleAssignerData.hpp"
+#include "RoleAssigner.hpp"
+#include "RoleAssignerData.hpp"
 
 // helper function for adding some seconds to a google timestamp
 google::protobuf::Timestamp timeFromDouble(google::protobuf::Timestamp const &t0, double dt)

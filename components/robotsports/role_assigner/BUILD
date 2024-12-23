@@ -38,6 +38,10 @@ cc_test(
         "test.cpp",
     ],
     data = glob(["testdata/*.json"]),
+    includes = [
+        ".", 
+        "./test"
+    ],
     deps = [
         "//base:testing_base",
         ":implementation",

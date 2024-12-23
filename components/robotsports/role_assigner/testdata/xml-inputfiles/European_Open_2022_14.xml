@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
   <tns:Description>throwin whe player can not take normal distance to ball due to smaller safer border around field (80 cm)</tns:Description>
   <tns:Options svgOutputFileName="output_team/European_Open_2022_14.svg"/>
   <tns:Field field_length="17.98" field_width="12.0" field_margin="0.8"

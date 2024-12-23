@@ -260,7 +260,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
     string new_save_name = save_name;
     new_save_name.replace(new_save_name.find(".svg"), new_save_name.length(), "_NEW.svg");
     fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-    fprintf(fp, "<tns:Situation xmlns:tns=\"http://www.robotsports.nl\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.robotsports.nl ../StrategyTester.xsd\">\n");
+    fprintf(fp, "<tns:Situation xmlns:tns=\"http://www.robotsports.nl\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.robotsports.nl../../test/StrategyTester.xsd\">\n");
     fprintf(fp, "<tns:Description>%s</tns:Description>\n", decription.c_str());
     fprintf(fp, "<tns:Options svgOutputFileName=\"%s_NEW\"\n", save_name.c_str());
     fprintf(fp, "   addBallApproachVertices=\"%s\"\n", boolToString(r_parameters.addBallApproachVertices).c_str());

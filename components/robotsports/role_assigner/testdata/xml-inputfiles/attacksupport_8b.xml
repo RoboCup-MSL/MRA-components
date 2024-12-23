@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../StrategyTester.xsd">
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
 <tns:Description>issue 102: plan attack supporters not close to eachother - robot 4 from replay</tns:Description>
 <tns:Options svgOutputFileName="./output_team/attacksupport_8b.svg"/>
   <tns:Field field_width="12.146" field_length="18.141" field_margin="1.00" goal_width="2.250" goal_length="0.500" goal_area_width="3.625" goal_area_length="0.945"

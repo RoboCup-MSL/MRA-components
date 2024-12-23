@@ -39,12 +39,15 @@ cc_test(
     ],
     data = glob(["testdata/*.json"]),
     includes = [
+        "./test",
         ".", 
-        "./test"
+        ":xmlRoleAssigner_lib",
+        ":StrategyTester_lib",
     ],
     deps = [
         "//base:testing_base",
         ":implementation",
+        "//components/robotsports/role_assigner/test:xmlRoleAssigner_lib",
         "@com_google_googletest//:gtest_main",
         "@nlohmann_json",
     ],

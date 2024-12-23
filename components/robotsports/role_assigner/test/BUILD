@@ -16,11 +16,18 @@ cc_library(
 
 cc_library(
     name = "xmlRoleAssigner_lib",
-    srcs = ["xmlRoleAssigner.cpp"],
-    hdrs = ["xmlRoleAssigner.hpp"],
+    srcs = [
+            "xmlRoleAssigner.cpp", 
+            "roleassigner_regression_checker.cpp"
+            ],
+    hdrs = [
+            "xmlRoleAssigner.hpp",
+            "roleassigner_regression_checker.hpp"
+            ],
+    visibility = ["//visibility:public"],
     includes = [
         ".",
-        "../internals"
+        ":StrategyTester_lib"
     ],
     deps = [
         "//components/robotsports/role_assigner:implementation",
@@ -34,7 +41,6 @@ cc_test(
     ],
     includes = [
         ".",
-        "../internals"
     ],
     deps = [
         ":StrategyTester_lib",

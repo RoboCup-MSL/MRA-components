@@ -7,8 +7,8 @@
 #include "gmock/gmock.h"
 #include "test_factory.hpp"
 using namespace ::testing;
-#include "test/xmlRoleAssigner.hpp"
-#include "test/roleassigner_regression_checker.hpp"
+#include "xmlRoleAssigner.hpp"
+#include "roleassigner_regression_checker.hpp"
 #include <string>
 #include <filesystem>
 

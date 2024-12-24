@@ -159,10 +159,49 @@ target_link_libraries(
     xerces-c
 )
 
+add_executable(
+  roleassigner_regressionsuite_test
+  test/roleassigner_regressionsuite_test.cpp
+    test/xmlRoleAssigner.cpp
+    test/roleassigner_regression_checker.cpp
+    ${STRATEGY_TESTER_CPP}
+)
+target_include_directories(roleassigner_regressionsuite_test  PRIVATE 
+    ${MRA_SOURCE_DIR}/components/robotsports/robot_strategy
+    ${MRA_SOURCE_DIR}/components/robotsports/role_assigner
+    ${MRA_SOURCE_DIR}/libraries/logging
+    ${MRA_SOURCE_DIR}/libraries/geometry
+    ${MRA_SOURCE_DIR}
+    ${MRA_SOURCE_DIR}/base
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/internals
+    ${CMAKE_CURRENT_SOURCE_DIR}/temp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test    
+    ${MRA_BINARY_DIR}
+)
+
+target_link_libraries(
+  roleassigner_regressionsuite_test
+    MRA-libraries 
+    MRA-components
+    nlohmann_json::nlohmann_json 
+    rt 
+    GTest::gtest_main 
+    gmock
+    xerces-c
+)
+
 # WORKING_DIRECTORY ${MRA_SOURCE_DIR}
 
 gtest_discover_tests(
-    robotsports_role_assigner_test
+  roleassigner_regressionsuite_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES ENVIRONMENT "MRA_LOGGER_CONTEXT=unittest"
+)
+
+gtest_discover_tests(
+  robotsports_role_assigner_test 
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTIES ENVIRONMENT "MRA_LOGGER_CONTEXT=unittest"
 )

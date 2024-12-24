@@ -4,6 +4,7 @@ cc_library(
         "Dynamics.cpp",
         "Edge.cpp",
         "Environment.cpp",
+        "EnvironmentParameters.cpp",
         "GlobalPathDynamicPlanner.cpp",
         "GlobalPathPlanner.cpp",
         "GridHeuristic.cpp",

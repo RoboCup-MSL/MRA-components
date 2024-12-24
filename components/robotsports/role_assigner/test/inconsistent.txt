@@ -1,0 +1,39 @@
+input_filename: ../testdata/xml-inputfiles/attacksupport_8a.xml
+svgOutputFileName: ./output_team/attack_support_8a.svg
+
+input_filename: ../testdata/xml-inputfiles/attacksupport_8b.xml
+svgOutputFileName: ./output_team/attack_support_8b.svg
+
+input_filename: ../testdata/xml-inputfiles/auto_assign_keeper_01.xml
+svgOutputFileName: output_team/auto_assing_keeper_01.svg
+
+input_filename: ../testdata/xml-inputfiles/auto_assign_keeper_02.xml
+svgOutputFileName: output_team/auto_assing_keeper_02.svg
+
+input_filename: ../testdata/xml-inputfiles/auto_assign_keeper_03.xml
+svgOutputFileName: output_team/auto_assing_keeper_03.svg
+
+input_filename: ../testdata/xml-inputfiles/auto_assign_keeper_04.xml
+svgOutputFileName: output_team/auto_assing_keeper_04.svg
+
+input_filename: ../testdata/xml-inputfiles/auto_assign_keeper_05.xml
+svgOutputFileName: output_team/auto_assing_keeper_05.svg
+
+input_filename: ../testdata/xml-inputfiles/begin_situation_1.xml
+svgOutputFileName: output_team/begin_position_1.svg
+
+input_filename: ../testdata/xml-inputfiles/corner_against_2.xml
+svgOutputFileName: output_team/corner_against_3.svg
+
+input_filename: ../testdata/xml-inputfiles/empty_kickoff_against.xml
+svgOutputFileName: output_team/empty_goalkick_against.svg
+
+input_filename: ../testdata/xml-inputfiles/interceptthread.xml
+svgOutputFileName: output_team/normal_attack_1.svg
+
+input_filename: ../testdata/xml-inputfiles/issue_62_sweeper_pos.xml
+svgOutputFileName: output_team/issue_62.svg
+
+input_filename: ../testdata/xml-inputfiles/no_opponent_kickoff_against.xml
+svgOutputFileName: output_team/no_opponent_goalkick_against.svg
+

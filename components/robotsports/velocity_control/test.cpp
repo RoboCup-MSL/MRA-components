@@ -1,11 +1,10 @@
 // this file was produced by MRA-codegen.py from template_test.cpp
 // with the intent of allowing user to add custom tests
 
-
 // Include testframework
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
 #include "test_factory.hpp"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 using namespace ::testing;
 
 // System under test:
@@ -13,8 +12,7 @@ using namespace ::testing;
 using namespace MRA;
 
 // Basic tick shall run OK and return error_value 0.
-TEST(RobotsportsVelocityControlTest, basicTick)
-{
+TEST(RobotsportsVelocityControlTest, basicTick) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
 
@@ -26,8 +24,7 @@ TEST(RobotsportsVelocityControlTest, basicTick)
 }
 
 // When robot is inactive, the robot shall STOP.
-TEST(RobotsportsVelocityControlTest, robotInactive)
-{
+TEST(RobotsportsVelocityControlTest, robotInactive) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -46,11 +43,8 @@ TEST(RobotsportsVelocityControlTest, robotInactive)
     EXPECT_EQ(output.velocity().rz(), 0.0);
 }
 
-
-
 // When no input is given, the robot shall STOP.
-TEST(RobotsportsVelocityControlTest, nominalOutput)
-{
+TEST(RobotsportsVelocityControlTest, nominalOutput) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -68,8 +62,7 @@ TEST(RobotsportsVelocityControlTest, nominalOutput)
 
 // Section: basic moves, stateless
 
-TEST(RobotsportsVelocityControlTest, moveX)
-{
+TEST(RobotsportsVelocityControlTest, moveX) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -94,8 +87,7 @@ TEST(RobotsportsVelocityControlTest, moveX)
     EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
 }
 
-TEST(RobotsportsVelocityControlTest, moveY)
-{
+TEST(RobotsportsVelocityControlTest, moveY) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -120,8 +112,7 @@ TEST(RobotsportsVelocityControlTest, moveY)
     EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
 }
 
-TEST(RobotsportsVelocityControlTest, moveRz)
-{
+TEST(RobotsportsVelocityControlTest, moveRz) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -146,8 +137,7 @@ TEST(RobotsportsVelocityControlTest, moveRz)
     EXPECT_FLOAT_EQ(output.velocity().rz(), acc * dt);
 }
 
-TEST(RobotsportsVelocityControlTest, stop)
-{
+TEST(RobotsportsVelocityControlTest, stop) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -179,8 +169,7 @@ TEST(RobotsportsVelocityControlTest, stop)
 
 // when STOP is not implemented correctly, it can happen that upon resuming,
 // the SPG still has an internal open-loop setpoint, where it should instead ramp up from zero
-TEST(RobotsportsVelocityControlTest, noHotRestart)
-{
+TEST(RobotsportsVelocityControlTest, noHotRestart) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input1 = RobotsportsVelocityControl::Input();
@@ -222,13 +211,13 @@ TEST(RobotsportsVelocityControlTest, noHotRestart)
     // EXPECT_LT(output.velocity().rz(), 0.1);
 }
 
-// Bug seen on RobotSports simulation, where it appears that VelocityControl stops steering when xy is in spec but rz not.
-// The json file uses custom simulation configuration.
-// The data is literally copied from the debug logs at one of the moments when the bug manifested.
-TEST(RobotsportsVelocityControlTest, bugNonconvergingRz)
-{
+// Bug seen on RobotSports simulation, where it appears that VelocityControl stops steering when xy is in spec but rz
+// not. The json file uses custom simulation configuration. The data is literally copied from the debug logs at one of
+// the moments when the bug manifested.
+TEST(RobotsportsVelocityControlTest, bugNonconvergingRz) {
     double tolerance = 1e-5;
-    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(std::string("components/robotsports/velocity_control/testdata/bug_nonconverging_rz.json"), tolerance);
+    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(
+        std::string("components/robotsports/velocity_control/testdata/bug_nonconverging_rz.json"), tolerance);
     // the problem was that output velocity was zero on given input+state
 }
 
@@ -237,19 +226,46 @@ TEST(RobotsportsVelocityControlTest, bugNonconvergingRz)
 // * Rz controller converged
 // * Rz controller triggers "convergence workaround"
 // * which produces vrz==0 but also overrules small XY velocity setpoint with one large jump ...
-TEST(RobotsportsVelocityControlTest, bugLargeXYJump)
-{
+TEST(RobotsportsVelocityControlTest, bugLargeXYJump) {
     // TODO check if test case is valid for ruckig
     double tolerance = 1e-5;
-    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(std::string("components/robotsports/velocity_control/testdata/bug_large_xy_jump.json"), tolerance);
+    auto output = TestFactory::run_testvector<RobotsportsVelocityControl::RobotsportsVelocityControl>(
+        std::string("components/robotsports/velocity_control/testdata/bug_large_xy_jump.json"), tolerance);
     // the problem was: output: {"velocity":{"x":-100,"y":-40}}
-
 }
 
-int main(int argc, char **argv)
-{
+TEST(RobotsportsVelocityControlTest, velocityOnly) {
+    // Arrange
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.53);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.98);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.25);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = RobotsportsVelocityControl::State();
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
+    EXPECT_NE(output.velocity().x(), 0.0);
+    EXPECT_NE(output.velocity().y(), 0.0);
+    EXPECT_NE(output.velocity().rz(), 0.0);
+}
+
+int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();
     return r;
 }
-

@@ -501,6 +501,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
         input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
     }
 
+    input.target_position = {};
     input.target_velocity[0] = std::clamp(m_targetVelocityRCS.x, (double)-spgLimits.vx, (double)spgLimits.vx);
     input.target_velocity[1] = std::clamp(m_targetVelocityRCS.y, (double)-spgLimits.vy, (double)spgLimits.vy);
     input.target_velocity[2] = std::clamp(m_targetVelocityRCS.rz, (double)-spgLimits.vRz, (double)spgLimits.vRz);

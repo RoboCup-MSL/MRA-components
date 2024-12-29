@@ -184,38 +184,6 @@ bool SPGVelocitySetpointController::calculateSPG(VelocityControlData &data, SpgL
     return result;
 }
 
-// if (not result == Working or result == Finished) {
-//    if (result == Error) {
-//        MRA_LOG_ERROR("ruckig.update return Error (< Unclassified error >)");
-//    }
-//    else if (result == ErrorInvalidInput) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorInvalidInput (< Error in the input parameter >)");
-//    }
-//    else if (result == ErrorTrajectoryDuration) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorTrajectoryDuration (< The trajectory duration exceeds its numerical
-//        limits >)");
-//    }
-//    else if (result == ErrorPositionalLimits) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorPositionalLimits (< The trajectory exceeds the given positional
-//        limits (only in Ruckig Pro) >)");
-//    }
-//    else if (result == ErrorZeroLimits) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorZeroLimits (< The trajectory is not valid due to a conflict with zero
-//        limits >)");
-//    }
-//    else if (result == ErrorExecutionTimeCalculation) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorExecutionTimeCalculation (< Error during the extreme time calculation
-//        (Step 1) >)");
-//    }
-//    else if (result == ErrorSynchronizationCalculation) {
-//        MRA_LOG_ERROR("ruckig.update return ErrorSynchronizationCalculation (< Error during the synchronization
-//        calculation (Step 2) >)");
-//    }
-//    else {
-//        MRA_LOG_ERROR("ruckig.update return an unknown error");
-//    }
-//}
-
 bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(VelocityControlData &data,
                                                                       const SpgLimits &spgLimits,
                                                                       Position2D &resultPosition,
@@ -502,13 +470,12 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     }
 
     input.target_position = {};
-    input.target_velocity[0] = std::clamp(m_targetVelocityRCS.x, (double)-spgLimits.vx, (double)spgLimits.vx);
-    input.target_velocity[1] = std::clamp(m_targetVelocityRCS.y, (double)-spgLimits.vy, (double)spgLimits.vy);
-    input.target_velocity[2] = std::clamp(m_targetVelocityRCS.rz, (double)-spgLimits.vRz, (double)spgLimits.vRz);
+    input.target_velocity = {data.targetVelocityFcs.x, data.targetVelocityFcs.y, data.targetVelocityFcs.rz};
 
     auto result = otg.calculate(input, trajectory);
     checkRuckigResult(result);
     if (result == ErrorInvalidInput) {
+        MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
         return false;
     }
 
@@ -524,9 +491,9 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     resultPosition.y = new_position[1];
     resultPosition.rz = new_position[2];
 
-    resultVelocity.x = new_velocity[0];
-    resultVelocity.y = new_velocity[1];
-    resultVelocity.rz = new_velocity[2];
+    resultVelocity.x = -new_velocity[0];
+    resultVelocity.y = -new_velocity[1];
+    resultVelocity.rz = -new_velocity[2];
 
     // Diag data
     /*TODO

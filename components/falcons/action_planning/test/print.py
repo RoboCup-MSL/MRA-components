@@ -21,7 +21,9 @@ See also: plot.py
 # python modules
 import sys
 import argparse
-import action
+
+# our test modules
+import components.falcons.action_planning.test.action as action
 
 
 def parse_args(args: list) -> argparse.Namespace:

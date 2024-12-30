@@ -21,7 +21,7 @@ import sys
 import argparse
 
 # our test modules
-import action
+import components.falcons.action_planning.test.action as action
 
 
 def parse_args(args: list) -> argparse.Namespace:

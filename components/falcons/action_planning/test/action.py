@@ -48,6 +48,10 @@ class Action:
         """
         Keypress event handler.
         """
+        # graceful shutdown?
+        if event.key == 'q':
+            plt.close()
+            return
         if event.key == 'right':
             self.sample_idx = (self.sample_idx + 1) % len(self.data.samples)
         elif event.key == 'left':
@@ -67,7 +71,7 @@ class Action:
         self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
         self.plot_sample(-1) # start with the last one
         figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.fig.canvas.manager.full_screen_toggle()
         plt.show()
 
     def plot_sample(self, sample_idx):

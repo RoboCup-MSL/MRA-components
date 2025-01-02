@@ -15,3 +15,5 @@ def plot(ax, robot, color='b', alpha=1.0):
     end_angle = np.degrees(orientation) - ROBOT_MOUTH_ANGLE * 0.5
     pacman = Wedge((p[0], p[1]), ROBOT_RADIUS, start_angle, end_angle, facecolor=color, edgecolor='black', linewidth=0.5, zorder=3.2, alpha=alpha)
     ax.add_patch(pacman)
+    return [pacman]
+

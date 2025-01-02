@@ -276,6 +276,43 @@ TEST(FalconsVelocityControlTest, moveYwhenRotated) {
     EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
 }
 
+// Section: basic moves, stateless
+TEST(FalconsVelocityControlTest, velocityYwhenRotated) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(1.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(3.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.5*M_PI);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_setpoint()->mutable_velocity()->set_x(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(0);
+    // input.mutable_setpoint()->mutable_position()->set_rz(0.0);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "state in: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    int error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    // Assert
+    // difference between the FCS positions is only in Y direction
+    // but player is rotated 90 degrees on the field 
+    // Then in RCS this is a X change
+    EXPECT_EQ(error_value, 0);
+    EXPECT_FLOAT_EQ(output.velocity().x(), 0.025); 
+    EXPECT_NEAR(output.velocity().y(), 0.0, 1e-15);
+    EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
+}
+
 
 TEST(FalconsVelocityControlTest, velocityOnly) {
     // Arrange

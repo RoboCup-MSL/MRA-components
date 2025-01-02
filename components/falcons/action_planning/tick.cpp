@@ -17,6 +17,7 @@ using namespace MRA;
 #include "FalconsActionAimedKick.hpp"
 #include "FalconsActionPark.hpp"
 #include "FalconsActionCatchBall.hpp"
+#include "FalconsActionShield.hpp"
 #include "FalconsActionKeeper.hpp"
 
 
@@ -79,7 +80,10 @@ void outputToSetpointsActionStop(MRA::FalconsActionStop::OutputType const &actio
 
 void outputToSetpointsActionMove(MRA::FalconsActionMove::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_move()->set_stop(actionOutput.stop());
     setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
     setpoints->mutable_bh()->set_enabled(actionOutput.ballhandlersenabled());
@@ -131,7 +135,10 @@ void outputToSetpointsActionShoot(MRA::FalconsActionAimedKick::OutputType const 
 
 void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_move()->set_stop(actionOutput.stop());
     setpoints->mutable_move()->set_motiontype(actionOutput.motiontype());
     setpoints->mutable_bh()->set_enabled(false);
@@ -139,8 +146,19 @@ void outputToSetpointsActionPark(MRA::FalconsActionPark::OutputType const &actio
 
 void outputToSetpointsActionCatchBall(MRA::FalconsActionCatchBall::OutputType const &actionOutput, Setpoints *setpoints)
 {
-    *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
     setpoints->mutable_bh()->set_enabled(actionOutput.bhenabled());
+}
+
+void outputToSetpointsActionShield(MRA::FalconsActionShield::OutputType const &actionOutput, Setpoints *setpoints)
+{
+    if (actionOutput.has_motiontarget())
+    {
+        *setpoints->mutable_move()->mutable_target() = actionOutput.motiontarget();
+    }
 }
 
 void outputToSetpointsActionKeeper(MRA::FalconsActionKeeper::OutputType const &actionOutput, Setpoints *setpoints)
@@ -163,21 +181,76 @@ void replaceAll(std::string &s, const std::string &search, const std::string &re
     }
 }
 
+bool checkHistoryDirty(ActionHistory const &history)
+{
+    /*
+    A clean action has only the final tick result as PASSED or FAILED, all other ticks RUNNING.
+
+    A dirty action can be
+     * early PASSED/FAILED, continue to run anyway (teamplay protocol issue?)
+     * somewhere an INVALID tick occurred
+     * all ticks RUNNING, teamplay decided to switch to another action
+    */
+    bool dirty = false;
+    if (history.samples_size() == 0)
+    {
+        return false;
+    }
+    // each sample except the last should have actionresult RUNNING
+    for (int i = 0; i < history.samples_size() - 1; i++)
+    {
+        if (history.samples(i).output().actionresult() != MRA::Datatypes::ActionResult::RUNNING)
+        {
+            dirty = true;
+            break;
+        }
+    }
+    auto lastSample = history.samples(history.samples_size() - 1);
+    if (lastSample.output().actionresult() != MRA::Datatypes::ActionResult::FAILED &&
+        lastSample.output().actionresult() != MRA::Datatypes::ActionResult::PASSED)
+    {
+        dirty = true;
+    }
+    return dirty;
+}
+
 void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType const &params, StateType &state)
 {
     int num_ticks = state.history().samples_size();
     MRA_TRACE_FUNCTION_INPUTS(state.action().type(), currentActionType, num_ticks);
+    if (num_ticks == 0)
+    {
+        return;
+    }
     if (state.action().type() != currentActionType)
     {
+        auto lastSample = state.history().samples(num_ticks - 1);
+        std::string actionTypeStr = MRA::Datatypes::ActionType_Name(lastSample.input().action().type());
+        std::string actionResultStr = MRA::Datatypes::ActionResult_Name(lastSample.output().actionresult());
         // flush history to file, if so configured
         bool do_flush = params.history().enabled() && (num_ticks >= params.history().minimumticks());
+        for (auto action : params.history().ignore().actions())
+        {
+            if (action == actionTypeStr)
+            {
+                do_flush = false;
+                break;
+            }
+        }
+        if (params.history().ignore().running() && actionResultStr == "RUNNING")
+        {
+            do_flush = false;
+        }
+        if (params.history().ignore().passed() && actionResultStr == "PASSED")
+        {
+            do_flush = false;
+        }
         if (do_flush)
         {
             std::string filename = params.history().logfolder() + "/" + params.history().logfilepattern();
             // replace <action> and <actionresult>, use last sample
-            auto lastSample = state.history().samples(num_ticks - 1);
-            replaceAll(filename, "<action>", MRA::Datatypes::ActionType_Name(lastSample.input().action().type()));
-            replaceAll(filename, "<actionresult>", MRA::Datatypes::ActionResult_Name(lastSample.output().actionresult()));
+            replaceAll(filename, "<action>", actionTypeStr);
+            replaceAll(filename, "<actionresult>", actionResultStr);
             // replace <date> and <time>
             std::time_t currentTime = std::time(nullptr);
             struct std::tm *timeinfo = std::localtime(&currentTime);
@@ -216,6 +289,7 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
         state.Clear();
         state.mutable_action()->set_type(currentActionType);
         state.mutable_history()->set_type(currentActionType);
+        state.mutable_history()->set_dirty(checkHistoryDirty(state.history()));
         *state.mutable_history()->mutable_params() = params;
     }
 }
@@ -282,6 +356,12 @@ int dispatchAction(google::protobuf::Timestamp timestamp, InputType const &input
     {
         error_value = handleAction<MRA::FalconsActionCatchBall::FalconsActionCatchBall>(
             timestamp, input, params, state, output, diagnostics, outputToSetpointsActionCatchBall, "catchball"
+        );
+    }
+    else if (currentActionType == MRA::Datatypes::ActionType::ACTION_SHIELD)
+    {
+        error_value = handleAction<MRA::FalconsActionShield::FalconsActionShield>(
+            timestamp, input, params, state, output, diagnostics, outputToSetpointsActionShield, "shield"
         );
     }
     else if (currentActionType == MRA::Datatypes::ActionType::ACTION_KEEPER)

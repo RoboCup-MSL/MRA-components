@@ -180,7 +180,7 @@ TEST_F(TestFixture, demoFunctions) {
 
 int main(int argc, char **argv) {
     // only run this testsuite if the macros are enabled at compiletime
-#if MRA_LOGGING_ENABLED
+#ifdef MRA_LOGGING_ENABLED
     configure_logger();
     testing::InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();

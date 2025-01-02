@@ -36,6 +36,9 @@
             "robotCatchSpeed": 1.5,
             "ballVectorExtrapolation": 0.5
         },
+        "shield": {
+            "obstacleDistance": 2.5
+        },
         "keeper": {
             "captureRadius": 3.0,
             "ballSpeedThreshold": 0.4,

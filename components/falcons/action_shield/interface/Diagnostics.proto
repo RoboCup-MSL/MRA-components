@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package MRA.FalconsActionMove;
+package MRA.FalconsActionShield;
 
 message Diagnostics
 {

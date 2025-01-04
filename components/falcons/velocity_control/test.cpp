@@ -284,12 +284,12 @@ TEST(FalconsVelocityControlTest, velocityYwhenRotated) {
     auto output = FalconsVelocityControl::Output();
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(1.0);
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(3.0);
-    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.5*M_PI);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-0.5*M_PI);
     input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
     input.mutable_worldstate()->mutable_robot()->set_active(true);
     input.mutable_setpoint()->mutable_velocity()->set_x(0.0);
     input.mutable_setpoint()->mutable_velocity()->set_y(1.0);
-    input.mutable_setpoint()->mutable_velocity()->set_rz(0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(0.0);
     // input.mutable_setpoint()->mutable_position()->set_rz(0.0);
     auto params = m.defaultParams();
     auto state = FalconsVelocityControl::State();
@@ -308,7 +308,7 @@ TEST(FalconsVelocityControlTest, velocityYwhenRotated) {
     // but player is rotated 90 degrees on the field 
     // Then in RCS this is a X change
     EXPECT_EQ(error_value, 0);
-    EXPECT_FLOAT_EQ(output.velocity().x(), 0.025); 
+    EXPECT_FLOAT_EQ(output.velocity().x(), -0.025);
     EXPECT_NEAR(output.velocity().y(), 0.0, 1e-15);
     EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
 }

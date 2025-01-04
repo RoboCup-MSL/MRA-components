@@ -47,15 +47,24 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
     // currentPosFCS.Rz + deltaAngle
 
     float w_pos = data.config.spg().weightfactorclosedlooppos();
-    double deltaRz = MRA::Geometry::wrap_pi(data.previousPositionSetpointFcs.rz - data.currentPositionFcs.rz) * w_pos;
+    float w_vel = data.config.spg().weightfactorclosedloopvel();
+
+    double deltaRz = 0.0;
+    if (data.state.has_velocitysetpointfcs()) {
+        deltaRz = MRA::Geometry::wrap_pi(data.previousPositionSetpointFcs.rz - data.currentPositionFcs.rz) * w_pos;
+    }
     double weightedRz = data.currentPositionFcs.rz + deltaRz;
 
-    Position2D weightedCurrentPositionFCS =
-        data.currentPositionFcs * w_pos + data.previousPositionSetpointFcs * (1.0 - w_pos);
+    Position2D weightedCurrentPositionFCS = data.currentPositionFcs;
+    if (data.state.has_velocitysetpointfcs()) {
+        weightedCurrentPositionFCS = data.currentPositionFcs * w_pos + data.previousPositionSetpointFcs * (1.0 - w_pos);
+    }
+
     weightedCurrentPositionFCS.rz = weightedRz;
-    float w_vel = data.config.spg().weightfactorclosedloopvel();
-    Velocity2D weightedCurrentVelocityFCS =
-        data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0 - w_vel);
+    Velocity2D weightedCurrentVelocityFCS = data.currentVelocityFcs;
+    if (data.state.has_velocitysetpointfcs()) {
+        weightedCurrentVelocityFCS = data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0 - w_vel);
+    }
 
     m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
     m_deltaPositionRCS.rz = MRA::Geometry::wrap_pi(data.targetPositionFcs.rz - weightedCurrentPositionFCS.rz);

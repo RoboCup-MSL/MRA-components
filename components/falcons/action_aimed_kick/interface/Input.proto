@@ -16,4 +16,5 @@ message Input
     MRA.Datatypes.WorldState worldstate = 1;
     MRA.Datatypes.PosVel target = 2; // typically only using pos.x and pos.y
     BallHandlers arms = 3; // can be used for aim correction
+    bool precisionMode = 4; // set this flag for setpieces when robot has plenty of time
 }

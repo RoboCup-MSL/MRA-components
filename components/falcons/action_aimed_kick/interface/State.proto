@@ -9,4 +9,6 @@ message State
 {
     ShootingPhase phase = 1;
     google.protobuf.Timestamp dischargeTimestamp = 2;
+    google.protobuf.Timestamp timeoutStartTimestamp = 3; // a timer starts when advancing from AIM_COARSE to AIM_FINE
+    bool aimTimerExpired = 4;
 }

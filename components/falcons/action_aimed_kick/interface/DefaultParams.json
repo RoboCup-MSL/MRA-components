@@ -1,5 +1,13 @@
 {
     "angleAccuracyThreshold": 0.01,
     "maxCooldownDuration": 1.5,
-    "ballTargetProximity": 2.0
+    "ballTargetProximity": 2.0,
+    "timeout": {
+        "angleAccuracyThreshold": 0.5,
+        "duration": 1.0
+    },
+    "precision": {
+        "angleAccuracyThreshold": 0.001,
+        "duration": 2.0
+    }
 }

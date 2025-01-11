@@ -642,7 +642,7 @@ TEST_F(TestActionPlanner, TickTestPassActionRunning)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_shoot()->set_type(FalconsActionPlanning::SHOOT_TYPE_PASS);
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_AIM_COARSE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;
@@ -686,7 +686,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     expectedSetpoints.mutable_move()->mutable_target()->mutable_position()->set_rz(-0.78539816339744828);
     expectedSetpoints.mutable_bh()->set_enabled(true);
     expectedSetpoints.mutable_shoot()->set_type(FalconsActionPlanning::SHOOT_TYPE_PASS);
-    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+    expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_AIM_COARSE);
     expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
     expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     Datatypes::ActionResult expectedActionResult = Datatypes::ActionResult::RUNNING;

@@ -32,10 +32,12 @@ private:
     MRA::Geometry::Position _deltaCurrentBallToRobot;
     float _remainingRotationAngle;
     void precalculate();
-    void phasePrepare();
+    void phaseAimCoarse();
+    void phaseAimFine();
     void phaseDischarge();
     float calculateAimError();
     void phaseCooldown();
+    bool checkParams(FalconsActionAimedKick::ParamsType const &params, std::string &failureReason);
 };
 
 int FalconsActionAimedKick::FalconsActionAimedKick::tick
@@ -69,6 +71,14 @@ ActionAimedKick::ActionAimedKick(google::protobuf::Timestamp const &timestamp, F
 int ActionAimedKick::run()
 {
     MRA_TRACE_FUNCTION();
+    // check params
+    std::string failureReason;
+    if (!checkParams(_params, failureReason))
+    {
+        _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
+        _diagnostics.set_failurereason(failureReason);
+        return 0;
+    }
     // fail when there is no ball
     if (!_input.worldstate().has_ball())
     {
@@ -86,11 +96,16 @@ int ActionAimedKick::run()
     if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_INVALID)
     {
         // first tick: advance to PREPARE
-        _state.set_phase(FalconsActionAimedKick::SHOOT_PHASE_PREPARE);
+        _state.set_phase(FalconsActionAimedKick::SHOOT_PHASE_AIM_COARSE);
     }
-    if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_PREPARE)
+    if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_AIM_COARSE)
     {
-        phasePrepare();
+        phaseAimCoarse();
+    }
+    // allow to fall through coarse phase
+    if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_AIM_FINE)
+    {
+        phaseAimFine();
     }
     else if (_state.phase() == FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE)
     {
@@ -120,19 +135,50 @@ void ActionAimedKick::precalculate()
     MRA_TRACE_FUNCTION_OUTPUTS(_remainingRotationAngle);
 }
 
-void ActionAimedKick::phasePrepare()
+void ActionAimedKick::phaseAimCoarse()
 {
     MRA_TRACE_FUNCTION();
+    double angleAccuracyThreshold = _params.timeout().angleaccuracythreshold();
     if (!_input.worldstate().robot().hasball())
     {
-        // TODO: robustness: use state - it can happen that the robot kicked the ball away, but it takes a tick or more for the ball to actually leave?
         // in that case, functionally the shot was a success, so we should not produce FAILED
         _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
         _diagnostics.set_failurereason("robot lost possession of the ball");
         return;
     }
+    // prepare, aim, running
+    *_output.mutable_motiontarget()->mutable_position() = _input.worldstate().robot().position();
+    _output.mutable_motiontarget()->mutable_position()->set_rz(_ballTargetPos.rz);
+    *_output.mutable_balltarget() = _input.target().position();
+    _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
+    _diagnostics.set_remainingrotationangle(_remainingRotationAngle);
+    // advance to next phase?
+    if (abs(_remainingRotationAngle) < angleAccuracyThreshold)
+    {
+        *_state.mutable_timeoutstarttimestamp() = _timestamp; // start the timer
+        _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
+        _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_AIM_FINE);
+    }
+}
+
+void ActionAimedKick::phaseAimFine()
+{
+    MRA_TRACE_FUNCTION();
+    double angleAccuracyThreshold = _params.angleaccuracythreshold();
+    double timeoutDuration = _params.timeout().duration();
+    if (!_input.worldstate().robot().hasball())
+    {
+        // in that case, functionally the shot was a success, so we should not produce FAILED
+        _output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
+        _diagnostics.set_failurereason("robot lost possession of the ball");
+        return;
+    }
+    // check the timer
+    auto elapsedDuration = _timestamp - _state.timeoutstarttimestamp();
+    float elapsedSeconds = 1e-9 * google::protobuf::util::TimeUtil::DurationToNanoseconds(elapsedDuration);
+    bool timerExpired = (elapsedSeconds > timeoutDuration);
     // check if phase ends
-    if (abs(_remainingRotationAngle) > _params.angleaccuracythreshold())
+    if (abs(_remainingRotationAngle) > angleAccuracyThreshold && !timerExpired)
     {
         // prepare, aim, running
         *_output.mutable_motiontarget()->mutable_position() = _input.worldstate().robot().position();
@@ -145,10 +191,13 @@ void ActionAimedKick::phasePrepare()
     {
         // shoot, advance to next phase
         // TODO: calculate timeToKick, tune it?
+        _output.Clear();
+        _output.set_bhenabled(true);
         _output.set_dokick(true);
         *_state.mutable_dischargetimestamp() = _timestamp;
         _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
+        _state.set_aimtimerexpired(timerExpired); // store this for diagnostics, but in state so it does not get reset next tick
     }
 }
 
@@ -195,4 +244,35 @@ void ActionAimedKick::phaseCooldown()
         }
     }
     MRA_TRACE_FUNCTION_OUTPUTS(elapsedSeconds, ballTargetDistance);
+}
+
+bool ActionAimedKick::checkParams(FalconsActionAimedKick::ParamsType const &params, std::string &failureReason)
+{
+    MRA_TRACE_FUNCTION();
+    if (params.angleaccuracythreshold() <= 0.0)
+    {
+        failureReason = "invalid configuration parameter angleAccuracyThreshold: should be larger than zero";
+        return false;
+    }
+    if (params.timeout().angleaccuracythreshold() <= 0.0)
+    {
+        failureReason = "invalid configuration parameter timeout.angleAccuracyThreshold: should be larger than zero";
+        return false;
+    }
+    if (params.timeout().duration() <= 0.0)
+    {
+        failureReason = "invalid configuration parameter timeout.duration: should be larger than zero";
+        return false;
+    }
+    if (params.precision().angleaccuracythreshold() <= 0.0)
+    {
+        failureReason = "invalid configuration parameter precision.angleAccuracyThreshold: should be larger than zero";
+        return false;
+    }
+    if (params.precision().duration() <= 0.0)
+    {
+        failureReason = "invalid configuration parameter precision.duration: should be larger than zero";
+        return false;
+    }
+    return true;
 }

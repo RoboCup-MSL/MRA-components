@@ -194,6 +194,7 @@ void ActionAimedKick::phaseAimFine()
         _output.Clear();
         _output.set_bhenabled(true);
         _output.set_dokick(true);
+        *_output.mutable_balltarget() = _input.target().position();
         *_state.mutable_dischargetimestamp() = _timestamp;
         _output.set_actionresult(MRA::Datatypes::ActionResult::RUNNING);
         _state.set_phase(MRA::FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);

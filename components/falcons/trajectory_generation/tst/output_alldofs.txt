@@ -10,8 +10,8 @@ parameters overrule:
 result:
     duration                    :    4.9500
     number of samples           :  198
-    final position x            :    2.9822
-    final position y            :    1.9760
-    final position rz           :   -3.0019
-    final velocity vx           :    0.1717
-    final velocity vy           :    0.2304
+    final position x            :    2.9827
+    final position y            :    1.9767
+    final position rz           :   -3.0006
+    final velocity vx           :    0.1693
+    final velocity vy           :    0.2274

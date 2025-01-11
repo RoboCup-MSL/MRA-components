@@ -3,7 +3,7 @@ input:
 parameters overrule:
     {"deadzone": {"toleranceXY": 0.001}}
 result:
-    duration                    :    0.6500
-    number of samples           :   26
-    final position x            :    0.0991
-    final velocity vx           :    0.0086
+    duration                    :    0.6250
+    number of samples           :   25
+    final position x            :    0.0990
+    final velocity vx           :    0.0339

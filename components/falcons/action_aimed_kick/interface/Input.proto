@@ -5,8 +5,15 @@ package MRA.FalconsActionAimedKick;
 import "datatypes/WorldState.proto";
 import "datatypes/PosVel.proto";
 
+message BallHandlers
+{
+    double left = 1;
+    double right = 2;
+}
+
 message Input
 {
     MRA.Datatypes.WorldState worldstate = 1;
     MRA.Datatypes.PosVel target = 2; // typically only using pos.x and pos.y
+    BallHandlers arms = 3; // can be used for aim correction
 }

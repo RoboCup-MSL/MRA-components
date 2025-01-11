@@ -247,6 +247,16 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
         }
         if (do_flush)
         {
+            // set dirty flag
+            state.mutable_history()->set_dirty(checkHistoryDirty(state.history()));
+            // set failure reason in case an action is interrupted
+            // more specifically, write last sample of history, diagnostics.failureReason
+            if (actionResultStr == "RUNNING")
+            {
+                auto mutable_last_sample = state.mutable_history()->mutable_samples(num_ticks - 1);
+                mutable_last_sample->mutable_diagnostics()->set_failurereason("interrupted by new action " + MRA::Datatypes::ActionType_Name(currentActionType));
+            }
+            // construct filename
             std::string filename = params.history().logfolder() + "/" + params.history().logfilepattern();
             // replace <action> and <actionresult>, use last sample
             replaceAll(filename, "<action>", actionTypeStr);
@@ -289,7 +299,6 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
         state.Clear();
         state.mutable_action()->set_type(currentActionType);
         state.mutable_history()->set_type(currentActionType);
-        state.mutable_history()->set_dirty(checkHistoryDirty(state.history()));
         *state.mutable_history()->mutable_params() = params;
     }
 }

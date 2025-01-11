@@ -104,7 +104,7 @@ class Action:
         resultDetails = ''
         if self.data.dirty:
             resultDetails = ' (dirty)'
-        if action_result_str == 'FAILED':
+        if action_result_str in ['FAILED', 'RUNNING']:
             reason = self.data.samples[-1].diagnostics.failureReason
             resultDetails += ' (failureReason: ' + reason + ')'
         print(f'       result: {action_result_str}{resultDetails}')

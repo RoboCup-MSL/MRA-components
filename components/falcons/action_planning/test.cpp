@@ -707,6 +707,8 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     // Setup expected outputs for the second tick
     expectedSetpoints.mutable_move()->Clear();
     expectedSetpoints.mutable_shoot()->Clear();
+    expectedSetpoints.mutable_shoot()->set_pos_x(5.0);
+    expectedSetpoints.mutable_shoot()->set_pos_y(6.0);
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_DISCHARGE);
 
     // Check the outputs after the second tick
@@ -718,6 +720,7 @@ TEST_F(TestActionPlanner, TickTestPassActionStateTransitions)
     feedTick();
 
     // Check the outputs
+    expectedSetpoints.mutable_shoot()->Clear();
     expectedSetpoints.mutable_shoot()->set_phase(FalconsActionAimedKick::SHOOT_PHASE_COOLDOWN);
     EXPECT_THAT(getLastSetpoints(), EqualsProto(expectedSetpoints));
     EXPECT_EQ(getLastActionResult(), expectedActionResult);

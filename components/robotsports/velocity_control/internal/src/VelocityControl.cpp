@@ -6,7 +6,8 @@
 // own package
 #include "VelocityControl.hpp"
 #include "VelocitySetpointControllers.hpp"
-
+#include <typeinfo>
+#include <string>
 
 using namespace MRA::internal::RVC;
 
@@ -43,8 +44,6 @@ void VelocityControl::setup()
     // immediately stop when the command is given (hard motor brake instead of SPG rampdown)
     add_algorithm(std::make_shared<CheckStop>());
 
-    // prevent runaway setpoints by ensuring that last call was recent enough
-//    algorithms.push_back(new Watchdog());
 
     // prevent wasting energy by responding to very small setpoints
     add_algorithm(std::make_shared<Deadzone>());
@@ -56,10 +55,6 @@ void VelocityControl::setup()
     // for now: always SPG (SetPointGenerator) using Reflexxes Type II library
     add_algorithm(std::make_shared<SelectVelocityController>());
     add_algorithm(std::make_shared<CalculateVelocity>());
-
-    // SPG intrinsically ensures limits are satisfied
-    // if the controller would be PID or Linear, then ApplyLimits would be needed
-    //add_algorithm(std::make_shared<ApplyLimits>());
 
     // to enable dribbling, limits should apply to ball, not robot
     add_algorithm(std::make_shared<UnShiftBallOffset>());

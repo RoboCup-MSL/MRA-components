@@ -7,7 +7,7 @@
 
 #include "SPGVelocitySetpointController.hpp"
 
-//#include <algorithm>
+#include <algorithm>
 #include <iostream>
 
 #include <logging.hpp>
@@ -38,6 +38,11 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
         spgLimits.jy = data.limits.maxjerk().y();
         spgLimits.jRz = data.limits.maxjerk().rz();
     }
+
+    // clamp the target velocity with the limits, to prevent rucking reporting invalid input 
+    data.targetVelocityFcs.x = std::clamp(data.targetVelocityFcs.x, (double) -spgLimits.vy, (double) spgLimits.vx);
+    data.targetVelocityFcs.y = std::clamp(data.targetVelocityFcs.y, (double) -spgLimits.vy, (double) spgLimits.vy);
+    data.targetVelocityFcs.rz = std::clamp(data.targetVelocityFcs.rz, (double) -spgLimits.vRz, (double) spgLimits.vRz);
 
     // For position, finding a weighted average on the Rz is not trivial when the angles are around the boundary of [0,
     // 2pi]. To solve this, rotate both currentPosFCS.Rz and previousPosSetpointFCS.Rz towards currentPosFCS.Rz. This

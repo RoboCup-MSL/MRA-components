@@ -39,11 +39,6 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
         spgLimits.jRz = data.limits.maxjerk().rz();
     }
 
-    // clamp the target velocity with the limits, to prevent rucking reporting invalid input 
-    data.targetVelocityFcs.x = std::clamp(data.targetVelocityFcs.x, (double) -spgLimits.vy, (double) spgLimits.vx);
-    data.targetVelocityFcs.y = std::clamp(data.targetVelocityFcs.y, (double) -spgLimits.vy, (double) spgLimits.vy);
-    data.targetVelocityFcs.rz = std::clamp(data.targetVelocityFcs.rz, (double) -spgLimits.vRz, (double) spgLimits.vRz);
-
     // For position, finding a weighted average on the Rz is not trivial when the angles are around the boundary of [0,
     // 2pi]. To solve this, rotate both currentPosFCS.Rz and previousPosSetpointFCS.Rz towards currentPosFCS.Rz. This
     // means currentPosFCS.Rz = 0, and previousPosSetpointFCS.Rz is the difference to currentPosFCS.Rz. At this point,
@@ -230,8 +225,11 @@ bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(VelocityCo
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
     //      input.target_acceleration = {0.0, 0.0, 0.5}; // TODO ruckig
 
+    applyLimitsOnInputs(input);
     auto result = otg.calculate(input, trajectory);
+    checkRuckigResult(result);
     if (result == ErrorInvalidInput) {
+        MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
         return false;
     }
 
@@ -320,8 +318,11 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(VelocityCont
                              m_deltaPositionRCS.y}; // steering from currentPos = 0 to targetPos = deltaPos
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y};
 
+    applyLimitsOnInputs(input);
     auto result = otg.calculate(input, trajectory);
+    checkRuckigResult(result);
     if (result == ErrorInvalidInput) {
+        MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
         return false;
     }
 
@@ -369,6 +370,14 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(VelocityCont
     return true;
 }
 
+template<size_t DOFs, template<class, size_t> class CustomVector>
+    void SPGVelocitySetpointController::applyLimitsOnInputs(ruckig::InputParameter<DOFs, CustomVector>& r_input) {
+
+    for (auto dof = 0u; dof < DOFs; dof++) {
+        r_input.target_velocity[dof] = std::clamp(r_input.target_velocity[dof], (double) -r_input.max_velocity[dof], r_input.max_velocity[dof]);
+    }
+}
+
 bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(VelocityControlData &data, SpgLimits const &spgLimits,
                                                                   Position2D &resultPosition,
                                                                   Velocity2D &resultVelocity) {
@@ -394,8 +403,11 @@ bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(VelocityContro
     input.target_position[0] = m_deltaPositionRCS.rz;
     input.target_velocity[0] = m_targetVelocityRCS.rz;
 
+    applyLimitsOnInputs(input);
     auto result = otg.calculate(input, trajectory);
+    checkRuckigResult(result);
     if (result == ErrorInvalidInput) {
+        MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
         return false;
     }
 
@@ -475,6 +487,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
     input.current_acceleration[1] = 0.0;
     input.current_acceleration[2] = 0.0;
+    input.synchronization = Synchronization::Time; // always synchronize the DoFs to reach the target at the same time
 
     input.max_velocity = {spgLimits.vx, spgLimits.vy, spgLimits.vRz};
     input.max_acceleration = {spgLimits.ax, spgLimits.ay, spgLimits.aRz};
@@ -486,6 +499,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     input.target_position = {};
     input.target_velocity = {data.targetVelocityFcs.x, data.targetVelocityFcs.y, data.targetVelocityFcs.rz};
 
+    applyLimitsOnInputs(input);
     auto result = otg.calculate(input, trajectory);
     checkRuckigResult(result);
     if (result == ErrorInvalidInput) {

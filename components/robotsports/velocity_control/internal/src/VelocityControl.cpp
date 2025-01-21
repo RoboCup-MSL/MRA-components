@@ -8,6 +8,7 @@
 #include "VelocitySetpointControllers.hpp"
 #include <typeinfo>
 #include <string>
+#include <typeinfo>
 
 using namespace MRA::internal::RVC;
 
@@ -73,10 +74,12 @@ void VelocityControl::iterate()
     data.num_algorithms_executed = 0;
     for (auto it = algorithms.begin(); it != algorithms.end(); ++it)
     {
+        // std::cout << "Executioning: " << typeid(**it).name() << std::endl;
         if (!data.done || (*it)->unskippable)
         {
             (*it)->execute(data);
             data.num_algorithms_executed++;
         }
+        // std::cout << "\tdata.done: " << std::boolalpha << data.done << std::endl;
     }
 }

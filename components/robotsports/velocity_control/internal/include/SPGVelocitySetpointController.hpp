@@ -54,6 +54,9 @@ class SPGVelocitySetpointController : public AbstractVelocitySetpointController 
 
     void checkRuckigResult(ruckig::Result result);
 
+    template<size_t DOFs, template<class, size_t> class CustomVector>
+    void applyLimitsOnInputs(ruckig::InputParameter<DOFs, CustomVector>& r_input);
+
     // internal data stored for open loop
     Position2D m_deltaPositionRCS;
     Velocity2D m_currentVelocityRCS;

@@ -467,6 +467,83 @@ TEST(RobotsportsVelocityControlTest, velocityRequestAboveLimit) {
     EXPECT_EQ(output.velocity().rz(), 0.0);
 }
 
+
+
+
+TEST(RobotsportsVelocityControlTest, velocityRequestAboveLimit2) {
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-2.6900212760939319);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.57369125183351255);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.2059715777447386);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.046696402131037519);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0178268879302128);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(2.4);
+    auto params = RobotsportsVelocityControl::Params();
+    params.set_dt(0.025);
+    params.set_timeout(0.1);
+    params.mutable_spg()->set_weightfactorclosedlooppos(1.0);
+    params.mutable_dribble()->set_applylimitstoball(true);
+    params.mutable_dribble()->set_radiusrobottoball(0.26);
+    params.mutable_deadzone()->set_enabled(true);
+    params.mutable_deadzone()->set_tolerancexy(0.01);
+    params.mutable_deadzone()->set_tolerancerz(0.005);
+    params.mutable_limits()->Clear();
+    RobotsportsVelocityControl::Limits limit_default = RobotsportsVelocityControl::Limits();
+    limit_default.set_name("default");
+    limit_default.mutable_maxvel()->set_x(2.5);
+    limit_default.mutable_maxvel()->set_rz(6);
+    limit_default.mutable_maxvel()->set_yforward(2.5);
+    limit_default.mutable_maxvel()->set_ybackward(1.6);
+    limit_default.mutable_maxacc()->set_x(2);
+    limit_default.mutable_maxacc()->set_rz(2);
+    limit_default.mutable_maxacc()->set_yforward(2);
+    limit_default.mutable_maxacc()->set_ybackward(2);
+    limit_default.mutable_maxdec()->set_x(2);
+    limit_default.mutable_maxdec()->set_y(2);
+    limit_default.mutable_maxdec()->set_rz(5);
+    params.mutable_limits()->Add()->CopyFrom(limit_default);
+    RobotsportsVelocityControl::Limits limit_withBall = RobotsportsVelocityControl::Limits();
+    limit_withBall.set_name("withBall");
+    limit_withBall.mutable_maxvel()->set_x(0.5);
+    limit_withBall.mutable_maxvel()->set_rz(2.5);
+    limit_withBall.mutable_maxvel()->set_yforward(1.4);
+    limit_withBall.mutable_maxvel()->set_ybackward(0.5);
+    limit_withBall.mutable_maxacc()->set_x(0.5);
+    limit_withBall.mutable_maxacc()->set_rz(3);
+    limit_withBall.mutable_maxacc()->set_yforward(1);
+    limit_withBall.mutable_maxacc()->set_ybackward(0.5);
+    params.mutable_limits()->Add()->CopyFrom(limit_withBall);
+
+    auto state = RobotsportsVelocityControl::State();
+    state.mutable_positionsetpointfcs()->set_x(-2.6908319014261544);
+    state.mutable_positionsetpointfcs()->set_y(0.57230806612855667);
+    state.mutable_velocitysetpointfcs()->set_y(0.05000000074505806);
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "params : " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+    // std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_LT(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();

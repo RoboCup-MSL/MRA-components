@@ -47,6 +47,7 @@ struct VelocityControlData
 
     // result
     Velocity2D resultVelocityRcs;
+    Velocity2D resultPositionRcs;
 
 };
 

@@ -544,6 +544,53 @@ TEST(RobotsportsVelocityControlTest, velocityRequestAboveLimit2) {
     EXPECT_EQ(output.velocity().rz(), 0.0);
 }
 
+
+TEST(RobotsportsVelocityControlTest, velocityYplusTraject) {
+    // Arrange
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(+1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = RobotsportsVelocityControl::State();
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    int error_value = 0;
+
+    // Act
+    for (auto sample_idx = 0; sample_idx < 3; sample_idx++) {
+        std::cout << "\n\n==========================================\nsample_idx: " << sample_idx << std::endl << std::flush;
+        std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+        std::cout << "params : " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+        std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+
+        error_value = m.tick(input, params, state, output, diagnostics);
+        // auto delta_y = (params.dt()* output.velocity().y()) + input.worldstate().robot().position().y();
+        input.mutable_worldstate()->mutable_robot()->mutable_position()->CopyFrom(diagnostics.newpositionrcs());
+        input.mutable_worldstate()->mutable_robot()->mutable_velocity()->CopyFrom(diagnostics.newvelocityrcs());
+
+        std::cout << "state: out: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+        std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+        std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+    }
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_GT(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+
+
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();

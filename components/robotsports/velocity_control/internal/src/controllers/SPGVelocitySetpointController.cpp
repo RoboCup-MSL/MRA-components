@@ -98,37 +98,9 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
         result = calculateSPG(data, spgLimits, resultPosition, resultVelocity);
     }
 
-    // check if motor limits are not exceeded.
-    /* disabled - in MRA context, we must not depend on vtClient
-    for(int i = 0; i < 10; i++)
-    {
-        if (data.vtClient.exceedsMotorLimits( pose(resultVelocity.x, resultVelocity.y, resultVelocity.rz) ))
-        {
-            // reduce limits by 20% to see if we can find setpoints which do not exceed the motor limits
-            spgLimits.vx *= 0.8;
-            spgLimits.vy *= 0.8;
-            spgLimits.vRz *= 0.8;
-            result = calculateSPG(data, spgLimits, resultPosition, resultVelocity);
-        }
-        else
-        {
-            break;
-        }
-    }
-    */
-
     // Done -- store output and values for next iteration
     data.resultVelocityRcs = resultVelocity;
-
-    // Store previousPositionSetpointFcs for open loop control
-    Position2D tmpPos = resultPosition;
-    data.previousPositionSetpointFcs = tmpPos.transformRcsToFcs(weightedCurrentPositionFCS);
-    // ???data.previousPositionSetpointFcs.rz += M_PI_2;
-    // ??? data.previousPositionSetpointFcs.rz = project_angle_0_2pi(data.previousPositionSetpointFcs.rz);
-
-    // Store previousVelocitySetpointFcs for open loop control
-    Velocity2D tmpVel = resultVelocity;
-    data.previousVelocitySetpointFcs = tmpVel.transformRcsToFcs(weightedCurrentPositionFCS);
+    data.resultPositionRcs = resultPosition;
 
     return result;
 }
@@ -470,8 +442,6 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
                                                                       Position2D &resultPosition,
                                                                       Velocity2D &resultVelocity) {
     const int numberOfDOFs = 3; // degrees of freedom (X, Y, Rz)
-    Ruckig<numberOfDOFs> otg;
-    Trajectory<numberOfDOFs> trajectory;
 
     InputParameter<numberOfDOFs> input;
 
@@ -495,60 +465,28 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     if (spgLimits.hasJerkLimit) {
         input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
     }
-
-    input.target_position = {};
     input.target_velocity = {data.targetVelocityFcs.x, data.targetVelocityFcs.y, data.targetVelocityFcs.rz};
 
     applyLimitsOnInputs(input);
-    auto result = otg.calculate(input, trajectory);
+
+    double new_time = data.config.dt() + data.config.spg().latencyoffset(); // TODO why not set new_time as sample_rate?
+    Ruckig<numberOfDOFs> otg(new_time);
+    OutputParameter<numberOfDOFs> output;
+    
+    auto result = otg.update(input, output);
     checkRuckigResult(result);
     if (result == ErrorInvalidInput) {
         MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
         return false;
     }
 
-    // output parameters have been evaluated at first tick (data.config.dt())
-    // latency correction: evaluate the trajectory at some offset
-    double new_time = data.config.dt() + data.config.spg().latencyoffset(); // TODO why not set new_time as sample_rate?
-    std::array<double, numberOfDOFs> new_position, new_velocity, new_acceleration, new_jerk;
-    size_t new_section;
-    trajectory.at_time(new_time, new_position, new_velocity, new_acceleration, new_jerk, new_section);
+    resultVelocity.x = -output.new_velocity[0];
+    resultVelocity.y = -output.new_velocity[1];
+    resultVelocity.rz = -output.new_velocity[2];
 
-    // convert outputs
-    resultPosition.x = new_position[0];
-    resultPosition.y = new_position[1];
-    resultPosition.rz = new_position[2];
-
-    resultVelocity.x = -new_velocity[0];
-    resultVelocity.y = -new_velocity[1];
-    resultVelocity.rz = -new_velocity[2];
-
-    // Diag data
-    /*TODO
-    data.spgCurrentPosition.x  = input.current_position[0];
-    data.spgCurrentPosition.y  = input.current_position[1];
-    data.spgCurrentPosition.Rz = input.current_position[2];
-
-    data.spgCurrentVelocity.x  = input.current_velocity[0];
-    data.spgCurrentVelocity.y  = input.current_velocity[1];
-    data.spgCurrentVelocity.Rz = input.current_velocity[2];
-
-    data.spgMaxAcceleration.x  = input.max_acceleration[0];
-    data.spgMaxAcceleration.y  = input.max_acceleration[1];
-    data.spgMaxAcceleration.Rz = input.max_acceleration[2];
-
-    data.spgTargetVelocity.x  = input.target_velocity[0];
-    data.spgTargetVelocity.y  = input.target_velocity[1];
-    data.spgTargetVelocity.Rz = input.target_velocity[2];
-
-    data.spgNewPosition.x  = new_position[0];
-    data.spgNewPosition.y  = new_position[1];
-    data.spgNewPosition.Rz = new_position[2];
-
-    data.spgNewVelocity.x  = new_velocity[0];
-    data.spgNewVelocity.y  = new_velocity[1];
-    data.spgNewVelocity.Rz = new_velocity[2];
-    */
+    resultPosition.x = output.new_position[0];
+    resultPosition.y = output.new_position[1];
+    resultPosition.rz = output.new_position[2];
 
     return true;
 }

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package MRA.RobotsportsVelocityControl;
 
+import "datatypes/Pose.proto";
 
 enum ControlModeEnum
 {
@@ -15,5 +16,8 @@ message Diagnostics
 {
     ControlModeEnum controlMode = 1;
     int32 numAlgorithmsExecuted = 2;
+    MRA.Datatypes.Pose newPositionRCS = 3;
+    MRA.Datatypes.Pose newVelocityRCS = 4;
+
 }
 

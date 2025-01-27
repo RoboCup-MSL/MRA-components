@@ -170,9 +170,9 @@ double Pose::distanceTo(const MRA::Geometry::Point& p) const
 }
 
 
-std::string Pose::toString(unsigned precision) const {
+std::string Pose::toString() const {
     std::stringstream buffer;
-    buffer << std::fixed << std::setprecision(precision) << "x: " << this->x << " y: " << this->y << " z: " << this->z
+    buffer << std::fixed << std::setprecision(2) << "x: " << this->x << " y: " << this->y << " z: " << this->z
     		             << " rx: " << this->rx << " ry: " << this->ry << " rz: " << this->rz;
     return buffer.str();
 }

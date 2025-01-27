@@ -443,7 +443,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
                                                                       Velocity2D &resultVelocity) {
     const int numberOfDOFs = 3; // degrees of freedom (X, Y, Rz)
 
-    InputParameter<numberOfDOFs> input;
+    InputParameter<numberOfDOFs> input = {};
 
     // set-up the input parameters
     input.current_position[0] = 0.0; // instead of steering from current to target,
@@ -471,7 +471,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
 
     double new_time = data.config.dt() + data.config.spg().latencyoffset(); // TODO why not set new_time as sample_rate?
     Ruckig<numberOfDOFs> otg(new_time);
-    OutputParameter<numberOfDOFs> output;
+    OutputParameter<numberOfDOFs> output  = {};
     
     auto result = otg.update(input, output);
     checkRuckigResult(result);

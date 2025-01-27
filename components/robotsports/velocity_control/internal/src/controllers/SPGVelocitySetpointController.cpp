@@ -450,6 +450,8 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     input.current_position[1] = 0.0; // we steer from zero to delta, so we can better configure
     input.current_position[2] = 0.0; // controlling FCS or RCS
 
+    input.target_position = {}; // no position, but velocity only
+
     input.current_velocity[0] = m_currentVelocityRCS.x;
     input.current_velocity[1] = m_currentVelocityRCS.y;
     input.current_velocity[2] = m_currentVelocityRCS.rz;

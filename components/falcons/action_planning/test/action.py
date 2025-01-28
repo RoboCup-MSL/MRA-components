@@ -107,10 +107,16 @@ class Action:
         self.fig_t = plt.figure()
         self.fig_t.canvas.mpl_connect('key_press_event', self.on_key_press_timeline)
         self.ax_t = self.fig_t.add_subplot(111)
-        self.ax_t.plot(data_signals.t, data_signals.values_target['x'], label='target.x')
-        self.ax_t.plot(data_signals.t, data_signals.values_target['y'], label='target.y')
-        self.ax_t.plot(data_signals.t, data_signals.values_target['rz'], label='target.rz')
-        self.ax_t.plot(data_signals.t, data_signals.values_target['d'], label='target.d')
+        if data_signals.values_target['enabled']:
+            self.ax_t.plot(data_signals.t, data_signals.values_target['x'], label='target.x')
+            self.ax_t.plot(data_signals.t, data_signals.values_target['y'], label='target.y')
+            self.ax_t.plot(data_signals.t, data_signals.values_target['rz'], label='target.rz')
+            self.ax_t.plot(data_signals.t, data_signals.values_target['d'], label='target.d')
+        if data_signals.values_ballhandlers['enabled']:
+            scaling_factor = 1e-3
+            self.ax_t.plot(data_signals.t, scaling_factor * data_signals.values_ballhandlers['left'], label='arms.left')
+            self.ax_t.plot(data_signals.t, scaling_factor * data_signals.values_ballhandlers['right'], label='arms.right')
+            self.ax_t.plot(data_signals.t, scaling_factor * data_signals.values_ballhandlers['delta'], label='arms.delta')
         self.ax_t.legend()
         if show:
             self.show()
@@ -257,6 +263,22 @@ def extract_target(sample_data, in_rcs=False):
     return result
 
 
+def extract_ballhandlers(sample_data):
+    result = {}
+    result = {'enabled': True}
+    empty_values = np.full(len(sample_data), np.nan)
+    result['left'] = empty_values.copy()
+    result['right'] = empty_values.copy()
+    result['delta'] = empty_values.copy()
+    for it, sample in enumerate(sample_data):
+        if sample.input.action.HasField('pass'):
+            arms = getattr(sample.input.action, 'pass').arms
+            result['left'][it] = arms.left
+            result['right'][it] = arms.right
+            result['delta'][it] = arms.left - arms.right
+    return result
+
+
 class DataSignals:
     """
     Class to extract a set of signals from action samples, for plotting timelines.
@@ -265,3 +287,4 @@ class DataSignals:
         t0 = timestamp_to_float(sample_data[0].timestamp)
         self.t = [timestamp_to_float(sample.timestamp) - t0 for sample in sample_data]
         self.values_target = extract_target(sample_data, in_rcs=True)
+        self.values_ballhandlers = extract_ballhandlers(sample_data)

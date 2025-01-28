@@ -61,7 +61,7 @@ TODO: reconsider responsibilities to reduce "multiple captain" situations (fold 
 
 Each action has its own semantics on `PASSED` / `FAILED`. For example, `GETBALL` fails when there is no ball in sight.
 What all actions have in common, is that `RUNNING` generally means that more ticks are needed to come to a `PASSED` or `FAILED` result.
-When an action fails, then a string at diagnostics field `verdict` explains why.
+When an action fails, then a string at diagnostics field `failureReason` explains why.
 
 ## Interface Details
 

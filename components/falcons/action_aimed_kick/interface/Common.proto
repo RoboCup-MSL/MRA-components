@@ -5,7 +5,8 @@ package MRA.FalconsActionAimedKick;
 enum ShootingPhase
 {
     SHOOT_PHASE_INVALID = 0;
-    SHOOT_PHASE_PREPARE = 1; // moving the height actuator may take a while
-    SHOOT_PHASE_DISCHARGE = 2; // one moment actually, not really a phase
-    SHOOT_PHASE_COOLDOWN = 3; // give ball some time to leave before signaling SUCCESS, perhaps evaluate shot result
+    SHOOT_PHASE_AIM_COARSE = 1;
+    SHOOT_PHASE_AIM_FINE = 2;
+    SHOOT_PHASE_DISCHARGE = 3; // one moment actually, not really a phase
+    SHOOT_PHASE_COOLDOWN = 4; // give ball some time to leave before signaling SUCCESS, perhaps evaluate shot result
 }

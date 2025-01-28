@@ -2,9 +2,24 @@ syntax = "proto3";
 
 package MRA.FalconsActionAimedKick;
 
+
+message TimeoutParams // associated to AIM_FINE phase
+{
+    double angleAccuracyThreshold = 1; // start the timer when delta angle is smaller than this threshold
+    double duration = 2; // time in seconds before releasing anyway
+}
+
+message PrecisionParams // only used when precision mode is requested
+{
+    double angleAccuracyThreshold = 1; // overrule with a smaller value
+    double duration = 2; // overrule with a larger value
+}
+
 message Params
 {
     double angleAccuracyThreshold = 1;
     double maxCooldownDuration = 2;
     double ballTargetProximity = 3;
+    TimeoutParams timeout = 4;
+    PrecisionParams precision = 5;
 }

@@ -475,6 +475,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
         input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
     }
 
+    input.target_position = {};
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
 
     applyLimitsOnInputs(input);

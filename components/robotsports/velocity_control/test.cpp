@@ -260,7 +260,7 @@ TEST(RobotsportsVelocityControlTest, velocityOnly) {
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
     EXPECT_LT(output.velocity().x(), 0.0);
-    EXPECT_GT(output.velocity().y(), 0.0);
+    EXPECT_LT(output.velocity().y(), 0.0);
     EXPECT_GT(output.velocity().rz(), 0.0);
 }
 
@@ -534,13 +534,13 @@ TEST(RobotsportsVelocityControlTest, velocityRequestAboveLimit2) {
 
     // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
     // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
-    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+    std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
 
     // Assert
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
     EXPECT_EQ(output.velocity().x(), 0.0);
-    EXPECT_LT(output.velocity().y(), 0.0);
+    EXPECT_NEAR(output.velocity().y(), 0.1000, 1e-6);
     EXPECT_EQ(output.velocity().rz(), 0.0);
 }
 
@@ -587,6 +587,94 @@ TEST(RobotsportsVelocityControlTest, velocityYplusTraject) {
     EXPECT_EQ(output.velocity().x(), 0.0);
     EXPECT_GT(output.velocity().y(), 0.0);
     EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+
+TEST(RobotsportsVelocityControlTest, trajectory1) {
+    // Arrange
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = RobotsportsVelocityControl::State();
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    int error_value = 0;
+
+    // ============================== sample_idx = 1;
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.5077355892075683);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.0006645120032562);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.5707941870251312);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.524043945040972);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.9817391487236535);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.2485809576986913);
+
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    // ============================== sample_idx = 2;
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.5075421994773794);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.0006478992031749);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.5707359924316022);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.5240039243791799);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.9817699257171253);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.2483977210924615);
+    error_value = m.tick(input, params, state, output, diagnostics);
+
+
+    // ============================== sample_idx = 3;
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.5075421994773794);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.0006478992031749);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.5707359924316022);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.5240039243791799);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.9817699257171253);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.2483977210924615);
+    error_value = m.tick(input, params, state, output, diagnostics);
+
+    // ============================== sample_idx = 4;
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.5069407467181311);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.0033622316545352);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.570536687880457);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.042467034752696718);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.040453612099819083);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.033132478594779968);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.5254186439173423);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.9806811860542768);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.2482755460157777);
+    error_value = m.tick(input, params, state, output, diagnostics);
+
+    // ============================== sample_idx = 5;
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.50510949038625);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.0017138085839965);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.5691365623162474);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.092026534247380387);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.087696890165874439);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.071826376020908356);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.5225086276427682);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.9829189289412052);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.2450051693366471);
+    error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
+    EXPECT_NEAR(output.velocity().x(), -0.250000, 1e-5);
+    EXPECT_NEAR(output.velocity().y(), -0.238119, 1e-5);
+    EXPECT_NEAR(output.velocity().rz(),   0.194941, 1e-5);
 }
 
 

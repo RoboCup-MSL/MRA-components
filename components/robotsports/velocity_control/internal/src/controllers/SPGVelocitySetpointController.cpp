@@ -100,7 +100,14 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
 
     // Done -- store output and values for next iteration
     data.resultVelocityRcs = resultVelocity;
-    data.resultPositionRcs = resultPosition;
+
+    // Store previousPositionSetpointFcs
+    Position2D tmpPos = resultPosition;
+    data.previousPositionSetpointFcs = tmpPos.transformRcsToFcs(weightedCurrentPositionFCS);
+
+    // Store previousVelocitySetpointFcs
+    Velocity2D tmpVel = resultVelocity;
+    data.previousVelocitySetpointFcs = tmpVel.transformRcsToFcs(weightedCurrentPositionFCS);
 
     return result;
 }
@@ -446,11 +453,11 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     InputParameter<numberOfDOFs> input = {};
 
     // set-up the input parameters
+    input.control_interface = ControlInterface::Velocity;
+
     input.current_position[0] = 0.0; // instead of steering from current to target,
     input.current_position[1] = 0.0; // we steer from zero to delta, so we can better configure
     input.current_position[2] = 0.0; // controlling FCS or RCS
-
-    input.target_position = {}; // no position, but velocity only
 
     input.current_velocity[0] = m_currentVelocityRCS.x;
     input.current_velocity[1] = m_currentVelocityRCS.y;
@@ -459,7 +466,7 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
     input.current_acceleration[1] = 0.0;
     input.current_acceleration[2] = 0.0;
-    input.synchronization = Synchronization::Time; // always synchronize the DoFs to reach the target at the same time
+    input.synchronization = Synchronization::Phase; // always synchronize the DoFs to reach the target at the same time
 
     input.max_velocity = {spgLimits.vx, spgLimits.vy, spgLimits.vRz};
     input.max_acceleration = {spgLimits.ax, spgLimits.ay, spgLimits.aRz};
@@ -467,13 +474,14 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
     if (spgLimits.hasJerkLimit) {
         input.max_jerk = {spgLimits.jx, spgLimits.jy, spgLimits.jRz};
     }
-    input.target_velocity = {data.targetVelocityFcs.x, data.targetVelocityFcs.y, data.targetVelocityFcs.rz};
+
+    input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
 
     applyLimitsOnInputs(input);
 
     double new_time = data.config.dt() + data.config.spg().latencyoffset(); // TODO why not set new_time as sample_rate?
     Ruckig<numberOfDOFs> otg(new_time);
-    OutputParameter<numberOfDOFs> output  = {};
+    OutputParameter<numberOfDOFs> output = {};
     
     auto result = otg.update(input, output);
     checkRuckigResult(result);
@@ -482,13 +490,9 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(VelocityCo
         return false;
     }
 
-    resultVelocity.x = -output.new_velocity[0];
-    resultVelocity.y = -output.new_velocity[1];
-    resultVelocity.rz = -output.new_velocity[2];
-
-    resultPosition.x = output.new_position[0];
-    resultPosition.y = output.new_position[1];
-    resultPosition.rz = output.new_position[2];
+    resultVelocity.x = output.new_velocity[0];
+    resultVelocity.y = output.new_velocity[1];
+    resultVelocity.rz = output.new_velocity[2];
 
     return true;
 }

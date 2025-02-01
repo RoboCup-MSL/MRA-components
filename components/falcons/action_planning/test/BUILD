@@ -34,3 +34,15 @@ py_binary(
         ":action",
     ],
 )
+
+py_binary(
+    name = "mkjson",
+    srcs = [
+        "mkjson.py",
+    ],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":action",
+    ],
+)

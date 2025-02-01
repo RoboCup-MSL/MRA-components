@@ -197,6 +197,29 @@ class Action:
         """
         print(json.dumps(MessageToDict(self.data), sort_keys=True, indent=2))
 
+    def timeline_entries(self, robot='robot-X'):
+        """
+        Return entries in the Google Catapult/Perfetto format (not yet json) which can be used to inspect the timeline of events during a match.
+        """
+        action_type_str = protobuf_enum2str(self.data, 'type').replace('ACTION_', '')
+        action_result_str = protobuf_enum2str(self.data.samples[-1].output, 'actionresult')
+        # combine action name with result, this also enables giving a red color to failed actions
+        name = f'{action_type_str} -> {action_result_str}'
+        # timestamps in microseconds
+        ts_start = int(1e6 * (self.data.samples[0].timestamp.seconds + self.data.samples[0].timestamp.nanos / 1e9))
+        ts_end = int(1e6 * (self.data.samples[-1].timestamp.seconds + self.data.samples[-1].timestamp.nanos / 1e9))
+        # other
+        pid = 'actions'
+        tid = robot
+        duration = 1e-6 * (ts_end - ts_start)
+        details = {'duration': duration, 'result': action_result_str}
+        if action_result_str in ['FAILED', 'RUNNING']:
+            details['failure_reason'] = self.data.samples[-1].diagnostics.failureReason
+        # create the entries
+        start_entry = {'name': name, 'ts': ts_start, 'ph': 'B', 'pid': pid, 'tid': tid}
+        end_entry = {'name': name, 'ts': ts_end, 'ph': 'E', 'args': details, 'pid': pid, 'tid': tid}
+        return [start_entry, end_entry]
+
 
 class ActionTick:
     """

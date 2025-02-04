@@ -24,10 +24,10 @@
     [
         {
             "name": "default",
-            "maxVel": {"X": 1.6, "Yforward": 1.6, "Ybackward": 1.6, "Rz": 6.0},
-            "maxAcc": {"X": 2.0, "Yforward": 2.0, "Ybackward": 2.0, "Rz": 2.0},
-            "maxDec": {"X": 2.0, "Y": 2.0, "Rz": 5.0},
-            "accThreshold": {"X": 0.0, "Y": 0.0, "Rz": 0.0}
+            "maxVel": {"X": 1.6, "Yforward": 1.6, "Ybackward": 1.6, "Rz": 6.0, "XY": 10.0},
+            "maxAcc": {"X": 2.0, "Yforward": 2.0, "Ybackward": 2.0, "Rz": 2.0, "XY": 10.0},
+            "maxDec": {"X": 2.0, "Y": 2.0, "Rz": 5.0, "XY": 10.0},
+            "accThreshold": {"X": 0.0, "Y": 0.0, "Rz": 0.0, "XY": 0.0}
         },
         {
             "name": "withBall",

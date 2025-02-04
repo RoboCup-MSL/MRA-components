@@ -612,13 +612,7 @@ TEST(RobotsportsVelocityControlTest, trajectory1) {
     input.mutable_setpoint()->mutable_velocity()->set_x(-1.524043945040972);
     input.mutable_setpoint()->mutable_velocity()->set_y(1.9817391487236535);
     input.mutable_setpoint()->mutable_velocity()->set_rz(1.2485809576986913);
-
-    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
-    // std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
     error_value = m.tick(input, params, state, output, diagnostics);
-    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
-    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
-    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
 
     // ============================== sample_idx = 2;
     input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.5075421994773794);
@@ -667,17 +661,21 @@ TEST(RobotsportsVelocityControlTest, trajectory1) {
     input.mutable_setpoint()->mutable_velocity()->set_x(-1.5225086276427682);
     input.mutable_setpoint()->mutable_velocity()->set_y(1.9829189289412052);
     input.mutable_setpoint()->mutable_velocity()->set_rz(1.2450051693366471);
+
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
     error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
 
     // Assert
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
-    EXPECT_NEAR(output.velocity().x(), -0.250000, 1e-5);
-    EXPECT_NEAR(output.velocity().y(), -0.238119, 1e-5);
-    EXPECT_NEAR(output.velocity().rz(),   0.194941, 1e-5);
+    EXPECT_NEAR(output.velocity().x(), -0.251156, 1e-5);
+    EXPECT_NEAR(output.velocity().y(), -0.236032, 1e-5);
+    EXPECT_NEAR(output.velocity().rz(),   0.1949917, 1e-5);
 }
-
-
 
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);

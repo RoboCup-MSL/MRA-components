@@ -29,8 +29,9 @@ message XYRzLimits
     double X = 1;
     double Y = 2;
     double Rz = 3;
-    double Yforward = 4; // optional Y split, ballHandling is easier driving forward than backward
-    double Ybackward = 5;
+    double XY = 4; // XY together (linear)
+    double Yforward = 5; // optional Y split, ballHandling is easier driving forward than backward
+    double Ybackward = 6;
 }
 
 message Limits

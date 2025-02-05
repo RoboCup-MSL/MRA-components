@@ -30,7 +30,7 @@ void UnShiftBallOffset::execute(VelocityControlData &data)
         // resultVelocityRcs applies to the ball
         // convert to motor setpoint
         // this used to be called TokyoDrift
-        data.resultVelocityRcs.x += data.resultVelocityRcs.rz * data.config.dribble().radiusrobottoball();
+        data.result.velocityRcs.x += data.result.velocityRcs.rz * data.config.dribble().radiusrobottoball();
 
         // unshift coordinates
         // - SPG 'feedforward' data update

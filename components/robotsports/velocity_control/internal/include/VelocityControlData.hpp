@@ -15,6 +15,12 @@ class AbstractVelocitySetpointController;
 namespace MRA::internal::RVC
 {
 
+struct VelocityControlResult {
+    Velocity2D velocityRcs;
+    Velocity2D positionRcs;
+    Pose2D acceleration;
+};
+
 // this struct is used (r/w) by every algorithm
 struct VelocityControlData
 {
@@ -46,8 +52,7 @@ struct VelocityControlData
     Velocity2D previousVelocitySetpointFcs;
 
     // result
-    Velocity2D resultVelocityRcs;
-
+    VelocityControlResult result;
 };
 
 } // namespace MRA::internal::RVC

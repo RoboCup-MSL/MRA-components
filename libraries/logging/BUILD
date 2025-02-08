@@ -13,11 +13,13 @@ cc_library(
         "logdebug.hpp",
         "levels.hpp",
         "control.hpp",
+        "tprintf.hpp",
     ],
     srcs = [
         "backend.cpp",
         "context.cpp",
         "control.cpp",
+        "tprintf.cpp",
     ],
     visibility = ["//visibility:public"],
     includes = ["."],

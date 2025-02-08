@@ -53,6 +53,8 @@ struct VelocityControlData
 
     // result
     VelocityControlResult result;
+    VelocityControlResult ruckig_info;
+
 };
 
 } // namespace MRA::internal::RVC

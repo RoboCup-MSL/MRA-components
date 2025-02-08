@@ -677,6 +677,44 @@ TEST(RobotsportsVelocityControlTest, trajectory1) {
     EXPECT_NEAR(output.velocity().rz(),   0.1949917, 1e-5);
 }
 
+
+TEST(RobotsportsVelocityControlTest, positionYplusTraject) {
+    // Arrange
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_position()->set_y(+1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = RobotsportsVelocityControl::State();
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    int error_value = 0;
+
+    // Act: 1 meter distance with 2 m/s is done is 57.x samples
+    for (auto sample_idx = 0; sample_idx < 57; sample_idx++) {
+        error_value = m.tick(input, params, state, output, diagnostics);
+        input.mutable_worldstate()->mutable_robot()->mutable_position()->CopyFrom(state.positionsetpointfcs());
+        input.mutable_worldstate()->mutable_robot()->mutable_velocity()->CopyFrom(state.velocitysetpointfcs());
+    }
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::POS_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_NEAR(output.velocity().y(), 0.0, 0.005);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+    EXPECT_GT(state.positionsetpointfcs().y(), 0.99); // check position via state
+}
+
+
+
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();

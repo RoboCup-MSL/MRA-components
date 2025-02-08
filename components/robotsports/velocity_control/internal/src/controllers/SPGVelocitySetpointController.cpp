@@ -128,6 +128,8 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
 
     // Done -- store output and values for next iteration
     data.result.velocityRcs = result.velocityRcs;
+    data.ruckig_info = result;
+
 
     // Store previousPositionSetpointFcs
     Position2D tmpPos = result.positionRcs;

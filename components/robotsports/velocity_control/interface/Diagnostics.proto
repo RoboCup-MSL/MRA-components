@@ -18,6 +18,6 @@ message Diagnostics
     int32 numAlgorithmsExecuted = 2;
     MRA.Datatypes.Pose newPositionRCS = 3;
     MRA.Datatypes.Pose newVelocityRCS = 4;
-
+    MRA.Datatypes.Pose newAccelerationRCS = 5;
 }
 

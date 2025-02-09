@@ -22,5 +22,16 @@ void SetOutputsPrepareNext::execute(VelocityControlData &data)
     // set diagnostics
     data.diagnostics.set_controlmode(data.controlMode);
     data.diagnostics.set_numalgorithmsexecuted(data.num_algorithms_executed);
+    data.diagnostics.mutable_newpositionrcs()->set_x(data.ruckig_info.positionRcs.x);
+    data.diagnostics.mutable_newpositionrcs()->set_y(data.ruckig_info.positionRcs.y);
+    data.diagnostics.mutable_newpositionrcs()->set_rz(data.ruckig_info.positionRcs.rz);
+    data.diagnostics.mutable_newvelocityrcs()->set_x(data.ruckig_info.velocityRcs.x);
+    data.diagnostics.mutable_newvelocityrcs()->set_y(data.ruckig_info.velocityRcs.y);
+    data.diagnostics.mutable_newvelocityrcs()->set_rz(data.ruckig_info.velocityRcs.rz);
+    data.diagnostics.mutable_newaccelerationrcs()->set_x(data.ruckig_info.acceleration.x);
+    data.diagnostics.mutable_newaccelerationrcs()->set_y(data.ruckig_info.acceleration.y);
+    data.diagnostics.mutable_newaccelerationrcs()->set_rz(data.ruckig_info.acceleration.rz);
+
 }
+
 

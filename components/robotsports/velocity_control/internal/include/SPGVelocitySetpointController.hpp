@@ -16,45 +16,56 @@
 //#include <ReflexxesAPI.h>
 #include <ruckig/ruckig.hpp>
 
-struct SpgLimits
-{
+struct SpgLimits {
     float vx;
     float vy;
     float vRz;
     float ax;
     float ay;
     float aRz;
-    bool  hasJerkLimit;
+    bool hasJerkLimit;
     float jx;
     float jy;
     float jRz;
+    float vxy;
+    float axy;
 };
 
-class SPGVelocitySetpointController : public AbstractVelocitySetpointController
-{
-public:
+class SPGVelocitySetpointController : public AbstractVelocitySetpointController {
+  public:
     SPGVelocitySetpointController();
     ~SPGVelocitySetpointController();
     bool calculate(VelocityControlData &data);
 
-private:
-    bool calculateSPG(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity);
-    bool isDofAccelerating(const VelocityControlData &data, const Velocity2D& resultVelocity, int dof, float threshold);
+  private:
+    enum AXES {
+      AXES_XY,
+      AXES_RZ,
+      AXES_XYRZ
+    };
+
+    bool calculateSPG(const VelocityControlData& r_data, const SpgLimits& r_spgLimits, VelocityControlResult& result);
 
     // Position SPG
-    bool calculatePosXYRzPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity);
-    bool calculatePosXYPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity);
-    bool calculatePosRzNonSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity);
+    bool calculatePosXYRzPhaseSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
+    bool calculatePosXYPhaseSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
+    bool calculatePosRzNonSynchronized(const VelocityControlData& r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
 
     // Velocity SPG
-    bool calculateVelXYRzPhaseSynchronized(VelocityControlData& data, SpgLimits const &spgLimits, Position2D& resultPosition, Velocity2D &resultVelocity);
+    bool calculateVelXYRzPhaseSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
+
+    // helper function for calculation using ruckig library
+    template<size_t DOFs, template<class, size_t> class CustomVector>
+    bool ruckig_calculate(const MRA::internal::RVC::VelocityControlData & r_data,
+                          ruckig::InputParameter<DOFs, CustomVector>& r_input,
+                          AXES axes,
+                          MRA::internal::RVC::VelocityControlResult & r_result);
+
 
     // internal data stored for open loop
     Position2D m_deltaPositionRCS;
     Velocity2D m_currentVelocityRCS;
     Velocity2D m_targetVelocityRCS;
-
 };
 
 #endif
-

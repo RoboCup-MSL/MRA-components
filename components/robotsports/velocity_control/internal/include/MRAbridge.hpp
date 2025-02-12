@@ -5,7 +5,7 @@
 #include "geometry.hpp"
 typedef MRA::Geometry::Position Position2D;
 typedef MRA::Geometry::Velocity Velocity2D;
-typedef MRA::Geometry::Pose pose;
+typedef MRA::Geometry::Pose Pose2D;
 
 // VelocityControlData is now basically a collection of protobuf datatypes
 #include "components/robotsports/velocity_control/interface/Input.pb.h"

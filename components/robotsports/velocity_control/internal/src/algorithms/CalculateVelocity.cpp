@@ -35,21 +35,21 @@ void CalculateVelocity::execute(VelocityControlData &data)
         bool xyDeltaSmallEnough = ((abs(deltaPosition.x) < tolerance) && (abs(deltaPosition.y) < tolerance));
         bool rzDeltaSmallEnough = (abs(deltaPosition.rz) < tolerance);
         // is SPG converged?
-        bool xySPGConverged = ((abs(data.resultVelocityRcs.x) < tolerance) && (abs(data.resultVelocityRcs.y) < tolerance));
-        bool rzSPGConverged = (abs(data.resultVelocityRcs.rz) < tolerance);
+        bool xySPGConverged = ((abs(data.result.velocityRcs.x) < tolerance) && (abs(data.result.velocityRcs.y) < tolerance));
+        bool rzSPGConverged = (abs(data.result.velocityRcs.rz) < tolerance);
         // run linear controller
         VelocityControlData tmpdata = data;
         LinearVelocitySetpointController().calculate(tmpdata);
         // overrule XY?
         if (xySPGConverged && !xyDeltaSmallEnough)
         {
-            data.resultVelocityRcs.x = tmpdata.resultVelocityRcs.x;
-            data.resultVelocityRcs.y = tmpdata.resultVelocityRcs.y;
+            data.result.velocityRcs.x = tmpdata.result.velocityRcs.x;
+            data.result.velocityRcs.y = tmpdata.result.velocityRcs.y;
         }
         // overrule Rz?
         if (rzSPGConverged && !rzDeltaSmallEnough)
         {
-            data.resultVelocityRcs.rz = tmpdata.resultVelocityRcs.rz;
+            data.result.velocityRcs.rz = tmpdata.result.velocityRcs.rz;
         }
     }
 }

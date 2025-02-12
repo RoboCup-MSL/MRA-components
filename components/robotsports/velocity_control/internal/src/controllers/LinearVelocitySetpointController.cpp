@@ -20,7 +20,7 @@ bool LinearVelocitySetpointController::calculate(VelocityControlData &data)
     Velocity2D resultVelocityFcs(deltaPosition / data.config.dt());
 
     // transform to RCS
-    data.resultVelocityRcs = resultVelocityFcs.transformFcsToRcs(data.currentPositionFcs);
+    data.result.velocityRcs = resultVelocityFcs.transformFcsToRcs(data.currentPositionFcs);
 
     // typically ApplyLimits should be called afterwards
 

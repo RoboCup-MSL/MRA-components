@@ -12,6 +12,7 @@ void SetOutputsPrepareNext::execute(VelocityControlData &data)
     data.output.mutable_velocity()->set_y(data.result.velocityRcs.y);
     data.output.mutable_velocity()->set_rz(data.result.velocityRcs.rz);
 
+    data.state.set_executed_before(true);
     data.state.mutable_positionsetpointfcs()->set_x(data.previousPositionSetpointFcs.x);
     data.state.mutable_positionsetpointfcs()->set_y(data.previousPositionSetpointFcs.y);
     data.state.mutable_positionsetpointfcs()->set_rz(data.previousPositionSetpointFcs.rz);

@@ -292,8 +292,9 @@ void checkFlushHistory(MRA::Datatypes::ActionType currentActionType, ParamsType 
             {
                 MRA_LOG_ERROR("failed to open file for writing: %s", filename.c_str());
             }
-            // logging
+            // logging, also to stdout
             MRA_LOG_INFO("flushed history to file: %s (%d bytes)", filename.c_str(), byteCount+4);
+            tprintf("flushed history to file: %s (%d bytes)", filename.c_str(), byteCount+4);
         }
         // reset and re-initialize history
         state.Clear();

@@ -5,9 +5,6 @@
  */
 #include "RoleAssigner.hpp"
 
-#include "RolePosition.hpp"
-#include "GlobalPathDynamicPlanner.hpp"
-#include "MathUtils.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -17,11 +14,13 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "Dynamics.hpp"
+#include "MathUtils.hpp"
+#include "RoleAssignerData.hpp"
 #include "RoleAssignerExport.hpp"
 #include "RoleAssignerSvg.hpp"
+#include "RolePosition.hpp"
 #include "Vertex.hpp"
-#include "RoleAssignerData.hpp"
-#include "GlobalPathPlanner.hpp"
 
 using namespace std;
 using namespace MRA;
@@ -219,44 +218,6 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
         }
     }
 
-    // calculate path for this robot
-    calculatePathForRobot(role_assigner_data, role_assigner_data.this_player_idx);
-    if (role_assigner_data.parameters.calculateAllPaths) {
-        // Calculate Robot Planner path for other robots
-        for (unsigned idx = 0; idx < role_assigner_data.team_admin.size(); idx++) {
-            // all robots except this-robot (already calculated)
-            if (role_assigner_data.this_player_idx != idx) {
-                if (role_assigner_data.team_admin[idx].assigned )  {
-                    // calculate path for robot.
-                    calculatePathForRobot(role_assigner_data, idx);
-                }
-            }
-        }
-    }
-
-    if (role_assigner_data.gamestate == NORMAL and (isOneOf(role_assigner_data.ball.status, {FREE, OWNED_BY_PLAYER}))) {
-        // replan interceptor with local ball only if interceptor is not performing a priority block
-        int interceptorIdx = -1;
-        for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
-            if (role_assigner_data.team_admin[idx].assigned)  {
-                if (role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_MAIN) {
-                    interceptorIdx = idx;
-                }
-
-            }
-        }
-
-        bool replan = false;
-        if ((interceptorIdx == (int) role_assigner_data.this_player_idx) || role_assigner_data.parameters.calculateAllPaths) {
-            replan = (interceptorIdx != -1)
-                      and (role_assigner_data.team_admin[interceptorIdx].result.path.size() > 0)
-                      and (role_assigner_data.team_admin[interceptorIdx].result.path[0].target != PRIORITY_BLOCK);
-        }
-        if (replan and interceptorIdx >= 0) {
-            ReplanInterceptor(interceptorIdx, role_assigner_data);
-        }
-    }
-
     // loop over the player path to verify if path of this player stay within the allowed boundaries (field+safety area)
     bool thisPlayerHasUnallowedPath = false;
     bool thisPlayerStartsAtUnallowedPosition = false;
@@ -316,6 +277,44 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
         }
     }
 
+    // // calculate path for this robot
+    calculatePathForRobot(role_assigner_data, role_assigner_data.this_player_idx);
+    if (role_assigner_data.parameters.calculateAllPaths) {
+        // Calculate Robot Planner path for other robots
+        for (unsigned idx = 0; idx < role_assigner_data.team_admin.size(); idx++) {
+            // all robots except this-robot (already calculated)
+            if (role_assigner_data.this_player_idx != idx) {
+                if (role_assigner_data.team_admin[idx].assigned )  {
+                    // calculate path for robot.
+                    calculatePathForRobot(role_assigner_data, idx);
+                }
+            }
+        }
+    }
+
+    if (role_assigner_data.gamestate == NORMAL and (isOneOf(role_assigner_data.ball.status, {FREE, OWNED_BY_PLAYER}))) {
+        // replan interceptor with local ball only if interceptor is not performing a priority block
+        int interceptorIdx = -1;
+        for (unsigned idx = 0; idx < role_assigner_data.team.size(); idx++) {
+            if (role_assigner_data.team_admin[idx].assigned)  {
+                if (role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_MAIN) {
+                    interceptorIdx = idx;
+                }
+            }
+        }
+
+        bool replan = false;
+        if ((interceptorIdx == (int) role_assigner_data.this_player_idx) || role_assigner_data.parameters.calculateAllPaths) {
+            replan = (interceptorIdx != -1)
+                      and (role_assigner_data.team_admin[interceptorIdx].result.path.size() > 0)
+                      and (role_assigner_data.team_admin[interceptorIdx].result.path[0].target != PRIORITY_BLOCK);
+        }
+        if (replan and interceptorIdx >= 0) {
+            ReplanInterceptor(interceptorIdx, role_assigner_data);
+        }
+    }
+
+
     // ----------------------------------------------------------
     // Put the player_paths in the same order as Team was defined by the client
     // Can be remove if client provide team in correct ordere
@@ -340,36 +339,49 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
 void
 RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, unsigned idx) {
 
-    MRA::Geometry::Point BallTargetPos = MRA::Geometry::Point (r_role_assigner_data.pass_data.target_pos.x, r_role_assigner_data.pass_data.target_pos.y);
+    // MRA::Geometry::Point BallTargetPos = MRA::Geometry::Point (r_role_assigner_data.pass_data.target_pos.x, r_role_assigner_data.pass_data.target_pos.y);
 
-    bool avoidBallPath = (r_role_assigner_data.gamestate == game_state_e::NORMAL and r_role_assigner_data.ball.status )
-                    and r_role_assigner_data.pass_data.valid; // avoid ball path only if pass made (or shot on goal) during normal play (normal_attack)
-    if (r_role_assigner_data.team_admin[idx].result.is_pass_desitination) {
-        // in case of pass, don't avoid ball path if player is destination of the pass
-        avoidBallPath = false;
-    }
+    // bool avoidBallPath = (r_role_assigner_data.gamestate == game_state_e::NORMAL and r_role_assigner_data.ball.status )
+    //                 and r_role_assigner_data.pass_data.valid; // avoid ball path only if pass made (or shot on goal) during normal play (normal_attack)
+    // if (r_role_assigner_data.team_admin[idx].result.is_pass_desitination) {
+    //     // in case of pass, don't avoid ball path if player is destination of the pass
+    //     avoidBallPath = false;
+    // }
 
-    vector<RoleAssignerRobot> myTeam = getTeamMates (r_role_assigner_data, idx, true);
-    GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_role_assigner_data.environment); // create robot planner
-    visibilityGraph.setOptions (r_role_assigner_data.parameters);
-    // create list of possible targets for robot-planner
-    std::vector<MRA::Vertex> targetPos = vector<MRA::Vertex> ();
+    // vector<RoleAssignerRobot> myTeam = getTeamMates (r_role_assigner_data, idx, true);
+    // GlobalPathPlanner visibilityGraph = GlobalPathPlanner (r_role_assigner_data.environment); // create robot planner
+    // visibilityGraph.setOptions (r_role_assigner_data.parameters);
+    // // create list of possible targets for robot-planner
+    // std::vector<MRA::Vertex> targetPos = vector<MRA::Vertex> ();
 
-    // check if role position is in allowed, if not allowed update position to an allowed positions
-    r_role_assigner_data.team_admin[idx].result.target = updatePositionIfNotAllowed (
-                    r_role_assigner_data.team[idx].position, r_role_assigner_data.team_admin[idx].result.role,
-                    r_role_assigner_data.team_admin[idx].result.target, r_role_assigner_data.environment);
+    // // check if role position is in allowed, if not allowed update position to an allowed positions
+    // r_role_assigner_data.team_admin[idx].result.target = updatePositionIfNotAllowed (
+    //                 r_role_assigner_data.team[idx].position, r_role_assigner_data.team_admin[idx].result.role,
+    //                 r_role_assigner_data.team_admin[idx].result.target, r_role_assigner_data.environment);
 
-    bool stay_in_playing_field = stayInPlayingField (r_role_assigner_data.gamestate);
+    // bool stay_in_playing_field = stayInPlayingField (r_role_assigner_data.gamestate);
 
-    auto target = Vertex (r_role_assigner_data.team_admin[idx].result.target, 0);
-    visibilityGraph.createGraph (r_role_assigner_data.team[idx].position, r_role_assigner_data.team[idx].velocity, r_role_assigner_data.ball,
-                                 myTeam, r_role_assigner_data.opponents,  r_role_assigner_data.no_opponent_obstacles,
-                                 target,r_role_assigner_data.team_admin[idx].result.planner_target,
-                                 r_role_assigner_data.ballIsObstacle,
-                                 avoidBallPath, stay_in_playing_field, BallTargetPos);
+    // auto target = Vertex (r_role_assigner_data.team_admin[idx].result.target, 0);
+    // visibilityGraph.createGraph (r_role_assigner_data.team[idx].position, r_role_assigner_data.team[idx].velocity, r_role_assigner_data.ball,
+    //                              myTeam, r_role_assigner_data.opponents,  r_role_assigner_data.no_opponent_obstacles,
+    //                              target,r_role_assigner_data.team_admin[idx].result.planner_target,
+    //                              r_role_assigner_data.ballIsObstacle,
+    //                              avoidBallPath, stay_in_playing_field, BallTargetPos);
 
-    r_role_assigner_data.team_admin[idx].result.path = visibilityGraph.getShortestPath(r_role_assigner_data);
+    // r_role_assigner_data.team_admin[idx].result.path = visibilityGraph.getShortestPath(r_role_assigner_data);
+
+    path_piece_t start_piece = { .x = r_role_assigner_data.team[idx].position.x, 
+                                .y = r_role_assigner_data.team[idx].position.y, 
+                                .cost = 0.0, 
+                                .target=r_role_assigner_data.team_admin[idx].result.planner_target };
+    r_role_assigner_data.team_admin[idx].result.path.push_back(start_piece);
+    
+    path_piece_t end_piece = {.x = r_role_assigner_data.team_admin[idx].result.target.x, 
+                              .y = r_role_assigner_data.team_admin[idx].result.target.y, 
+                              .cost = r_role_assigner_data.team_admin[idx].result.target.distanceTo(r_role_assigner_data.team[idx].position), 
+                              .target = r_role_assigner_data.team_admin[idx].result.planner_target };
+    r_role_assigner_data.team_admin[idx].result.path.push_back(end_piece);
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -963,75 +975,88 @@ void RoleAssigner::printAssignInputs(const RoleAssignerData& role_assigner_data)
     }
 }
 
-void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData&  role_assigner_data)
+void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData&  r_role_assigner_data)
 {
-    if (role_assigner_data.ball.is_valid == false) {
+    if (r_role_assigner_data.ball.is_valid == false) {
         return; // invalid ball, can not calculate new path
     }
+
+    MRA::Geometry::Point original_role_position = r_role_assigner_data.team_admin[interceptorIdx].result.target;
+
     // this player is interceptor and game state is normal.
     // Replan: using dynamic path planner and local ball.
-    double shortestDistanceOpponentToBall = calculateShortestDistanceObjectsToTarget(getOpponents(role_assigner_data.opponents), role_assigner_data.ball.position);
-    int nrDynamicPlannerIterations = role_assigner_data.parameters.nrDynamicPlannerIterations;
-    double maxSpeed = role_assigner_data.parameters.maxPossibleLinearSpeed;
-    double distRobotToBall = role_assigner_data.team[role_assigner_data.this_player_idx].position.distanceTo(role_assigner_data.ball.position);
-    // check if ball approach from best angle must be applied.
-    if (distRobotToBall < shortestDistanceOpponentToBall + 1.0) {
-        // always approach from outside when the robot is closer to the ball than any opponent + 1.0 meter
-        role_assigner_data.parameters.addBallApproachVertices = true;
-        role_assigner_data.parameters.distToapplyBallApproachVertices = role_assigner_data.environment.getFieldWidth();
-    } else {
-        // go straight to the ball
-        role_assigner_data.parameters.addBallApproachVertices = false;
-    }
-
-    MRA::Vertex targetPos = Vertex(role_assigner_data.ball.position, 0);
-    std::vector<path_piece_t> path;
-
-    vector<RoleAssignerRobot> myTeam = getTeamMates(role_assigner_data, interceptorIdx, true);
-    bool stay_in_playing_field = stayInPlayingField (role_assigner_data.gamestate);
+    int nrDynamicPlannerIterations = r_role_assigner_data.parameters.nrDynamicPlannerIterations;
+    double maxSpeed = r_role_assigner_data.parameters.maxPossibleLinearSpeed;
+    vector<RoleAssignerRobot> myTeam = getTeamMates(r_role_assigner_data, interceptorIdx, true);
 
     if (nrDynamicPlannerIterations <= 0) {
-        bool avoidBallPath = false; // intercept should never avoid a passing ball.
-        MRA::Geometry::Point BallTargetPos;
-        // use normal planner
-        // when ball is obstacle or no iterations for dynamic planner is defined.
-        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.environment);
-        visibilityGraph.setOptions(role_assigner_data.parameters);
-        vector<RoleAssignerRobot> myTeam = getTeamMates(role_assigner_data, interceptorIdx, false);
-        bool stay_in_playing_field = stayInPlayingField (role_assigner_data.gamestate);
-        visibilityGraph.createGraph(role_assigner_data.team[interceptorIdx].position,
-                                    role_assigner_data.team[interceptorIdx].velocity, role_assigner_data.ball, myTeam, 
-                                    role_assigner_data.opponents, role_assigner_data.no_opponent_obstacles,
-                targetPos, planner_target_e::GOTO_BALL, role_assigner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
-        path = visibilityGraph.getShortestPath(role_assigner_data);
+        r_role_assigner_data.team_admin[interceptorIdx].result.target = r_role_assigner_data.ball.position;
+        r_role_assigner_data.team_admin[interceptorIdx].result.planner_target = planner_target_e::GOTO_BALL;
     } else {
-        // use dynamic robot planner for goto ball
-        GlobalPathDynamicPlanner dp = GlobalPathDynamicPlanner();
-        path = dp.planPath(    role_assigner_data.team[interceptorIdx].position, role_assigner_data.team[interceptorIdx].velocity,
-                               myTeam, role_assigner_data, targetPos,
-                planner_target_e::GOTO_BALL, role_assigner_data.ballIsObstacle, maxSpeed,
-                nrDynamicPlannerIterations, stay_in_playing_field);
+        // Currently we do not use the initial robot speed
+
+        // Find initial intercept point
+        Dynamics::dynamics_t intercept_data = Dynamics::interceptBall(r_role_assigner_data.ball,
+                                                     r_role_assigner_data.team[interceptorIdx].position, maxSpeed,
+                                                     r_role_assigner_data.environment, r_role_assigner_data.parameters.move_to_ball_left_field_position);
+        if (intercept_data.intercept_position.x == std::numeric_limits<double>::has_quiet_NaN) {
+            // No intercept possible, return empty list
+            // if (logDynamicPlanner) {
+            //     MRA_LOG_INFO("No intercept possible");
+            // }
+        }
+        // if (logDynamicPlanner) {
+        //     MRA_LOG_INFO("calculate interception point %s", intercept_data.intercept_position.toString().c_str());
+        // }
+
+        // bool avoidBallPath = false; // Not need to avoid the ball. This function is only used for the interceptor
+        Geometry::Point BallTargetPos;
+
+        int iteration = 1;
+
+        auto target = Vertex(intercept_data.intercept_position, 0);
+        r_role_assigner_data.team_admin[interceptorIdx].result.target = intercept_data.intercept_position;
+        r_role_assigner_data.team_admin[interceptorIdx].result.planner_target = planner_target_e::GOTO_BALL;
+
+        while ((nrDynamicPlannerIterations - iteration > 0) && (!intercept_data.move_to_ball_leave_field_pos)) {
+            // See how long it takes to get to intercept point
+            // add extra 300 milliseconds (default delay, due to vision processing and role assigner execution frequency
+            double distToBall = intercept_data.intercept_position.distanceTo(r_role_assigner_data.team[interceptorIdx].position);
+            double time = distToBall * maxSpeed + 0.300;
+            // if (logDynamicPlanner) {
+            //     MRA_LOG_INFO("Path takes %f seconds. Recalculating.", time);
+            // }
+            // Calculate new intercept point based on minimum time
+            Geometry::Position newInterceptPosition =  r_role_assigner_data.ball.position + (r_role_assigner_data.ball.velocity*time);
+            if (newInterceptPosition.x == std::numeric_limits<double>::has_quiet_NaN) {
+                // Return previous path
+                // if (logDynamicPlanner) {
+                //     MRA_LOG_INFO("New intercept impossible. Returning last path.");
+                // }
+                // return path;
+            }
+
+            auto newInterceptInField = r_role_assigner_data.environment.isInField(newInterceptPosition, 0.0);
+            if (!newInterceptInField) {
+                auto interceptPoint = Dynamics::calculateBallLeavingFieldPoint(r_role_assigner_data.ball, r_role_assigner_data.environment);
+                newInterceptPosition.x = interceptPoint.x;
+                newInterceptPosition.y = interceptPoint.y;
+            }
+
+            r_role_assigner_data.team_admin[interceptorIdx].result.target = newInterceptPosition;
+            r_role_assigner_data.team_admin[interceptorIdx].result.planner_target = planner_target_e::GOTO_BALL;
+            iteration++;
+        }
+
     }
 
-    if (not path.empty()) {
-        MRA::Geometry::Point original_role_position(path[path.size()-1].x, path[path.size()-1].y);
-        // check if role position is in allowed, if not allowed update position to an allowed positions
-        MRA::Geometry::Point role_position = updatePositionIfNotAllowed(role_assigner_data.team[interceptorIdx].position,
-                                                            role_assigner_data.team_admin[interceptorIdx].result.role,
-                                                            original_role_position, role_assigner_data.environment);
+    // check if role position is in allowed, if not allowed update position to an allowed positions
+    MRA::Geometry::Point role_position = updatePositionIfNotAllowed(r_role_assigner_data.team[interceptorIdx].position,
+                                                     r_role_assigner_data.team_admin[interceptorIdx].result.role,
+                                                     original_role_position, r_role_assigner_data.environment);
 
-        MRA::Vertex roleTargetPos = Vertex(role_position, 0);
-
-        bool avoidBallPath = false; // intercept should never avoid a passing ball.
-        MRA::Geometry::Point BallTargetPos;
-        GlobalPathPlanner visibilityGraph = GlobalPathPlanner(role_assigner_data.environment);
-        visibilityGraph.setOptions(role_assigner_data.parameters);
-        visibilityGraph.createGraph(role_assigner_data.team[interceptorIdx].position, role_assigner_data.team[interceptorIdx].velocity,
-                                    role_assigner_data.ball, myTeam, role_assigner_data.opponents, role_assigner_data.no_opponent_obstacles,
-                roleTargetPos, planner_target_e::GOTO_BALL, role_assigner_data.ballIsObstacle, avoidBallPath, stay_in_playing_field, BallTargetPos);
-        path = visibilityGraph.getShortestPath(role_assigner_data);
-    }
-    role_assigner_data.team_admin[interceptorIdx].result.path = path;
+    r_role_assigner_data.team_admin[interceptorIdx].result.target = role_position;
+    r_role_assigner_data.team_admin[interceptorIdx].result.planner_target = planner_target_e::GOTO_BALL;
 }
 
 ////---------------------------------------------------------------------------------------------------------------------

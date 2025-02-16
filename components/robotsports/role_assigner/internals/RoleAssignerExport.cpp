@@ -8,7 +8,6 @@
 
 #include "RoleAssignerExport.hpp"
 
-#include "GlobalPathPlanner.hpp"
 #include <vector>
 #include <iostream>
 #include <algorithm>

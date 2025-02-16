@@ -25,7 +25,6 @@
 
 
 #include "StrategyTester_generated.h" // generated
-#include "GlobalPathPlanner.hpp" // for print path
 #include "xmlRoleAssigner.hpp"
 
 #include "Environment.hpp"

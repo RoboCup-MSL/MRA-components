@@ -277,18 +277,22 @@ void RoleAssigner::assign(const RoleAssignerInput& r_input,
         }
     }
 
-    // // calculate path for this robot
-    calculatePathForRobot(role_assigner_data, role_assigner_data.this_player_idx);
-    if (role_assigner_data.parameters.calculateAllPaths) {
-        // Calculate Robot Planner path for other robots
-        for (unsigned idx = 0; idx < role_assigner_data.team_admin.size(); idx++) {
-            // all robots except this-robot (already calculated)
-            if (role_assigner_data.this_player_idx != idx) {
-                if (role_assigner_data.team_admin[idx].assigned )  {
-                    // calculate path for robot.
-                    calculatePathForRobot(role_assigner_data, idx);
-                }
-            }
+    // // set start and end-path for all robot
+    for (unsigned idx = 0; idx < role_assigner_data.team_admin.size(); idx++) {
+        // all robots except this-robot (already calculated)
+        if (role_assigner_data.team_admin[idx].assigned )  {
+            // calculate path for robot.
+            path_piece_t start_piece = { .x = role_assigner_data.team[idx].position.x, 
+                                         .y = role_assigner_data.team[idx].position.y, 
+                                         .cost = 0.0, 
+                                         .target = role_assigner_data.team_admin[idx].result.planner_target };
+            role_assigner_data.team_admin[idx].result.path.push_back(start_piece);
+
+            path_piece_t end_piece = {.x = role_assigner_data.team_admin[idx].result.target.x, 
+                                      .y = role_assigner_data.team_admin[idx].result.target.y, 
+                                      .cost = role_assigner_data.team_admin[idx].result.target.distanceTo(role_assigner_data.team[idx].position), 
+                                      .target = role_assigner_data.team_admin[idx].result.planner_target };
+            role_assigner_data.team_admin[idx].result.path.push_back(end_piece);
         }
     }
 
@@ -370,17 +374,6 @@ RoleAssigner::calculatePathForRobot (RoleAssignerData &r_role_assigner_data, uns
 
     // r_role_assigner_data.team_admin[idx].result.path = visibilityGraph.getShortestPath(r_role_assigner_data);
 
-    path_piece_t start_piece = { .x = r_role_assigner_data.team[idx].position.x, 
-                                .y = r_role_assigner_data.team[idx].position.y, 
-                                .cost = 0.0, 
-                                .target=r_role_assigner_data.team_admin[idx].result.planner_target };
-    r_role_assigner_data.team_admin[idx].result.path.push_back(start_piece);
-    
-    path_piece_t end_piece = {.x = r_role_assigner_data.team_admin[idx].result.target.x, 
-                              .y = r_role_assigner_data.team_admin[idx].result.target.y, 
-                              .cost = r_role_assigner_data.team_admin[idx].result.target.distanceTo(r_role_assigner_data.team[idx].position), 
-                              .target = r_role_assigner_data.team_admin[idx].result.planner_target };
-    r_role_assigner_data.team_admin[idx].result.path.push_back(end_piece);
 
 }
 
@@ -1009,7 +1002,6 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
         //     MRA_LOG_INFO("calculate interception point %s", intercept_data.intercept_position.toString().c_str());
         // }
 
-        // bool avoidBallPath = false; // Not need to avoid the ball. This function is only used for the interceptor
         Geometry::Point BallTargetPos;
 
         int iteration = 1;

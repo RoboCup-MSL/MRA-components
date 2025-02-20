@@ -55,8 +55,8 @@ public:
     // get distance to point c
     double distanceTo(const MRA::Geometry::Point& p) const;
 
-    // get string representation of the point with 2 decimals
-    std::string toString() const;
+    // get string representation of the point with x decimals (default: 2)
+    std::string toString(unsigned precision=2) const;
 
     // functions call wrap_angles, left to be implemented by Position
     virtual void wrap_angles();

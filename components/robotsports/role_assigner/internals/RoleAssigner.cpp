@@ -20,7 +20,6 @@
 #include "RoleAssignerExport.hpp"
 #include "RoleAssignerSvg.hpp"
 #include "RolePosition.hpp"
-#include "Vertex.hpp"
 
 using namespace std;
 using namespace MRA;
@@ -1006,7 +1005,6 @@ void RoleAssigner::ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData& 
 
         int iteration = 1;
 
-        auto target = Vertex(intercept_data.intercept_position, 0);
         r_role_assigner_data.team_admin[interceptorIdx].result.target = intercept_data.intercept_position;
         r_role_assigner_data.team_admin[interceptorIdx].result.planner_target = planner_target_e::GOTO_BALL;
 

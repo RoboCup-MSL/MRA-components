@@ -2,7 +2,6 @@ cc_library(
     name = "RoleAssigner",
     srcs = [
         "Dynamics.cpp",
-        "Edge.cpp",
         "Environment.cpp",
         "EnvironmentParameters.cpp",
         "GridHeuristic.cpp",
@@ -17,11 +16,9 @@ cc_library(
         "RoleAssignerRobot.cpp",
         "RoleAssignerSvg.cpp",
         "RolePosition.cpp",
-        "Vertex.cpp",
     ],
     hdrs = [
         "Dynamics.hpp",
-        "Edge.hpp",
         "Environment.hpp",
         "EnvironmentParameters.hpp",
         "GridHeuristic.hpp",
@@ -38,7 +35,6 @@ cc_library(
         "RoleAssignerSvg.hpp",
         "RoleAssigner_types.hpp",
         "RolePosition.hpp",
-        "Vertex.hpp",
     ],
     includes = [
         "."

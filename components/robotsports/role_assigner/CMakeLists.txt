@@ -7,7 +7,6 @@ set(STRATEGY_TESTER_CPP StrategyTester_generated.cpp)
 add_library(MRA-components-robotsports-role-assigner
     tick.cpp
     internals/Dynamics.cpp
-    internals/Edge.cpp
     internals/Environment.cpp
     internals/EnvironmentParameters.cpp
     internals/GridHeuristic.cpp
@@ -21,7 +20,6 @@ add_library(MRA-components-robotsports-role-assigner
     internals/RoleAssignerParameters.cpp
     internals/RoleAssignerRobot.cpp
     internals/RoleAssigner.cpp
-    internals/Vertex.cpp
     internals/RoleAssignerGrid.cpp
 )
 

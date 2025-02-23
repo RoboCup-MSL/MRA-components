@@ -5,7 +5,6 @@
  */
 #include "MathUtils.hpp"
 #include "logging.hpp"
-#include "Vertex.hpp"
 #include "RoleAssignerData.hpp"
 //class RoleAssignerResult;
 
@@ -110,7 +109,6 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
 
     m_environment = r_input.environment;
 
-    std::vector<Vertex* > vertices = std::vector<Vertex* >();
     std::vector<MRA::Geometry::Point> parking_positions;
     std::vector<MRA::Geometry::Position> myTeam = {};
     for (auto idx = 0u; idx < r_input.team.size(); idx++) {
@@ -547,25 +545,6 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
     fprintf(fp,"<text x=\"%4.2fcm\" y=\"%4.2fcm\" fill=\"darkred\">OWN</text>",
             (totalFieldWidth*0.5)-(r_input.environment.getGoalWidth()*0.2),
             r_input.environment.getFieldMargin()+r_input.environment.getFieldLength()+(r_input.environment.getGoalLength()*0.75));
-
-    //vertices
-    for (auto j = 0u; j < vertices.size(); j++) {
-        Vertex* v = vertices[j];
-
-        fprintf(fp,
-                "<circle cx=\"%4.2fcm\" cy=\"%4.2fcm\" r=\"%4.2fcm\" fill=\"orange\" stroke=\"orange\" stroke-width=\"0.125cm\"  />\n",
-                svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), 0.01);
-        if (r_parameters.svgDrawEdges) {
-            for (std::vector<Edge>::iterator it = v->m_neighbours.begin(); it != v->m_neighbours.end(); ++it) {
-                Edge e = *it;
-                Vertex* t = e.m_pTarget;
-                fprintf(fp,
-                        "<line x1=\"%4.2fcm\" y1=\"%4.2fcm\" x2=\"%4.2fcm\" y2=\"%4.2fcm\" stroke-width=\"0.025cm\"  stroke=\"pink\"/>\n",
-                        svgX(v->m_coordinate.x),  svgY(v->m_coordinate.y), svgX(t->m_coordinate.x),  svgY(t->m_coordinate.y));
-
-            }
-        }
-    }
 
     // OPPONENTS
     for(auto bar_idx = 0u; bar_idx != r_input.opponents.size(); bar_idx++) {

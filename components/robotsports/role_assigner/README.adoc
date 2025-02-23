@@ -9,17 +9,11 @@ REMAINING WORK (TODO list) - to create first version:
 * updated based on known issues in original code
 ** no opponent obstacles: add test-case, fill in data via xml
 ** apply additional cost of edges outside the playing field (scaled with distance to outerlines of the playing field)
-** fix overshoot in graphs
-** restructure: split role assignment and calculate rough path (optional)
-* Bazel support
 * Review
 ** discuss interfaces
 ** discuss Environment as generic library ?
 ** discuss MathUtils  as generic library ?
 
-
-Future development:
-===================
 
 
 

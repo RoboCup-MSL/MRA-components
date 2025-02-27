@@ -173,10 +173,6 @@ bool SPGVelocitySetpointController::calculateSPG(const VelocityControlData& r_da
 bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(const VelocityControlData& r_data,
                                                                       const SpgLimits &r_spgLimits,
                                                                       VelocityControlResult& r_result) {
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-    //    // construct Reflexxes objects
-
     const int numberOfDOFs = 3; // degrees of freedom (x,y,Rz)
     InputParameter<numberOfDOFs> input;
 
@@ -198,16 +194,16 @@ bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(const Velo
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
     //      input.target_acceleration = {0.0, 0.0, 0.5}; // TODO ruckig
 
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XYRZ, r_result);
 }
 
 bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const VelocityControlData &r_data,
                                                                     const SpgLimits& r_spgLimits,
                                                                     VelocityControlResult& r_result) {
-    //    RMLPositionFlags            Flags;
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-
     const int numberOfDOFs = 2; // degrees of freedom (x,y)
     InputParameter<numberOfDOFs> input;
 
@@ -228,6 +224,10 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const Veloci
     input.target_position = {m_deltaPositionRCS.x, m_deltaPositionRCS.y}; // steering from currentPos = 0 to targetPos = deltaPos
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y};
 
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XY, r_result);
 }
 
@@ -235,10 +235,6 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const Veloci
 bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(const VelocityControlData &r_data, 
                                                                   const SpgLimits& r_spgLimits,
                                                                   VelocityControlResult& r_result) {
-    //    RMLPositionFlags            Flags;
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::NO_SYNCHRONIZATION;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-    //
     const int numberOfDOFs = 1; // degrees of freedom (Rz)
     InputParameter<numberOfDOFs> input;
 
@@ -253,6 +249,9 @@ bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(const Velocity
     }
     input.target_position[0] = m_deltaPositionRCS.rz;
     input.target_velocity[0] = m_targetVelocityRCS.rz;
+
+    // Calculate every DoF independently
+    input.synchronization = Synchronization::None;
 
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_RZ, r_result );
 }
@@ -278,7 +277,6 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(const Velo
     input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
     input.current_acceleration[1] = 0.0;
     input.current_acceleration[2] = 0.0;
-    input.synchronization = Synchronization::Phase; // always synchronize the DoFs to reach the target at the same time
 
     input.max_velocity = {r_spgLimits.vx, r_spgLimits.vy, r_spgLimits.vRz};
     input.max_acceleration = {r_spgLimits.ax, r_spgLimits.ay, r_spgLimits.aRz};
@@ -289,6 +287,10 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(const Velo
 
     input.target_position = {};
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
+
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
 
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XYRZ, r_result);
 }

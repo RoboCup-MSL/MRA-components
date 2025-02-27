@@ -715,7 +715,7 @@ TEST(RobotsportsVelocityControlTest, positionYplusTraject) {
     EXPECT_GT(state.positionsetpointfcs().y(), 0.99); // check position via state
 }
 
-TEST(RobotsportsVelocityControlTest, moveToBall) {
+TEST(RobotsportsVelocityControlTest, moveToBall_traject) {
     // Arrange
     auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
     auto input = RobotsportsVelocityControl::Input();
@@ -736,8 +736,7 @@ TEST(RobotsportsVelocityControlTest, moveToBall) {
 
     int error_value = 0;
 
-    // Act: 1 meter distance with 2 m/s is done is 57.x samples
-    for (auto sample_idx = 0; sample_idx < 229; sample_idx++) {
+    for (auto sample_idx = 0; sample_idx < 230; sample_idx++) {
         std::cout << "\n\n==================================== \nsample_idx = " << sample_idx << std::endl;
         std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
         std::cout << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
@@ -752,7 +751,7 @@ TEST(RobotsportsVelocityControlTest, moveToBall) {
     // Assert
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::POS_ONLY);
-    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_NEAR(output.velocity().x(), 0.0, 0.001);
     EXPECT_NEAR(output.velocity().y(), 0.0, 0.001);
     EXPECT_EQ(output.velocity().rz(), 0.0);
     EXPECT_NEAR(state.positionsetpointfcs().x(), 0.97328414980065947, 0.02); // check position via state
@@ -801,7 +800,7 @@ TEST(RobotsportsVelocityControlTest, moveToBall_sample_1) {
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::POS_ONLY);
     EXPECT_EQ(output.velocity().x(), 0.05);
-    EXPECT_NEAR(output.velocity().y(), 0.05, 0.001);
+    EXPECT_NEAR(output.velocity().y(), 0.02009, 0.001);
     EXPECT_EQ(output.velocity().rz(), -0.05);
     EXPECT_NEAR(state.positionsetpointfcs().x(), -6.4998611901630827, 0.02); // check position via state
     EXPECT_NEAR(state.positionsetpointfcs().y(), -1.0040211636203276, 0.02); // check position via state

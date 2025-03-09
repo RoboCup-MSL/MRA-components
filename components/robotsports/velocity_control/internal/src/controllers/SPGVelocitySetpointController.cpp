@@ -69,10 +69,17 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
         weightedCurrentVelocityFCS = data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0 - w_vel);
     }
 
-    m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
-    m_deltaPositionRCS.rz = MRA::Geometry::wrap_pi(data.targetPositionFcs.rz - weightedCurrentPositionFCS.rz);
-    m_currentVelocityRCS = Velocity2D(weightedCurrentVelocityFCS).transformFcsToRcs(weightedCurrentPositionFCS);
-    m_targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+    if (data.input.setpoint().has_position()) {
+        m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_currentVelocityRCS = Velocity2D(weightedCurrentVelocityFCS).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+    }
+    else {
+        // velocity only
+        m_deltaPositionRCS = {};
+        m_currentVelocityRCS = data.currentVelocityFcs;
+        m_targetVelocityRCS = data.targetVelocityFcs;
+    }
 
     VelocityControlResult result = {};
     bool res = this->calculateSPG(data, spgLimits, result);

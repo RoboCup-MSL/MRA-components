@@ -11,6 +11,8 @@ void CheckPrepareInputs::execute(VelocityControlData &data)
 {
     // check worldstate: is robot active, is it properly filled, ...
     checkWorldState(data);
+    // TODO : reset state if robot is inactive ? This to avoid moves when re-activate the robot
+
 
     // check target setpoint: is there enough information, is it valid, return the requested control mode
     data.controlMode = checkTargetSetpoint(data);

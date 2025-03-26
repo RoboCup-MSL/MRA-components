@@ -7,7 +7,8 @@
         "weightFactorClosedLoopVel": 0.0,
         "weightFactorClosedLoopPos": 1.0,
         "latencyOffset": 0.0,
-        "convergenceWorkaround": false
+        "convergenceWorkaround": false,
+        "synchronizeRotationVelocity": false
     },
     "dribble":
     {

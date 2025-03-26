@@ -53,6 +53,8 @@ class SPGVelocitySetpointController : public AbstractVelocitySetpointController 
 
     // Velocity SPG
     bool calculateVelXYRzPhaseSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
+    bool calculateVelXYPhaseSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
+    bool calculateVelRzNonSynchronized(const VelocityControlData&  r_data, const SpgLimits& r_spgLimits, VelocityControlResult& r_result);
 
     // helper function for calculation using ruckig library
     template<size_t DOFs, template<class, size_t> class CustomVector>

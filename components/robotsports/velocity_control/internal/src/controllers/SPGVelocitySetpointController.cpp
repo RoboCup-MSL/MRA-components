@@ -171,7 +171,13 @@ bool SPGVelocitySetpointController::calculateSPG(const VelocityControlData& r_da
             r_result.velocityRcs = Velocity2D(m_currentVelocityRCS);
             res = true;
         } else {
-            res = calculateVelXYRzPhaseSynchronized(r_data, r_spgLimits, r_result);
+            if (r_data.config.spg().synchronizerotationvelocity()) {
+                res = calculateVelXYRzPhaseSynchronized(r_data, r_spgLimits, r_result);
+            }
+            else{
+                res = calculateVelXYPhaseSynchronized(r_data, r_spgLimits, r_result);
+                res = calculateVelRzNonSynchronized(r_data, r_spgLimits, r_result);
+            }
         }
     }
     return res;
@@ -300,6 +306,77 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(const Velo
     input.synchronization = Synchronization::Phase;
 
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XYRZ, r_result);
+}
+
+bool SPGVelocitySetpointController::calculateVelXYPhaseSynchronized(const VelocityControlData &r_data,
+    const SpgLimits& r_spgLimits,
+    VelocityControlResult& r_result) {
+    const int numberOfDOFs = 2; // degrees of freedom (x,y)
+    InputParameter<numberOfDOFs> input;
+
+    // set-up the input parameters
+    input.control_interface = ControlInterface::Velocity;
+
+    input.current_position[0] = 0.0; // instead of steering from current to target,
+    input.current_position[1] = 0.0; // we steer from zero to delta, so we can better configure controlling FCS or RCS
+
+    input.current_velocity[0] = m_currentVelocityRCS.x;
+    input.current_velocity[1] = m_currentVelocityRCS.y;
+
+    input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
+    input.current_acceleration[1] = 0.0;
+
+    input.max_velocity = {r_spgLimits.vx, r_spgLimits.vy};
+    input.max_acceleration = {r_spgLimits.ax, r_spgLimits.ay};
+
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jx, r_spgLimits.jy};
+    }
+
+    input.target_position = {};
+    input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y};
+
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
+    return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XY, r_result);
+}
+
+
+bool SPGVelocitySetpointController::calculateVelRzNonSynchronized(const VelocityControlData &r_data, 
+  const SpgLimits& r_spgLimits,
+  VelocityControlResult& r_result) {
+    const int numberOfDOFs = 1; // degrees of freedom (Rz)
+    InputParameter<numberOfDOFs> input;
+
+    // set-up the input parameters
+    input.control_interface = ControlInterface::Velocity;
+
+    input.current_position[0] = 0.0; // instead of steering from current to target,
+
+    input.current_velocity[0] = m_currentVelocityRCS.rz;
+
+    input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
+
+    input.max_velocity = {r_spgLimits.vRz };
+    input.max_acceleration = {r_spgLimits.aRz};
+
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jRz};
+    }
+
+    input.target_position = {};
+    input.target_velocity = {m_targetVelocityRCS.rz};
+
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
+    // Calculate every DoF independently
+    input.synchronization = Synchronization::None;
+
+    return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_RZ, r_result );
 }
 
 

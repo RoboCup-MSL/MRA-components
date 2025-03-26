@@ -4,11 +4,12 @@ package MRA.RobotsportsVelocityControl;
 
 message SpgConfig
 {
-    bool synchronizeRotation = 1; // true means smearing out the rotation (non-greedy), but not always facing ball
+    bool synchronizeRotation = 1; // true means smearing out the rotation (non-greedy), but not always facing ball for position based setpoints
     double weightFactorClosedLoopVel = 2; // tuning parameter
     double weightFactorClosedLoopPos = 3; // tuning parameter
     double latencyOffset = 4; // [seconds] tuning parameter
     bool convergenceWorkaround = 5; // intended for simulation
+    bool synchronizeRotationVelocity = 6; // true means smearing out the rotation (non-greedy), but not always facing ball for velocity based setpoints
 }
 
 message DribbleConfig

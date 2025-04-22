@@ -747,6 +747,80 @@ TEST(RobotsportsVelocityControlTest, outputRot90PosY) {
 // }
 
 
+TEST(RobotsportsVelocityControlTest, velWithVel) {
+    // Arrange
+    auto m = RobotsportsVelocityControl::RobotsportsVelocityControl();
+    auto input = RobotsportsVelocityControl::Input();
+    auto output = RobotsportsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-6.50);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-1.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.571);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(-2.373e-5);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(-0.5);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(2.0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = RobotsportsVelocityControl::State();
+    state.set_executed_before(true);
+    state.mutable_positionsetpointfcs()->set_x(0.0);
+    state.mutable_positionsetpointfcs()->set_y(0.0);
+    state.mutable_positionsetpointfcs()->set_rz(0.0);
+    state.mutable_velocitysetpointfcs()->set_x(0.0);
+    state.mutable_velocitysetpointfcs()->set_y(0.0);
+    state.mutable_velocitysetpointfcs()->set_rz(0.0);
+
+
+    auto diagnostics = RobotsportsVelocityControl::Diagnostics();
+
+    int error_value = 0;
+
+    // std::cerr << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cerr << "state: in" << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cerr << "state: out: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    // std::cerr << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cerr << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    fprintf(stderr, "\ninput: \n"
+        "\tpos     x: %7.4f m    y: %7.4f m     rz: %4.3f deg\n"
+        "\tvel     x: %7.4f m/s  y: %7.4f m/s   rz: %4.2f deg/s\n"
+        "\treq-pos x: %7.4f m    y: %7.4f m     rz: %4.2f deg\n"
+        "\treq-vel x: %7.4f m/s  y: %7.4f m/s   rz: %4.2f deg/s\n",
+            input.worldstate().robot().position().x(), input.worldstate().robot().position().y(), Geometry::rad_to_deg(input.worldstate().robot().position().rz()),
+            input.worldstate().robot().velocity().x(), input.worldstate().robot().velocity().y(), Geometry::rad_to_deg(input.worldstate().robot().velocity().rz()),
+            input.setpoint().position().x(), input.setpoint().position().y(), Geometry::rad_to_deg(input.setpoint().position().rz()),
+            input.setpoint().velocity().x(), input.setpoint().velocity().y(), Geometry::rad_to_deg(input.setpoint().velocity().rz())
+        );
+
+    fprintf(stderr, "output: \n"
+        "\tvel     x: %7.4f m/s  y: %7.4f m/s  rz: %7.2f deg/s\n",
+            output.velocity().x(), output.velocity().y(), Geometry::rad_to_deg(output.velocity().rz())
+        );
+
+    fprintf(stderr, "diagnostics: \n"
+            "\tnew pos RCS x: %7.4f m     y: %7.4f m     rz: %4.2f deg\n"
+            "\tnew vel RCS x: %7.4f m/s   y: %7.4f m/s   rz: %4.2f deg/s\n"
+            "\tnew acc RCS x: %7.4f m/s^2 y: %7.4f m/s^2 rz: %4.2f deg/s^2\n\n",
+                diagnostics.newpositionrcs().x(), diagnostics.newpositionrcs().y(), Geometry::rad_to_deg(diagnostics.newpositionrcs().rz()),
+                diagnostics.newvelocityrcs().x(), diagnostics.newvelocityrcs().y(), Geometry::rad_to_deg(diagnostics.newvelocityrcs().rz()),
+                diagnostics.newaccelerationrcs().x(), diagnostics.newaccelerationrcs().y(), Geometry::rad_to_deg(diagnostics.newaccelerationrcs().rz())
+            );
+
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    // EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::POS_ONLY);
+    // EXPECT_EQ(output.velocity().x(), 0.05);
+    // EXPECT_NEAR(output.velocity().y(), 0.02009, 0.001);
+    // EXPECT_EQ(output.velocity().rz(), -0.05);
+    // EXPECT_NEAR(state.positionsetpointfcs().x(), -6.4998611901630827, 0.02); // check position via state
+    // EXPECT_NEAR(state.positionsetpointfcs().y(), -1.0040211636203276, 0.02); // check position via state
+    // EXPECT_NEAR(state.positionsetpointfcs().rz(), -0.00062500000000031974, 0.02); // check position via state
+}
+
 
 int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);

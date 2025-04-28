@@ -5,7 +5,7 @@
     {
         "synchronizeRotation": false,
         "weightFactorClosedLoopVel": 0.0,
-        "weightFactorClosedLoopPos": 0.7,
+        "weightFactorClosedLoopPos": 1.0,
         "latencyOffset": 0.0,
         "convergenceWorkaround": false
     },

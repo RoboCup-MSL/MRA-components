@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>https://www.youtube.com/watch?v=hjckDx-BQqM&amp;t=1027s</tns:Description>
+  <tns:Options svgOutputFileName="output_team/European_Open_2022_01.svg" use_pass_to_position_for_attack_support="false"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-0.50" y="7.50" velx="0.50" vely="-0.5"/>
+  <tns:Team id="1" trackingId="1" x="0.0" y="-9.0" rz="0.0" isGoalie="true"/>
+  <tns:Team id="2" trackingId="2" x="-0.5" y="-6.0" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Team id="3" trackingId="3" x="0.0" y="2.5" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Team id="4" trackingId="4" x="-5.5" y="2.75" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Team id="5" trackingId="5" x="5.0" y="2.75" rz="0.0" velx="0.0" vely="0.0" velrz="0.0"/>
+  <tns:Opponent trackingId="11" x="-0.25" y="8.5" isGoalie="true"/>
+  <tns:Opponent trackingId="12" x="0.5" y="8.0"/>
+  <tns:Opponent trackingId="13" x="-1.0" y="6.0"/>
+  <tns:Opponent trackingId="14" x="-3.0" y="-1.0"/>
+  <tns:Opponent trackingId="15" x="1.5" y="5.0"/>
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
+</tns:Situation>

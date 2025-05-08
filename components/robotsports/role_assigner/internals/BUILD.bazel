@@ -1,0 +1,51 @@
+cc_library(
+    name = "RoleAssigner",
+    srcs = [
+        "Dynamics.cpp",
+        "Environment.cpp",
+        "EnvironmentParameters.cpp",
+        "GridHeuristic.cpp",
+        "MathUtils.cpp",
+        "RoleAssigner.cpp",
+        "RoleAssignerData.cpp",
+        "RoleAssignerExport.cpp",
+        "RoleAssignerGrid.cpp",
+        "RoleAssignerGridInfoData.cpp",
+        "RoleAssignerOpponent.cpp",
+        "RoleAssignerParameters.cpp",
+        "RoleAssignerRobot.cpp",
+        "RoleAssignerSvg.cpp",
+        "RolePosition.cpp",
+    ],
+    hdrs = [
+        "Dynamics.hpp",
+        "Environment.hpp",
+        "EnvironmentParameters.hpp",
+        "GridHeuristic.hpp",
+        "MathUtils.hpp",
+        "RoleAssignerData.hpp",
+        "RoleAssignerExport.hpp",
+        "RoleAssignerGrid.hpp",
+        "RoleAssignerGridInfoData.hpp",
+        "RoleAssigner.hpp",
+        "RoleAssignerOpponent.hpp",
+        "RoleAssignerParameters.hpp",
+        "RoleAssignerResult.hpp",
+        "RoleAssignerRobot.hpp",
+        "RoleAssignerSvg.hpp",
+        "RoleAssigner_types.hpp",
+        "RolePosition.hpp",
+    ],
+    includes = [
+        "."
+    ],
+    deps = [
+        "//libraries/logging",
+        "//libraries/geometry",
+        "//components/robotsports/role_assigner:datatypes",
+        "//components/robotsports/robot_strategy:implementation",
+
+    ],
+    visibility = ["//visibility:public"],
+)
+

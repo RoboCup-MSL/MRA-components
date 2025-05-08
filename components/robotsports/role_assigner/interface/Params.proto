@@ -1,0 +1,294 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRoleAssigner;
+
+// see https://msl.robocup.org/wp-content/uploads/2023/01/Rulebook_MSL2023_v24.1.pdf#section.1.1
+// for a picture with the letters included
+// defaults in [brackets] in meters according to official WorldCup size (large field)
+message StandardLetterModel
+{
+    double A = 1;  // [22.0]   field length including lines (y)
+    double B = 2;  // [14.0]   field width including lines (x)
+    double C = 3;  // [ 6.9]   penalty area width including lines (x)
+    double D = 4;  // [ 3.9]   goal area width including lines (x)
+    double E = 5;  // [ 2.25]  penalty area length including lines (y)
+    double F = 6;  // [ 0.75]  goal area length including lines (y)
+    double G = 7;  // [ 0.75]  corner circle radius including lines
+    double H = 8;  // [ 4.0]   inner circle diameter including lines
+    double I = 9;  // [ 3.6]   penalty mark distance (y) including line to mark center (?)
+    double J = 10; // [ 0.15]  penalty- and center mark diameter
+    double K = 11; // [ 0.125] line width
+    double L = 12; // [ 1.0]   field border (x) (between outer line and black safety border)
+    double M = 13; // [ 1.0]   TTA width (x)
+    double N = 14; // [ 7.5]   TTA length (y) (between safety borders)
+    double O = 15; // [ 1.0]   TTA ramp length (y)
+    double P = 16; // [ 0.5]   TTA ramp width (x)
+    double Q = 17; // [ 3.5]   off-center distance to restart spots (x)
+}
+
+message Environment_Parameters {
+    StandardLetterModel model = 1; // optional MSL standard model of the field using letters, where A=22, B=14, etc, leading to a set of shapes
+    bool penalty_area_present = 2;
+    bool technical_team_area_present = 3;
+    double goal_width = 4;
+    double goal_length = 5;
+    double parking_area_width = 6;
+    double parking_area_length = 7;
+    double parking_distance_between_robots = 8;
+    double parking_distance_to_line = 9;  // [m] distance to side line when parking : 0 is on the line, negative is outside playing field
+    double robot_size = 10; // [m] max robot size as defined in MSL rules
+    double ball_radius = 11; // [m] radius of the ball as defined in the MSL rules
+    double minimum_distance_to_goal_area = 12; // [m] distance to goal-area to consider as in goal-area
+
+};
+
+message Params
+{
+    Environment_Parameters environment = 104;
+
+    // Calculate for all player a path, otherwise stop if own path is calculated.
+    bool calculateAllPaths = 1;
+
+    // Minimum distance between to vertices. This will make the path finding algorithm faster
+    double minimumEdgeLength = 2;
+
+    // Maximum length of and edge. Edges that are longer will not be added to the graph and there not be part of a path.
+    double maximumEdgeLength = 3;
+
+    // Barriers that are far from a reasonable path are not considered. A
+    // barrier is "near", if it is somewhat in between the end points or at small distance of an end point.
+    double minimumDistanceToEndPoint = 4;
+
+    // Number of vertices on the first circle around the object. Set to 0 if      * none.
+    int32 nrVerticesFirstCircle = 5;
+
+    // Radius of the first circle of vertices around the object.
+    double firstCircleRadius = 6;
+
+    // Number of vertices on the second circle around the object. Set to 0 if none.
+    int32 nrVerticesSecondCircle = 7;
+
+    // Radius of the second circle of vertices around the object.
+    double secondCircleRadius = 8;
+
+    // Factor for obstacle cost
+    double safetyFactor = 9;
+
+    // If vertices around barriers should be added
+    bool addBarierVertices = 10;
+
+    // If uniformly distributed vertices should be added
+    bool addUniformVertices = 11;
+
+    // spacing in x between vertices when applying uniform grid
+    double uniform_x_interval = 12;
+
+    // spacing in y between vertices when applying uniform grid
+    double uniform_y_interval = 13;
+
+    // Penalty for starting velocity in other direction than intended direction
+    double startingVelocityPenaltyFactor = 14;
+    
+    // The distance from the border of the field, when approach vertices must be applied
+    double distToapplyBallApproachVertices = 15;
+
+    // If ball approach distributed vertices should be added
+    bool addBallApproachVertices = 16;
+    
+    // approach vertices radius around ball
+    double ballApproachVerticesRadius = 17;
+    
+    // number of approach vertices around ball
+    int32 ballApproachNumberOfVertices = 18;
+
+    // when playing man defense, the player will position itself between the ball and the player.
+    bool manDefenseBetweenBallAndPlayer = 19;
+
+    //      distance for sweeper to penalty area
+    double dist_before_penalty_area_for_sweeper = 20;
+
+    //  grid size for grid-based calculations
+    double grid_size = 21;
+
+    //  number of iterations for the dynamic planner (intercept ball, 0 is normal robotplanner)
+    int32 nrDynamicPlannerIterations = 22;
+
+    //  maximum possible linear speed (used for interception calculations)
+    double maxPossibleLinearSpeed = 23;
+
+    //  maximum possible linear acceleration
+    double maxPossibleLinearAcceleration = 24;
+
+    // distance when penalty for interception thread must be applied.
+    double interceptionChanceStartDistance = 25;
+
+    // distance increase when penalty for interception thread must be applied.
+    double interceptionChanceIncreasePerMeter = 26;
+
+    // penalty factor for interception thread calculation
+    double interceptionChancePenaltyFactor = 27;
+
+
+    // parameters to get a minimal distance to the ball (used function is a parabool).
+    // default dist to ball 4 meter + 17000
+    // restart dist to ball: freekick, goalkick, corner, throwin:  2.5 meter + 17000
+    // restart dist to dropball: :  1.5 meter + 17000
+
+    // penalty in grid for being to close to the ball within the normal radius.
+    double grid_close_to_ball_normal_penalty = 28;
+
+    // radius to apply penalty in grid for being to close to the ball during normal situation.
+    double grid_close_to_ball_normal_radius = 29;
+
+    // penalty in grid for being to close to the ball within the restart radius.
+    double grid_close_to_ball_restart_normal_penalty = 30;
+
+    // radius to apply penalty in grid for being to close to the ball during normal restart situation.
+    double grid_close_to_ball_restart_normal_radius = 31;
+
+    // penalty in grid for being to close to the ball within the penalty radius.
+    double grid_close_to_ball_restart_penalty_penalty = 32;
+
+    // radius to apply penalty in grid for being to close to the ball during penalty  situation.
+    double grid_close_to_ball_restart_penalty_radius = 33;
+
+    // penalty in grid for being to close to the ball within the dropball radius.
+    double grid_close_to_ball_restart_dropball_penalty = 34;
+
+    // radius to apply penalty in grid for being to close to the ball during dropball situation.
+    double grid_close_to_ball_restart_dropball_radius = 35;
+
+    // x of area where no supporting robot should be positioned (forbidden area).
+    double grid_opponent_goal_clearance_x = 36;
+
+    // y of area where no supporting robot should be positioned (forbidden area).
+    double grid_opponent_goal_clearance_y = 37;
+
+    // x of area where no supporting robot should be positioned (forbidden area).
+    double grid_own_goal_clearance_x = 38;
+
+    // y of area where no supporting robot should be positioned (forbidden area).
+    double grid_own_goal_clearance_y = 39;
+
+    // must attackers wait on non optimal position during prepare phase (and move to best position when game starts)
+    bool wait_on_non_optimal_position_during_prepare_phase = 42;
+
+    // priority block minimal distance to ball during priority block
+    double priority_block_min_distance = 44;
+
+    // priority block maximum distance to ball during priority block
+    double priority_block_max_distance = 45;
+
+    //priority block max allowed distance to defense line (between min and max priortity block distance to the ball
+    double priority_block_max_distance_to_defense_line = 46;
+
+    // addition distance for attack supporter to stay from sideline: give more room to adjust position when pass is not perfect
+    double attack_supporter_extra_distance_to_stay_from_sideline = 51;
+
+    // distance between receiver and ball during game restart
+    double restart_receiver_ball_dist = 52;
+
+    //  distance between shooter and ball during game restart
+    double restart_shooter_ball_dist = 53;
+
+    // path cost equality threshold: if equal additional rule (x,y location) is applied to determine the best path
+    double equality_cost_threshold = 54;
+
+    // Must previous role bonus be applied (better if previous dynamic_role was the same)
+    bool previous_role_bonus_must_be_applied = 56;
+
+    // Radius of current end-position compared to previous end-position to apply previous role bonus
+    double previous_role_end_pos_threshold = 57;
+
+    // cost function bonus if previous role end position is close current role end position
+    double previous_role_bonus_end_pos_radius = 58;
+
+
+    // Use pass to position for attack supporter as ball position
+    bool use_pass_to_position_for_attack_support = 59;
+
+    // apply man to man defense during setplay against (bool)
+    bool man_to_man_defense_during_normal_play = 60;
+
+    // apply man to man defense during setplay against (bool)
+    bool man_to_man_defense_during_setplay_against = 61;
+
+    /* max distance to opponent goal to mark an opponent as goalie */
+    double dist_to_goal_to_mark_opponent_as_goalie = 62;
+
+    /* preferred distance to keep to opponent during setplay against */
+    double setplay_against_dist_to_opponent = 63;
+
+    // Move to ball left field position (or move to current ball position)
+    bool move_to_ball_left_field_position = 64;
+
+
+    double auto_save_svg_period = 65; // -1 no save, otherwise interval for auto save svg
+
+    // write output to svg file with the name, if empty ("") then no file is written.
+    string svgOutputFileName = 67;
+
+    string svgDefaultTargetColor = 68;
+    string svgBallColor = 69;
+    string svgOriginalTargetColor = 70;
+
+    string svgTeamColor = 71;
+    string svgOpponentColor = 72;
+    bool svgDrawVelocity = 73; // draw velocity vectors
+
+    bool svgDrawEdges = 74; // draw edges
+
+    /**
+     * if true, grid data is saved to file, for debugging purposes.
+     * file-names will be constructed from the svgOutputFileName or using a generic name if that is not available.
+     */
+    bool saveGridDataToFile = 75;
+
+    /**
+     * if true, robot planner will write its output to a svg file, for debugging purposes.
+     * file-names will be constructed from the svgOutputFileName or using a generic name if that is not available.
+     */
+    bool svgRobotPlanner = 76;
+
+    // id of the preferred player for kicking during setplay.  Avoid assign to player which has trouble to kick the ball.
+    int32 preferredSetplayKicker = 77;
+
+    // id of the preferred player for receiving during setplay.  Avoid assign to player which has trouble to receive the ball.
+    int32 preferredSetplayReceiver = 78;
+
+    // min distance for setplay receiver to side of penalty area
+    double setplay_margin_to_penalty_area_side = 79;
+
+    // use ball velocity to determine the interceptor
+    bool interceptor_assign_use_ball_velocity = 80;
+
+    // minimum ball velocity needed to calculate interception position for interceptor role assignment
+    double interceptor_assign_min_velocity_for_calculate_interception_position = 81;
+
+    // when True the goalie role will be assigned to a field player if there is not player of type: goalie present
+    bool autoAssignGoalie = 83;
+
+    // minimum distance to make a lob shot (shoot over opponent)
+    double min_y_for_lob_shot = 85;
+    double outsideFieldMargin = 86;
+
+    // coordinates of the fixed kick off position fors the field players
+    double kickoff_fp1_x = 87;
+    double kickoff_fp1_y = 88;
+    double kickoff_fp2_x = 89;
+    double kickoff_fp2_y = 90;
+    double kickoff_fp3_x  = 91;
+    double kickoff_fp3_y = 92;
+    double kickoff_fp4_x = 93;
+    double kickoff_fp4_y = 94;
+
+    // coordinates of the fixed kick off against positions for the field players
+    double kickoff_against_fp1_x = 95;
+    double kickoff_against_fp1_y = 96;
+    double kickoff_against_fp2_x = 97;
+    double kickoff_against_fp2_y = 98;
+    double kickoff_against_fp3_x = 99;
+    double kickoff_against_fp3_y = 100;
+    double kickoff_against_fp4_x = 101;
+    double kickoff_against_fp4_y = 102;
+}

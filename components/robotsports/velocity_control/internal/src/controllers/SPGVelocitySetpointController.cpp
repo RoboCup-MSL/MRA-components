@@ -56,17 +56,16 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
     Position2D weightedCurrentPositionFCS = data.currentPositionFcs;
 
     weightedCurrentPositionFCS.rz = weightedRz;
-    Velocity2D weightedCurrentVelocityFCS = data.currentVelocityFcs;
 
     if (data.input.setpoint().has_position()) {
         m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
-        m_currentVelocityRCS = Velocity2D(weightedCurrentVelocityFCS).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_currentVelocityRCS = Velocity2D(data.currentVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
         m_targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
     }
     else {
         // velocity only
         m_deltaPositionRCS = {};
-        m_currentVelocityRCS = data.currentVelocityFcs;
+        m_currentVelocityRCS = Velocity2D(data.currentVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
         m_targetVelocityRCS = data.targetVelocityFcs;
     }
 

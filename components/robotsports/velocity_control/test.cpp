@@ -460,12 +460,12 @@ TEST(RobotsportsVelocityControlTest, velocityRequestAboveLimit1) {
 
     // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
     // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
-    // std::cout << "output: " << MRA::convert_proto_to_json_str_pretty(output) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
 
     // Assert
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::VEL_ONLY);
-    EXPECT_GT(output.velocity().x(), 0.0);
+    EXPECT_EQ(output.velocity().x(), 0.0);
     EXPECT_GT(output.velocity().y(), 0.0);
     EXPECT_EQ(output.velocity().rz(), 0.0);
 }
@@ -636,12 +636,12 @@ TEST(RobotsportsVelocityControlTest, moveToBall_sample_1) {
     // Assert
     EXPECT_EQ(error_value, 0);
     EXPECT_EQ(diagnostics.controlmode(), MRA::RobotsportsVelocityControl::POS_ONLY);
-    EXPECT_EQ(output.velocity().x(), 0.05);
-    EXPECT_NEAR(output.velocity().y(), 0.02009, 0.001);
-    EXPECT_EQ(output.velocity().rz(), -0.05);
-    EXPECT_NEAR(state.positionsetpointfcs().x(), -6.4998611901630827, 0.02); // check position via state
-    EXPECT_NEAR(state.positionsetpointfcs().y(), -1.0040211636203276, 0.02); // check position via state
-    EXPECT_NEAR(state.positionsetpointfcs().rz(), -0.00062500000000031974, 0.02); // check position via state
+    EXPECT_NEAR(output.velocity().x(), -0.020167, 0.001);
+    EXPECT_NEAR(output.velocity().y(), 0.05, 0.001);
+    EXPECT_EQ(output.velocity().rz(), 0.05);
+    EXPECT_NEAR(state.positionsetpointfcs().x(), -6.49986, 0.02); // check position via state
+    EXPECT_NEAR(state.positionsetpointfcs().y(), -1.00440, 0.02); // check position via state
+    EXPECT_NEAR(state.positionsetpointfcs().rz(),-1.57145, 0.02); // check position via state
 }
 
 

@@ -43,7 +43,7 @@ int callSubcomponent(
         subcomponent_diagnostics
     );
     output.set_actionresult(subcomponent_output.actionresult());
-    diagnostics.set_verdict(subcomponent_diagnostics.verdict());
+    diagnostics.set_failurereason(subcomponent_diagnostics.failurereason());
     *state = subcomponent_state;
     if (subcomponent_output.has_motiontarget())
     {
@@ -103,7 +103,24 @@ int FalconsActionGetBall::FalconsActionGetBall::tick
         );
     }
 
+    /*
+    // if FETCH and CATCH do not apply, then fail - teamplay should not have selected this action
+    // (for instance, a robot should not chase a ball after just having passed to teammate)
+    output.set_actionresult(Datatypes::ActionResult::FAILED);
+    diagnostics.set_failurereason("ball moving away from robot");
+
     // TODO: maybe chase/swerve after the ball?
+    */
+
+    // fallback: fetch the ball
+    return callSubcomponent<FalconsActionFetchBall::FalconsActionFetchBall>(
+        timestamp,
+        input,
+        params.fetchball(),
+        state.mutable_fetchball(),
+        output,
+        diagnostics
+    );
 
     return error_value;
 }

@@ -8,6 +8,7 @@
 #include "backend.hpp"
 #include "frontend.hpp"
 #include "control.hpp"
+#include "tprintf.hpp"
 
 #endif // #ifndef _MRA_LIBRARIES_LOGGING_HPP
 

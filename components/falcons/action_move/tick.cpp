@@ -9,7 +9,7 @@ using namespace MRA;
 // custom includes, if any
 #include "geometry.hpp"
 
-bool checkParams(FalconsActionMove::ParamsType const &params, std::string &verdict);
+bool checkParams(FalconsActionMove::ParamsType const &params, std::string &failureReason);
 
 
 int FalconsActionMove::FalconsActionMove::tick
@@ -30,11 +30,11 @@ int FalconsActionMove::FalconsActionMove::tick
         // user implementation goes here
 
         // check params
-        std::string verdict;
-        if (!checkParams(params, verdict))
+        std::string failureReason;
+        if (!checkParams(params, failureReason))
         {
             output.set_actionresult(MRA::Datatypes::ActionResult::FAILED);
-            diagnostics.set_verdict(verdict);
+            diagnostics.set_failurereason(failureReason);
             return 0;
         }
 
@@ -88,18 +88,18 @@ int FalconsActionMove::FalconsActionMove::tick
     return error_value;
 }
 
-bool checkParams(FalconsActionMove::ParamsType const &params, std::string &verdict)
+bool checkParams(FalconsActionMove::ParamsType const &params, std::string &failureReason)
 {
     double tolerance_xy = params.tolerances().xy();
     if (tolerance_xy <= 0.0)
     {
-        verdict = "invalid configuration parameter for move.tolerances.xy: should be larger than zero";
+        failureReason = "invalid configuration parameter for move.tolerances.xy: should be larger than zero";
         return false;
     }
     double tolerance_rz = params.tolerances().rz();
     if (tolerance_rz <= 0.0)
     {
-        verdict = "invalid configuration parameter for move.tolerances.rz: should be larger than zero";
+        failureReason = "invalid configuration parameter for move.tolerances.rz: should be larger than zero";
         return false;
     }
     return true;

@@ -9,25 +9,6 @@
 // TODO: remove this temporary simulation PoC workaround (avoid having to create setpoint_processing already)
 typedef mra_falcons_msgs::msg::Setpoints output_t;
 
-void count_primes_below(int lim)
-{
-    TRACE_FUNCTION_INPUTS(lim);
-    int count = 0;
-    for (int i = 2; i < lim; ++i) {
-        bool is_prime = true;
-        for (int j = 2; j * j <= i; ++j) {
-            if (i % j == 0) {
-                is_prime = false;
-                break;
-            }
-        }
-        if (is_prime) {
-            count++;
-        }
-    }
-    TRACE_FUNCTION_OUTPUTS(count);
-}
-
 class ActionPlanningROS : public rclcpp::Node {
 public:
     ActionPlanningROS() : Node("mra_falcons_action_planning") {
@@ -66,7 +47,6 @@ private:
 
     void tick() {
         TRACE_FUNCTION();
-        count_primes_below(50000);
         auto targets_msg = output_t();
         publisher_targets_->publish(targets_msg);
     }

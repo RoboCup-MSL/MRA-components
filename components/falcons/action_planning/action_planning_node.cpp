@@ -1,8 +1,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/empty.hpp>
-#include "mra_msgs/msg/world_state.hpp"
-#include "mra_msgs/msg/targets.hpp"
+#include "mra_common_msgs/msg/world_state.hpp"
+#include "mra_common_msgs/msg/targets.hpp"
+#include "mra_falcons_msgs/msg/setpoints.hpp"
 #include "mra_tracing/tracing.hpp"
+
+//typedef mra_common_msgs::msg::Targets output_t;
+// TODO: remove this temporary simulation PoC workaround (avoid having to create setpoint_processing already)
+typedef mra_falcons_msgs::msg::Setpoints output_t;
 
 void count_primes_below(int lim)
 {
@@ -35,11 +40,12 @@ public:
         qos.keep_last(100);
         qos.transient_local();
         // Publisher for targets
-        publisher_targets_ = this->create_publisher<mra_msgs::msg::Targets>("targets", qos);
+        //publisher_targets_ = this->create_publisher<output_t>("targets", qos);
+        publisher_targets_ = this->create_publisher<output_t>("setpoints", qos); // TODO: remove this temporary simulation PoC workaround
         // Subscriber for world_state
-        subscriber_world_state_ = this->create_subscription<mra_msgs::msg::WorldState>(
+        subscriber_world_state_ = this->create_subscription<mra_common_msgs::msg::WorldState>(
             "world_state", qos,
-            [this](const mra_msgs::msg::WorldState::SharedPtr msg) {
+            [this](const mra_common_msgs::msg::WorldState::SharedPtr msg) {
                 this->handle_world_state(msg);
             });
         // TODO: subscriber for Action from teamplay
@@ -50,9 +56,9 @@ public:
     }
 
 private:
-    mra_msgs::msg::WorldState world_state_;
+    mra_common_msgs::msg::WorldState world_state_;
 
-    void handle_world_state(const mra_msgs::msg::WorldState::SharedPtr msg) {
+    void handle_world_state(const mra_common_msgs::msg::WorldState::SharedPtr msg) {
         TRACE_FUNCTION();
         world_state_ = *msg;
         tick();
@@ -61,12 +67,12 @@ private:
     void tick() {
         TRACE_FUNCTION();
         count_primes_below(50000);
-        auto targets_msg = mra_msgs::msg::Targets();
+        auto targets_msg = output_t();
         publisher_targets_->publish(targets_msg);
     }
 
-    rclcpp::Publisher<mra_msgs::msg::Targets>::SharedPtr publisher_targets_;
-    rclcpp::Subscription<mra_msgs::msg::WorldState>::SharedPtr subscriber_world_state_;
+    rclcpp::Publisher<output_t>::SharedPtr publisher_targets_;
+    rclcpp::Subscription<mra_common_msgs::msg::WorldState>::SharedPtr subscriber_world_state_;
 };
 
 int main(int argc, char **argv) {

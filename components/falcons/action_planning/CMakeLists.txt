@@ -8,15 +8,17 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(mra_msgs REQUIRED)
+find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
+find_package(mra_falcons_msgs REQUIRED)
 
 # Add the executable for action_planning_node
 add_executable(mra_falcons_action_planning_node action_planning_node.cpp)
 ament_target_dependencies(mra_falcons_action_planning_node
   rclcpp
-  mra_msgs
+  mra_common_msgs
   mra_tracing
+  mra_falcons_msgs
 )
 target_link_libraries(mra_falcons_action_planning_node
   mra_tracing

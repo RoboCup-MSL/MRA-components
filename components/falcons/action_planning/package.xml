@@ -10,7 +10,8 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>rclcpp</build_depend>
-  <build_depend>mra_msgs</build_depend>
+  <build_depend>mra_common_msgs</build_depend>
+  <build_depend>mra_falcons_msgs</build_depend>
   <build_depend>mra_tracing</build_depend>
   <exec_depend>rclcpp</exec_depend>
 

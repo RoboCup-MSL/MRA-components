@@ -2,6 +2,6 @@
 
 
 bool grab                       # ball grabber on/off
-mra_msgs/MovementTarget move    # target pose in FCS, unsafe, to be handled by PathPlanning / VelocityControl
-mra_msgs/ShootingTarget shoot   # where the ball should be kicked
-mra_msgs/KeeperTarget keeper    # where the hands should go
+mra_common_msgs/MovementTarget move    # target pose in FCS, unsafe, to be handled by PathPlanning / VelocityControl
+mra_common_msgs/ShootingTarget shoot   # where the ball should be kicked
+mra_common_msgs/KeeperTarget keeper    # where the hands should go

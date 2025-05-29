@@ -4,16 +4,16 @@
 builtin_interfaces/Time time
 
 # Self (robot)
-mra_msgs/Player robot
+mra_common_msgs/Player robot
 
 # Ball (allow maximum one ball in the field/test; if there are more, then WorldModel should provide the closest one)
-mra_msgs/Ball ball
+mra_common_msgs/Ball ball
 
 # Teammates (a mix of robots and humans)
-mra_msgs/Player[] teammates
+mra_common_msgs/Player[] teammates
 
 # Opponents (a mix of robots and humans)
-mra_msgs/Player[] opponents
+mra_common_msgs/Player[] opponents
 
 # Optional entities (like a black box or suitcase for testing, some kind of forbidden zone)
 Obstacle[] obstacles

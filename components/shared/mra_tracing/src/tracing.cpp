@@ -1,72 +1,74 @@
-#include "tracing/tracing.hpp"
+#include "mra_tracing/tracing.hpp"
 #include <unistd.h>
 #include <mutex>
 #include <filesystem>
 
 #define MAX_LINE_LENGTH 4096
 
-tracing::FunctionRecord::FunctionRecord(tracing::SourceLoc loc)
+using namespace MRA::tracing;
+
+FunctionRecord::FunctionRecord(SourceLoc loc)
     : loc_(loc)
     , timestamp_start_(std::chrono::high_resolution_clock::now())
 {
 }
 
-tracing::FunctionRecord::~FunctionRecord()
+FunctionRecord::~FunctionRecord()
 {
     flush_output(std::chrono::high_resolution_clock::now());
 }
 
-void tracing::FunctionRecord::add_input(std::string const &varname, int value)
+void FunctionRecord::add_input(std::string const &varname, int value)
 {
     input_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_input(std::string const &varname, float value)
+void FunctionRecord::add_input(std::string const &varname, float value)
 {
     input_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_input(std::string const &varname, double value)
+void FunctionRecord::add_input(std::string const &varname, double value)
 {
     input_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_input(std::string const &varname, bool value)
+void FunctionRecord::add_input(std::string const &varname, bool value)
 {
     input_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_input(std::string const &varname, std::string const &value)
+void FunctionRecord::add_input(std::string const &varname, std::string const &value)
 {
     input_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_output(std::string const &varname, int value)
+void FunctionRecord::add_output(std::string const &varname, int value)
 {
     output_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_output(std::string const &varname, float value)
+void FunctionRecord::add_output(std::string const &varname, float value)
 {
     output_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_output(std::string const &varname, double value)
+void FunctionRecord::add_output(std::string const &varname, double value)
 {
     output_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_output(std::string const &varname, bool value)
+void FunctionRecord::add_output(std::string const &varname, bool value)
 {
     output_data_.emplace_back(varname, value);
 }
 
-void tracing::FunctionRecord::add_output(std::string const &varname, std::string const &value)
+void FunctionRecord::add_output(std::string const &varname, std::string const &value)
 {
     output_data_.emplace_back(varname, value);
 }
 
-std::string tracing::FunctionRecord::convert_to_json(std::vector<std::pair<std::string, std::variant<int, double, bool, std::string>>> const &data)
+std::string FunctionRecord::convert_to_json(std::vector<std::pair<std::string, std::variant<int, double, bool, std::string>>> const &data)
 {
     std::string js = "{";
     bool first = true;
@@ -149,7 +151,7 @@ std::string determine_trace_filename(std::string const &loc_filename)
     return result;
 }
 
-std::string format_time_point(tracing::timestamp_t const &timestamp, const char *format)
+std::string format_time_point(timestamp_t const &timestamp, const char *format)
 {
     // convert to time_t
     auto time = std::chrono::high_resolution_clock::to_time_t(timestamp);
@@ -161,7 +163,7 @@ std::string format_time_point(tracing::timestamp_t const &timestamp, const char 
     return std::string(buffer);
 }
 
-void dispatch_trace_line(tracing::timestamp_t const &timestamp, tracing::SourceLoc const &loc, std::string const &details)
+void dispatch_trace_line(timestamp_t const &timestamp, SourceLoc const &loc, std::string const &details)
 {
     // sanitize string, e.g. replace newlines with '\n'
     std::string s = sanitize(details);
@@ -182,13 +184,13 @@ void dispatch_trace_line(tracing::timestamp_t const &timestamp, tracing::SourceL
     append_to_tracefile(determine_trace_filename(loc.filename), line);
 }
 
-void tracing::FunctionRecord::flush_input()
+void FunctionRecord::flush_input()
 {
     std::string js = convert_to_json(input_data_);
     dispatch_trace_line(timestamp_start_, loc_, std::string("> ") + js.c_str());
 }
 
-void tracing::FunctionRecord::flush_output(tracing::timestamp_t const &timestamp)
+void FunctionRecord::flush_output(timestamp_t const &timestamp)
 {
     std::string js = convert_to_json(output_data_);
     dispatch_trace_line(timestamp, loc_, std::string("< ") + js.c_str());

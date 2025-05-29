@@ -1,5 +1,5 @@
-#ifndef TRACING_BACKEND_HPP
-#define TRACING_BACKEND_HPP
+#ifndef MRA_TRACING_BACKEND_HPP
+#define MRA_TRACING_BACKEND_HPP
 
 #include <chrono>
 #include <string>
@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <variant>
 
+namespace MRA {
 namespace tracing {
 
 typedef std::chrono::high_resolution_clock::time_point timestamp_t;
@@ -86,5 +87,6 @@ private:
 }; // end of class FunctionRecord
 
 } // end of namespace tracing
+} // end of namespace MRA
 
-#endif // TRACING_BACKEND_HPP
+#endif // MRA_TRACING_BACKEND_HPP

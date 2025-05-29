@@ -3,4 +3,4 @@
 int32 frame # counter
 int32 robot
 builtin_interfaces/Time timestamp
-msl_msgs/VisionObject[] objects
+mra_msgs/VisionObject[] objects

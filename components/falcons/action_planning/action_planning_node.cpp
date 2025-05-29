@@ -1,8 +1,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/empty.hpp>
-#include "msl_msgs/msg/world_state.hpp"
-#include "interfaces/msg/actuation.hpp"
-#include "tracing/tracing.hpp"
+#include "mra_msgs/msg/world_state.hpp"
+#include "mra_msgs/msg/targets.hpp"
+#include "mra_tracing/tracing.hpp"
 
 void count_primes_below(int lim)
 {
@@ -25,7 +25,7 @@ void count_primes_below(int lim)
 
 class ActionPlanningROS : public rclcpp::Node {
 public:
-    ActionPlanningROS() : Node("action_planning") {
+    ActionPlanningROS() : Node("mra_falcons_action_planning") {
         // Get our namespace
         std::string ns = this->get_namespace();
         TRACE_FUNCTION_INPUTS(ns);
@@ -34,12 +34,12 @@ public:
         qos.reliable();
         qos.keep_last(100);
         qos.transient_local();
-        // Publisher for actuation
-        publisher_actuation_ = this->create_publisher<interfaces::msg::Actuation>("actuation", qos);
+        // Publisher for targets
+        publisher_targets_ = this->create_publisher<mra_msgs::msg::Targets>("targets", qos);
         // Subscriber for world_state
-        subscriber_world_state_ = this->create_subscription<msl_msgs::msg::WorldState>(
+        subscriber_world_state_ = this->create_subscription<mra_msgs::msg::WorldState>(
             "world_state", qos,
-            [this](const msl_msgs::msg::WorldState::SharedPtr msg) {
+            [this](const mra_msgs::msg::WorldState::SharedPtr msg) {
                 this->handle_world_state(msg);
             });
         // TODO: subscriber for Action from teamplay
@@ -50,9 +50,9 @@ public:
     }
 
 private:
-    msl_msgs::msg::WorldState world_state_;
+    mra_msgs::msg::WorldState world_state_;
 
-    void handle_world_state(const msl_msgs::msg::WorldState::SharedPtr msg) {
+    void handle_world_state(const mra_msgs::msg::WorldState::SharedPtr msg) {
         TRACE_FUNCTION();
         world_state_ = *msg;
         tick();
@@ -61,12 +61,12 @@ private:
     void tick() {
         TRACE_FUNCTION();
         count_primes_below(50000);
-        auto actuation_msg = interfaces::msg::Actuation();
-        publisher_actuation_->publish(actuation_msg);
+        auto targets_msg = mra_msgs::msg::Targets();
+        publisher_targets_->publish(targets_msg);
     }
 
-    rclcpp::Publisher<interfaces::msg::Actuation>::SharedPtr publisher_actuation_;
-    rclcpp::Subscription<msl_msgs::msg::WorldState>::SharedPtr subscriber_world_state_;
+    rclcpp::Publisher<mra_msgs::msg::Targets>::SharedPtr publisher_targets_;
+    rclcpp::Subscription<mra_msgs::msg::WorldState>::SharedPtr subscriber_world_state_;
 };
 
 int main(int argc, char **argv) {

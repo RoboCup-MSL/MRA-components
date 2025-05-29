@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>falcons_action_planning</name>
+  <name>mra_falcons_action_planning</name>
   <version>0.1.0</version>
   <description>Falcons ActionPlanning: translate action commands from teamplay to targets</description>
   <maintainer email="jan.feitsma@gmail.com">Jan Feitsma</maintainer>
@@ -10,8 +10,8 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>rclcpp</build_depend>
-  <build_depend>msl_msgs</build_depend>
-  <build_depend>tracing</build_depend>
+  <build_depend>mra_msgs</build_depend>
+  <build_depend>mra_tracing</build_depend>
   <exec_depend>rclcpp</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

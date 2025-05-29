@@ -1,0 +1,6 @@
+# ActionResult feedback coming from ActionPlanning
+
+uint8 ACTIONRESULT_INVALID=0
+uint8 ACTIONRESULT_FAILED=1
+uint8 ACTIONRESULT_RUNNING=2
+uint8 ACTIONRESULT_PASSED=3

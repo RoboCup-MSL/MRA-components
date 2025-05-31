@@ -49,30 +49,25 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data) {
     // factor can be rotated back from currentPosFCS.Rz. The final average angle between the two is then
     // currentPosFCS.Rz + deltaAngle
 
-    float w_pos = data.config.spg().weightfactorclosedlooppos();
-    float w_vel = data.config.spg().weightfactorclosedloopvel();
 
     double deltaRz = 0.0;
-    if (data.state.executed_before()) {
-        deltaRz = MRA::Geometry::wrap_pi(data.previousPositionSetpointFcs.rz - data.currentPositionFcs.rz) * w_pos;
-    }
     double weightedRz = data.currentPositionFcs.rz + deltaRz;
 
     Position2D weightedCurrentPositionFCS = data.currentPositionFcs;
-    if (data.state.executed_before()) {
-        weightedCurrentPositionFCS = data.currentPositionFcs * w_pos + data.previousPositionSetpointFcs * (1.0 - w_pos);
-    }
 
     weightedCurrentPositionFCS.rz = weightedRz;
-    Velocity2D weightedCurrentVelocityFCS = data.currentVelocityFcs;
-    if (data.state.executed_before()) {
-        weightedCurrentVelocityFCS = data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0 - w_vel);
-    }
 
-    m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
-    m_deltaPositionRCS.rz = MRA::Geometry::wrap_pi(data.targetPositionFcs.rz - weightedCurrentPositionFCS.rz);
-    m_currentVelocityRCS = Velocity2D(weightedCurrentVelocityFCS).transformFcsToRcs(weightedCurrentPositionFCS);
-    m_targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+    if (data.input.setpoint().has_position()) {
+        m_deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_currentVelocityRCS = Velocity2D(data.currentVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+    }
+    else {
+        // velocity only
+        m_deltaPositionRCS = {};
+        m_currentVelocityRCS = Velocity2D(data.currentVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
+        m_targetVelocityRCS = data.targetVelocityFcs;
+    }
 
     VelocityControlResult result = {};
     bool res = this->calculateSPG(data, spgLimits, result);
@@ -164,7 +159,14 @@ bool SPGVelocitySetpointController::calculateSPG(const VelocityControlData& r_da
             r_result.velocityRcs = Velocity2D(m_currentVelocityRCS);
             res = true;
         } else {
-            res = calculateVelXYRzPhaseSynchronized(r_data, r_spgLimits, r_result);
+            if (r_data.config.spg().synchronizerotationvelocity()) {
+                res = calculateVelXYRzPhaseSynchronized(r_data, r_spgLimits, r_result);
+            }
+            else{
+                res = calculateVelSingleAxisNonSynchronized(AXES_X, r_data, r_spgLimits, r_result);
+                res = calculateVelSingleAxisNonSynchronized(AXES_Y, r_data, r_spgLimits, r_result);
+                res = calculateVelSingleAxisNonSynchronized(AXES_RZ, r_data, r_spgLimits, r_result);
+            }
         }
     }
     return res;
@@ -173,10 +175,6 @@ bool SPGVelocitySetpointController::calculateSPG(const VelocityControlData& r_da
 bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(const VelocityControlData& r_data,
                                                                       const SpgLimits &r_spgLimits,
                                                                       VelocityControlResult& r_result) {
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-    //    // construct Reflexxes objects
-
     const int numberOfDOFs = 3; // degrees of freedom (x,y,Rz)
     InputParameter<numberOfDOFs> input;
 
@@ -198,16 +196,16 @@ bool SPGVelocitySetpointController::calculatePosXYRzPhaseSynchronized(const Velo
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
     //      input.target_acceleration = {0.0, 0.0, 0.5}; // TODO ruckig
 
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XYRZ, r_result);
 }
 
 bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const VelocityControlData &r_data,
                                                                     const SpgLimits& r_spgLimits,
                                                                     VelocityControlResult& r_result) {
-    //    RMLPositionFlags            Flags;
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::PHASE_SYNCHRONIZATION_IF_POSSIBLE;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-
     const int numberOfDOFs = 2; // degrees of freedom (x,y)
     InputParameter<numberOfDOFs> input;
 
@@ -228,6 +226,10 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const Veloci
     input.target_position = {m_deltaPositionRCS.x, m_deltaPositionRCS.y}; // steering from currentPos = 0 to targetPos = deltaPos
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y};
 
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XY, r_result);
 }
 
@@ -235,10 +237,6 @@ bool SPGVelocitySetpointController::calculatePosXYPhaseSynchronized(const Veloci
 bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(const VelocityControlData &r_data, 
                                                                   const SpgLimits& r_spgLimits,
                                                                   VelocityControlResult& r_result) {
-    //    RMLPositionFlags            Flags;
-    //    Flags.SynchronizationBehavior                  = RMLPositionFlags::NO_SYNCHRONIZATION;
-    //    Flags.BehaviorAfterFinalStateOfMotionIsReached = RMLPositionFlags::RECOMPUTE_TRAJECTORY;
-    //
     const int numberOfDOFs = 1; // degrees of freedom (Rz)
     InputParameter<numberOfDOFs> input;
 
@@ -253,6 +251,9 @@ bool SPGVelocitySetpointController::calculatePosRzNonSynchronized(const Velocity
     }
     input.target_position[0] = m_deltaPositionRCS.rz;
     input.target_velocity[0] = m_targetVelocityRCS.rz;
+
+    // Calculate every DoF independently
+    input.synchronization = Synchronization::None;
 
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_RZ, r_result );
 }
@@ -278,7 +279,6 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(const Velo
     input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
     input.current_acceleration[1] = 0.0;
     input.current_acceleration[2] = 0.0;
-    input.synchronization = Synchronization::Phase; // always synchronize the DoFs to reach the target at the same time
 
     input.max_velocity = {r_spgLimits.vx, r_spgLimits.vy, r_spgLimits.vRz};
     input.max_acceleration = {r_spgLimits.ax, r_spgLimits.ay, r_spgLimits.aRz};
@@ -290,7 +290,104 @@ bool SPGVelocitySetpointController::calculateVelXYRzPhaseSynchronized(const Velo
     input.target_position = {};
     input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y, m_targetVelocityRCS.rz};
 
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
     return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XYRZ, r_result);
+}
+
+bool SPGVelocitySetpointController::calculateVelXYPhaseSynchronized(const VelocityControlData &r_data,
+    const SpgLimits& r_spgLimits,
+    VelocityControlResult& r_result) {
+    const int numberOfDOFs = 2; // degrees of freedom (x,y)
+    InputParameter<numberOfDOFs> input;
+
+    // set-up the input parameters
+    input.control_interface = ControlInterface::Velocity;
+
+    input.current_position[0] = 0.0; // instead of steering from current to target,
+    input.current_position[1] = 0.0; // we steer from zero to delta, so we can better configure controlling FCS or RCS
+
+    input.current_velocity[0] = m_currentVelocityRCS.x;
+    input.current_velocity[1] = m_currentVelocityRCS.y;
+
+    input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
+    input.current_acceleration[1] = 0.0;
+
+    input.max_velocity = {r_spgLimits.vx, r_spgLimits.vy};
+    input.max_acceleration = {r_spgLimits.ax, r_spgLimits.ay};
+
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jx, r_spgLimits.jy};
+    }
+
+    input.target_position = {};
+    input.target_velocity = {m_targetVelocityRCS.x, m_targetVelocityRCS.y};
+
+    // Phase synchronize the DoFs when this is possible,
+    // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+    input.synchronization = Synchronization::Phase;
+
+    return ruckig_calculate<numberOfDOFs>(r_data, input, AXES::AXES_XY, r_result);
+}
+
+
+bool SPGVelocitySetpointController::calculateVelSingleAxisNonSynchronized(
+        enum SPGVelocitySetpointController::AXES axis,
+        const VelocityControlData&  r_data,
+        const SpgLimits& r_spgLimits,
+        VelocityControlResult& r_result)
+{
+  const int numberOfDOFs = 1; // degrees of freedom (Rz)
+  InputParameter<numberOfDOFs> input;
+
+  // set-up the input parameters
+  input.control_interface = ControlInterface::Velocity;
+
+  input.current_position[0] = 0.0; // instead of steering from current to target,
+
+  if (axis == AXES::AXES_X) {
+    input.current_velocity[0] = m_currentVelocityRCS.x;
+    input.max_velocity = {r_spgLimits.vx };
+    input.max_acceleration = {r_spgLimits.ax};
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jx};
+    }
+    input.target_velocity = {m_targetVelocityRCS.x};
+}
+  else if (axis == AXES::AXES_Y) {
+    input.current_velocity[0] = m_currentVelocityRCS.y;
+    input.max_velocity = {r_spgLimits.vy };
+    input.max_acceleration = {r_spgLimits.ay};
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jy};
+    }
+    input.target_velocity = { m_targetVelocityRCS.y };
+  }
+  else { // axis == AXES::AXES_RZ
+    input.current_velocity[0] = m_currentVelocityRCS.rz;
+    input.max_velocity = {r_spgLimits.vRz };
+    input.max_acceleration = {r_spgLimits.aRz};
+    if (r_spgLimits.hasJerkLimit) {
+        input.max_jerk = {r_spgLimits.jRz};
+    }
+    input.target_velocity = { m_targetVelocityRCS.rz };
+  }
+
+  input.current_acceleration[0] = 0.0; // not relevant, due to limitation of TypeII library
+
+
+  input.target_position = {};
+
+  // Phase synchronize the DoFs when this is possible,
+  // else fall back to time (default: always synchronize the DoFs to reach the target on the same time)
+  input.synchronization = Synchronization::Phase;
+
+  // Calculate every DoF independently
+  input.synchronization = Synchronization::None;
+
+  return ruckig_calculate<numberOfDOFs>(r_data, input, axis, r_result );
 }
 
 
@@ -339,11 +436,11 @@ bool SPGVelocitySetpointController::ruckig_calculate(const MRA::internal::RVC::V
         } else {
             msg = "ruckig.update return an unknown error";
         }
-        MRA_LOG_ERROR(msg);
+        MRA_LOG_ERROR(msg.c_str());
     }
 
     if (res == ErrorInvalidInput) {
-        MRA_LOG_INFO("Invalid input for ruckig %s", input.to_string().c_str());
+        MRA_LOG_INFO("Invalid input for ruckig %s", r_input.to_string().c_str());
         return false;
     }
 
@@ -363,6 +460,16 @@ bool SPGVelocitySetpointController::ruckig_calculate(const MRA::internal::RVC::V
         r_result.velocityRcs.rz = output.new_velocity[2];
         r_result.positionRcs.rz = output.new_position[2];
         r_result.acceleration.rz = output.new_acceleration[2];
+    }
+    else if (axes == AXES_X)  {
+        r_result.velocityRcs.x = output.new_velocity[0];
+        r_result.positionRcs.x = output.new_position[0];
+        r_result.acceleration.x = output.new_acceleration[0];
+    }
+    else if (axes == AXES_Y)  {
+        r_result.velocityRcs.y = output.new_velocity[0];
+        r_result.positionRcs.y = output.new_position[0];
+        r_result.acceleration.y = output.new_acceleration[0];
     }
     else if (axes == AXES_RZ)  {
         r_result.velocityRcs.rz = output.new_velocity[0];

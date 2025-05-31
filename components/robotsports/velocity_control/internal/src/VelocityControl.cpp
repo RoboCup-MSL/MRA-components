@@ -53,7 +53,7 @@ void VelocityControl::setup()
     add_algorithm(std::make_shared<ShiftBallOffset>());
 
     // velocity control (in FCS or RCS, depends on configuration)
-    // for now: always SPG (SetPointGenerator) using Reflexxes Type II library
+    // for now: always SPG (SetPointGenerator) using Ruckig library
     add_algorithm(std::make_shared<SelectVelocityController>());
     add_algorithm(std::make_shared<CalculateVelocity>());
 

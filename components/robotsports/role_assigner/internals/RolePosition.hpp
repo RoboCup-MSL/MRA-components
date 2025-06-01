@@ -18,7 +18,7 @@ class RoleAssignerData;
 class RolePosition {
 public:
     static Geometry::Point determineDynamicRolePosition(defend_info_t& rDefend_info, planner_target_e& planner_target, int& r_gridFileNumber,
-            role_e role, RoleAssignerData& r_role_assigner_data, bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
+            MRA::Datatypes::DynamicRole role, RoleAssignerData& r_role_assigner_data, bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
 
     static void GetFixedPositions(std::vector<Geometry::Point>& playerPositions, const RoleAssignerData& r_role_assigner_data);
 
@@ -26,7 +26,7 @@ public:
 
     static MRA::Geometry::Point determineSetplayRolePosition_2024(int assignment_nr, defend_info_t& rDefend_info,
                                                                   planner_target_e& planner_target, int& r_gridFileNumber,
-                                                                  role_e role,  RoleAssignerData& r_role_assigner_data,
+                                                                  MRA::Datatypes::DynamicRole role,  RoleAssignerData& r_role_assigner_data,
                                                                   bool playerPassedBall, bool& r_role_position_is_end_position_of_pass);
 private:
     static int FindOpponentClostestToPositionAndNotAssigned(const Geometry::Point& targetPos, const RoleAssignerData& r_role_assigner_data);
@@ -51,7 +51,7 @@ private:
 
 
     static MRA::Geometry::Point calculateManToManDefensePosition(
-            defend_info_t& rDefend_info, role_e role,
+            defend_info_t& rDefend_info, MRA::Datatypes::DynamicRole role,
             RoleAssignerData& r_role_assigner_data, int& r_gridFileNumber, bool setPlayActive);
     static Geometry::Point calculateSetPlayerKickerPosition(const Geometry::Point& receiverPosition, const RoleAssignerData& r_role_assigner_data);
 };

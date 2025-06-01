@@ -10,6 +10,8 @@
 #include <limits>
 #include <string>
 
+#include "components/robotsports/role_assigner/RobotsportsRoleAssigner_datatypes.hpp"
+
 namespace MRA {
 
 typedef enum  {
@@ -49,18 +51,6 @@ typedef enum  {
     dr_PENALTY_DEFENDER = 14,
     dr_IS_ALIVE = 15
 } dynamic_role_e;
-
-typedef enum  {
-    role_UNDEFINED = 0,
-    role_GOALKEEPER = 1,
-    role_ATTACKER_MAIN = 2,
-    role_ATTACKER_ASSIST = 3,
-    role_ATTACKER_GENERIC = 4,
-    role_DEFENDER_MAIN = 5,
-    role_DEFENDER_GENERIC = 6,
-    role_DISABLED_OUT = 7,
-    role_DISABLED_IN = 8
-} role_e;   // matching with MRA::RobotsportsRobotStrategy::Output_DynamicRole
 
 typedef enum  {
     FORMATION_112 = 0,
@@ -132,7 +122,7 @@ typedef struct previous_role_assigner_result  {
     int robotId = -1;
     double ts = 0.0;
     path_piece_t end_position ={};
-    role_e role = role_e::role_UNDEFINED;
+    MRA::Datatypes::DynamicRole role = MRA::Datatypes::DynamicRole::UNDEFINED;
 } previous_role_assigner_result_t;
 
 typedef struct  previous_used_ball_by_role_assinger  {
@@ -225,18 +215,18 @@ inline std::string DynamicRoleAsString(dynamic_role_e dynamic_role) {
     return dynamic_role_string;
 }
 
-inline std::string RoleAsString(role_e role) {
+inline std::string RoleAsString(MRA::Datatypes::DynamicRole role) {
     std::string role_string = "";
     switch (role) {
-        case role_UNDEFINED: role_string = "UNDEFINED"; break;
-        case role_GOALKEEPER: role_string = "GOALKEEPER"; break;
-        case role_ATTACKER_MAIN: role_string = "ATTACKER_MAIN"; break;
-        case role_ATTACKER_ASSIST: role_string = "ATTACKER_ASSIST"; break;
-        case role_ATTACKER_GENERIC: role_string = "ATTACKER_GENERIC"; break;
-        case role_DEFENDER_MAIN: role_string = "DEFENDER_MAIN"; break;
-        case role_DEFENDER_GENERIC: role_string = "DEFENDER_GENERIC"; break;
-        case role_DISABLED_OUT: role_string = "DISABLED_OUT"; break;
-        case role_DISABLED_IN: role_string = "DISABLED_IN"; break;
+        case MRA::Datatypes::DynamicRole::UNDEFINED: role_string = "UNDEFINED"; break;
+        case MRA::Datatypes::DynamicRole::GOALKEEPER: role_string = "GOALKEEPER"; break;
+        case MRA::Datatypes::DynamicRole::ATTACKER_MAIN: role_string = "ATTACKER_MAIN"; break;
+        case MRA::Datatypes::DynamicRole::ATTACKER_ASSIST: role_string = "ATTACKER_ASSIST"; break;
+        case MRA::Datatypes::DynamicRole::ATTACKER_GENERIC: role_string = "ATTACKER_GENERIC"; break;
+        case MRA::Datatypes::DynamicRole::DEFENDER_MAIN: role_string = "DEFENDER_MAIN"; break;
+        case MRA::Datatypes::DynamicRole::DEFENDER_GENERIC: role_string = "DEFENDER_GENERIC"; break;
+        case MRA::Datatypes::DynamicRole::DISABLED_OUT: role_string = "DISABLED_OUT"; break;
+        case MRA::Datatypes::DynamicRole::DISABLED_IN: role_string = "DISABLED_IN"; break;
     default:
         role_string = "unknown role (ERROR situation)";
     }
@@ -319,18 +309,18 @@ bool isOneOf(T value, std::initializer_list<T> values) {
 }
 
 
-inline role_e DynamicRoleToRole(dynamic_role_e dr_role, role_e org_role) {
-    role_e role = role_UNDEFINED;
+inline MRA::Datatypes::DynamicRole DynamicRoleToRole(dynamic_role_e dr_role, MRA::Datatypes::DynamicRole org_role) {
+    MRA::Datatypes::DynamicRole role = MRA::Datatypes::DynamicRole::UNDEFINED;
     switch (dr_role) {
-        case dr_NONE: role = role_UNDEFINED; break;
-        case dr_GOALKEEPER: role = role_GOALKEEPER; break;
-        case dr_ATTACKSUPPORTER: role = role_ATTACKER_GENERIC; break;
-        case dr_DEFENDER: role = role_DEFENDER_GENERIC; break;
-        case dr_INTERCEPTOR: role = role_ATTACKER_MAIN; break;
-        case dr_SWEEPER: role = role_DEFENDER_MAIN; break;
-        case dr_SETPLAY_RECEIVER: role = role_ATTACKER_ASSIST; break;
-        case dr_SETPLAY_KICKER: role = role_ATTACKER_MAIN; break;
-        case dr_BALLPLAYER: role = role_ATTACKER_MAIN; break;
+        case dr_NONE: role = MRA::Datatypes::DynamicRole::UNDEFINED; break;
+        case dr_GOALKEEPER: role = MRA::Datatypes::DynamicRole::GOALKEEPER; break;
+        case dr_ATTACKSUPPORTER: role = MRA::Datatypes::DynamicRole::ATTACKER_GENERIC; break;
+        case dr_DEFENDER: role = MRA::Datatypes::DynamicRole::DEFENDER_GENERIC; break;
+        case dr_INTERCEPTOR: role = MRA::Datatypes::DynamicRole::ATTACKER_MAIN; break;
+        case dr_SWEEPER: role = MRA::Datatypes::DynamicRole::DEFENDER_MAIN; break;
+        case dr_SETPLAY_RECEIVER: role = MRA::Datatypes::DynamicRole::ATTACKER_ASSIST; break;
+        case dr_SETPLAY_KICKER: role = MRA::Datatypes::DynamicRole::ATTACKER_MAIN; break;
+        case dr_BALLPLAYER: role = MRA::Datatypes::DynamicRole::ATTACKER_MAIN; break;
         case dr_SEARCH_FOR_BALL: role = org_role; break;
         case dr_BEGIN_POSITION: role = org_role; break;
         case dr_PARKING: role = org_role; break;
@@ -342,9 +332,9 @@ inline role_e DynamicRoleToRole(dynamic_role_e dr_role, role_e org_role) {
     return role;
 }
 
-inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, ball_status_e ball_status) {
+inline dynamic_role_e RoleToDynamicRole(MRA::Datatypes::DynamicRole role, game_state_e gamestate, ball_status_e ball_status) {
     dynamic_role_e dr_role = dr_NONE;
-    if (gamestate == BEGIN_POSITION and role != role_GOALKEEPER) {
+    if (gamestate == BEGIN_POSITION and role != MRA::Datatypes::DynamicRole::GOALKEEPER) {
         dr_role = dr_BEGIN_POSITION;
     }
     else if (gamestate == PARKING) {
@@ -352,10 +342,10 @@ inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, bal
     }
     else {
         switch (role) {
-            case role_UNDEFINED: dr_role = dr_NONE; break;
-            case role_GOALKEEPER: dr_role = dr_GOALKEEPER; break;
-            case role_ATTACKER_GENERIC: dr_role = dr_ATTACKSUPPORTER; break;
-            case role_DEFENDER_GENERIC:
+            case MRA::Datatypes::DynamicRole::UNDEFINED: dr_role = dr_NONE; break;
+            case MRA::Datatypes::DynamicRole::GOALKEEPER: dr_role = dr_GOALKEEPER; break;
+            case MRA::Datatypes::DynamicRole::ATTACKER_GENERIC: dr_role = dr_ATTACKSUPPORTER; break;
+            case MRA::Datatypes::DynamicRole::DEFENDER_GENERIC:
                 if (isOneOf(gamestate, {PENALTY_SHOOTOUT, PENALTY_SHOOTOUT_AGAINST})) {
                     dr_role = dr_PENALTY_DEFENDER;
                 }
@@ -363,7 +353,7 @@ inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, bal
                     dr_role = dr_DEFENDER;
                 }
                 break;
-            case role_ATTACKER_MAIN:
+            case MRA::Datatypes::DynamicRole::ATTACKER_MAIN:
                 if (isOneOf(gamestate, {CORNER, FREEKICK, GOALKICK, KICKOFF, THROWIN})) {
                     dr_role = dr_SETPLAY_KICKER;
                 }
@@ -379,11 +369,13 @@ inline dynamic_role_e RoleToDynamicRole(role_e role, game_state_e gamestate, bal
                     }
                 }
                 break;
-            case role_DEFENDER_MAIN: dr_role = dr_SWEEPER; break;
-            case role_ATTACKER_ASSIST: dr_role = dr_SETPLAY_RECEIVER; break;
-            case role_DISABLED_OUT: dr_role = dr_NONE; break; // not supported
-            case role_DISABLED_IN: dr_role = dr_NONE; break;  // not supported
-
+            case MRA::Datatypes::DynamicRole::DEFENDER_MAIN: dr_role = dr_SWEEPER; break;
+            case MRA::Datatypes::DynamicRole::ATTACKER_ASSIST: dr_role = dr_SETPLAY_RECEIVER; break;
+            case MRA::Datatypes::DynamicRole::DISABLED_OUT: dr_role = dr_NONE; break; // not supported
+            case MRA::Datatypes::DynamicRole::DISABLED_IN: dr_role = dr_NONE; break;  // not supported
+            // supress not all values in switch used warning
+            case MRA::Datatypes::DynamicRole::DynamicRole_INT_MIN_SENTINEL_DO_NOT_USE_: dr_role = dr_NONE; break;  // not supported   
+            case MRA::Datatypes::DynamicRole::DynamicRole_INT_MAX_SENTINEL_DO_NOT_USE_: dr_role = dr_NONE; break;  // not supported   
             //        case dr_role = dr_SETPLAY_KICKER: dr_role = role_ATTACKER_MAIN; break;
             //        case dr_role = dr_BALLPLAYER: dr_role = role_ATTACKER_MAIN; break;
             //        case dr_role = dr_SEARCH_FOR_BALL: dr_role = org_role; break;

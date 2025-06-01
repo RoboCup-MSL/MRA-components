@@ -328,7 +328,7 @@ double CollideTeamMateHeuristic::getValue(double x, double y) {
     double value = 0.0;
     for (unsigned idx = 0; idx < m_r_role_assigner_data.team_admin.size(); idx++) {
         if (m_r_role_assigner_data.team_admin[idx].assigned) {
-            if (m_assigned_attack_supporters and  m_r_role_assigner_data.team_admin[idx].result.role != role_e::role_ATTACKER_GENERIC)
+            if (m_assigned_attack_supporters and  m_r_role_assigner_data.team_admin[idx].result.role != MRA::Datatypes::DynamicRole::ATTACKER_GENERIC)
             {
                 // role is not attack supporter
             }
@@ -542,7 +542,7 @@ InterceptionThreatHeuristic::InterceptionThreatHeuristic(const char *id, double 
     if (not skipOwnTeam) {
         for (unsigned idx = 0; idx < r_role_assigner_data.team.size(); idx++) {
             if (r_role_assigner_data.team_admin[idx].assigned and
-                r_role_assigner_data.team_admin[idx].result.role == role_e::role_ATTACKER_GENERIC) {
+                r_role_assigner_data.team_admin[idx].result.role == MRA::Datatypes::DynamicRole::ATTACKER_GENERIC) {
                 m_Opponents.push_back(r_role_assigner_data.team[idx].position);
             }
         }
@@ -585,7 +585,7 @@ double InfluenceCurrentPositionsHeuristic::getValue(double x, double y) {
 // ----------------------------------------------------------------------------------------
 InfluencePreviousAssignedPositionsHeuristic::InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
                                                                                          const RoleAssignerData& r_role_assigner_data,
-                                                                double maxPossibleFieldDistance, role_e role) :
+                                                                double maxPossibleFieldDistance, MRA::Datatypes::DynamicRole role) :
                                                                         GridHeuristic(id, weight, pgid),
                                                                         m_r_role_assigner_data(r_role_assigner_data),
                                                                         m_dScaling(maxPossibleFieldDistance),

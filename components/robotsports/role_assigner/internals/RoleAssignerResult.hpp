@@ -17,7 +17,7 @@ class RoleAssignerResult {
 public:
     int robotId = -1;
     std::vector<path_piece_t> path = std::vector<path_piece_t>();
-    role_e role = role_e::role_UNDEFINED;
+    MRA::Datatypes::DynamicRole role = MRA::Datatypes::DynamicRole::UNDEFINED;
     int role_rank = -1;
     game_state_e gamestate = game_state_e::NONE;
     MRA::Geometry::Point target = {};
@@ -27,7 +27,7 @@ public:
 
     RoleAssignerResult(int robot_id = -1,
                        const game_state_e&  gamestate = game_state_e::NONE,
-                       const role_e& role = role_e::role_UNDEFINED,
+                       const MRA::Datatypes::DynamicRole& role = MRA::Datatypes::DynamicRole::UNDEFINED,
                        int role_rank = -1,
                        const MRA::Geometry::Point& target = MRA::Geometry::Point(),
                        const planner_target_e& planner_target = planner_target_e::GOTO_BALL,

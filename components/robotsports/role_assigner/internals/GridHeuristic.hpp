@@ -372,13 +372,13 @@ class InfluencePreviousAssignedPositionsHeuristic : public GridHeuristic
 {
 public:
     InfluencePreviousAssignedPositionsHeuristic(const char *id, double weight, RoleAssignerGridInfoData& pgid,
-                                                const RoleAssignerData& r_role_assigner_data, double dScaling, role_e role);
+                                                const RoleAssignerData& r_role_assigner_data, double dScaling, MRA::Datatypes::DynamicRole role);
     virtual ~InfluencePreviousAssignedPositionsHeuristic() {};
     double getValue(double x, double y);
 private:
     const RoleAssignerData& m_r_role_assigner_data;
     const double m_dScaling;
-    role_e m_role;
+    MRA::Datatypes::DynamicRole m_role;
 };
 
 // ----------------------------------------------------------------------------------------

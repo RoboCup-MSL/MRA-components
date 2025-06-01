@@ -82,7 +82,7 @@ public:
     game_state_e gamestate = game_state_e::NONE;
     RoleAssignerBall ball = {};
 
-    std::vector<role_e> formation = {};
+    std::vector<MRA::Datatypes::DynamicRole> formation = {};
     std::vector<RoleAssignerRobot> team = {};
     std::vector<RoleAssignerOpponent> opponents = {};
     std::vector<RoleAssignerOpponent> no_opponent_obstacles = {};
@@ -120,7 +120,7 @@ class RoleAssignerData {
 public:
     // RoleAssignerData() {};
     /* inputs */
-    std::vector<role_e> formation = {};
+    std::vector<MRA::Datatypes::DynamicRole> formation = {};
     game_state_e gamestate = game_state_e::NONE;
     RoleAssignerBall ball = {};
     std::vector<MRA::Geometry::Point> parking_positions = {};
@@ -132,7 +132,7 @@ public:
 
 
     // based on inputs
-    std::vector<role_e> teamFormation = {};
+    std::vector<MRA::Datatypes::DynamicRole> teamFormation = {};
     bool ballIsObstacle = false;
     bool searchForBall = false;
     defend_info_t defend_info = {};

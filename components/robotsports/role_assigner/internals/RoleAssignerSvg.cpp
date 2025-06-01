@@ -181,7 +181,7 @@ void RoleAssignerSvg::role_assigner_data_to_svg(const RoleAssignerInput& r_input
                 rbt.trackingId,
                 PlayerTypeAsString(static_cast<player_type_e>(rbt.player_type)).c_str(),
                 rbt.player_type );
-        auto dr_role = RoleToDynamicRole(role_UNDEFINED, r_input.gamestate, r_input.ball.status);
+        auto dr_role = RoleToDynamicRole(MRA::Datatypes::DynamicRole::UNDEFINED, r_input.gamestate, r_input.ball.status);
         for (auto res_idx = 0u; res_idx < r_output.player_paths.size(); res_idx++) {
             if (r_output.player_paths[res_idx].robotId ==  rbt.robotId) {
                 dr_role = RoleToDynamicRole(r_output.player_paths[res_idx].role, r_input.gamestate, r_input.ball.status);

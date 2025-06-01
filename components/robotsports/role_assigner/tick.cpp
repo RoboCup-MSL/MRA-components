@@ -37,7 +37,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
     ra_input.gamestate = (MRA::game_state_e) input.gamestate();
     ra_input.formation = {};
     for (auto idx = 0; idx <  input.formation_size(); idx++) {
-        ra_input.formation.push_back(static_cast<role_e>(input.formation(idx))); // enums have the same values
+        ra_input.formation.push_back(input.formation(idx)); // enums have the same values
     }
 
     bool a_player_has_ball = false;
@@ -191,7 +191,7 @@ int RobotsportsRoleAssigner::RobotsportsRoleAssigner::tick
         prev_res.ts = google::protobuf::util::TimeUtil::TimestampToMilliseconds(result.timestamp()) / 1000.0;
         prev_res.end_position.x = result.end_position().x();
         prev_res.end_position.y = result.end_position().y();
-        prev_res.role = (MRA::role_e) result.role();
+        prev_res.role = (MRA::Datatypes::DynamicRole) result.role();
 
         ra_state.previous_results.push_back(prev_res);
     }

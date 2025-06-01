@@ -43,9 +43,9 @@ private:
         double distToPreviousTarget;
     };
 
-    bool assignAnyToPosition(RoleAssignerData&  role_assigner_data, role_e dr_role,
+    bool assignAnyToPosition(RoleAssignerData&  role_assigner_data, MRA::Datatypes::DynamicRole dr_role,
             const MRA::Geometry::Point& target, planner_target_e planner_target, bool role_position_is_end_position_of_pass,
-            role_e org_role);
+            MRA::Datatypes::DynamicRole org_role);
 
     void calculatePathForRobot(RoleAssignerData&  r_role_assigner_data, unsigned idx);
 
@@ -58,7 +58,7 @@ private:
 
     void assignTooLongInPenaltyAreaPlayers(RoleAssignerData&  role_assigner_data );
 
-    planner_target_e determine_planner_target(role_e role, const RoleAssignerData& role_assigner_data);
+    planner_target_e determine_planner_target(MRA::Datatypes::DynamicRole role, const RoleAssignerData& role_assigner_data);
 
     std::vector<RoleAssignerRobot> getTeamMates(const RoleAssignerData& role_assigner_data, unsigned meIdx, bool addAssignedTargetAsTeamPosition);
 
@@ -70,8 +70,8 @@ private:
 
     void ReplanInterceptor(unsigned interceptorIdx, RoleAssignerData&  role_assigner_data);
 
-    bool AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, role_e dr_role,
-                                         planner_target_e planner_target, const MRA::Geometry::Point& targetPos, role_e org_role);
+    bool AssignAnyRobotPreferedSetPlayer(RoleAssignerData&  role_assigner_data, MRA::Datatypes::DynamicRole dr_role,
+                                         planner_target_e planner_target, const MRA::Geometry::Point& targetPos, MRA::Datatypes::DynamicRole org_role);
 
     void assignParkingPositions(RoleAssignerData& role_assigner_data);
 
@@ -79,7 +79,7 @@ private:
 
     bool searchForBallBehaviorNeeded(RoleAssignerData& role_assigner_data);
 
-    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, role_e role, const MRA::Geometry::Point& original_target_position, const Environment& rEnvironment);
+    MRA::Geometry::Point updatePositionIfNotAllowed(const MRA::Geometry::Point& playerPosition, MRA::Datatypes::DynamicRole role, const MRA::Geometry::Point& original_target_position, const Environment& rEnvironment);
 
     bool stayInPlayingField(game_state_e gamestate) const;
 

@@ -221,7 +221,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         proto_input.clear_formation();
         for (auto idx = 0u; idx < ra_input.formation.size(); idx++) {
         	// enums have the same values
-        	proto_input.add_formation(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(ra_input.formation[idx]));
+        	proto_input.add_formation(ra_input.formation[idx]);
         }
 
         proto_input.mutable_team()->Clear();
@@ -484,7 +484,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
         	auto assignement = proto_output.assignments(idx);
         	RoleAssignerResult result = {};
         	result.robotId = assignement.robotid();
-        	result.role = static_cast<MRA::role_e>(assignement.role());
+        	result.role = static_cast<MRA::Datatypes::DynamicRole>(assignement.role());
         	result.role_rank = assignement.role_rank();
         	result.gamestate = ra_input.gamestate;
         	result.target = assignement.target();
@@ -534,7 +534,7 @@ public:
 #include <sstream>
 #include <vector>
 
-std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
+std::vector<MRA::Datatypes::DynamicRole> getListWithRoles(game_state_e gameState, ball_status_e ball_status,
                                      bool no_defender_main_during_setplay,
                                      team_formation_e attack_formation,
                                      team_formation_e defense_formation ) {
@@ -557,10 +557,10 @@ std::vector<role_e> getListWithRoles(game_state_e gameState, ball_status_e ball_
         exit(1);
     }
 
-    std::vector<role_e> roles_to_assign = {};
+    std::vector<MRA::Datatypes::DynamicRole> roles_to_assign = {};
     for (auto idx = 0; idx < robot_strategy_output.dynamic_roles_size(); idx++) {
         MRA::Datatypes::DynamicRole odr = robot_strategy_output.dynamic_roles(idx);
-        roles_to_assign.push_back(static_cast<role_e>(odr));
+        roles_to_assign.push_back(static_cast<MRA::Datatypes::DynamicRole>(odr));
     }
 
     return roles_to_assign;
@@ -817,7 +817,7 @@ void fillTeam(std::vector<RoleAssignerRobot>& Team, std::vector<RoleAssignerAdmi
 
         previous_role_assigner_result_t previous_result  = {};
         previous_result.present = (*team_iter).previous_result_present();
-        previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), role_UNDEFINED);
+        previous_result.role = DynamicRoleToRole(StringToDynamicRole((*team_iter).previous_result_dynamic_role()), MRA::Datatypes::DynamicRole::UNDEFINED);
         previous_result.end_position.x = (*team_iter).previous_result_x();
         previous_result.end_position.y = (*team_iter).previous_result_y();
         previous_result.ts = (*team_iter).previous_result_ts();

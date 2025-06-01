@@ -3,10 +3,11 @@ syntax = "proto3";
 package MRA.RobotsportsRoleAssigner;
 
 import "google/protobuf/timestamp.proto";
-import "datatypes/Pose.proto";
-import "datatypes/Point.proto";
 import "datatypes/Ball.proto";
+import "datatypes/DynamicRole.proto";
 import "datatypes/Obstacle.proto";
+import "datatypes/Point.proto";
+import "datatypes/Pose.proto";
 import "components/robotsports/role_assigner/interface/Output.proto";
 
 
@@ -26,7 +27,6 @@ message Player
     double time_in_opponent_penalty_area = 10;
     // double energy, competence? Reasoning should take it account when choosing player to pass to
     // radius?
-    //    DynamicRole dynamic_role = 11;
     int32 trackingId = 12; // id of object tracking
 }
 
@@ -86,7 +86,7 @@ message Input
     GameState gamestate = 2;
     MRA.Datatypes.Ball ball = 3; // allow maximum one ball in the field/test; if there are more, then WorldModel should provide closest one, can be none.
 
-    repeated DynamicRole formation = 11; // ordered list of dynamic roles to be assigned.
+    repeated MRA.Datatypes.DynamicRole formation = 11; // ordered list of dynamic roles to be assigned.
 
     repeated Player team = 4;   // players in the team (own player is first in the list)
     repeated Opponent opponents = 5; // opponents participating in the games

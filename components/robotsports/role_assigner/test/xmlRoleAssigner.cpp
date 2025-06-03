@@ -469,7 +469,7 @@ static void xml_assign_roles(const RoleAssignerInput& ra_input,
                 proto_prev_result.mutable_end_position()->set_cost(prev_res.end_position.cost);
                 proto_prev_result.mutable_end_position()->set_target(
                     static_cast<MRA::RobotsportsRoleAssigner::PathPurpose>(prev_res.end_position.target));
-                proto_prev_result.set_role(static_cast<MRA::RobotsportsRoleAssigner::DynamicRole>(prev_res.role));
+                proto_prev_result.set_role(prev_res.role);
                 proto_state.mutable_previous_result()->Add()->CopyFrom(proto_prev_result);
             }
         }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>Milestone A: normal play 1 robot with ball on field line</tns:Description>
+  <tns:Options svgOutputFileName="output_team/ms-A_part2.svg" svgDrawEdges="true" />
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-6.0" y="-0.0" velx="0.0" vely="0.0"/>
+  <tns:Team id="1" trackingId="1" x="-6.5" y="-0.5" hasBall="true"/>
+  <tns:SituationInfo passing_required="false" ball_status="OWNED_BY_PLAYER"/>
+</tns:Situation>

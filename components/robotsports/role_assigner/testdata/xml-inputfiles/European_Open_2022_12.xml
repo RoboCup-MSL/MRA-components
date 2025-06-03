@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>intercept rolling ball, should not sent robot outside the field</tns:Description>
+  <tns:Options svgOutputFileName="output_team/European_Open_2022_12.svg"/>
+  <tns:Field field_length="17.98" field_width="12.0" field_margin="0.8"
+         goal_width="2.25" goal_length="1.0" 
+         center_circle_diameter="3.99" 
+         goal_area_width="3.894" goal_area_length="0.746"
+	 penalty_area_present="true" penalty_area_width="6.875" penalty_area_length="2.244"
+	 robot_size="0.52" ball_radius="0.11"
+	 field_markings_width="0.123" 
+	 parking_area_width="0.5" parking_area_length="0.5" parking_distance_between_robots="1.0" parking_distance_to_line="0.0"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-3.50" y="-6.03" velx="-0.37" vely="-0.98"/>
+  <tns:Team id="1" trackingId="1" x="-0.713" y="-6.413" rz="1.478" velx="-1.683" vely="-0.943" velrz="-0.497"     previous_result_present="true"  previous_result_ts="44750.2" previous_result_x="-4.4301" previous_result_y="-8.47" previous_result_dynamic_role="INTERCEPTOR"/>
+  <tns:Team id="2" trackingId="2" x="-0.361" y="-8.689" rz="0.471" velx="-0.123" vely="-0.046" velrz="0.000"  isGoalie="true"     previous_result_present="true"  previous_result_ts="44750.9" previous_result_x="-0.563" previous_result_y="-8.49" previous_result_dynamic_role="GOALKEEPER"/>
+  <tns:Team id="3" trackingId="3" x="-0.124" y="-3.457" rz="1.761" velx="-0.667" vely="-1.494" velrz="0.000"     previous_result_present="true"  previous_result_ts="44750.3" previous_result_x="-2.25" previous_result_y="-6.75" previous_result_dynamic_role="SWEEPER"/>
+ <tns:Team id="4" trackingId="4" x="1.635" y="-1.637" rz="2.133" velx="-0.433" vely="-0.519" velrz="0.000"     previous_result_present="true"  previous_result_ts="44750.4" previous_result_x="2.153" previous_result_y="-2.273" previous_result_dynamic_role="DEFENDER"/>
+  <tns:PickupPosition x="0.000" y="0.000" ts="44750.341" valid="false" />
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
+</tns:Situation>

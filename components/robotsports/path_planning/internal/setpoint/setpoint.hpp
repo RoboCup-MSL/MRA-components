@@ -1,99 +1,86 @@
 #ifndef SETPOINT_HPP
 #define SETPOINT_HPP 1
 
+#include <vector>
+#include <array>
+#include <cmath>
+#include <numeric>   // For std::iota
+#include <algorithm> // For std::max, std::min, std::clamp
 
-typedef struct Segment {
-    std::vector<double> p;
-    std::vector<double> v;
-    std::vector<double> a;
-    std::vector<double> t;
-    std::vector<double> dt;
-} Segment_t;
+// Define degrees of freedom (e.g., x, y, rotation)
+const int DOF = 3;
 
-
-// std::tuple<std::vector<Segment_t>, std::vector<double>, std::vector<double>, std::vector<double>> balance_xy(
-//     std::vector<Segment_t> segment, 
-//     const std::vector<double>& p0, 
-//     const std::vector<double>& v0, 
-//     const std::vector<double>& pe, 
-//     const std::vector<double>& ve, 
-//     const std::vector<double>& vm, 
-//     const std::vector<double>& am, 
-//     const std::vector<double>& dm);
-
-
-double wrap(double angle, double reference);
-
-Segment_t move_at_constant_vel(const Segment_t& segment_in,
-                                const std::vector<double>& p0, 
-                                const std::vector<double>& v0, 
-                                const std::vector<double>& t0, 
-                                const std::vector<double>& dt);
-
-Segment_t move_to_vel(const Segment_t& segment_in, 
-                      const std::vector<double>& p0, const std::vector<double>& v0, 
-                      const std::vector<double>& t0, const std::vector<double>& ve, 
-                      const std::vector<double>& am, const std::vector<double>& dm);
-
-std::pair<std::vector<double>, std::vector<double>> get_max_velocity(const Segment_t& segment_in, const std::vector<double>& p0, 
-                                                                     const std::vector<double>& v0, const std::vector<double>& pe, 
-                                                                     const std::vector<double>& ve, const std::vector<double>& vm, 
-                                                                     const std::vector<double>& am, const std::vector<double>& dm);
-
-
-void get_segments(std::vector<Segment_t>& segment, const std::vector<double>& p0, 
-                    const std::vector<double>& v0, const std::vector<double>& pe, 
-                    const std::vector<double>& ve, const std::vector<double>& vm, 
-                    const std::vector<double>& am, const std::vector<double>& dm);
-
-
-
-
-
-typedef struct Traject {
-    std::vector<double> t;
-    std::vector<std::vector<double>> p;
-    std::vector<std::vector<double>> v;
-    std::vector<std::vector<double>> a;
-    std::vector<std::vector<int>> segment_id;
-} Traject_t;
-
-std::tuple<std::vector<double>, std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<bool>>> traj_segment(
-    const std::vector<std::map<std::string, std::vector<double>>>& segment, const std::vector<double>& time);
-
-// std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<bool>>>
-//         traj_segment(const std::vector<std::map<std::string, std::vector<double>>>& segment, const std::vector<double>& time);
-
-
-std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::vector<double>> combine_segment_data(
-            const std::vector<std::map<std::string, std::vector<double>>>& segment);
-
-// std::tuple<std::vector<double>, std::vector<std::vector<double>>, std::vector<vector<double>>, std::vector<std::vector<double>>>
-//         combine_segment_data(const std::vector<std::map<std::string, std::vector<double>>>& segment);
-
-Traject_t traj1(Traject traject, const std::vector<std::map<std::string, std::vector<double>>>& segment, double Ts);
-
-
-
-struct Input {
-    struct Robot {
-        int skillID;
-    } robot;
+// Represents a single segment in the trajectory
+struct SegmentData {
+    std::array<double, DOF> t;
+    std::array<double, DOF> p;
+    std::array<double, DOF> v;
+    std::array<double, DOF> a;
+    std::array<double, DOF> dt;
 };
 
+// Simplified representation of the 'd' dictionary for relevant fields
 struct Data {
-    Traject_t traj;
-    Input input;
     struct Parameters {
+        std::array<double, 2> field_size; // [width, length]
+        double field_border_margin;
+        double dmax_move;
+        double dmax_rotate;
+        double Ts;
         double Ts_predict;
+        double technical_area_width;
     } par;
+
+    struct Input {
+        struct Robot {
+            std::array<double, DOF> p; // position
+            std::array<double, DOF> v; // velocity
+            std::array<double, DOF> IMU_orientation; // [pitch, roll, yaw] or similar
+            int skillID;
+        } robot;
+    } input;
+
+    struct Subtarget {
+        std::array<double, DOF> p;
+        std::array<double, DOF> v;
+        std::array<double, DOF> vmax;
+        std::array<double, DOF> amax;
+        bool automatic_substitution_flag;
+    } subtarget;
+
+    struct Setpoint {
+        std::array<double, DOF> p;
+        std::array<double, DOF> v;
+        std::array<double, DOF> a;
+    } setpoint;
+
+    struct Auxiliary {
+        std::vector<SegmentData> segment; // List of SegmentData
+    } aux;
+
+    struct Trajectory {
+        std::vector<double> t; // This should be a 1D vector of times
+        std::vector<std::array<double, DOF>> p; // N x DOF matrix
+        std::vector<std::array<double, DOF>> v; // N x DOF matrix
+        std::vector<std::array<double, DOF>> a; // N x DOF matrix
+        std::vector<std::array<int, DOF>> segment_id; // N x DOF matrix
+    } traj;
 };
 
-std::vector<double> arange(int start, int end);
+// Helper for numpy.linalg.norm for a DOF-element array
+inline double norm(const std::array<double, DOF>& vec) {
+    double sum_sq = 0.0;
+    for (double val : vec) {
+        sum_sq += val * val;
+    }
+    return std::sqrt(sum_sq);
+}
 
-Data traj_predict(Data d, const std::vector<std::map<std::string, std::vector<double>>>& segment);
+// Helper for numpy.linalg.norm for a 2-element array (specifically for XY plane)
+inline double norm_xy(const std::array<double, DOF>& vec) {
+    return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
+}
 
-
-
+Data set(Data d);
 
 #endif

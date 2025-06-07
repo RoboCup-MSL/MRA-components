@@ -1,6 +1,13 @@
-#include <cmath>
+#include "wrap.hpp"
 
-double wrap(double angle, double angle_setpoint) {
-    angle = fmod(angle - angle_setpoint + M_PI, 2 * M_PI) + angle_setpoint - M_PI;
+double wrap(double angle, double reference) {
+    // This implementation matches the Python code's logic for angle wrapping
+    // to keep `angle` within `reference - pi` and `reference + pi`.
+    while (angle > reference + M_PI) {
+        angle -= 2 * M_PI;
+    }
+    while (angle < reference - M_PI) {
+        angle += 2 * M_PI;
+    }
     return angle;
 }

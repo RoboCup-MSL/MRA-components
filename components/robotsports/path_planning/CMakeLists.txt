@@ -5,8 +5,16 @@ add_library(MRA-components-robotsports-path-planning
     tick.cpp
     internal/setpoint/balance_xy.cpp
     internal/setpoint/get_segments.cpp
-    internal/setpoint/traj1.cpp
+    internal/setpoint/setpoint.cpp
     internal/setpoint/traj_pred.cpp
+    internal/setpoint/traj1.cpp
+    internal/setpoint/traject_common.cpp
+    internal/setpoint/wrap.cpp
+    internal/target/adjust_to_3m_rule.cpp
+    internal/target/adjust_to_field.cpp
+    internal/target/adjust_to_goal_area.cpp
+    internal/target/adjust_to_obstacles.cpp
+    internal/target/adjust_to_penalty_area.cpp
 )
 
 

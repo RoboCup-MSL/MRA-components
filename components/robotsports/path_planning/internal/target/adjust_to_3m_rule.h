@@ -12,6 +12,7 @@ struct RobotInput {
     std::vector<int> skillID;
     std::vector<double> cpb_poi_xy;
     int human_dribble_flag;
+    bool CPPA; // can not be in penaly area ?
     std::vector<double> target;
     std::vector<double> target_vel;
 };

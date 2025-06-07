@@ -83,13 +83,22 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Wno-address -Wno-reorder -Wno-arr
 # install on Ubuntu: sudo apt-get install protobuf-compiler
 find_package(Protobuf)
 if(NOT PROTOBUF_FOUND)
-  message(FATAL_ERROR "Protobuf could not be find by cmake. Install protobuf (e.g. sudo apt-get install protobuf-compiler)")
+  message(FATAL_ERROR "\nProtobuf could not be find by cmake.\nInstall protobuf (e.g. sudo apt-get install protobuf-compiler)")
 endif(NOT PROTOBUF_FOUND)
 find_library(PROTOBUF_LIBRARY protobuf)
 
 # dependency: opencv
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+# dependency: Eigen
+# check if Eigen is installed
+# install on Ubuntu: sudo apt-get install protobuf-compiler
+find_package(Eigen3)
+if(NOT EIGEN3_FOUND)
+  message(FATAL_ERROR "\nEigen3 could not be find by cmake.\nInstall Eigen3 (e.g. sudo apt-get install libeigen3-dev)")
+endif(NOT EIGEN3_FOUND)
+
 
 
 if (MRA_TEST_ENABLED)

@@ -10,28 +10,25 @@ add_library(MRA-components-robotsports-path-planning
     internal/setpoint/traj1.cpp
     internal/setpoint/traject_common.cpp
     internal/setpoint/wrap.cpp
+    internal/subtarget/subtarget.cpp
+    internal/subtarget/replan/new_subtarget.cpp
+    internal/subtarget/replan/search/beside_obstacle.cpp
+    internal/subtarget/replan/search/inpolygonpy
+    internal/subtarget/replan/search/random.cpp
+    internal/subtarget/angle/aim_at_target.cpp
+    internal/subtarget/angle/angle.cpp
+    internal/subtarget/angle/dribble_module.cpp
+    internal/subtarget/angle/shield.cpp
+    # internal/subtarget/angle/test_angle.cpp
     internal/target/adjust_to_3m_rule.cpp
     internal/target/adjust_to_field.cpp
     internal/target/adjust_to_goal_area.cpp
     internal/target/adjust_to_obstacles.cpp
     internal/target/adjust_to_penalty_area.cpp
+    internal/target/target.cpp
 )
 
 
-# add_library(MRA-components-robotsports-velocity-control
-#     tick.cpp
-#     internal/src/VelocityControl.cpp
-#     internal/src/controllers/LinearVelocitySetpointController.cpp
-#     internal/src/controllers/SPGVelocitySetpointController.cpp
-#     internal/src/algorithms/CheckPrepareInputs.cpp
-#     internal/src/algorithms/CheckStop.cpp
-#     internal/src/algorithms/ConfigureLimits.cpp
-#     internal/src/algorithms/Deadzone.cpp
-#     internal/src/algorithms/SelectVelocityController.cpp
-#     internal/src/algorithms/ShiftBallOffset.cpp
-#     internal/src/algorithms/CalculateVelocity.cpp
-#     internal/src/algorithms/SetOutputsPrepareNext.cpp
-# )
 
 target_include_directories(MRA-components-robotsports-path-planning PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
@@ -46,12 +43,16 @@ add_executable(
     robotsports_path_planning_test
     test.cpp
 )
-target_include_directories(robotsports_path_planning_test PRIVATE ${MRA_SOURCE_DIR}/base ${MRA_SOURCE_DIR}/libraries/logging ${MRA_BINARY_DIR})
+target_include_directories(robotsports_path_planning_test 
+    PRIVATE ${MRA_SOURCE_DIR}/base 
+    ${MRA_SOURCE_DIR}/libraries/logging 
+    ${MRA_BINARY_DIR}
+    ${EIGEN3_INCLUDE_DIRS}
+    )
 target_link_libraries(
     robotsports_path_planning_test
     MRA-components-robotsports-path-planning
-    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock
-)
+    MRA-libraries MRA-components nlohmann_json::nlohmann_json rt GTest::gtest_main gmock ${Eigen_LIBRARIES})
 
 
 gtest_discover_tests(

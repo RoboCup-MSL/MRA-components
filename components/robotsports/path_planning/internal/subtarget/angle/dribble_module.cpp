@@ -1,6 +1,7 @@
 #include "dribble_module.hpp"
+#include "subtarget.hpp"
 
-double dribble(const DribbleData& d) {
+double dribble(const DribbleData_t& d) {
     double angle;
     // Equivalent to np.linalg.norm(d['setpoint']['v'][:2])
     if (d.setpoint.v.head<2>().norm() > 1e-6) {

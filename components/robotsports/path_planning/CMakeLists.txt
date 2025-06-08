@@ -36,7 +36,9 @@ target_include_directories(MRA-components-robotsports-path-planning PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging
     ${MRA_SOURCE_DIR}
     ${MRA_SOURCE_DIR}/base
-    ${CMAKE_CURRENT_SOURCE_DIR}/internal/setpoint/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/internal/setpoint
+    ${CMAKE_CURRENT_SOURCE_DIR}/internal/target
+    ${CMAKE_CURRENT_SOURCE_DIR}/internal/subtarget
     ${CMAKE_CURRENT_BINARY_DIR}/interface)
 target_link_libraries(MRA-components-robotsports-path-planning MRA-libraries MRA-base nlohmann_json::nlohmann_json)
 

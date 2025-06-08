@@ -1,5 +1,5 @@
 // adjust_to_goal_area.cpp
-#include "adjust_to_goal_area.h"
+#include "adjust_to_goal_area.hpp"
 #include <cmath>
 #include <algorithm> // For std::abs
 
@@ -7,7 +7,7 @@ double sign(double x) {
     return (x > 0) - (x < 0);
 }
 
-DType::TargetType adjust_to_goal_area(const DType& d, DType::TargetType target) {
+TargetType_t adjust_to_goal_area(const DType_t& d, TargetType_t target) {
     double xpos = 0.5 * d.par.field_goal_area[0];
     double ypos = d.par.field_size[1] * 0.5 - d.par.field_goal_area[1];
 

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <eigen3/Eigen/Dense>
 
+#include "subtarget.hpp"
+
 // Assuming these are C++ equivalents or that their functionalities are handled within this file.
 // If they are separate modules, they would need to be translated as well.
 namespace subtarget {
@@ -58,56 +60,6 @@ namespace subtarget {
 }
 
 
-// Define necessary structs based on the Python 'd' dictionary and other objects
-struct Obstacles {
-    std::vector<bool> active;
-    std::vector<Eigen::Vector3d> p; // Position [x, y, z]
-    std::vector<double> r;           // Radius
-};
-
-struct Input {
-    Obstacles obstacles;
-    // Add other input fields as necessary, e.g., robot, ball
-};
-
-struct Target {
-    Eigen::Vector3d p; // Position [x, y, z]
-    // Add other target fields as necessary
-};
-
-struct Setpoint {
-    Eigen::Vector3d p; // Position [x, y, z]
-    Eigen::Vector3d v; // Velocity [vx, vy, vz]
-    // Add other setpoint fields as necessary
-};
-
-struct Parameters {
-    double vmax_move;
-    double robot_radius;
-    double margin_replan;
-    // Add other parameters as necessary, e.g., field_size, goalwidth, nattempts_replan, replan_uphill_distance
-};
-
-struct D_Struct { // Represents the 'd' dictionary in Python
-    Input input;
-    Target target;
-    Setpoint setpoint;
-    Parameters par;
-};
-
-struct SubtargetCandidate {
-    Eigen::Vector3d p;
-    Eigen::Vector3d v;
-    // Add other relevant fields like 'score' if used for comparison
-    double score = 0.0; // Example score, adjust as per update_best logic
-};
-
-struct Best_Struct {
-    Eigen::Vector3d p;
-    Eigen::Vector3d v;
-    double score = -std::numeric_limits<double>::infinity(); // Initialize with a very low score
-};
-
 
 // Include Eigen library for vector and matrix operations
 #include <eigen3/Eigen/Dense>
@@ -116,7 +68,7 @@ struct Best_Struct {
 namespace subtarget {
     namespace replan {
         namespace determine_setpoint_limits {
-            SubtargetCandidate determine_setpoint_limits(const D_Struct& d, const SubtargetCandidate& candidate) {
+            SubtargetCandidate_t determine_setpoint_limits(const D_Struct_t& d, const SubtargetCandidate_t& candidate) {
                 // Placeholder implementation
                 return candidate;
             }

@@ -1,8 +1,8 @@
 // adjust_to_field.cpp
-#include "adjust_to_field.h"
+#include "adjust_to_field.hpp"
 #include <algorithm> // For std::max and std::min
 
-DType::TargetType adjust_to_field(const DType& d, DType::TargetType target) {
+TargetType_t adjust_to_field(const DType_t& d, TargetType_t target) {
     bool skill_id_active = false;
     for (int skill_id : d.input_robot.skillID) {
         if (skill_id >= 1 && skill_id <= 4) {

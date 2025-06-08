@@ -3,15 +3,9 @@
 
 #include <eigen3/Eigen/Dense>
 #include <cmath> // For std::atan2
+#include "subtarget.hpp"
 
-// Structure to mimic the relevant parts of the Python 'd' dictionary
-struct DribbleData {
-    struct Setpoint {
-        Eigen::Vector3d v; // Velocity vector (x, y, z)
-        Eigen::Vector3d p; // Position vector (x, y, angle) - in Python, p[2] was the angle
-    } setpoint;
-};
 
-double dribble(const DribbleData& d);
+double dribble(const DribbleData_t& d);
 
 #endif // DRIBBLE_MODULE_H

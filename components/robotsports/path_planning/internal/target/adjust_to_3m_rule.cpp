@@ -1,8 +1,8 @@
 // adjust_to_3m_rule.cpp
-#include "adjust_to_3m_rule.h"
+#include "adjust_to_3m_rule.hpp"
 #include <algorithm> // For std::any_of, std::max, std::min
 
-DType::TargetType adjust_to_3m_rule(const DType& d, DType::TargetType target) {
+TargetType_t adjust_to_3m_rule(const DType_t& d, TargetType_t target) {
     double max_radius = 3.0; // Maximum allowable radius (in meters) from the reference point
 
     // Calculate the differences in x and y coordinates between the reference point

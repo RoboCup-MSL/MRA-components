@@ -1,6 +1,6 @@
 #include "shield.hpp"
 
-double shield(const ShieldData& d) {
+double shield(const ShieldData_t& d) {
     // get the distances to active obstacles
     // Filter active obstacles. Eigen doesn't have direct boolean indexing like numpy.
     // We'll build a new matrix of active obstacles.

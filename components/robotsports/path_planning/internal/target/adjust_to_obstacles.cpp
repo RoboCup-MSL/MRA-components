@@ -1,8 +1,8 @@
 // adjust_to_obstacles.cpp
-#include "adjust_to_obstacles.h"
+#include "adjust_to_obstacles.hpp"
 #include <limits> // For std::numeric_limits
 
-DType::TargetType adjust_to_obstacles(const DType& d, DType::TargetType target) {
+TargetType_t adjust_to_obstacles(const DType_t& d, TargetType_t target) {
     // Prep
     double extra_margin = 0.05; // [m] move a bit further beyond the collision_distance
     int nAttempts = 10; // [#] maximum iteration count to step away from nearby obstacles

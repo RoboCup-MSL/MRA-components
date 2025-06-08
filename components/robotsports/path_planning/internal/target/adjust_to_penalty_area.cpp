@@ -1,9 +1,9 @@
 // adjust_to_penalty_area.cpp
-#include "adjust_to_penalty_area.h"
+#include "adjust_to_penalty_area.hpp"
 #include <cmath>
 #include <algorithm> // For std::abs
 
-DType::TargetType adjust_to_penalty_area(const DType& d, DType::TargetType target) {
+TargetType_t adjust_to_penalty_area(const DType_t& d, TargetType_t target) {
     double xpos = 0.5 * d.par.field_penalty_area[0];
     double ypos = d.par.field_size[1] * 0.5 - d.par.field_penalty_area[1];
 

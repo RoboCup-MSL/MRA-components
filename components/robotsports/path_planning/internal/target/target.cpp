@@ -1,7 +1,7 @@
 // set.cpp
 #include "target.hpp"
 
-DType set(DType d) {
+DType_t set(DType_t d) {
     // Initialize target output
     // Assuming d.input_robot.target and d.input_robot.target_vel are std::vector<double>
     // and that target.p and target.v are also std::vector<double>

@@ -10,11 +10,13 @@ add_library(MRA-components-robotsports-path-planning
     internal/setpoint/traj1.cpp
     internal/setpoint/traject_common.cpp
     internal/setpoint/wrap.cpp
-    internal/subtarget/subtarget.cpp
-    internal/subtarget/replan/new_subtarget.cpp
+    #internal/subtarget/subtarget.cpp  # new
+    #internal/subtarget/replan/new_subtarget.cpp # new
+    internal/subtarget/replan/determine_setpoint_limits.cpp
+    #internal/subtarget/replan/get_distance_inside_penalty_area.cpp #new
     internal/subtarget/replan/search/beside_obstacle.cpp
     internal/subtarget/replan/search/inpolygonpy
-    internal/subtarget/replan/search/random.cpp
+    #internal/subtarget/replan/search/random.cpp # new
     internal/subtarget/angle/aim_at_target.cpp
     internal/subtarget/angle/angle.cpp
     internal/subtarget/angle/dribble_module.cpp

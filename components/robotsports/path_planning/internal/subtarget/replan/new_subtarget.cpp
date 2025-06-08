@@ -5,6 +5,8 @@
 #include <map>   // For dictionary-like access
 #include <limits> // For std::numeric_limits
 
+#include "new_subtarget.hpp"
+
 // --- Helper Functions (NumPy Equivalents) ---
 
 // Function to calculate the L2 norm of a 2D or 3D vector
@@ -67,42 +69,6 @@ std::vector<double> element_wise_min(const std::vector<double>& a, const std::ve
     return result;
 }
 
-// --- Structure Definitions (Simplified) ---
-// In a real application, you would define more specific structs for 'par', 'setpoint', 'target', 'input', etc.
-// For this translation, we'll use a nested map structure to mimic Python dictionaries.
-// This is not the most efficient or type-safe C++ approach but serves for direct translation.
-
-struct Subtarget {
-    std::vector<double> p; // position
-    std::vector<double> v; // velocity
-    std::vector<double> vmax; // max velocity
-    std::vector<double> amax; // max acceleration
-    std::vector<double> dmax; // max deceleration
-    double eta; // time to reach subtarget
-    int age;
-    bool collisionfree;
-    int violation_count;
-    std::string action; // Assuming 'action' is a string
-    std::vector<int> segment_id; // Assuming segment_id is a vector of ints
-    std::map<int, std::map<char, std::vector<double>>> segment; // Mimics segment[2]['t'][0:2]
-    std::vector<double> target; // New field for subtarget_target['target']
-};
-
-struct RobotInput {
-    int skillID;
-    double CPBteam;
-    bool quickstop_trigger;
-    bool human_dribble_flag;
-};
-
-struct Data {
-    std::map<std::string, std::map<std::string, std::vector<double>>> par; // Parameters
-    std::map<std::string, std::vector<double>> setpoint; // Current state
-    std::map<std::string, std::vector<double>> target; // Target state
-    RobotInput input_robot; // input['robot']
-    Subtarget subtarget; // Current subtarget info
-};
-
 // --- Forward Declarations for interdependent functions ---
 // These functions are defined in other files and will be represented as placeholders.
 
@@ -147,99 +113,87 @@ Subtarget replan_search_beside_obstacles_beside_obstacle(
 
 namespace SubtargetReplan { // Encapsulate functions in a namespace
 
-    // determine_setpoint_limits.py
-    Subtarget determine_setpoint_limits(Data& d, Subtarget subtarget) {
-        // Calculate the angle difference within the range [-pi, pi]
-        double angle_diff = std::fmod((d.setpoint["p"][2] - subtarget.p[2] + M_PI), (2 * M_PI)) - M_PI;
-        double sc = d.par["scale_rotate"][0]; // Assuming scale_rotate is a single value in a vector
+    // // determine_setpoint_limits.py
+    // Subtarget determine_setpoint_limits(Data& d, Subtarget subtarget) {
+    //     // Calculate the angle difference within the range [-pi, pi]
+    //     double angle_diff = std::fmod((d.setpoint["p"][2] - subtarget.p[2] + M_PI), (2 * M_PI)) - M_PI;
+    //     double sc = d.par["scale_rotate"][0]; // Assuming scale_rotate is a single value in a vector
 
-        // Check conditions
-        bool possess_ball = false;
-        for (int skill_id : d.input_robot.skillID) { // Assuming skillID is a vector/array of ints
-            if (skill_id >= 1 && skill_id <= 4) {
-                possess_ball = true;
-                break;
-            }
-        }
+    //     // Check conditions
+    //     bool possess_ball = false;
+    //     for (int skill_id : d.input_robot.skillID) { // Assuming skillID is a vector/array of ints
+    //         if (skill_id >= 1 && skill_id <= 4) {
+    //             possess_ball = true;
+    //             break;
+    //         }
+    //     }
 
-        bool large_angle = std::abs(angle_diff) > d.par["scale_angle"][0]; // Assuming scale_angle is a single value
-        bool low_velocity = vector_norm_2d(d.setpoint["v"]) < 1;
+    //     bool large_angle = std::abs(angle_diff) > d.par["scale_angle"][0]; // Assuming scale_angle is a single value
+    //     bool low_velocity = vector_norm_2d(d.setpoint["v"]) < 1;
 
-        // Determine limits based on conditions
-        std::vector<double> vmax;
-        std::vector<double> amax;
-        std::vector<double> dmax;
+    //     // Determine limits based on conditions
+    //     std::vector<double> vmax;
+    //     std::vector<double> amax;
+    //     std::vector<double> dmax;
 
-        if (possess_ball && large_angle && low_velocity) {
-            vmax = {d.par["vmax_move"][0] * sc / std::sqrt(2),
-                    d.par["vmax_move"][0] * sc / std::sqrt(2),
-                    d.par["vmax_rotate"][0]};
+    //     if (possess_ball && large_angle && low_velocity) {
+    //         vmax = {d.par["vmax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["vmax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["vmax_rotate"][0]};
 
-            amax = {d.par["amax_move"][0] * sc / std::sqrt(2),
-                    d.par["amax_move"][0] * sc / std::sqrt(2),
-                    d.par["amax_rotate"][0]};
+    //         amax = {d.par["amax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["amax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["amax_rotate"][0]};
 
-            dmax = {d.par["dmax_move"][0] * sc / std::sqrt(2),
-                    d.par["dmax_move"][0] * sc / std::sqrt(2),
-                    d.par["dmax_rotate"][0]};
-        } else {
-            vmax = {d.par["vmax_move"][0] / std::sqrt(2),
-                    d.par["vmax_move"][0] / std::sqrt(2),
-                    d.par["vmax_rotate"][0]};
+    //         dmax = {d.par["dmax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["dmax_move"][0] * sc / std::sqrt(2),
+    //                 d.par["dmax_rotate"][0]};
+    //     } else {
+    //         vmax = {d.par["vmax_move"][0] / std::sqrt(2),
+    //                 d.par["vmax_move"][0] / std::sqrt(2),
+    //                 d.par["vmax_rotate"][0]};
 
-            amax = {d.par["amax_move"][0] / std::sqrt(2),
-                    d.par["amax_move"][0] / std::sqrt(2),
-                    d.par["amax_rotate"][0]};
+    //         amax = {d.par["amax_move"][0] / std::sqrt(2),
+    //                 d.par["amax_move"][0] / std::sqrt(2),
+    //                 d.par["amax_rotate"][0]};
 
-            dmax = {d.par["dmax_move"][0] / std::sqrt(2),
-                    d.par["dmax_move"][0] / std::sqrt(2),
-                    d.par["dmax_rotate"][0]};
-        }
+    //         dmax = {d.par["dmax_move"][0] / std::sqrt(2),
+    //                 d.par["dmax_move"][0] / std::sqrt(2),
+    //                 d.par["dmax_rotate"][0]};
+    //     }
 
-        // Clip desired subtarget velocity to maximum velocity if condition is met
-        // Assuming subtarget.v and vmax are at least 2 elements for 0:2 slicing
-        if (vector_norm_2d(subtarget.v) > vector_norm_2d(vmax) && d.input_robot.skillID != 5) {
-            double norm_subtarget_v = vector_norm_2d(subtarget.v);
-            if (norm_subtarget_v > 1e-6) { // Avoid division by zero
-                subtarget.v[0] = (subtarget.v[0] / norm_subtarget_v) * vector_norm_2d(vmax);
-                subtarget.v[1] = (subtarget.v[1] / norm_subtarget_v) * vector_norm_2d(vmax);
-            } else {
-                subtarget.v[0] = 0;
-                subtarget.v[1] = 0;
-            }
-        }
+    //     // Clip desired subtarget velocity to maximum velocity if condition is met
+    //     // Assuming subtarget.v and vmax are at least 2 elements for 0:2 slicing
+    //     if (vector_norm_2d(subtarget.v) > vector_norm_2d(vmax) && d.input_robot.skillID != 5) {
+    //         double norm_subtarget_v = vector_norm_2d(subtarget.v);
+    //         if (norm_subtarget_v > 1e-6) { // Avoid division by zero
+    //             subtarget.v[0] = (subtarget.v[0] / norm_subtarget_v) * vector_norm_2d(vmax);
+    //             subtarget.v[1] = (subtarget.v[1] / norm_subtarget_v) * vector_norm_2d(vmax);
+    //         } else {
+    //             subtarget.v[0] = 0;
+    //             subtarget.v[1] = 0;
+    //         }
+    //     }
 
-        // Update subtarget limits using a balancing function (spg.setpoint.balance_xy in MATLAB)
-        // This assumes balance_xy returns a tuple that matches the assignment.
-        std::tie(subtarget.segment, subtarget.vmax, subtarget.amax) = balance_xy(
-            subtarget.segment,
-            d.setpoint["p"],
-            d.setpoint["v"],
-            subtarget.p,
-            subtarget.v,
-            vmax,
-            amax,
-            dmax
-        );
+    //     // Update subtarget limits using a balancing function (spg.setpoint.balance_xy in MATLAB)
+    //     // This assumes balance_xy returns a tuple that matches the assignment.
+    //     std::tie(subtarget.segment, subtarget.vmax, subtarget.amax) = balance_xy(
+    //         subtarget.segment,
+    //         d.setpoint["p"],
+    //         d.setpoint["v"],
+    //         subtarget.p,
+    //         subtarget.v,
+    //         vmax,
+    //         amax,
+    //         dmax
+    //     );
 
-        // Compute eta, the maximum value in the time component of subtarget's segment
-        // Assuming segment[2]['t'] is a vector with at least 2 elements
-        subtarget.eta = std::fmax(subtarget.segment[2]['t'][0], subtarget.segment[2]['t'][1]);
+    //     // Compute eta, the maximum value in the time component of subtarget's segment
+    //     // Assuming segment[2]['t'] is a vector with at least 2 elements
+    //     subtarget.eta = std::fmax(subtarget.segment[2]['t'][0], subtarget.segment[2]['t'][1]);
 
-        return subtarget;
-    }
-
-    // get_distances_inside_penalty_area.py
-    double get_distance_inside_penalty_area(const Data& d, const std::vector<double>& pos) {
-        // Calculate x and y distances
-        double x = -std::abs(pos[0]) + d.par["field_penalty_area"][0] * 0.5;
-        double y = std::abs(pos[1]) - (d.par["field_size"][1] * 0.5 - d.par["field_penalty_area"][1]);
-
-        // Calculate distance
-        double distance = std::fmax(0, std::fmin(x, y));
-
-        return distance;
-    }
+    //     return subtarget;
+    // }
 
     // new_subtarget.py
     Subtarget new_subtarget(Data& d, Subtarget subtarget) {

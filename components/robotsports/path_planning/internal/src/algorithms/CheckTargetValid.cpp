@@ -20,12 +20,12 @@ void handleViolation(PathPlanningData &data, BoundaryOptionEnum mode)
         case BoundaryOptionEnum::STOP_AND_PASS:
             data.done = true;
             data.stop = true;
-            data.resultStatus = actionResultTypeEnum::PASSED;
+            data.resultStatus = MRA::Datatypes::ActionResult::PASSED;
             break;
         case BoundaryOptionEnum::STOP_AND_FAIL:
             data.done = true;
             data.stop = true;
-            data.resultStatus = actionResultTypeEnum::FAILED;
+            data.resultStatus = MRA::Datatypes::ActionResult::FAILED;
             break;
         case BoundaryOptionEnum::CLIP:
             ; // falling through, do nothing (not in this function anyway)

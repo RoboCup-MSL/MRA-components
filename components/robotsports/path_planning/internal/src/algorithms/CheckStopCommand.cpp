@@ -12,7 +12,7 @@ void CheckStopCommand::execute(PathPlanningData &data)
 {
     if (data.stop)
     {
-        data.resultStatus = actionResultTypeEnum::PASSED;
+        data.resultStatus = MRA::Datatypes::ActionResult::PASSED;
         data.path.clear();
         
         // create wayPoint on robot itself

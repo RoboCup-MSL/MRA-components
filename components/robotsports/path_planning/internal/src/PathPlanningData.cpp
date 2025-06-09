@@ -5,12 +5,9 @@
  *      Author: Jan Feitsma
  */
 
-#include "PathPlanningData.hpp"
 #include "logging.hpp"
 #include "position2d.hpp"
 #include "PathPlanning.hpp"
-// #include "generated_enum2str.hpp"
-
 
 void PathPlanningData::reset()
 {
@@ -19,7 +16,7 @@ void PathPlanningData::reset()
     path.clear();
     calculatedObstacles.clear();
     calculatedForbiddenAreas.clear();
-    resultStatus = actionResultTypeEnum::INVALID;
+    resultStatus = MRA::Datatypes::ActionResult::INVALID;
     deltaPositionFcs = Position2D(0.0, 0.0, 0.0);
     deltaPositionRcs = Position2D(0.0, 0.0, 0.0);
     done = false;

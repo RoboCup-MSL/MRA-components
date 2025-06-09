@@ -9,7 +9,6 @@
 #define PATHPLANNING_ALGORITHMS_HPP_
 
 #include "PathPlanning.hpp"
-#include "PathPlanningData.hpp"
 
 /*!
  * \brief is the abstract class that each PathPlanning algorithm should inherit.

@@ -4,7 +4,6 @@
 add_library(MRA-components-robotsports-path-planning
     tick.cpp
     internal/src/facilities/ppgeometry.cpp
-    internal/src/main.cpp
     internal/src/algorithms/CheckTargetReached.cpp
     internal/src/algorithms/CheckStopCommand.cpp
     internal/src/algorithms/EscapeForbiddenAreas.cpp

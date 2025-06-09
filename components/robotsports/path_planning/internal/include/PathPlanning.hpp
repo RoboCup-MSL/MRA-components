@@ -8,6 +8,7 @@
 #ifndef PATHPLANNING_HPP_
 #define PATHPLANNING_HPP_
 
+#include "../../RobotsportsPathPlanning_datatypes.hpp"
 #include "vector2d.hpp"
 
 #include <vector>
@@ -26,14 +27,6 @@ enum class BoundaryOptionEnum
     CLIP
 };
 
-
-enum class actionResultTypeEnum
-{
-    INVALID,
-    PASSED,
-    FAILED, 
-    RUNNING
-};
 
 enum class robotStatusEnum
 {
@@ -249,7 +242,7 @@ typedef struct PathPlanningData
 
     // calculation results
     std::vector<wayPoint>     path;
-    actionResultTypeEnum        resultStatus;
+    MRA::Datatypes::ActionResult  resultStatus;
     std::vector<forbiddenArea>  calculatedForbiddenAreas; // = input + obstacle paths
     std::vector<obstacleResult> calculatedObstacles;
     Position2D                  targetPositionFcs; // might be corrected with ball possession offset
@@ -309,10 +302,10 @@ public:
     // * get RTDB inputs
     // * calculate
     // * set RTDB outputs
-    actionResultTypeEnum iterate();
+    MRA::Datatypes::ActionResult iterate();
 
     // raw calculation based on inputs, useful for unit testing
-    actionResultTypeEnum calculate();
+    MRA::Datatypes::ActionResult calculate();
 
     // TODO: add an interface to provide (part of) the configuration
     // example use case: interceptBall calculation needs robot speed capability (maxVelXY)

@@ -1,24 +1,7 @@
 #include "subtarget.hpp"
 #include <numeric> // For std::inner_product
 
-// Assuming the existence of these namespaces/classes for the Python module structure
-namespace GetSegments {
-    // This is a placeholder for `get_segments` if it's not a standalone function
-    // but part of a class. The Python code implies it's a direct function call.
-    // For now, let's assume it's a function directly in the global or a specific namespace.
-}
-
-namespace TrajPred {
-    // Similar placeholder for `traj_predict`
-}
-
-namespace SetAngle {
-    // Assuming 'set' from subtarget/angle/set is in a namespace or class
-    double set(MainData d);
-}
-
-
-MainData set(MainData d) {
+MainData_t set(MainData_t d) {
     // Calculate the distance between the robot and the ball
     double robot2ball_dist = std::sqrt(
         std::pow(d.input.ball.p[0] - d.input.robot.p[0], 2) +

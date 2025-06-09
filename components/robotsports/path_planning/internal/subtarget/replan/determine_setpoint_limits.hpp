@@ -2,7 +2,7 @@
 #define DETERMININE_SETPOINT_LIMITS_H
 #include "subtarget.hpp"
 
-Subtarget determine_setpoint_limits(Data& d, Subtarget subtarget);
+Subtarget_t determine_setpoint_limits(Data_t& d, Subtarget _tsubtarget);
 
 
 #endif

@@ -209,8 +209,10 @@ typedef struct InputData {
     // Define members for 'd['input']'
     ObstacleData obstacles;
     double robot_radius;
-    std::vector<double> ball_p; // Added to match usage in the Python code
-    std::vector<double> ball_v; // Added to match usage in the Python code
+    struct BallData {
+        std::vector<double> p; // Added to match usage in the Python code
+        std::vector<double> v; // Added to match usage in the Python code
+    } ball;
     struct RobotData {
         int skillID;
         double dist2ball_vs_opp;
@@ -232,12 +234,12 @@ typedef struct ParamsData {
 
 typedef struct MainData {
     // This will hold the equivalent of the 'd' dictionary
-    SetpointData setpoint;
-    InputData input;
-    ParamsData par;
-    TrajectoryData traj; // This will be updated by traj_predict
-    SetpointData target; // Added to match usage in the Python code
-    SetpointData subtarget; // Added to match usage in the Python code
+    SetpointData_t setpoint;
+    InputData_t input;
+    ParamsData_t par;
+    TrajectoryData_t traj; // This will be updated by traj_predict
+    SetpointData_t target; // Added to match usage in the Python code
+    SetpointData_t subtarget; // Added to match usage in the Python code
 } MainData_t;
 
 typedef struct Violation {

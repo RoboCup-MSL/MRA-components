@@ -10,8 +10,8 @@
 
 #include "PathPlanning.hpp"
 
-Position2D addRcsToFcs(Position2D const &posRcs, Position2D const &posFcs);
-Position2D faceTowards(Position2D const &current, float targetX, float targetY);
+MRA::Geometry::Position addRcsToFcs(MRA::Geometry::Position const &posRcs, MRA::Geometry::Position const &posFcs);
+MRA::Geometry::Position faceTowards(MRA::Geometry::Position const &current, double targetX, double targetY);
 
 #endif
 

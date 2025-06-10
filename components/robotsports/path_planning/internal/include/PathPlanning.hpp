@@ -9,15 +9,11 @@
 #define PATHPLANNING_HPP_
 
 #include "../../RobotsportsPathPlanning_datatypes.hpp"
-#include "vector2d.hpp"
 
 #include <vector>
-// map RobotSports Position2D, Velocity2D pose to MRA classes and operations (at MRA-libraries)
-// #include "geometry.hpp"
-// typedef MRA::Geometry::Position Position2D;
-// typedef MRA::Geometry::Velocity Velocity2D;
-// typedef MRA::Geometry::Pose Pose2D;
-#include "position2d.hpp"
+#include "geometry.hpp"
+// #include "vector2d.hpp"
+// #include "position2d.hpp"
 
 enum class BoundaryOptionEnum
 {
@@ -38,48 +34,39 @@ enum class robotStatusEnum
 
 struct ConfigExecution
 {
-    float frequency = 40.0;                 // [Hz]     The frequency of the heartbeat (tick), e.g., 40Hz -> 40 ticks per second.
-    float simulationSpeedupFactor = 1.0;    // [double] The speedup factor for simulation, e.g., 2.0 -> simulation time advances at 200%: 1 real-world second == 2 seconds in simulation time
+    double frequency = 40.0;                 // [Hz]     The frequency of the heartbeat (tick), e.g., 40Hz -> 40 ticks per second.
+    double simulationSpeedupFactor = 1.0;    // [double] The speedup factor for simulation, e.g., 2.0 -> simulation time advances at 200%: 1 real-world second == 2 seconds in simulation time
     std::string tickFinishRtdbKey = "ROBOT_VELOCITY_SETPOINT";   // [string] The RtDB key that is written when a tick / heartbeat finishes. Execution will subscribe to this RtDB key.
-};
-
-struct pose
-{
-    float x = 0;
-    float y = 0;
-    float Rz = 0;
-    
-    pose(float xx = 0.0, float yy = 0.0, float Rzz = 0.0) : x(xx), y(yy), Rz(Rzz) {}
 };
 
 struct wayPoint
 {
-    pose pos;
-    pose vel;
+    MRA::Geometry::Pose pos;
+    MRA::Geometry::Pose vel;
 };
 
 struct ObstacleAvoidanceConfig
 {
     bool enabled = true;
-    float robotRadius = 0.26;
-    float obstacleRadius = 0.26;
-    float distanceScalingFactor = 0.0;
-    float speedScalingFactor = 1.0;
-    float speedLowerThreshold = 0.3;
-    float speedUpperThreshold = 4.0;
-    float generatedObstacleSpacing = 0.5;
-    float ballClearance = 0.5;
-    float groupGapDistance = 0.5;
-    float subTargetDistance = 0.5;
-    float subTargetExtensionFactor = 0.0;
+    double robotRadius = 0.26;
+    double obstacleRadius = 0.26;
+    double distanceScalingFactor = 0.0;
+    double speedScalingFactor = 1.0;
+    double speedLowerThreshold = 0.3;
+    double speedUpperThreshold = 4.0;
+    double generatedObstacleSpacing = 0.5;
+    double ballClearance = 0.5;
+    double groupGapDistance = 0.5;
+    double subTargetDistance = 0.5;
+    double subTargetExtensionFactor = 0.0;
 };
 
 struct BoundaryConfig
 {
     BoundaryOptionEnum targetInsideForbiddenArea;
     BoundaryOptionEnum targetOutsideField;
-    float fieldMarginX = 0.0;
-    float fieldMarginY = 0.0;
+    double fieldMarginX = 0.0;
+    double fieldMarginY = 0.0;
     BoundaryOptionEnum targetOnOwnHalf;
     BoundaryOptionEnum targetOnOpponentHalf;
 };
@@ -87,27 +74,27 @@ struct BoundaryConfig
 struct ForwardDrivingConfig
 {
     bool enabled = true;
-    float minimumDistance = 2.0;
+    double minimumDistance = 2.0;
 };
 
 struct ForwardDrivingConfigs
 {
     ForwardDrivingConfig withoutBall;
     ForwardDrivingConfig withBall;
-    float radiusRobotToBall = 0.25;
+    double radiusRobotToBall = 0.25;
     bool applyLimitsToBall = true;
 };
 
 struct DeadzoneConfig
 {
     bool enabled;
-    float toleranceXY    = 0.01;
-    float toleranceRz    = 0.005;
+    double toleranceXY    = 0.01;
+    double toleranceRz    = 0.005;
 };
 
 struct TokyoDriftConfig
 {
-    float toleranceRz    = 1.0; // if deltaPos.Rz > tokyoDrift.toleranceRz -> do tokyo drift; otherwise do normal rotation
+    double toleranceRz    = 1.0; // if deltaPos.Rz > tokyoDrift.toleranceRz -> do tokyo drift; otherwise do normal rotation
 };
 
 struct ConfigPathPlanning
@@ -115,7 +102,7 @@ struct ConfigPathPlanning
     int                                numExtraSettlingTicks = 0;
     ObstacleAvoidanceConfig            obstacleAvoidance;
     BoundaryConfig                     boundaries;
-    float                              slowFactor = 0.5;
+    double                              slowFactor = 0.5;
     ForwardDrivingConfigs              forwardDriving;
     DeadzoneConfig                     deadzone;
     TokyoDriftConfig                   tokyoDrift;
@@ -125,9 +112,9 @@ struct robotState
 {
     robotStatusEnum    status;
     // rtime              timestamp;
-    pose               position;
-    pose               velocity;
-    bool               hasBall;
+    MRA::Geometry::Pose position;
+    MRA::Geometry::Pose velocity;
+    bool                hasBall;
     // vec2d              ballAcquired; // only filled in when having ball, for dribble rule
     // int                robotId;
     // teamIdType         teamId;
@@ -136,10 +123,10 @@ struct robotState
 
 struct vec2d
 {
-    float      x = 0.0;
-    float      y = 0.0;
+    double      x = 0.0;
+    double      y = 0.0;
     
-    vec2d(float xx = 0.0, float yy = 0.0)
+    vec2d(double xx = 0.0, double yy = 0.0)
     {
         x = xx;
         y = yy;
@@ -180,9 +167,9 @@ typedef double rtime;
 
 struct vec3d
 {
-    float      x;
-    float      y;
-    float      z;
+    double      x;
+    double      y;
+    double      z;
 };
 
 enum class ballPossessionTypeEnum
@@ -203,7 +190,7 @@ struct ballResult
 {
     vec3d          position;
     vec3d          velocity;
-    float          confidence;
+    double          confidence;
     ballPossession owner;
 };
 
@@ -211,7 +198,7 @@ struct obstacleResult
 {
     vec2d          position;
     vec2d          velocity;
-    float          confidence = 0.0;
+    double         confidence = 0.0;
     int            id = 0; // optional, if we ever want to track/identify opponents
 };
 
@@ -241,17 +228,17 @@ typedef struct PathPlanningData
     std::vector<obstacleResult> obstacles; // only the ones from worldModel, see calculatedObstacles below
 
     // calculation results
-    std::vector<wayPoint>     path;
-    MRA::Datatypes::ActionResult  resultStatus;
-    std::vector<forbiddenArea>  calculatedForbiddenAreas; // = input + obstacle paths
-    std::vector<obstacleResult> calculatedObstacles;
-    Position2D                  targetPositionFcs; // might be corrected with ball possession offset
-    Position2D                  currentPositionFcs; // might be corrected with ball possession offset
-    Position2D                  deltaPositionFcs; // delta of current position w.r.t. subtarget (=first waypoint)
-    Position2D                  deltaPositionRcs;
+    std::vector<wayPoint>         path;
+    MRA::Datatypes::ActionResult resultStatus;
+    std::vector<forbiddenArea>   calculatedForbiddenAreas; // = input + obstacle paths
+    std::vector<obstacleResult>  calculatedObstacles;
+    MRA::Geometry::Position      targetPositionFcs; // might be corrected with ball possession offset
+    MRA::Geometry::Position      currentPositionFcs; // might be corrected with ball possession offset
+    MRA::Geometry::Position      deltaPositionFcs; // delta of current position w.r.t. subtarget (=first waypoint)
+    MRA::Geometry::Position      deltaPositionRcs;
 
     // internal data
-    float                       dt;
+    double                      dt;
     bool                        done = false;
     motionTypeEnum              motionType = motionTypeEnum::INVALID;
     bool                        stop = false;
@@ -261,8 +248,8 @@ typedef struct PathPlanningData
     void reset();
     void traceInputs();
     void traceOutputs();
-    Position2D getSubTarget() const;
-    void insertSubTarget(Position2D const &pos, Velocity2D const &vel = Velocity2D(0,0,0));
+    MRA::Geometry::Position getSubTarget() const;
+    void insertSubTarget(MRA::Geometry::Position const &pos, MRA::Geometry::Velocity const &vel = MRA::Geometry::Velocity(0,0,0));
     void addForbiddenAreas(std::vector<forbiddenArea> const &newForbiddenAreas);
     void addForbiddenArea(forbiddenArea const &newForbiddenArea);
 } PathPlanningData_t;
@@ -272,9 +259,39 @@ struct diagPathPlanning
 {
     std::vector<wayPoint> path; // can contain a single target, or no target, or even an extra intermediate (sub-)target
     std::vector<forbiddenArea> forbiddenAreas;
-    pose                  distanceToSubTargetRCS; // for kstplot_motion
+    MRA::Geometry::Pose   distanceToSubTargetRCS; // for kstplot_motion
     int                   numCalculatedObstacles;
 };
+
+#include <cmath>
+inline double project_angle_mpi_pi(double angle)
+{
+    // sanity checks
+    if ((angle > 100) || (angle < -100))
+    {
+        throw std::runtime_error("angle out of bounds");
+    }
+    while (angle < -M_PI) angle += 2*M_PI;
+    while (angle > M_PI) angle -= 2*M_PI;
+    return angle;
+}
+
+inline void Rotate(MRA::Geometry::Pose& p, double angle) {
+    double s = sin(angle);
+    double c = cos(angle);
+    double nx = c * p.x - s * p.y;
+    double ny = s * p.x + c * p.y;
+    p.x = nx;
+    p.y = ny;
+}
+
+// TODO add pose + point to pose in MRA
+
+inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
+{
+    p /= hypot(p.x, p.y);
+    p *= factor;
+}
 
 
 // // common Falcons headers

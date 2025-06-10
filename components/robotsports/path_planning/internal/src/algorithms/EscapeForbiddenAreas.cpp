@@ -19,7 +19,7 @@ void EscapeForbiddenAreas::execute(PathPlanningData &data)
         // ignore forbidden area if robot is inside, otherwise it cannot escape
         if (it->isPointInside(r))
         {
-            data.insertSubTarget(Position2D(0, 0, data.robot.position.Rz));
+            data.insertSubTarget(MRA::Geometry::Position(0, 0, data.robot.position.rz));
             MRA_LOG_DEBUG("escaping forbidden area id=%d", it->id);
             break;
         }

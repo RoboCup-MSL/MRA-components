@@ -9,15 +9,16 @@
 #include "PathPlanningAlgorithms.hpp"
 #include "logging.hpp"
 
-forbiddenArea makeForbiddenAreaFromLine(Vector2D const &src, Vector2D const &dst)
+forbiddenArea makeForbiddenAreaFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst)
 {
-    float WIDTH = 0.3;
-    Vector2D perpendicular = dst - src;
-    perpendicular.rotate(M_PI * 0.5);
-    perpendicular.normalize(WIDTH);
+    double WIDTH = 0.3;
+    MRA::Geometry::Point p(dst - src);
+    MRA::Geometry::Pose perpendicular(p.x, p.y);
+    Rotate(perpendicular, M_PI * 0.5);
+    Normalize(perpendicular, WIDTH);
     forbiddenArea result;
     result.id = 0;
-    Vector2D point = src + perpendicular * 0.5;
+    MRA::Geometry::Point point = src + perpendicular * 0.5;
     result.points.push_back(vec2d(point.x, point.y));
     point = src - perpendicular * 0.5;
     result.points.push_back(vec2d(point.x, point.y));
@@ -28,19 +29,20 @@ forbiddenArea makeForbiddenAreaFromLine(Vector2D const &src, Vector2D const &dst
     return result;
 }
 
-std::vector<obstacleResult> makeObstaclesFromLine(Vector2D const &src, Vector2D const &dst, float step)
+std::vector<obstacleResult> makeObstaclesFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst, double step)
 {
     std::vector<obstacleResult> result;
     obstacleResult obst;
-    Vector2D t = dst;
+    MRA::Geometry::Point t = dst;
     // insert final point
     obst.position.x = t.x;
     obst.position.y = t.y;
     result.push_back(obst);
     // iterate from base
-    Vector2D d = dst - src;
+    MRA::Geometry::Point p(dst - src);
+    MRA::Geometry::Position d(p.x, p.y);
     int n = floor(d.size() / step);
-    d.normalize(step);
+    Normalize(d, step);
     for (int i = 0; i <= n; ++i)
     {
         t = src + d * i;
@@ -51,22 +53,22 @@ std::vector<obstacleResult> makeObstaclesFromLine(Vector2D const &src, Vector2D 
     return result;
 }
 
-std::vector<obstacleResult> makeObstaclesFromPolygon(polygon const &poly, float step)
+std::vector<obstacleResult> makeObstaclesFromPolygon(polygon const &poly, double step)
 {
     std::vector<obstacleResult> result;
     // place obstacles on each side, not inside the interior
     for (int it = 0; it < (int)poly.points.size(); ++it)
     {
-        Vector2D src(poly.points.at(it).x, poly.points.at(it).y), dst;
+        MRA::Geometry::Point src(poly.points.at(it).x, poly.points.at(it).y), dst;
         if (it + 1 == (int)poly.points.size())
         {
             // last segment, wrap around
-            dst = Vector2D(poly.points.at(0).x, poly.points.at(0).y);
+            dst = MRA::Geometry::Point(poly.points.at(0).x, poly.points.at(0).y);
         }
         else
         {
             // any but last segment
-            dst = Vector2D(poly.points.at(it+1).x, poly.points.at(it+1).y);
+            dst = MRA::Geometry::Point(poly.points.at(it+1).x, poly.points.at(it+1).y);
         }
         auto segment = makeObstaclesFromLine(src, dst, step);
         // pop the last of each segment to reduce dupes
@@ -80,8 +82,8 @@ void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
 {
     // commonly used
     auto config = data.configPP.obstacleAvoidance;
-    Vector2D r(data.robot.position.x, data.robot.position.y);
-    Vector2D b(99, 99); // far outside field == ignore
+    MRA::Geometry::Point r(data.robot.position.x, data.robot.position.y);
+    MRA::Geometry::Point b(99, 99); // far outside field == ignore
     if (data.balls.size())
     {
         b.x = data.balls.at(0).position.x;
@@ -92,8 +94,8 @@ void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
     data.calculatedObstacles.push_back(obstacle);
 
     // check if speed vector is large enough
-    Vector2D p(obstacle.position.x, obstacle.position.y);
-    Vector2D v(obstacle.velocity.x, obstacle.velocity.y);
+    MRA::Geometry::Point p(obstacle.position.x, obstacle.position.y);
+    MRA::Geometry::Pose v(obstacle.velocity.x, obstacle.velocity.y);
     if (v.size() < config.speedLowerThreshold)
     {
         // done
@@ -105,7 +107,7 @@ void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
     if (v.size() > config.speedUpperThreshold)
     {
         MRA_LOG_DEBUG("obstacle moves too fast, v=(%6.2f, %6.2f)", v.x, v.y);
-        v.normalize(config.speedUpperThreshold);
+        Normalize(v, config.speedUpperThreshold);
         MRA_LOG_DEBUG("obstacle speed clipped, v=(%6.2f, %6.2f)", v.x, v.y);
     }
 
@@ -113,9 +115,9 @@ void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
     // where s is a scaling factor, which depends on a few things
     // ROADMAP: ignore points around p, since obstacle will be gone from there soon
     // ROADMAP: use a triangle as forbidden area, to account for possible aim change
-    float distToObst = (r - p).size();
-    float s = config.speedScalingFactor + config.distanceScalingFactor * distToObst;
-    Vector2D d = v * s; // direction
+    double distToObst = (r - p).size();
+    double s = config.speedScalingFactor + config.distanceScalingFactor * distToObst;
+    MRA::Geometry::Point d = v * s; // direction
 
     // add forbidden area for diagnostics (visualizer can draw opaque cyan areas)
     if (d.size() > 0.1) // otherwise it is undefined and hardly visible anyway
@@ -127,7 +129,7 @@ void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
     auto projectedObstacles = makeObstaclesFromLine(p, p + d, config.generatedObstacleSpacing);
     for (auto it = projectedObstacles.begin(); it != projectedObstacles.end(); ++it)
     {
-        if ((b - Vector2D(it->position.x, it->position.y)).size() > config.ballClearance)
+        if ((b - MRA::Geometry::Point(it->position.x, it->position.y)).size() > config.ballClearance)
         {
             data.calculatedObstacles.push_back(*it);
         }
@@ -144,8 +146,8 @@ void CalculateObstacles::execute(PathPlanningData &data)
     MRA_LOG_DEBUG("#calculatedForbiddenAreas: %d", (int)data.calculatedForbiddenAreas.size());
     MRA_LOG_DEBUG("#calculatedObstacles: %d", (int)data.calculatedObstacles.size());
     auto config = data.configPP.obstacleAvoidance;
-    Vector2D r(data.robot.position.x, data.robot.position.y);
-    Vector2D b(99, 99); // far outside field == ignore
+    MRA::Geometry::Point r(data.robot.position.x, data.robot.position.y);
+    MRA::Geometry::Point b(99, 99); // far outside field == ignore
     if (data.balls.size())
     {
         b.x = data.balls.at(0).position.x;
@@ -198,7 +200,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
             obstacleResult obst = *it;
             // ignore its velocity vector in case this obstacle is close to the ball
             // to prevent our robots from being 'too afraid' of the opponent
-            float distanceObst2Ball = (Vector2D(obst.position.x, obst.position.y) - b).size();
+            double distanceObst2Ball = (MRA::Geometry::Point(obst.position.x, obst.position.y) - b).size();
             if (distanceObst2Ball < config.ballClearance)
             {
                 obst.velocity = vec2d(0.0, 0.0);

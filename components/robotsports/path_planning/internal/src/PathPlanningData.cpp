@@ -6,7 +6,6 @@
  */
 
 #include "logging.hpp"
-#include "position2d.hpp"
 #include "PathPlanning.hpp"
 
 void PathPlanningData::reset()
@@ -17,8 +16,8 @@ void PathPlanningData::reset()
     calculatedObstacles.clear();
     calculatedForbiddenAreas.clear();
     resultStatus = MRA::Datatypes::ActionResult::INVALID;
-    deltaPositionFcs = Position2D(0.0, 0.0, 0.0);
-    deltaPositionRcs = Position2D(0.0, 0.0, 0.0);
+    deltaPositionFcs = MRA::Geometry::Position(0.0, 0.0, 0.0);
+    deltaPositionRcs = MRA::Geometry::Position(0.0, 0.0, 0.0);
     done = false;
     motionType = motionTypeEnum::INVALID;
     stop = false;
@@ -46,26 +45,24 @@ void PathPlanningData::traceOutputs()
     
 }
 
-void PathPlanningData::insertSubTarget(Position2D const &pos, Velocity2D const &vel)
+void PathPlanningData::insertSubTarget(MRA::Geometry::Position const &pos, MRA::Geometry::Velocity const &vel)
 {
     // only insert if subtarget is sufficiently far away
-    Position2D deltaPositionFcsLocal = pos - currentPositionFcs;
-    deltaPositionFcsLocal.phi = project_angle_mpi_pi(deltaPositionFcsLocal.phi);
-    bool xyFar = deltaPositionFcsLocal.xy().size() >= configPP.deadzone.toleranceXY;
-    bool RzFar = fabs(deltaPositionFcsLocal.phi) >= configPP.deadzone.toleranceRz;
+    MRA::Geometry::Position deltaPositionFcsLocal = pos - currentPositionFcs;
+    deltaPositionFcsLocal.rz = project_angle_mpi_pi(deltaPositionFcsLocal.rz);
+    bool xyFar = MRA::Geometry::Point(deltaPositionFcsLocal.x, deltaPositionFcsLocal.y).size() >= configPP.deadzone.toleranceXY;
+    bool RzFar = fabs(deltaPositionFcsLocal.rz) >= configPP.deadzone.toleranceRz;
     MRA_LOG_DEBUG("xyFar=%d RzFar=%d", xyFar, RzFar);
     if (xyFar || RzFar)
     {
         wayPoint wp;
         wp.pos.x = pos.x;
         wp.pos.y = pos.y;
-        wp.pos.Rz = pos.phi;
+        wp.pos.rz = pos.rz;
         wp.vel.x = vel.x;
         wp.vel.y = vel.y;
-        wp.vel.Rz = vel.phi;
+        wp.vel.rz = vel.rz;
         path.insert(path.begin(), wp);
-        // Position2D p = pos;
-        // Velocity2D v = vel;
         MRA_LOG_DEBUG("adding subtarget %s %s, path size is now %d", pos.tostr(), vel.tostr(), (int)path.size());
     }
     else
@@ -93,21 +90,21 @@ void PathPlanningData::addForbiddenArea(forbiddenArea const &newForbiddenArea)
     calculatedForbiddenAreas.push_back(f);
 }
 
-Position2D PathPlanningData::getSubTarget() const
+MRA::Geometry::Position PathPlanningData::getSubTarget() const
 {
-    Position2D result;
+    MRA::Geometry::Position result;
     if (path.size())
     {
         auto subtarget = path.at(0);
         result.x = subtarget.pos.x;
         result.y = subtarget.pos.y;
-        result.phi = subtarget.pos.Rz;
+        result.rz = subtarget.pos.rz;
     }
     else
     {
         result.x = robot.position.x;
         result.y = robot.position.y;
-        result.phi = robot.position.Rz;
+        result.rz = robot.position.rz;
     }
     return result;
 }

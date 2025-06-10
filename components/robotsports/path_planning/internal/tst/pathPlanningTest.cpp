@@ -59,7 +59,7 @@ TEST(pathPlanningTest, simpleMove_shouldMoveForward)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    auto targetPos = pose(1, 0, 0);
+    auto targetPos = MRA::Geometry::Pose(1, 0, 0);
     pp.data.target.pos = targetPos;
 
     // Act
@@ -77,7 +77,7 @@ TEST(pathPlanningTest, stop)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(1, 0, 0);
+    pp.data.target.pos = MRA::Geometry::Pose(1, 0, 0);
     pp.data.stop = true;
 
     // Act
@@ -123,7 +123,7 @@ TEST(pathPlanningTest, targetOutOfBounds_shouldFail)
     // Arrange
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::STOP_AND_FAIL;
-    pp.data.target.pos = pose(99, 99, 0);
+    pp.data.target.pos = MRA::Geometry::Pose(99, 99, 0);
 
     // Act
     auto result = pp.calculate();
@@ -139,7 +139,7 @@ TEST(pathPlanningTest, targetX_OutOfBounds_shouldClip)
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
     pp.data.configPP.boundaries.fieldMarginX = 0.9; // TODO stub environmentField
-    pp.data.target.pos = pose(99, 0, 0);
+    pp.data.target.pos = MRA::Geometry::Pose(99, 0, 0);
 
     // Act
     auto result = pp.calculate();
@@ -158,7 +158,7 @@ TEST(pathPlanningTest, targetY_OutOfBounds_shouldClip)
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
     pp.data.configPP.boundaries.fieldMarginY = 0.4; // TODO stub environmentField
-    pp.data.target.pos = pose(0, 99, 0);
+    pp.data.target.pos = MRA::Geometry::Pose(0, 99, 0);
 
     // Act
     auto result = pp.calculate();
@@ -176,7 +176,7 @@ TEST(pathPlanningTest, targetY_ownHalf_notAllowed)
     // Arrange
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOnOwnHalf = BoundaryOptionEnum::STOP_AND_FAIL;
-    pp.data.target.pos = pose(0.0, -6.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(0.0, -6.0, 0.0);
 
     // Act
     auto result = pp.calculate();
@@ -191,7 +191,7 @@ TEST(pathPlanningTest, targetY_ownHalf_clip)
     // Arrange
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOnOwnHalf = BoundaryOptionEnum::CLIP;
-    pp.data.target.pos = pose(1.0, -6.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(1.0, -6.0, 0.0);
 
     // Act
     auto result = pp.calculate();
@@ -209,7 +209,7 @@ TEST(pathPlanningTest, targetY_oppHalf_notAllowed)
     // Arrange
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::STOP_AND_FAIL;
-    pp.data.target.pos = pose(0.0, 6.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(0.0, 6.0, 0.0);
 
     // Act
     auto result = pp.calculate();
@@ -224,7 +224,7 @@ TEST(pathPlanningTest, targetY_oppHalf_clip)
     // Arrange
     auto pp = defaultPathPlanningSetup();
     pp.data.configPP.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::CLIP;
-    pp.data.target.pos = pose(1.0, 6.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(1.0, 6.0, 0.0);
 
     // Act
     auto result = pp.calculate();
@@ -243,7 +243,7 @@ TEST(pathPlanningTest, targetInForbiddenArea_shouldFail)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(0.0, 6.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(0.0, 6.0, 0.0);
     forbiddenArea f; // construct a forbidden area around the target (penalty marker)
     f.points.push_back(vec2d(-1.0,  5.0));
     f.points.push_back(vec2d(-1.0,  7.0));
@@ -263,7 +263,7 @@ TEST(pathPlanningTest, currentInForbiddenArea_shouldMoveOut)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.robot.position = pose(0.0, 6.0, 0.0);
+    pp.data.robot.position = MRA::Geometry::Pose(0.0, 6.0, 0.0);
     forbiddenArea f; // construct a forbidden area around the target (penalty marker)
     f.points.push_back(vec2d(-1.0,  5.0));
     f.points.push_back(vec2d(-1.0,  7.0));
@@ -288,9 +288,9 @@ TEST(pathPlanningTest, avoid_teammember_left)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, 0.1, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.1, 0.0);
     robotState r;
-    r.position = pose(2.0, 0.0, 0.0);
+    r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
     pp.data.teamMembers.push_back(r);
 
     // Act
@@ -308,9 +308,9 @@ TEST(pathPlanningTest, avoid_teammember_right)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, -0.1, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.1, 0.0);
     robotState r;
-    r.position = pose(2.0, 0.0, 0.0);
+    r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
     pp.data.teamMembers.push_back(r);
 
     // Act
@@ -328,10 +328,10 @@ TEST(pathPlanningTest, avoid_moving_teammember)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, -0.3, 0.0);
-    pp.data.target.vel = pose(0.0, 2.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.3, 0.0);
+    pp.data.target.vel = MRA::Geometry::Pose(0.0, 2.0, 0.0);
     robotState r;
-    r.position = pose(2.0, 0.0, 0.0);
+    r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
     pp.data.teamMembers.push_back(r);
 
     // Act
@@ -349,7 +349,7 @@ TEST(pathPlanningTest, avoid_obstacle)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, 0.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
     obstacleResult obst;
     obst.position = vec2d(2.0, -0.1);
     pp.data.obstacles.push_back(obst);
@@ -369,7 +369,7 @@ TEST(pathPlanningTest, avoid_obstacle_cluster_left)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, 0.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
     obstacleResult obst;
     obst.position = vec2d(1.5, -0.5); pp.data.obstacles.push_back(obst);
     obst.position = vec2d(1.5, -0.1); pp.data.obstacles.push_back(obst);
@@ -396,7 +396,7 @@ TEST(pathPlanningTest, avoid_obstacle_cluster_right)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, -1.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, -1.0, 0.0);
     obstacleResult obst;
     obst.position = vec2d(1.5, -0.5); pp.data.obstacles.push_back(obst);
     obst.position = vec2d(1.5, -0.1); pp.data.obstacles.push_back(obst);
@@ -424,7 +424,7 @@ TEST(pathPlanningTest, avoid_obstacles_jailed) // TODO: disabled for now; undefi
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, 0.0, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
     obstacleResult obst;
     obst.position = vec2d(-0.4, -0.4); pp.data.obstacles.push_back(obst);
     obst.position = vec2d(-0.4,  0.4); pp.data.obstacles.push_back(obst);
@@ -432,7 +432,7 @@ TEST(pathPlanningTest, avoid_obstacles_jailed) // TODO: disabled for now; undefi
     obst.position = vec2d( 0.4, -0.4); pp.data.obstacles.push_back(obst);
 
     // Iteration 1: robot exactly at center, move towards target
-    pp.data.robot.position = pose(0.0, 0.0, 0.0);
+    pp.data.robot.position = MRA::Geometry::Pose(0.0, 0.0, 0.0);
     auto result = pp.calculate();
     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
     auto subtarget = pp.data.path[0];
@@ -441,7 +441,7 @@ TEST(pathPlanningTest, avoid_obstacles_jailed) // TODO: disabled for now; undefi
     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
 
     // Iteration 2: robot on its way
-    pp.data.robot.position = pose(0.2, 0.0, 0.0);
+    pp.data.robot.position = MRA::Geometry::Pose(0.2, 0.0, 0.0);
     result = pp.calculate();
     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
     subtarget = pp.data.path[0];
@@ -456,7 +456,7 @@ TEST(pathPlanningTest, avoid_obstacles_jailed) // TODO: disabled for now; undefi
 // First parameter: yaml file
 // Second parameter: distance between obstacles
 // Third parameter: y offset of obstacles
-class ObstacleDriveThroughTest : public testing::TestWithParam<std::tuple<std::string, float, float>>
+class ObstacleDriveThroughTest : public testing::TestWithParam<std::tuple<std::string, double, double>>
 {
 public:
     virtual void SetUp(){}
@@ -493,8 +493,8 @@ TEST_P(ObstacleDriveThroughTest, ObstacleDriveThroughTests)
 
     // Parameters
     std::string yamlfile = std::get<0>(GetParam());
-    float distanceBetweenObstacles = std::get<1>(GetParam());
-    float offsetY = std::get<2>(GetParam());
+    double distanceBetweenObstacles = std::get<1>(GetParam());
+    double offsetY = std::get<2>(GetParam());
     MRA_LOG_DEBUG("test parameters: yamlfile=%s distanceBetweenObstacles=%6.2f offsetY=%6.2f", yamlfile.c_str(), distanceBetweenObstacles, offsetY);
 
     // Arrange
@@ -503,7 +503,7 @@ TEST_P(ObstacleDriveThroughTest, ObstacleDriveThroughTests)
     pp.data.configPP.forwardDriving.withoutBall.enabled = false; // prevent extra sub-targets
     EXPECT_GT(pp.data.configPP.obstacleAvoidance.subTargetDistance, 0.1); // sanity check if YAML was properly loaded
     pp.data.robot.position.y = offsetY;
-    pp.data.target.pos = pose(4.0, offsetY, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, offsetY, 0.0);
     obstacleResult obst;
     obst.position = vec2d(2.0, -0.5 * distanceBetweenObstacles); pp.data.obstacles.push_back(obst);
     obst.position = vec2d(2.0,  0.5 * distanceBetweenObstacles); pp.data.obstacles.push_back(obst);
@@ -532,7 +532,7 @@ TEST(pathPlanningTest, avoid_forbidden_area_left)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, 0.3, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.3, 0.0);
     forbiddenArea f; // construct a forbidden area in between robot and target
     f.points.push_back(vec2d(1.0, -1.0));
     f.points.push_back(vec2d(1.0,  1.0));
@@ -555,7 +555,7 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = pose(4.0, -0.3, 0.0);
+    pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.3, 0.0);
     forbiddenArea f; // construct a forbidden area in between robot and target
     f.points.push_back(vec2d(1.0, -1.0));
     f.points.push_back(vec2d(1.0,  1.0));
@@ -613,7 +613,7 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //
 //// every mini simulation end with evaluating and 'expectation'
 //
-//typedef std::pair<float, float> ExpectationRange;
+//typedef std::pair<double, double> ExpectationRange;
 //
 //#define EXPECT_INRANGE(value, range) 
 //    EXPECT_GE(value + NUMERICAL_TOLERANCE, range.first); 
@@ -672,12 +672,12 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    PathPlanningSimulationScene result;
 //    result.robotId = MINISIMULATION_DEFAULT_ROBOT_ID;
 //    result.hasBall = true;
-//    result.target.pos = pose(4.0, 0.0, 1.0);
-//    result.target.vel = pose(0.0, 0.0, 0.0);
+//    result.target.pos = MRA::Geometry::Pose(4.0, 0.0, 1.0);
+//    result.target.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    SimulationSceneRobot r;
 //    r.robotId = result.robotId;
-//    r.position = pose(0.0, 0.0, 1.0);
-//    r.velocity = pose(0.0, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(0.0, 0.0, 1.0);
+//    r.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    result.robots.push_back(r);
 //    SimulationSceneObstacle obst;
 //    obst.position = vec2d(2.0, 0.0);
@@ -702,12 +702,12 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    PathPlanningSimulationScene result;
 //    result.robotId = MINISIMULATION_DEFAULT_ROBOT_ID;
 //    result.hasBall = false;
-//    result.target.pos = pose(6.0, 9.0, 0.0);
-//    result.target.vel = pose(0.0, 0.0, 0.0);
+//    result.target.pos = MRA::Geometry::Pose(6.0, 9.0, 0.0);
+//    result.target.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    SimulationSceneRobot r;
 //    r.robotId = result.robotId;
-//    r.position = pose(0.0, -2.0, 0.0);
-//    r.velocity = pose(0.0, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(0.0, -2.0, 0.0);
+//    r.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    result.robots.push_back(r);
 //
 ///*
@@ -744,7 +744,7 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //*/
 //
 //    // construct several forbidden areas on a grid
-//    float forbiddenAreaSize = 0.8;
+//    double forbiddenAreaSize = 0.8;
 //    for (int ix = -1; ix <= 3; ++ix)
 //    {
 //        for (int iy = 0; iy <= 4; ++iy)
@@ -763,22 +763,22 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    }
 //    // add a full team of teammembers, with velocities
 //    // such that they 'connect' some forbidden areas
-//    float v = 1.7;
+//    double v = 1.7;
 //    r.robotId = 1;
-//    r.position = pose(2.0, 0.5, M_PI*0.5);
-//    r.velocity = pose(0.0, v, 0.0);
+//    r.position = MRA::Geometry::Pose(2.0, 0.5, M_PI*0.5);
+//    r.velocity = MRA::Geometry::Pose(0.0, v, 0.0);
 //    result.robots.push_back(r);
 //    r.robotId = 3;
-//    r.position = pose(2.5, 0.0, 0.0);
-//    r.velocity = pose(v, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(2.5, 0.0, 0.0);
+//    r.velocity = MRA::Geometry::Pose(v, 0.0, 0.0);
 //    result.robots.push_back(r);
 //    r.robotId = 4;
-//    r.position = pose(1.5, 2.0, 0.0);
-//    r.velocity = pose(-v, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(1.5, 2.0, 0.0);
+//    r.velocity = MRA::Geometry::Pose(-v, 0.0, 0.0);
 //    result.robots.push_back(r);
 //    r.robotId = 5;
-//    r.position = pose(4.5, 0.0, 0.0);
-//    r.velocity = pose(v, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(4.5, 0.0, 0.0);
+//    r.velocity = MRA::Geometry::Pose(v, 0.0, 0.0);
 //    result.robots.push_back(r);
 //
 //    // insert some obstacles with velocities,
@@ -818,12 +818,12 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    PathPlanningSimulationScene result;
 //    result.robotId = MINISIMULATION_DEFAULT_ROBOT_ID;
 //    result.hasBall = true;
-//    result.target.pos = pose(2.0, 0.0, 3.0);
-//    result.target.vel = pose(0.0, 0.0, 0.0);
+//    result.target.pos = MRA::Geometry::Pose(2.0, 0.0, 3.0);
+//    result.target.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    SimulationSceneRobot r;
 //    r.robotId = result.robotId;
-//    r.position = pose(0.0, 0.0, 0.0);
-//    r.velocity = pose(0.0, 0.0, 0.0);
+//    r.position = MRA::Geometry::Pose(0.0, 0.0, 0.0);
+//    r.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    result.robots.push_back(r);
 //    return result;
 //}
@@ -851,8 +851,8 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    PathPlanningSimulationScene result;
 //    result.robotId = MINISIMULATION_DEFAULT_ROBOT_ID;
 //    result.hasBall = false;
-//    result.target.pos = pose(0.0, 8.0, 1.5);
-//    result.target.vel = pose(0.0, 0.0, 0.0);
+//    result.target.pos = MRA::Geometry::Pose(0.0, 8.0, 1.5);
+//    result.target.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    srand(0);
 //    result.localizationNoise.xy = 0.01;
 //    result.localizationNoise.Rz = 0.05;
@@ -864,8 +864,8 @@ TEST(pathPlanningTest, avoid_forbidden_area_right)
 //    PathPlanningSimulationScene result;
 //    result.robotId = MINISIMULATION_DEFAULT_ROBOT_ID;
 //    result.hasBall = false;
-//    result.target.pos = pose(2.0, 4.0, 0.0);
-//    result.target.vel = pose(0.0, 0.0, 0.0);
+//    result.target.pos = MRA::Geometry::Pose(2.0, 4.0, 0.0);
+//    result.target.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
 //    return result;
 //}
 //

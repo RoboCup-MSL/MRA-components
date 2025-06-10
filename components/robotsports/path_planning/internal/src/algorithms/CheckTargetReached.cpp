@@ -11,13 +11,14 @@
 void CheckTargetReached::execute(PathPlanningData &data)
 {
     // get delta - TODO simplify
-    Position2D targetPos = data.getSubTarget();
-    Position2D robotPos(data.robot.position.x, data.robot.position.y, data.robot.position.Rz);
-    Position2D deltaPositionFcs = targetPos - robotPos;
-    deltaPositionFcs.phi = project_angle_mpi_pi(deltaPositionFcs.phi);
+    MRA::Geometry::Position targetPos = data.getSubTarget();
+    MRA::Geometry::Position robotPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
+    MRA::Geometry::Position deltaPositionFcs = targetPos - robotPos;
+    deltaPositionFcs.rz = project_angle_mpi_pi(deltaPositionFcs.rz);
     // compare with tolerances
-    bool xyOk = deltaPositionFcs.xy().size() < data.configPP.deadzone.toleranceXY;
-    bool RzOk = fabs(deltaPositionFcs.phi) < data.configPP.deadzone.toleranceRz;
+    MRA::Geometry::Point deltaPositionFcsXY(deltaPositionFcs.x, deltaPositionFcs.y);
+    bool xyOk = deltaPositionFcsXY.size() < data.configPP.deadzone.toleranceXY;
+    bool RzOk = fabs(deltaPositionFcs.rz) < data.configPP.deadzone.toleranceRz;
     MRA_LOG_DEBUG("xyOk=%d RzOk=%d", xyOk, RzOk);
     // convergence criterion, especially useful for testing where overshoot can cause premature 'PASSED'
     static int tickCountTargetReached = 0;

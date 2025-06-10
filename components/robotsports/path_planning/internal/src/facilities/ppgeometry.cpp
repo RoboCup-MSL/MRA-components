@@ -6,22 +6,22 @@
  */
 
 #include "ppgeometry.hpp"
+#include <cmath>
 
-
-Position2D addRcsToFcs(Position2D const &posRcs, Position2D const &posFcs)
+MRA::Geometry::Position addRcsToFcs(MRA::Geometry::Position const &posRcs, MRA::Geometry::Position const &posFcs)
 {
     // return posFcs with posRcs offset added
-    // TODO (#14): awkward old Position2D API ... we should actually improve the core Position2D class ...
-    Position2D result = posRcs;
-    result.transform_rcs2fcs(posFcs);
-    result.phi = posFcs.phi;
+    // TODO (#14): awkward old MRA::Geometry::Position API ... we should actually improve the core MRA::Geometry::Position class ...
+    MRA::Geometry::Position result = posRcs;
+    result.transformRcsToFcs(posFcs);
+    result.rz = posFcs.rz;
     return result;
 }
 
-Position2D faceTowards(Position2D const &current, float targetX, float targetY)
+MRA::Geometry::Position faceTowards(MRA::Geometry::Position const &current, double targetX, double targetY)
 {
-    Position2D result = current;
-    result.phi = atan2(targetY - current.y, targetX - current.x);
+    MRA::Geometry::Position result = current;
+    result.rz = std::atan2(targetY - current.y, targetX - current.x);
     return result;
 }
 

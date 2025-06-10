@@ -105,7 +105,7 @@ void PathPlanning::getInputs()
         _inputInterface->fetch();
         // get and store data
         motionSetpoint sp = _inputInterface->getMotionSetpoint();
-        data.target.pos = pose();
+        data.target.pos = MRA::Geometry::Pose();
         data.stop = true;
         data.motionType = sp.motionType; 
         if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
@@ -115,7 +115,7 @@ void PathPlanning::getInputs()
             data.target.pos.Rz = sp.position.z;
             data.stop = false;
         }
-        data.target.vel = pose(); // nonzero input velocity is not yet supported on external interface
+        data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
         data.forbiddenAreas = _inputInterface->getForbiddenAreas();
         data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
         data.robot = _inputInterface->getRobotState();
@@ -134,7 +134,7 @@ void PathPlanning::setOutputs()
         if (data.stop)
         {
             subTarget.robotPosVelType = robotPosVelEnum::VEL_ONLY;
-            subTarget.velocity = pose(0.0, 0.0, 0.0);
+            subTarget.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
             subTarget.motionType = motionTypeEnum::NORMAL;
         }
         else

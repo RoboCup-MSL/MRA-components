@@ -17,17 +17,20 @@ void Shielding::execute(PathPlanningData &data)
     }
 
     // get subtarget and configuration parameters
-    Position2D currPos(data.robot.position.x, data.robot.position.y, data.robot.position.Rz);
-    Position2D subTarget = data.getSubTarget();
-    Position2D target(data.target.pos.x, data.target.pos.y, data.target.pos.Rz);
-    Vector2D subTargetDelta = subTarget.xy() - currPos.xy();
-    float subTargetAngle = atan2(subTargetDelta.y, subTargetDelta.x);
-    float shieldingAngleOffset = 0.4; // TODO make reconfigurable
-    float shieldingObstacleProximity = 1.0;
-    float shieldingMinimumTargetDistance = 1.0;
+    MRA::Geometry::Position currPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
+    MRA::Geometry::Point currPosXY(data.robot.position.x, data.robot.position.y);
+    MRA::Geometry::Position subTarget = data.getSubTarget();
+    MRA::Geometry::Point subTargetXY(subTarget.x, subTarget.y);
+    MRA::Geometry::Position target(data.target.pos.x, data.target.pos.y, data.target.pos.rz);
+    MRA::Geometry::Point targetXY(data.target.pos.x, data.target.pos.y);
+    MRA::Geometry::Point subTargetDelta = subTargetXY - currPosXY;
+    double subTargetAngle = atan2(subTargetDelta.y, subTargetDelta.x);
+    double shieldingAngleOffset = 0.4; // TODO make reconfigurable
+    double shieldingObstacleProximity = 1.0;
+    double shieldingMinimumTargetDistance = 1.0;
 
     // robot must be sufficiently far away from target
-    if ((target.xy() - currPos.xy()).size() < shieldingMinimumTargetDistance)
+    if ((targetXY - currPosXY).size() < shieldingMinimumTargetDistance)
     {
         // nothing to do, robot is too close to final destination
         MRA_LOG_DEBUG("no shielding, robot is too close to final target");
@@ -35,13 +38,13 @@ void Shielding::execute(PathPlanningData &data)
     }
 
     // find closest opponent
-    float closestOpponentDistance = 9.9;
+    double closestOpponentDistance = 9.9;
     bool closestOpponentIsLeft = false;
     for (auto opponent: data.obstacles)
     {
-        Vector2D opponentPos(opponent.position.x, opponent.position.y);
-        Vector2D delta = currPos.xy() - opponentPos;
-        float distance = delta.size();
+        MRA::Geometry::Point opponentPos(opponent.position.x, opponent.position.y);
+        MRA::Geometry::Point delta = currPosXY - opponentPos;
+        double distance = delta.size();
         if (distance < closestOpponentDistance)
         {
             closestOpponentDistance = distance;
@@ -68,10 +71,10 @@ void Shielding::execute(PathPlanningData &data)
     // then it makes no sense to shield either way
     for (auto opponent: data.obstacles)
     {
-        Vector2D opponentPos(opponent.position.x, opponent.position.y);
-        Vector2D delta = currPos.xy() - opponentPos;
+        MRA::Geometry::Point opponentPos(opponent.position.x, opponent.position.y);
+        MRA::Geometry::Point delta = MRA::Geometry::Point(currPos.x, currPos.y) - opponentPos;
         bool opponentIsLeft = project_angle_mpi_pi(atan2(delta.y, delta.x) - subTargetAngle) < 0.0;
-        float distance = delta.size();
+        double distance = delta.size();
         bool opponentCloseEnough = (distance < shieldingObstacleProximity);
         bool opponentOnSameSideAsClosestOpponent = (closestOpponentIsLeft == opponentIsLeft);
         if (opponentCloseEnough && !opponentOnSameSideAsClosestOpponent)
@@ -85,12 +88,12 @@ void Shielding::execute(PathPlanningData &data)
     if (closestOpponentIsLeft)
     {
         MRA_LOG_DEBUG("shielding to the right side");
-        data.path.at(0).pos.Rz -= shieldingAngleOffset;
+        data.path.at(0).pos.rz -= shieldingAngleOffset;
     }
     else
     {
         MRA_LOG_DEBUG("shielding to the left side");
-        data.path.at(0).pos.Rz += shieldingAngleOffset;
+        data.path.at(0).pos.rz += shieldingAngleOffset;
     }
 }
 

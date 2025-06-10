@@ -15,7 +15,7 @@
 #include "ftime.hpp"
 
 
-MiniSimulation::MiniSimulation(std::string const &yamlfile, float timeout, bool writeRDL)
+MiniSimulation::MiniSimulation(std::string const &yamlfile, double timeout, bool writeRDL)
 {
     TRACE_FUNCTION("");
     _config = loadYAML(yamlfile);
@@ -24,7 +24,7 @@ MiniSimulation::MiniSimulation(std::string const &yamlfile, float timeout, bool 
     _writeRDL = writeRDL;
 }
 
-MiniSimulation::MiniSimulation(ConfigPathPlanning const &config, float timeout, bool writeRDL)
+MiniSimulation::MiniSimulation(ConfigPathPlanning const &config, double timeout, bool writeRDL)
 {
     TRACE_FUNCTION("");
     _config = config;
@@ -94,8 +94,8 @@ MiniSimulationResult MiniSimulation::run()
     // initialize
     initialize();
     applySceneToData();
-    _simulatedPositionFcs = Position2D(_pp.data.robot.position.x, _pp.data.robot.position.y, _pp.data.robot.position.Rz);
-    _simulatedVelocityFcs = Velocity2D(_pp.data.robot.velocity.x, _pp.data.robot.velocity.y, _pp.data.robot.velocity.Rz);
+    _simulatedPositionFcs = MRA::Geometry::Position(_pp.data.robot.position.x, _pp.data.robot.position.y, _pp.data.robot.position.Rz);
+    _simulatedVelocityFcs = MRA::Geometry::Velocity(_pp.data.robot.velocity.x, _pp.data.robot.velocity.y, _pp.data.robot.velocity.Rz);
     initRDL();
     _result.duration = 0.0;
     _result.distance = 0.0;
@@ -108,7 +108,7 @@ MiniSimulationResult MiniSimulation::run()
     // iterate
     rtime t0 = ftime::now();
     rtime t = t0;
-    float dt = _pp.data.dt;
+    double dt = _pp.data.dt;
     actionResultTypeEnum status = actionResultTypeEnum::RUNNING;
     bool success = true;
     int iteration = 0;
@@ -239,22 +239,22 @@ void MiniSimulation::overruleVelocityController(VelocitySetpointControllerTypeEn
     _pp.data.vcConfig.coordinateSystem = vccs;
 }
 
-void imin(float &vmin, float v)
+void imin(double &vmin, double v)
 {
     if (v < vmin) vmin = v;
 }
-void imax(float &vmax, float v)
+void imax(double &vmax, double v)
 {
     if (v > vmax) vmax = v;
 }
 
-float MiniSimulation::calcDistanceToObstacles()
+double MiniSimulation::calcDistanceToObstacles()
 {
-    float result = 99;
-    Vector2D r(_simulatedPositionFcs.x, _simulatedPositionFcs.y);
+    double result = 99;
+    MRA::Geometry::Point r(_simulatedPositionFcs.x, _simulatedPositionFcs.y);
     for (auto& obst: _scene.obstacles)
     {
-        Vector2D o(obst.position.x, obst.position.y);
+        MRA::Geometry::Point o(obst.position.x, obst.position.y);
         imin(result, (r - o).size());
     }
     return result;
@@ -267,14 +267,14 @@ void MiniSimulation::processIterationResult()
     _simulatedVelocityFcs.transform_rcs2fcs(_simulatedPositionFcs);
     _simulatedPositionFcs.update(_simulatedVelocityFcs, _pp.data.dt);
     // update robot administration
-    _pp.data.robot.position = pose(_simulatedPositionFcs.x, _simulatedPositionFcs.y, _simulatedPositionFcs.phi);
-    _pp.data.robot.velocity = pose(_simulatedVelocityFcs.x, _simulatedVelocityFcs.y, _simulatedVelocityFcs.phi);
+    _pp.data.robot.position = MRA::Geometry::Pose(_simulatedPositionFcs.x, _simulatedPositionFcs.y, _simulatedPositionFcs.phi);
+    _pp.data.robot.velocity = MRA::Geometry::Pose(_simulatedVelocityFcs.x, _simulatedVelocityFcs.y, _simulatedVelocityFcs.phi);
     // add noise?
     _pp.data.robot.position.x += (2.0 * rand() / RAND_MAX - 1.0) * _scene.localizationNoise.xy;
     _pp.data.robot.position.y += (2.0 * rand() / RAND_MAX - 1.0) * _scene.localizationNoise.xy;
     _pp.data.robot.position.Rz += (2.0 * rand() / RAND_MAX - 1.0) * _scene.localizationNoise.Rz;
     // calculate distance of this iteration for total travelled path calculation
-    float speedRobot = _simulatedVelocityFcs.xy().size();
+    double speedRobot = _simulatedVelocityFcs.xy().size();
     _result.distance += speedRobot * _pp.data.dt;
     imax(_result.maxSpeedRobot, speedRobot);
     // calculate other statistics, useful for evaluating the simulation result
@@ -282,12 +282,12 @@ void MiniSimulation::processIterationResult()
     // verify: calculate velocity and acceleration of the ball in RCS
     if (_pp.data.robot.hasBall)
     {
-        Velocity2D ballVelocity = _pp.data.resultVelocityRcs;
+        MRA::Geometry::Velocity ballVelocity = _pp.data.resultVelocityRcs;
         ballVelocity.x += ROBOT_RADIUS * -_pp.data.resultVelocityRcs.phi;
         imax(_result.maxVelBall.x, fabs(ballVelocity.x));
         imax(_result.maxVelBall.y, fabs(ballVelocity.y));
         /* TODO: robust checks on ball acceleration -- require a bit more algorithm robustness, we get small occasional spikes / discontinuities
-        static Velocity2D ballVelocityPrev;
+        static MRA::Geometry::Velocity ballVelocityPrev;
         static bool havePrev = false;
         if (havePrev)
         {

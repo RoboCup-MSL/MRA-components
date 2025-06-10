@@ -20,9 +20,9 @@ typedef struct
 {
     vec2d location;
     vec2d velocity;
-    float a_i = 0.0;
-    float b_i = 0.0;
-    float radius = 0.0;
+    double a_i = 0.0;
+    double b_i = 0.0;
+    double radius = 0.0;
 } pp_obstacle_struct_t;
 
 void convertAndAddObstacles(std::vector<pp_obstacle_struct_t> &dst, std::vector<obstacleResult> const &src)
@@ -57,9 +57,9 @@ struct posval_compare // for std::set
 void AvoidObstacles::execute(PathPlanningData &data)
 {
     // get target, initialize
-    Position2D target = data.getSubTarget();
+    MRA::Geometry::Position target = data.getSubTarget();
     std::string msg = "target: ";
-    msg.append(target.tostr());
+    msg.append(target.toString());
     MRA_LOG_DEBUG(msg.c_str());
     auto config = data.configPP.obstacleAvoidance;
 
@@ -71,7 +71,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     }
 
     // get other data
-    Position2D currPos(data.robot.position.x, data.robot.position.y, data.robot.position.Rz);
+    MRA::Geometry::Position currPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
 
     // get calculated obstacles, convert to internal type
     std::vector<pp_obstacle_struct_t> obstacles;
@@ -79,11 +79,13 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
     MRA_LOG_DEBUG("Starting algorithm with nr_obs: %d", obstacles.size());
 
-    Position2D subTarget = target;
+    MRA::Geometry::Position subTarget = target;
     bool calculatedSubTarget = false;
+    MRA::Geometry::Position targetXY(target.x, target.y);
+    MRA::Geometry::Position curPosXY(currPos.x, currPos.y);
 
     // Guard with moving at least 10cm
-    if ((currPos.xy() - target.xy()).size() > 0.1)
+    if ((curPosXY - targetXY).size() > 0.1)
     {
         std::vector<pp_obstacle_struct_t> B;
         {
@@ -92,15 +94,16 @@ void AvoidObstacles::execute(PathPlanningData &data)
             for (int i = 0; i < (int)obstacles.size(); i++)
             {
                 // Pre-compute a_i and b_i for all obstacles, and store in the struct for later reuse.
-                Vector2D obstVec = Vector2D(obstacles[i].location.x, obstacles[i].location.y);
-                obstacles[i].a_i = ((target.xy() - currPos.xy()) * (obstVec - currPos.xy())) / (target.xy() - currPos.xy()).size();
-                obstacles[i].b_i = ((target.xy() - currPos.xy()).CrossProduct((obstVec - currPos.xy()))) / (target.xy() - currPos.xy()).size();
+                MRA::Geometry::Position obstVec = MRA::Geometry::Position(obstacles[i].location.x, obstacles[i].location.y);
+                // TODO: Jurge
+                // obstacles[i].a_i = ((targetXY - curPosXY) * (obstVec - curPosXY)) / (targetXY - curPosXY).size();
+                // obstacles[i].b_i = ((targetXY - curPosXY).CrossProduct((obstVec - curPosXY))) / (targetXY - curPosXY).size();
                 obstacles[i].radius = config.obstacleRadius;
                 // ROADMAP: vision/worldModel might know radius better at some point
 
                 // Equation (4) from the paper.
                 if (( 0 < obstacles[i].a_i ) &&
-                    ( obstacles[i].a_i < (target.xy() - currPos.xy()).size() ) &&
+                    ( obstacles[i].a_i < (targetXY - curPosXY).size() ) &&
                     ( fabs(obstacles[i].b_i) < (config.robotRadius + obstacles[i].radius) )) // r_r + r_i
                 {
                     B.push_back(obstacles[i]);
@@ -117,7 +120,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
         {
             MRA_LOG_DEBUG("cXYTrajectory#Step2", "");
             // 2. Determine f = The obstacle from B that is the nearest to the robot
-            float minDist = 100.0;
+            double minDist = 100.0;
 
             for (int i = 0; i < (int)B.size(); i++)
             {
@@ -164,7 +167,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                         for (size_t j = 0; j < obstacles.size(); j++)
                         {
                             // Compute distance between obstacle in G and all obstacles.
-                            float dist = std::hypot(fabs(itG->location.x - obstacles[j].location.x), fabs(itG->location.y - obstacles[j].location.y));
+                            double dist = std::hypot(fabs(itG->location.x - obstacles[j].location.x), fabs(itG->location.y - obstacles[j].location.y));
 
                             //TRACE("Dist between (%6.2f,%6.2f) and (%6.2f,%6.2f) is %6.2f", itG->location.x, itG->location.y, obstacles[j].location.x, obstacles[j].location.y, dist);
 
@@ -217,8 +220,8 @@ void AvoidObstacles::execute(PathPlanningData &data)
             //       # left side of G
             //    else:
             //       # right side of G
-            float bp_max = 0.0;
-            float bm_max = 0.0;
+            double bp_max = 0.0;
+            double bm_max = 0.0;
             std::vector<pp_obstacle_struct_t> G_plus;
             std::vector<pp_obstacle_struct_t> G_min;
             std::vector<pp_obstacle_struct_t> G_side_to_use;
@@ -232,7 +235,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                         G_plus.push_back(G[i]);
 
                         // Equation (6a)
-                        float val = fabs(G[i].b_i + G[i].radius);
+                        double val = fabs(G[i].b_i + G[i].radius);
                         if (val > bp_max)
                         {
                             bp_max = val;
@@ -243,7 +246,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                         G_min.push_back(G[i]);
 
                         // Equation (6b)
-                        float val = fabs(G[i].b_i - G[i].radius);
+                        double val = fabs(G[i].b_i - G[i].radius);
                         if (val > bm_max)
                         {
                             bm_max = val;
@@ -277,8 +280,8 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
             // 5. Compute for each i \in G the angle alpha. Save the i with highest angle -> alpha_max.
             // Determine "j" below equation (8) -> G_idx
-            float alpha_max = 0.0;
-            float alpha_j = 0.0;
+            double alpha_max = 0.0;
+            double alpha_j = 0.0;
             int G_idx = -1;
 
             {
@@ -286,21 +289,21 @@ void AvoidObstacles::execute(PathPlanningData &data)
                 for (size_t i = 0; i < G_side_to_use.size(); i++)
                 {
                     // Determine the sign from equation (7)
-                    float sign = 0.0;
+                    double sign = 0.0;
                     if ((bm_max - bp_max) < 0)
                         sign = -1.0;
                     else
                         sign = 1.0;
 
                     // Compute the first and second term of equation (7)
-                    float first_term = atan(G_side_to_use[i].b_i / G_side_to_use[i].a_i);
-                    float distBetweenObstAndRobot = (Vector2D(G_side_to_use[i].location.x, G_side_to_use[i].location.y)-currPos.xy()).size();
-                    float second_term = sign*asin( fmax( fmin( config.subTargetDistance/distBetweenObstAndRobot, 0.99), -0.99) ); // asin's argument must be in [-1 < x < 1]
+                    double first_term = atan(G_side_to_use[i].b_i / G_side_to_use[i].a_i);
+                    double distBetweenObstAndRobot = (MRA::Geometry::Point(G_side_to_use[i].location.x, G_side_to_use[i].location.y)-curPosXY).size();
+                    double second_term = sign*asin( fmax( fmin( config.subTargetDistance/distBetweenObstAndRobot, 0.99), -0.99) ); // asin's argument must be in [-1 < x < 1]
                     //TRACE("first_term: %6.4f, second_term: %6.4f, sign: %6.4f, distBetweenObstAndRobot: %6.4f", first_term, second_term, sign, distBetweenObstAndRobot);
 
                     // Equation (7)
-                    float alpha = first_term + second_term;
-                    float abs_alpha = fabs(alpha);
+                    double alpha = first_term + second_term;
+                    double abs_alpha = fabs(alpha);
 
                     if (abs_alpha > alpha_max)
                     {
@@ -319,15 +322,17 @@ void AvoidObstacles::execute(PathPlanningData &data)
             {
                 MRA_LOG_DEBUG("cXYTrajectory#Step6", "");
                 // Equation (8) -- G_idx == j
-                Vector2D rightPart = ((target.xy() - currPos.xy()) / (target.xy() - currPos.xy()).size()) * (Vector2D(G_side_to_use[G_idx].location.x, G_side_to_use[G_idx].location.y) - currPos.xy()).size();
-                Vector2D multipliedMatrix = Vector2D( ( (cos(alpha_j)*rightPart.x) - (sin(alpha_j)*rightPart.y) ) , ( (sin(alpha_j)*rightPart.x) + (cos(alpha_j)*rightPart.y) ) );
-                Vector2D subtarget = currPos.xy() + multipliedMatrix;
+                MRA::Geometry::Point rightPart = ((targetXY - curPosXY) / (targetXY - curPosXY).size()) * (MRA::Geometry::Point(G_side_to_use[G_idx].location.x, G_side_to_use[G_idx].location.y) - curPosXY).size();
+                MRA::Geometry::Point multipliedMatrix = MRA::Geometry::Point( ( (cos(alpha_j)*rightPart.x) - (sin(alpha_j)*rightPart.y) ) , ( (sin(alpha_j)*rightPart.x) + (cos(alpha_j)*rightPart.y) ) );
+                MRA::Geometry::Point subtarget(curPosXY.x + multipliedMatrix.x, curPosXY.y + multipliedMatrix.y);
 
                 //TRACE("subtarget pre-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
                 //TRACE("currPos pre-extend: x %6.2f, y %6.2f", currPos.x, currPos.y);
 
                 // Put the subtarget further away to prevent the robot from slowing down for the subtarget
-                subtarget = subtarget + ((subtarget - currPos.xy()).normalize() * config.subTargetExtensionFactor);
+                MRA::Geometry::Point diffSubTargetCurPos(subtarget - curPosXY);
+                diffSubTargetCurPos.normalize();
+                subtarget = subtarget + (diffSubTargetCurPos * config.subTargetExtensionFactor);
                 // ROADMAP: replace this trick with velocity control making use of target.velocity
 
                 //TRACE("subtarget post-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
@@ -345,7 +350,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     if (calculatedSubTarget)
     {
         // add waypoint, leave original target orientation and velocity intact
-        data.insertSubTarget(Position2D(subTarget.x, subTarget.y, data.path.at(0).pos.Rz));
+        data.insertSubTarget(MRA::Geometry::Position(subTarget.x, subTarget.y, data.path.at(0).pos.rz));
         MRA_LOG_DEBUG("Algorithm done, inserted subTarget (%6.2f, %6.2f)", subTarget.x, subTarget.y);
     }
     else

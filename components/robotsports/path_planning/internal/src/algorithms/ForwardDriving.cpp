@@ -29,31 +29,32 @@ void ForwardDriving::execute(PathPlanningData &data)
             // each one must face the next
             auto wp = data.path.at(it);
             auto wpNext = data.path.at(it+1);
-            data.path[it].pos.Rz = atan2(wpNext.pos.y - wp.pos.y, wpNext.pos.x - wp.pos.x);
+            data.path[it].pos.rz = atan2(wpNext.pos.y - wp.pos.y, wpNext.pos.x - wp.pos.x);
         }
     }
 
     // get sub-target and current robot position
-    Position2D subTarget = data.getSubTarget();
-    Position2D robotPos(data.robot.position.x, data.robot.position.y, data.robot.position.Rz);
+    MRA::Geometry::Position subTarget = data.getSubTarget();
+    MRA::Geometry::Position robotPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
 
     // check if distance is large enough
-    if ((subTarget - robotPos).xy().size() < config.minimumDistance)
+    MRA::Geometry::Pose p(subTarget - robotPos);
+    if (MRA::Geometry::Point(p.x, p.y).size() < config.minimumDistance)
     {
         MRA_LOG_DEBUG("too close to sub-target");
         return;
     }
 
     // insert sub-targets
-    Position2D subTarget1 = faceTowards(robotPos, subTarget.x, subTarget.y);
-    subTarget1 = addRcsToFcs(Position2D(0.0, config.minimumDistance, 0.0), subTarget1);
+    MRA::Geometry::Position subTarget1 = faceTowards(robotPos, subTarget.x, subTarget.y);
+    subTarget1 = addRcsToFcs(MRA::Geometry::Position(0.0, config.minimumDistance, 0.0), subTarget1);
     data.insertSubTarget(subTarget1);
     /*
-    Position2D subTarget2 = subTarget;
+    MRA::Geometry::Position subTarget2 = subTarget;
     if ((subTarget - robotPos).xy().size() > 2.0 * config.minimumDistance)
     {
         subTarget2.phi = subTarget1.phi;
-        subTarget2 = addRcsToFcs(Position2D(0.0, -config.minimumDistance, 0.0), subTarget2);
+        subTarget2 = addRcsToFcs(MRA::Geometry::Position(0.0, -config.minimumDistance, 0.0), subTarget2);
         data.insertSubTarget(subTarget2);
     }*/
 }

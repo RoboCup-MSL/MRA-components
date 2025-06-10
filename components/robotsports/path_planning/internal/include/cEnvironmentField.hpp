@@ -124,12 +124,12 @@ enum areaType
 typedef struct
 {
     std::string id;
-    float x;
-    float y;
+    double x;
+    double y;
 
-    Position2D toPos2D()
+    MRA::Geometry::Position toPos2D()
     {
-        return Position2D(x, y, 0.0);
+        return MRA::Geometry::Position(x, y, 0.0);
     }
 } poiInfo;  // POI = Point Of Interest
 
@@ -138,9 +138,9 @@ typedef struct
     poiInfo corner1;
     poiInfo corner2;
 
-    float getMinX()
+    double getMinX()
     {
-        float minX;
+        double minX;
         if( corner1.x < corner2.x )
             minX=corner1.x;
         else
@@ -148,9 +148,9 @@ typedef struct
         return minX;
     }
 
-    float getMaxX()
+    double getMaxX()
     {
-        float maxX;
+        double maxX;
         if( corner1.x < corner2.x )
             maxX=corner2.x;
         else
@@ -158,9 +158,9 @@ typedef struct
         return maxX;
     }
 
-    float getMinY()
+    double getMinY()
     {
-        float minY;
+        double minY;
         if( corner1.y < corner2.y )
             minY=corner1.y;
         else
@@ -168,9 +168,9 @@ typedef struct
         return minY;
     }
 
-    float getMaxY()
+    double getMaxY()
     {
-        float maxY;
+        double maxY;
         if( corner1.y < corner2.y )
             maxY=corner2.y;
         else
@@ -179,29 +179,6 @@ typedef struct
     }
 
 
-    void getFieldBoundaries( float &minX, float &maxX, float &minY, float &maxY)
-    {
-        if( corner1.x < corner2.x )
-        {
-            minX=corner1.x;
-            maxX=corner2.x;
-        }
-        else
-        {
-            minX=corner2.x;
-            maxX=corner1.x;
-        }
-        if( corner1.y < corner2.y )
-        {
-            minY=corner1.y;
-            maxY=corner2.y;
-        }
-        else
-        {
-            minY=corner2.y;
-            maxY=corner1.y;
-        }
-    }
     void getFieldBoundaries( double &minX, double &maxX, double &minY, double &maxY)
     {
         if( corner1.x < corner2.x )
@@ -230,7 +207,7 @@ typedef struct
 typedef struct
 {
     poiInfo center;
-    float radius;
+    double radius;
 } fieldCircle;
 
 typedef struct
@@ -243,8 +220,8 @@ typedef struct
 typedef struct
 {
     poiInfo center;
-    float radius;
-    float baseAngle;    // 0=diameter line parallel to center line, circle pointing towards oppenent goal line
+    double radius;
+    double baseAngle;    // 0=diameter line parallel to center line, circle pointing towards oppenent goal line
                         //90=diameer line parallel to side lines, circle pointing to the left
                         //180=diameter line parallel to center line, circle pointing towards  to center line, circle pointing towards own goal line
 } fieldSemicircle;
@@ -284,15 +261,15 @@ class cEnvironmentField
             areaInfo getFieldArea(areaName area);
             bool getFieldAreaByString(std::string areaString, areaInfo &fieldArea);
             void getFieldAreaList( std::vector<std::string> &vectorOfAreaNames);
-            bool isPositionInArea( float x, float y, areaName area, float margin = 0.0);
-            bool isPositionInArea( float x, float y, areaInfo area, float margin = 0.0);
-            float getWidth();
-            float getLength();
-            float getLineThickness();
-            float getGoalPostOffset();
-            float getGoalPostWidth();
-            float getGoalHeight();
-            float getGoalDepth();
+            bool isPositionInArea( double x, double y, areaName area, double margin = 0.0);
+            bool isPositionInArea( double x, double y, areaInfo area, double margin = 0.0);
+            double getWidth();
+            double getLength();
+            double getLineThickness();
+            double getGoalPostOffset();
+            double getGoalPostWidth();
+            double getGoalHeight();
+            double getGoalDepth();
 
             areaInfo getTTAarea();
 
@@ -302,10 +279,10 @@ class cEnvironmentField
             cEnvironmentField(cEnvironmentField const&); // Don't Implement
             void operator=(cEnvironmentField const&);       // Don't implement
 
-            float _width, _length, _goalPostOffset, _goalPostWidth, _goalAreaOffset, _goalDepth, _goalHeight;
-            float _penaltyAreaOffset, _penaltySpotOffset, _safetyBoundaryOffset, _lineThickness;
-            float _centerCircleRadius;
-            std::map<std::string, float> _tta_box; // relative coordinates (boundingbox), from cEnvironmentField.yaml
+            double _width, _length, _goalPostOffset, _goalPostWidth, _goalAreaOffset, _goalDepth, _goalHeight;
+            double _penaltyAreaOffset, _penaltySpotOffset, _safetyBoundaryOffset, _lineThickness;
+            double _centerCircleRadius;
+            std::map<std::string, double> _tta_box; // relative coordinates (boundingbox), from cEnvironmentField.yaml
 
             poiInfo _fieldPOIs[ (poiName) POI_COUNT];
             areaInfo _fieldAreas[ (areaName) AREA_COUNT];

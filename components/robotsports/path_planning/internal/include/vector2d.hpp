@@ -145,10 +145,10 @@ class Vector2D
 
         Vector2D& rotate(double angle)
         {
-            float s = sin(angle);
-            float c = cos(angle);
-            float nx = c * x - s * y;
-            float ny = s * x + c * y;
+            double s = sin(angle);
+            double c = cos(angle);
+            double nx = c * x - s * y;
+            double ny = s * x + c * y;
             x = nx;
             y = ny;
             return (*this);

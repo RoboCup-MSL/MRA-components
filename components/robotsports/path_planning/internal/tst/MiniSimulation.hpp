@@ -20,10 +20,10 @@ struct MiniSimulationResult
 {
     bool success;
     actionResultTypeEnum status;
-    float duration;
-    float distance;
-    float maxSpeedRobot = 0.0;
-    float minDistanceToObstacles = 0.0;
+    double duration;
+    double distance;
+    double maxSpeedRobot = 0.0;
+    double minDistanceToObstacles = 0.0;
     // to verify limiter behavior when robot has the ball, both in RCS
     vec2d maxVelBall;
     vec2d maxAccBall;
@@ -33,8 +33,8 @@ struct MiniSimulationResult
 class MiniSimulation
 {
 public:
-    MiniSimulation(std::string const &yamlfile, float timeout=10.0, bool writeRDL=false);
-    MiniSimulation(ConfigPathPlanning const &config, float timeout=10.0, bool writeRDL=false);
+    MiniSimulation(std::string const &yamlfile, double timeout=10.0, bool writeRDL=false);
+    MiniSimulation(ConfigPathPlanning const &config, double timeout=10.0, bool writeRDL=false);
     void setScene(PathPlanningSimulationScene &scene);
     void setScene(std::string const &scenefile);
     void setRdlFilename(std::string const &rdlFilename) { _rdlFilename = rdlFilename; }
@@ -48,22 +48,22 @@ private:
     PathPlanning                _pp;
     PathPlanningSimulationScene _scene;
     ConfigPathPlanning          _config;
-    float                       _timeout = 10.0;
+    double                       _timeout = 10.0;
     int                         _myRobotId = MINISIMULATION_DEFAULT_ROBOT_ID;
     std::map<int, RtDB2*>       _rtdb;
     bool                        _initialized = false;
     bool                        _writeRDL = false;
     std::string                 _rdlFilename = "auto";
     OutputInterface            *_rtdbOutputAdapter = NULL;
-    Position2D                  _simulatedPositionFcs;
-    Velocity2D                  _simulatedVelocityFcs;
+    MRA::Geometry::Position     _simulatedPositionFcs;
+    MRA::Geometry::Velocity     _simulatedVelocityFcs;
     cLogger                    *_logger = NULL;
     MiniSimulationResult        _result;
 
     // helper functions
     void applySceneToData();
     void processIterationResult();
-    float calcDistanceToObstacles();
+    double calcDistanceToObstacles();
     void initRDL();
     void tickRDL(rtime const &t);
     void finishRDL();

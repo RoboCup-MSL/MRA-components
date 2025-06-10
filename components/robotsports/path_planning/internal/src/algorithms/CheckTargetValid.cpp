@@ -38,7 +38,7 @@ void handleViolation(PathPlanningData &data, BoundaryOptionEnum mode)
 
 void CheckTargetValid::execute(PathPlanningData &data)
 {
-    Position2D target = data.getSubTarget();
+    MRA::Geometry::Position target = data.getSubTarget();
 
     // check option: what to do if target is inside a forbidden area
     auto mode = data.configPP.boundaries.targetInsideForbiddenArea;
@@ -77,10 +77,10 @@ void CheckTargetValid::execute(PathPlanningData &data)
     mode = data.configPP.boundaries.targetOutsideField;
     if (mode != BoundaryOptionEnum::ALLOW)
     {
-        float fieldMarginX = data.configPP.boundaries.fieldMarginX;
-        float fieldMarginY = data.configPP.boundaries.fieldMarginY;
-        float fieldLength = cEnvironmentField::getInstance().getLength();
-        float fieldWidth = cEnvironmentField::getInstance().getWidth();
+        double fieldMarginX = data.configPP.boundaries.fieldMarginX;
+        double fieldMarginY = data.configPP.boundaries.fieldMarginY;
+        double fieldLength = cEnvironmentField::getInstance().getLength();
+        double fieldWidth = cEnvironmentField::getInstance().getWidth();
         double limit = fieldWidth * 0.5 + fieldMarginX;
         if (fabs(target.x) > limit && !targetInsideTTA)
         {
@@ -88,7 +88,7 @@ void CheckTargetValid::execute(PathPlanningData &data)
             handleViolation(data, mode);
             if (mode == BoundaryOptionEnum::CLIP)
             {
-                float tmp = std::clamp(target.x, 0.0, limit);
+                double tmp = std::clamp(target.x, 0.0, limit);
                 data.path[0].pos.x = tmp;
             }
         }
@@ -99,7 +99,7 @@ void CheckTargetValid::execute(PathPlanningData &data)
             handleViolation(data, mode);
             if (mode == BoundaryOptionEnum::CLIP)
             {
-                float tmp = std::clamp(target.y, 0.0, limit);
+                double tmp = std::clamp(target.y, 0.0, limit);
                 data.path[0].pos.y = tmp;
             }
         }

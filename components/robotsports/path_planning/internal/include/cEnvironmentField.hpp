@@ -11,9 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "position2d.hpp"
-// #include "FalconsRTDB.hpp"
-
 
 enum poiName {    // all right and left references as SEEN from OUR SIDE (or OUR GOALIE)
     P_CENTER,

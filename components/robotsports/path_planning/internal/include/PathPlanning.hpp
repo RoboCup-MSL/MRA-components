@@ -12,8 +12,6 @@
 
 #include <vector>
 #include "geometry.hpp"
-// #include "vector2d.hpp"
-// #include "position2d.hpp"
 
 enum class BoundaryOptionEnum
 {
@@ -298,8 +296,51 @@ inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
 // #include "ConfigInterface.hpp"
 
 // // PathPlanning interfaces
-// #include "int/InputInterface.hpp"
 // #include "int/OutputInterface.hpp"
+
+struct motionSetpoint
+{
+    MRA::Datatypes::ActionResult  action;
+    MRA::Geometry::Position       position; // could be interpreted as a pose (in case of move) or vec3d (when shooting)
+    motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
+};
+
+
+class InputInterface
+{
+public:
+    InputInterface() {};
+    virtual ~InputInterface() {};
+
+    virtual void                        fetch() = 0;
+
+    virtual motionSetpoint              getMotionSetpoint() = 0;
+    virtual std::vector<forbiddenArea>  getForbiddenAreas() = 0;
+    virtual robotState                  getRobotState() = 0;
+    virtual std::vector<robotState>     getTeamMembers() = 0;
+    virtual std::vector<ballResult>     getBalls() = 0;
+    virtual std::vector<obstacleResult> getObstacles() = 0;
+
+};
+
+
+class OutputInterface
+{
+public:
+    OutputInterface() {};
+    virtual ~OutputInterface() {};
+
+    // required
+    virtual void setSubtarget(MRA::Datatypes::ActionResult const &status, 
+                              bool positionSetpointValid,
+                              MRA::Geometry::Position const &robotPositionSetpoint,
+                              bool velocitySetpointValid,
+                              MRA::Geometry::Velocity const &robotVelocitySetpoint) = 0;
+
+    // optional
+    virtual void setDiagnostics(diagPathPlanning const &diagnostics) {};
+};
+
 
 // data struct
 

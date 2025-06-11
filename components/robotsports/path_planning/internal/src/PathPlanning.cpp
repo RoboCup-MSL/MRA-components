@@ -7,35 +7,37 @@
 #include <boost/bind.hpp>
 
 // own package
-#include "int/PathPlanning.hpp"
-#include "int/PathPlanningAlgorithms.hpp"
+#include "PathPlanning.hpp"
+#include "PathPlanningAlgorithms.hpp"
 
-// other Falcons packages
-#include "tracing.hpp"
-#include "cDiagnostics.hpp"
+#include "logging.hpp"
 
 
-PathPlanning::PathPlanning(ppCFI *configInterfacePP, exCFI *configInterfaceEx, InputInterface *inputInterface, OutputInterface *outputInterface)
+// PathPlanning::PathPlanning(ppCFI *configInterfacePP, exCFI *configInterfaceEx, InputInterface *inputInterface, OutputInterface *outputInterface)
+// {
+//     _configInterfacePP = configInterfacePP;
+//     _configInterfaceEx = configInterfaceEx;
+//     _inputInterface = inputInterface;
+//     _outputInterface = outputInterface;
+//     if (_configInterfacePP != NULL)
+//     {
+//         _configInterfacePP->get(data.configPP);
+//     }
+//     if (_configInterfaceEx != NULL)
+//     {
+//         _configInterfaceEx->get(data.configEx);
+//     }
+// }
+PathPlanning::PathPlanning()
 {
-    _configInterfacePP = configInterfacePP;
-    _configInterfaceEx = configInterfaceEx;
-    _inputInterface = inputInterface;
-    _outputInterface = outputInterface;
-    if (_configInterfacePP != NULL)
-    {
-        _configInterfacePP->get(data.configPP);
-    }
-    if (_configInterfaceEx != NULL)
-    {
-        _configInterfaceEx->get(data.configEx);
-    }
 }
+
 
 PathPlanning::~PathPlanning()
 {
 }
 
-actionResultTypeEnum PathPlanning::iterate()
+MRA::Datatypes::ActionResult PathPlanning::iterate()
 {
     // clear intermediate and output data, retrieve configuration
     prepare();
@@ -44,19 +46,19 @@ actionResultTypeEnum PathPlanning::iterate()
     getInputs();
 
     // calculate
-    data.timestamp = ftime::now();
+    data.timestamp = 0.0; // TODO ftime::now();
     auto result = calculate();
 
     // write outputs to output interface
     setOutputs();
 
-    TRACE("result=%s", enum2str(result));
+    MRA_LOG_DEBUG("result=%s", enum2str(result));
 
     // wrap up
     return result;
 }
 
-actionResultTypeEnum PathPlanning::calculate()
+MRA::Datatypes::ActionResult PathPlanning::calculate()
 {
     // this function assumes all inputs are set (see iterate() wrapper)
 
@@ -91,7 +93,6 @@ actionResultTypeEnum PathPlanning::calculate()
     }
 
     data.traceOutputs();
-    WRITE_TRACE;
 
     return data.resultStatus;
 }
@@ -99,88 +100,88 @@ actionResultTypeEnum PathPlanning::calculate()
 void PathPlanning::getInputs()
 {
     // configuration is handled at construction and upon change
-    if (_inputInterface != NULL)
-    {
+    // if (_inputInterface != NULL)
+    // {
         // query RTDB once so we could do repeated gets
-        _inputInterface->fetch();
-        // get and store data
-        motionSetpoint sp = _inputInterface->getMotionSetpoint();
-        data.target.pos = MRA::Geometry::Pose();
-        data.stop = true;
-        data.motionType = sp.motionType; 
-        if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
-        {
-            data.target.pos.x = sp.position.x;
-            data.target.pos.y = sp.position.y;
-            data.target.pos.Rz = sp.position.z;
-            data.stop = false;
-        }
+        // _inputInterface->fetch();
+        // // get and store data
+        // motionSetpoint sp = _inputInterface->getMotionSetpoint();
+        // data.target.pos = MRA::Geometry::Pose();
+        // data.stop = true;
+        // data.motionType = sp.motionType; 
+        // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
+        // {
+        //     data.target.pos.x = sp.position.x;
+        //     data.target.pos.y = sp.position.y;
+        //     data.target.pos.rz = sp.position.rz;
+        //     data.stop = false;
+        // }
         data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
-        data.forbiddenAreas = _inputInterface->getForbiddenAreas();
-        data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
-        data.robot = _inputInterface->getRobotState();
-        data.teamMembers = _inputInterface->getTeamMembers();
-        data.obstacles = _inputInterface->getObstacles();
-        data.balls = _inputInterface->getBalls();
-    }
+        // data.forbiddenAreas = _inputInterface->getForbiddenAreas();
+        // data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
+        // data.robot = _inputInterface->getRobotState();
+        // data.teamMembers = _inputInterface->getTeamMembers();
+        // data.obstacles = _inputInterface->getObstacles();
+        // data.balls = _inputInterface->getBalls();
+    // }
 }
 
 void PathPlanning::setOutputs()
 {
-    if (_outputInterface != NULL)
-    {
-        // Output of PathPlanning is the first wayPoint / subTarget
-        robotPosVel subTarget;
-        if (data.stop)
-        {
-            subTarget.robotPosVelType = robotPosVelEnum::VEL_ONLY;
-            subTarget.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
-            subTarget.motionType = motionTypeEnum::NORMAL;
-        }
-        else
-        {
-            subTarget.robotPosVelType = robotPosVelEnum::POSVEL;
-            subTarget.position = data.path.front().pos;
-            subTarget.velocity = data.path.front().vel;
-            subTarget.motionType = data.motionType;
+    // if (_outputInterface != NULL)
+    // {
+    //     // Output of PathPlanning is the first wayPoint / subTarget
+    //     robotPosVel subTarget;
+    //     if (data.stop)
+    //     {
+    //         subTarget.robotPosVelType = robotPosVelEnum::VEL_ONLY;
+    //         subTarget.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
+    //         subTarget.motionType = motionTypeEnum::NORMAL;
+    //     }
+    //     else
+    //     {
+    //         subTarget.robotPosVelType = robotPosVelEnum::POSVEL;
+    //         subTarget.position = data.path.front().pos;
+    //         subTarget.velocity = data.path.front().vel;
+    //         subTarget.motionType = data.motionType;
 
-            if (data.robot.hasBall)
-            {
-                subTarget.motionType = motionTypeEnum::WITH_BALL;
-            }
-        }
+    //         if (data.robot.hasBall)
+    //         {
+    //             subTarget.motionType = motionTypeEnum::WITH_BALL;
+    //         }
+    //     }
 
-        _outputInterface->setSubtarget(data.resultStatus, subTarget);
-        _outputInterface->setDiagnostics(makeDiagnostics());
-    }
+    //     _outputInterface->setSubtarget(data.resultStatus, subTarget);
+    //     _outputInterface->setDiagnostics(makeDiagnostics());
+    //}
 }
 
-diagPathPlanning PathPlanning::makeDiagnostics()
-{
-    // data adapter
-    diagPathPlanning result;
-    result.path = data.path;
-    result.forbiddenAreas = data.calculatedForbiddenAreas;
-    result.distanceToSubTargetRCS.x = data.deltaPositionRcs.x;
-    result.distanceToSubTargetRCS.y = data.deltaPositionRcs.y;
-    result.distanceToSubTargetRCS.Rz = data.deltaPositionRcs.phi;
-    result.numCalculatedObstacles = data.calculatedObstacles.size();
-    return result;
-}
+// diagPathPlanning PathPlanning::makeDiagnostics()
+// {
+//     // data adapter
+//     diagPathPlanning result;
+//     result.path = data.path;
+//     result.forbiddenAreas = data.calculatedForbiddenAreas;
+//     result.distanceToSubTargetRCS.x = data.deltaPositionRcs.x;
+//     result.distanceToSubTargetRCS.y = data.deltaPositionRcs.y;
+//     result.distanceToSubTargetRCS.rz = data.deltaPositionRcs.rz;
+//     result.numCalculatedObstacles = data.calculatedObstacles.size();
+//     return result;
+// }
 
 void PathPlanning::prepare()
 {
     data.reset();
 
     // new configuration?
-    if (_configInterfacePP != NULL)
-    {
-        _configInterfacePP->get(data.configPP);
-    }
-    if (_configInterfaceEx != NULL)
-    {
-        _configInterfaceEx->get(data.configEx);
-    }
+    // if (_configInterfacePP != NULL)
+    // {
+    //     _configInterfacePP->get(data.configPP);
+    // }
+    // if (_configInterfaceEx != NULL)
+    // {
+    //     _configInterfaceEx->get(data.configEx);
+    // }
 
     // timestepping
     if (data.configEx.frequency > 0)
@@ -191,6 +192,6 @@ void PathPlanning::prepare()
     {
         data.dt = 1.0 / 20.0;
     }
-    TRACE("nominalFrequency=%.1f dt=%.4fs", data.configEx.frequency, data.dt);
+    MRA_LOG_DEBUG("nominalFrequency=%.1f dt=%.4fs", data.configEx.frequency, data.dt);
 }
 

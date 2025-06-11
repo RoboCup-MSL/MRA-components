@@ -11,7 +11,6 @@
 
 #include "PathPlanningAlgorithms.hpp"
 // #include "cDiagnostics.hpp"
-#include "position2d.hpp"
 #include "logging.hpp"
 
 // internal constants, types and utilities
@@ -81,8 +80,8 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
     MRA::Geometry::Position subTarget = target;
     bool calculatedSubTarget = false;
-    MRA::Geometry::Position targetXY(target.x, target.y);
-    MRA::Geometry::Position curPosXY(currPos.x, currPos.y);
+    MRA::Geometry::Point targetXY(target.x, target.y);
+    MRA::Geometry::Point curPosXY(currPos.x, currPos.y);
 
     // Guard with moving at least 10cm
     if ((curPosXY - targetXY).size() > 0.1)
@@ -94,10 +93,17 @@ void AvoidObstacles::execute(PathPlanningData &data)
             for (int i = 0; i < (int)obstacles.size(); i++)
             {
                 // Pre-compute a_i and b_i for all obstacles, and store in the struct for later reuse.
-                MRA::Geometry::Position obstVec = MRA::Geometry::Position(obstacles[i].location.x, obstacles[i].location.y);
+                MRA::Geometry::Point obstVec = MRA::Geometry::Point(obstacles[i].location.x, obstacles[i].location.y);
                 // TODO: Jurge
-                // obstacles[i].a_i = ((targetXY - curPosXY) * (obstVec - curPosXY)) / (targetXY - curPosXY).size();
-                // obstacles[i].b_i = ((targetXY - curPosXY).CrossProduct((obstVec - curPosXY))) / (targetXY - curPosXY).size();
+                MRA::Geometry::Point tgtCur = (targetXY - curPosXY);
+                MRA::Geometry::Point obstCur = (obstVec - curPosXY);
+
+                obstacles[i].a_i = (tgtCur.x*obstCur.x + tgtCur.y*obstCur.y) / (targetXY - curPosXY).size();
+                // where (tgtCur.x*obstCur.x + tgtCur.y*obstCur.y) : vector2d(a) * vector2d(b)
+
+                obstacles[i].b_i = (tgtCur.x*obstCur.y + tgtCur.y*obstCur.x) / (targetXY - curPosXY).size();
+                //where  (tgtCur.x*obstCur.y + tgtCur.y*obstCur.x) : vector2d(a).CrossProduct(vector2d(b))
+
                 obstacles[i].radius = config.obstacleRadius;
                 // ROADMAP: vision/worldModel might know radius better at some point
 

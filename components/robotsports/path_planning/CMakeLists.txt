@@ -14,6 +14,7 @@ add_library(MRA-components-robotsports-path-planning
     internal/src/algorithms/AvoidObstacles.cpp
     internal/src/algorithms/Shielding.cpp
     internal/src/PathPlanningData.cpp
+    internal/src/PathPlanning.cpp
 )
 target_include_directories(MRA-components-robotsports-path-planning PUBLIC
     ${MRA_SOURCE_DIR}/libraries/logging

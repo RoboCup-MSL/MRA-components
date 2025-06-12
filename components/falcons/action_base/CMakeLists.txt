@@ -3,6 +3,7 @@ project(mra_falcons_action_base)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(mra_common_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE

@@ -253,13 +253,13 @@ typedef struct PathPlanningData
 } PathPlanningData_t;
 
 
-struct diagPathPlanning
+typedef struct path_planner_diagnostics_s
 {
     std::vector<wayPoint> path; // can contain a single target, or no target, or even an extra intermediate (sub-)target
     std::vector<forbiddenArea> forbiddenAreas;
     MRA::Geometry::Pose   distanceToSubTargetRCS; // for kstplot_motion
     int                   numCalculatedObstacles;
-};
+} path_planner_diagnostics_t;
 
 #include <cmath>
 inline double project_angle_mpi_pi(double angle)
@@ -292,54 +292,35 @@ inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
 }
 
 
-// // common Falcons headers
-// #include "ConfigInterface.hpp"
-
-// // PathPlanning interfaces
-// #include "int/OutputInterface.hpp"
-
-struct motionSetpoint
+typedef struct motionSetpoint_s
 {
     MRA::Datatypes::ActionResult  action;
     MRA::Geometry::Position       position; // could be interpreted as a pose (in case of move) or vec3d (when shooting)
     motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
-};
+} motionSetpoint_t;
 
 
-class InputInterface
+typedef struct path_planner_input_s
 {
-public:
-    InputInterface() {};
-    virtual ~InputInterface() {};
+    motionSetpoint_t            motionSetpoint;
+    robotState                  myRobotState;
+    std::vector<robotState>     teamRobotState;
+    ballResult                  ball;
+    std::vector<obstacleResult> obbstacles;
 
-    virtual void                        fetch() = 0;
-
-    virtual motionSetpoint              getMotionSetpoint() = 0;
-    virtual std::vector<forbiddenArea>  getForbiddenAreas() = 0;
-    virtual robotState                  getRobotState() = 0;
-    virtual std::vector<robotState>     getTeamMembers() = 0;
-    virtual std::vector<ballResult>     getBalls() = 0;
-    virtual std::vector<obstacleResult> getObstacles() = 0;
-
-};
+    std::vector<forbiddenArea>  forbiddenAreas; // parameters ?
+} path_planner_input_t;
 
 
-class OutputInterface
+typedef struct path_planner_output_s
 {
-public:
-    OutputInterface() {};
-    virtual ~OutputInterface() {};
+    MRA::Datatypes::ActionResult status;
+    bool positionSetpointValid;
+    MRA::Geometry::Position robotPositionSetpoint;
+    bool velocitySetpointValid;
+    MRA::Geometry::Velocity robotVelocitySetpoint;
+} path_planner_output_t;
 
-    // required
-    virtual void setSubtarget(MRA::Datatypes::ActionResult const &status, 
-                              bool positionSetpointValid,
-                              MRA::Geometry::Position const &robotPositionSetpoint,
-                              bool velocitySetpointValid,
-                              MRA::Geometry::Velocity const &robotVelocitySetpoint) = 0;
-
-    // optional
-    virtual void setDiagnostics(diagPathPlanning const &diagnostics) {};
-};
 
 
 // data struct
@@ -352,18 +333,12 @@ public:
 class PathPlanning
 {
 public:
-    // PathPlanning(ppCFI *configInterfacePP = NULL, exCFI *configInterfaceEx = NULL, InputInterface *inputInterface = NULL, OutputInterface *outputInterface = NULL);
     PathPlanning();
     ~PathPlanning();
 
-    // full iteration:
-    // * get RTDB inputs
-    // * calculate
-    // * set RTDB outputs
-    MRA::Datatypes::ActionResult iterate();
 
-    // raw calculation based on inputs, useful for unit testing
-    MRA::Datatypes::ActionResult calculate();
+    // raw calculation based on inputs
+    void calculate();
 
     // TODO: add an interface to provide (part of) the configuration
     // example use case: interceptBall calculation needs robot speed capability (maxVelXY)
@@ -372,13 +347,13 @@ public:
 public:
     // having these public is convenient for test suite
     PathPlanningData data;
-    void prepare();
-    void setOutputs();
+    // void prepare();
+    // void setOutputs();
 
 private:
-    // helper functions
-    void getInputs();
-    diagPathPlanning makeDiagnostics();
+    // // helper functions
+    // void getInputs();
+    // path_planner_diagnostics_t makeDiagnostics();
 
     // ppCFI                     *_configInterfacePP;
     // exCFI                     *_configInterfaceEx;

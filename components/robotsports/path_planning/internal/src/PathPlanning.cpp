@@ -22,24 +22,20 @@ PathPlanning::~PathPlanning()
 {
 }
 
-void PathPlanning::calculate()
+void PathPlanning::calculate(double ts, 
+                    const path_planner_input_t& r_input, 
+                    const path_planner_parameters_t& r_params,
+                    path_planner_state_t& r_state,
+                    path_planner_output_t& r_output,
+                    path_planner_diagnostics_t& r_diagnostics)
 {
     data.reset();
-
-    // new configuration?
-    // if (_configInterfacePP != NULL)
-    // {
-    //     _configInterfacePP->get(data.configPP);
-    // }
-    // if (_configInterfaceEx != NULL)
-    // {
-    //     _configInterfaceEx->get(data.configEx);
-    // }
+    data.parameters = r_params;
 
     // timestepping
-    if (data.configEx.frequency > 0)
+    if (data.parameters.frequency > 0)
     {
-        data.dt = 1.0 / data.configEx.frequency;
+        data.dt = 1.0 / data.parameters.frequency;
     }
     else
     {
@@ -49,7 +45,26 @@ void PathPlanning::calculate()
 
     // get inputs from input interface
     // getInputs();
-    
+    // get and store data
+    motionSetpoint_t sp = r_input.motionSetpoint;
+    data.target.pos = MRA::Geometry::Pose();
+    data.stop = true;
+    data.motionType = sp.motionType; 
+    // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
+    // {
+    data.target.pos.x = sp.position.x;
+    data.target.pos.y = sp.position.y;
+    data.target.pos.rz = sp.position.rz;
+    data.stop = false;
+    // }
+    data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
+    data.forbiddenAreas = r_input.forbiddenAreas;
+    data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
+    data.robot = r_input.myRobotState;
+    data.teamMembers = r_input.teamRobotState;
+    data.obstacles = r_input.obbstacles;
+    data.ball = r_input.ball;
+
     // calculate
     data.timestamp = 0.0; // TODO ftime::now();
 
@@ -84,80 +99,36 @@ void PathPlanning::calculate()
     }
 
     data.traceOutputs();
-    // setOutputs();
+    // Output of PathPlanning is the first wayPoint / subTarget
+    if (data.stop)
+    {
+        r_output.velocitySetpointValid = true;
+        r_output.positionSetpointValid = false;
+        r_output.robotVelocitySetpoint = MRA::Geometry::Pose(0.0, 0.0, 0.0);
+        r_output.motionType = motionTypeEnum::NORMAL;
+    }
+    else
+    {
+        r_output.velocitySetpointValid = true;
+        r_output.robotPositionSetpoint = data.path.front().pos;
+        r_output.velocitySetpointValid = true;
+        r_output.robotVelocitySetpoint = data.path.front().vel;
+        r_output.motionType = data.motionType;
+
+        if (data.robot.hasBall)
+        {
+            r_output.motionType = motionTypeEnum::WITH_BALL;
+        }
+    }
+
+    // fill diagnostics
+    r_diagnostics.path = data.path;
+    r_diagnostics.forbiddenAreas = data.calculatedForbiddenAreas;
+    r_diagnostics.distanceToSubTargetRCS.x = data.deltaPositionRcs.x;
+    r_diagnostics.distanceToSubTargetRCS.y = data.deltaPositionRcs.y;
+    r_diagnostics.distanceToSubTargetRCS.rz = data.deltaPositionRcs.rz;
+    r_diagnostics.numCalculatedObstacles = data.calculatedObstacles.size();
 
     MRA_LOG_DEBUG("result=%s", enum2str(result));
 }
-
-// void PathPlanning::getInputs()
-// {
-//     // configuration is handled at construction and upon change
-//     // if (_inputInterface != NULL)
-//     // {
-//         // query RTDB once so we could do repeated gets
-//         // _inputInterface->fetch();
-//         // // get and store data
-//         // motionSetpoint sp = _inputInterface->getMotionSetpoint();
-//         // data.target.pos = MRA::Geometry::Pose();
-//         // data.stop = true;
-//         // data.motionType = sp.motionType; 
-//         // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
-//         // {
-//         //     data.target.pos.x = sp.position.x;
-//         //     data.target.pos.y = sp.position.y;
-//         //     data.target.pos.rz = sp.position.rz;
-//         //     data.stop = false;
-//         // }
-//         // data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
-//         // data.forbiddenAreas = _inputInterface->getForbiddenAreas();
-//         // data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
-//         // data.robot = _inputInterface->getRobotState();
-//         // data.teamMembers = _inputInterface->getTeamMembers();
-//         // data.obstacles = _inputInterface->getObstacles();
-//         // data.balls = _inputInterface->getBalls();
-//     // }
-// }
-
-// void PathPlanning::setOutputs()
-// {
-    // if (_outputInterface != NULL)
-    // {
-    //     // Output of PathPlanning is the first wayPoint / subTarget
-    //     robotPosVel subTarget;
-    //     if (data.stop)
-    //     {
-    //         subTarget.robotPosVelType = robotPosVelEnum::VEL_ONLY;
-    //         subTarget.velocity = MRA::Geometry::Pose(0.0, 0.0, 0.0);
-    //         subTarget.motionType = motionTypeEnum::NORMAL;
-    //     }
-    //     else
-    //     {
-    //         subTarget.robotPosVelType = robotPosVelEnum::POSVEL;
-    //         subTarget.position = data.path.front().pos;
-    //         subTarget.velocity = data.path.front().vel;
-    //         subTarget.motionType = data.motionType;
-
-    //         if (data.robot.hasBall)
-    //         {
-    //             subTarget.motionType = motionTypeEnum::WITH_BALL;
-    //         }
-    //     }
-
-    //     _outputInterface->setSubtarget(data.resultStatus, subTarget);
-    //     _outputInterface->setDiagnostics(makeDiagnostics());
-    //}
-// }
-
-// diagPathPlanning PathPlanning::makeDiagnostics()
-// {
-//     // data adapter
-//     diagPathPlanning result;
-//     result.path = data.path;
-//     result.forbiddenAreas = data.calculatedForbiddenAreas;
-//     result.distanceToSubTargetRCS.x = data.deltaPositionRcs.x;
-//     result.distanceToSubTargetRCS.y = data.deltaPositionRcs.y;
-//     result.distanceToSubTargetRCS.rz = data.deltaPositionRcs.rz;
-//     result.numCalculatedObstacles = data.calculatedObstacles.size();
-//     return result;
-// }
 

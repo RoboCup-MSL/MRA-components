@@ -41,12 +41,12 @@ void CheckTargetValid::execute(PathPlanningData &data)
     MRA::Geometry::Position target = data.getSubTarget();
 
     // check option: what to do if target is inside a forbidden area
-    auto mode = data.configPP.boundaries.targetInsideForbiddenArea;
+    auto mode = data.parameters.boundaries.targetInsideForbiddenArea;
     if (mode != BoundaryOptionEnum::ALLOW)
     {
         for (auto it = data.forbiddenAreas.begin(); it != data.forbiddenAreas.end(); ++it)
         {
-            if (it->isPointInside(vec2d(target.x, target.y)))
+            if (it->isPointInside(MRA::Geometry::Point(target.x, target.y)))
             {
                 // JPGL - 2022-06-27
                 //      This trace was converted to an event log warning in order to
@@ -74,11 +74,11 @@ void CheckTargetValid::execute(PathPlanningData &data)
     }
 
     // check option: what to do if target is outside of field
-    mode = data.configPP.boundaries.targetOutsideField;
+    mode = data.parameters.boundaries.targetOutsideField;
     if (mode != BoundaryOptionEnum::ALLOW)
     {
-        double fieldMarginX = data.configPP.boundaries.fieldMarginX;
-        double fieldMarginY = data.configPP.boundaries.fieldMarginY;
+        double fieldMarginX = data.parameters.boundaries.fieldMarginX;
+        double fieldMarginY = data.parameters.boundaries.fieldMarginY;
         double fieldLength = cEnvironmentField::getInstance().getLength();
         double fieldWidth = cEnvironmentField::getInstance().getWidth();
         double limit = fieldWidth * 0.5 + fieldMarginX;
@@ -107,7 +107,7 @@ void CheckTargetValid::execute(PathPlanningData &data)
 
     // check options: own and opponent halves
     // (especially the CLIP options are useful for playing on half a demo field)
-    mode = data.configPP.boundaries.targetOnOwnHalf;
+    mode = data.parameters.boundaries.targetOnOwnHalf;
     if (mode != BoundaryOptionEnum::ALLOW)
     {
         if (target.y < 0.0)
@@ -120,7 +120,7 @@ void CheckTargetValid::execute(PathPlanningData &data)
             }
         }
     }
-    mode = data.configPP.boundaries.targetOnOpponentHalf;
+    mode = data.parameters.boundaries.targetOnOpponentHalf;
     if (mode != BoundaryOptionEnum::ALLOW)
     {
         if (target.y > 0.0)

@@ -17,8 +17,8 @@
 
 typedef struct
 {
-    vec2d location;
-    vec2d velocity;
+    MRA::Geometry::Point location;
+    MRA::Geometry::Point velocity;
     double a_i = 0.0;
     double b_i = 0.0;
     double radius = 0.0;
@@ -60,7 +60,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     std::string msg = "target: ";
     msg.append(target.toString());
     MRA_LOG_DEBUG(msg.c_str());
-    auto config = data.configPP.obstacleAvoidance;
+    auto config = data.parameters.obstacleAvoidance;
 
     // check if functionality is enabled
     if (config.enabled == false)

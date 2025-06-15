@@ -21,7 +21,6 @@ enum class BoundaryOptionEnum
     CLIP
 };
 
-
 enum class robotStatusEnum
 {
     UNKNOWN,
@@ -30,20 +29,13 @@ enum class robotStatusEnum
     OUTOFPLAY     // button toggled off
 };
 
-struct ConfigExecution
-{
-    double frequency = 40.0;                 // [Hz]     The frequency of the heartbeat (tick), e.g., 40Hz -> 40 ticks per second.
-    double simulationSpeedupFactor = 1.0;    // [double] The speedup factor for simulation, e.g., 2.0 -> simulation time advances at 200%: 1 real-world second == 2 seconds in simulation time
-    std::string tickFinishRtdbKey = "ROBOT_VELOCITY_SETPOINT";   // [string] The RtDB key that is written when a tick / heartbeat finishes. Execution will subscribe to this RtDB key.
-};
-
 struct wayPoint
 {
     MRA::Geometry::Pose pos;
     MRA::Geometry::Pose vel;
 };
 
-struct ObstacleAvoidanceConfig
+typedef struct ObstacleAvoidanceParameters_s
 {
     bool enabled = true;
     double robotRadius = 0.26;
@@ -57,9 +49,9 @@ struct ObstacleAvoidanceConfig
     double groupGapDistance = 0.5;
     double subTargetDistance = 0.5;
     double subTargetExtensionFactor = 0.0;
-};
+} ObstacleAvoidanceParameters_t;
 
-struct BoundaryConfig
+typedef struct BoundaryParameters_s
 {
     BoundaryOptionEnum targetInsideForbiddenArea;
     BoundaryOptionEnum targetOutsideField;
@@ -67,46 +59,46 @@ struct BoundaryConfig
     double fieldMarginY = 0.0;
     BoundaryOptionEnum targetOnOwnHalf;
     BoundaryOptionEnum targetOnOpponentHalf;
-};
+} BoundaryParameters_t;
 
-struct ForwardDrivingConfig
+typedef struct ForwardDrivingSituationParameters_s
 {
     bool enabled = true;
     double minimumDistance = 2.0;
-};
+} ForwardDrivingSituationParameters_t;
 
-struct ForwardDrivingConfigs
+typedef struct ForwardDrivingParameters_s
 {
-    ForwardDrivingConfig withoutBall;
-    ForwardDrivingConfig withBall;
+    ForwardDrivingSituationParameters_t withoutBall;
+    ForwardDrivingSituationParameters_t withBall;
     double radiusRobotToBall = 0.25;
     bool applyLimitsToBall = true;
-};
+} ForwardDrivingParameters_t; 
 
-struct DeadzoneConfig
+typedef struct DeadzoneParameters_s
 {
     bool enabled;
     double toleranceXY    = 0.01;
     double toleranceRz    = 0.005;
-};
+} DeadzoneParameters_t;
 
-struct TokyoDriftConfig
+typedef struct TokyoDriftParameters_s
 {
     double toleranceRz    = 1.0; // if deltaPos.Rz > tokyoDrift.toleranceRz -> do tokyo drift; otherwise do normal rotation
-};
+} TokyoDriftParameters_t;
 
-struct ConfigPathPlanning
-{
-    int                                numExtraSettlingTicks = 0;
-    ObstacleAvoidanceConfig            obstacleAvoidance;
-    BoundaryConfig                     boundaries;
-    double                              slowFactor = 0.5;
-    ForwardDrivingConfigs              forwardDriving;
-    DeadzoneConfig                     deadzone;
-    TokyoDriftConfig                   tokyoDrift;
-};
+typedef struct path_planner_parameters_s {
+    int                           numExtraSettlingTicks = 0;
+    ObstacleAvoidanceParameters_t obstacleAvoidance;
+    BoundaryParameters_t          boundaries;
+    double                        slowFactor = 0.5;
+    ForwardDrivingParameters_t    forwardDriving;
+    DeadzoneParameters_t          deadzone;
+    TokyoDriftParameters_t        tokyoDrift;
+    double                        frequency = 40.0; // [Hz]     The frequency of the heartbeat (tick), e.g., 40Hz -> 40 ticks per second.
+} path_planner_parameters_t;
 
-struct robotState
+typedef struct robotState_s
 {
     robotStatusEnum    status;
     // rtime              timestamp;
@@ -116,44 +108,34 @@ struct robotState
     // vec2d              ballAcquired; // only filled in when having ball, for dribble rule
     // int                robotId;
     // teamIdType         teamId;
-};
+} robotState_t;
 
 
-struct vec2d
+
+class polygon
 {
-    double      x = 0.0;
-    double      y = 0.0;
-    
-    vec2d(double xx = 0.0, double yy = 0.0)
-    {
-        x = xx;
-        y = yy;
-    }
-};
+    public:
+        std::vector<MRA::Geometry::Point>   points;
 
-struct polygon
-{
-    std::vector<vec2d>   points;
-
-    // this magic was found in geometry, polygon2D.cpp
-    // (original from internet somewhere??)
-    bool isPointInside(vec2d const &p)
-    {
-        bool retVal = false;
-        size_t i, j, nvert = points.size();
-        if (nvert > 2)
+        // this magic was found in geometry, polygon2D.cpp
+        // (original from internet somewhere??)
+        bool isPointInside(MRA::Geometry::Point const &p)
         {
-            for (i = 0, j = nvert - 1; i < nvert; j = i++)
+            bool retVal = false;
+            size_t i, j, nvert = points.size();
+            if (nvert > 2)
             {
-                if (((points[i].y >= p.y ) != (points[j].y >= p.y) ) &&
-                    (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+                for (i = 0, j = nvert - 1; i < nvert; j = i++)
                 {
-                    retVal = !retVal;
+                    if (((points[i].y >= p.y ) != (points[j].y >= p.y) ) &&
+                        (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+                    {
+                        retVal = !retVal;
+                    }
                 }
             }
+            return retVal;
         }
-        return retVal;
-    }
 };
 
 struct forbiddenArea: public polygon
@@ -162,13 +144,6 @@ struct forbiddenArea: public polygon
 };
 
 typedef double rtime;
-
-struct vec3d
-{
-    double      x;
-    double      y;
-    double      z;
-};
 
 enum class ballPossessionTypeEnum
 {
@@ -186,18 +161,19 @@ struct ballPossession
 
 struct ballResult
 {
-    vec3d          position;
-    vec3d          velocity;
-    double          confidence;
-    ballPossession owner;
+    bool                    valid;
+    MRA::Geometry::Position position;
+    MRA::Geometry::Velocity velocity;
+    double                  confidence;
+    ballPossession          owner;
 };
 
 struct obstacleResult
 {
-    vec2d          position;
-    vec2d          velocity;
-    double         confidence = 0.0;
-    int            id = 0; // optional, if we ever want to track/identify opponents
+    MRA::Geometry::Point position;
+    MRA::Geometry::Point velocity;
+    double               confidence = 0.0;
+    int                  id = 0; // optional, if we ever want to track/identify opponents
 };
 
 enum class motionTypeEnum
@@ -215,14 +191,13 @@ enum class motionTypeEnum
 typedef struct PathPlanningData
 {
     // inputs
-    ConfigPathPlanning          configPP;
-    ConfigExecution             configEx;
+    path_planner_parameters_t   parameters;
     wayPoint                    target;  
     double                      timestamp;   // was type: rtime
     std::vector<forbiddenArea>  forbiddenAreas;
-    robotState                  robot;
-    std::vector<ballResult>     balls;
-    std::vector<robotState>     teamMembers;
+    robotState_t                robot;
+    ballResult                  ball;
+    std::vector<robotState_t>     teamMembers;
     std::vector<obstacleResult> obstacles; // only the ones from worldModel, see calculatedObstacles below
 
     // calculation results
@@ -291,11 +266,10 @@ inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
     p *= factor;
 }
 
-
 typedef struct motionSetpoint_s
 {
     MRA::Datatypes::ActionResult  action;
-    MRA::Geometry::Position       position; // could be interpreted as a pose (in case of move) or vec3d (when shooting)
+    MRA::Geometry::Position       position; // could be interpreted as a position (in case of move) or pose (when shooting)
     motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
 } motionSetpoint_t;
 
@@ -303,8 +277,8 @@ typedef struct motionSetpoint_s
 typedef struct path_planner_input_s
 {
     motionSetpoint_t            motionSetpoint;
-    robotState                  myRobotState;
-    std::vector<robotState>     teamRobotState;
+    robotState_t                myRobotState;
+    std::vector<robotState_t>   teamRobotState;
     ballResult                  ball;
     std::vector<obstacleResult> obbstacles;
 
@@ -319,15 +293,14 @@ typedef struct path_planner_output_s
     MRA::Geometry::Position robotPositionSetpoint;
     bool velocitySetpointValid;
     MRA::Geometry::Velocity robotVelocitySetpoint;
+    motionTypeEnum motionType;
 } path_planner_output_t;
 
 
 
-// data struct
+typedef struct path_planner_state_s {
 
-// // use a short alias
-// using ppCFI = ConfigInterface<ConfigPathPlanning>;
-// using exCFI = ConfigInterface<ConfigExecution>;
+} path_planner_state_t;
 
 
 class PathPlanning
@@ -338,27 +311,19 @@ public:
 
 
     // raw calculation based on inputs
-    void calculate();
+    void calculate(double ts, 
+                    const path_planner_input_t& r_input, 
+                    const path_planner_parameters_t& r_params,
+                    path_planner_state_t& r_state,
+                    path_planner_output_t& r_output,
+                    path_planner_diagnostics_t& r_diagnostics);
 
     // TODO: add an interface to provide (part of) the configuration
     // example use case: interceptBall calculation needs robot speed capability (maxVelXY)
 
-
-public:
     // having these public is convenient for test suite
     PathPlanningData data;
-    // void prepare();
-    // void setOutputs();
-
 private:
-    // // helper functions
-    // void getInputs();
-    // path_planner_diagnostics_t makeDiagnostics();
-
-    // ppCFI                     *_configInterfacePP;
-    // exCFI                     *_configInterfaceEx;
-    // InputInterface            *_inputInterface;
-    // OutputInterface           *_outputInterface;
 
 };
 

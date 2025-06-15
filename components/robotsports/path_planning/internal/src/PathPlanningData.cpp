@@ -50,8 +50,8 @@ void PathPlanningData::insertSubTarget(MRA::Geometry::Position const &pos, MRA::
     // only insert if subtarget is sufficiently far away
     MRA::Geometry::Position deltaPositionFcsLocal = pos - currentPositionFcs;
     deltaPositionFcsLocal.rz = project_angle_mpi_pi(deltaPositionFcsLocal.rz);
-    bool xyFar = MRA::Geometry::Point(deltaPositionFcsLocal.x, deltaPositionFcsLocal.y).size() >= configPP.deadzone.toleranceXY;
-    bool RzFar = fabs(deltaPositionFcsLocal.rz) >= configPP.deadzone.toleranceRz;
+    bool xyFar = MRA::Geometry::Point(deltaPositionFcsLocal.x, deltaPositionFcsLocal.y).size() >= parameters.deadzone.toleranceXY;
+    bool RzFar = fabs(deltaPositionFcsLocal.rz) >= parameters.deadzone.toleranceRz;
     MRA_LOG_DEBUG("xyFar=%d RzFar=%d", xyFar, RzFar);
     if (xyFar || RzFar)
     {

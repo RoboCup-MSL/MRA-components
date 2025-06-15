@@ -13,7 +13,7 @@
 void ForwardDriving::execute(PathPlanningData &data)
 {
     // get applicable configuration
-    ForwardDrivingConfig config = (data.robot.hasBall ? data.configPP.forwardDriving.withBall : data.configPP.forwardDriving.withoutBall);
+    ForwardDrivingSituationParameters_t config = (data.robot.hasBall ? data.parameters.forwardDriving.withBall : data.parameters.forwardDriving.withoutBall);
 
     // disabled?
     if (!config.enabled)

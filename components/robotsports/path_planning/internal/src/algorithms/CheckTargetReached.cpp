@@ -17,8 +17,8 @@ void CheckTargetReached::execute(PathPlanningData &data)
     deltaPositionFcs.rz = project_angle_mpi_pi(deltaPositionFcs.rz);
     // compare with tolerances
     MRA::Geometry::Point deltaPositionFcsXY(deltaPositionFcs.x, deltaPositionFcs.y);
-    bool xyOk = deltaPositionFcsXY.size() < data.configPP.deadzone.toleranceXY;
-    bool RzOk = fabs(deltaPositionFcs.rz) < data.configPP.deadzone.toleranceRz;
+    bool xyOk = deltaPositionFcsXY.size() < data.parameters.deadzone.toleranceXY;
+    bool RzOk = fabs(deltaPositionFcs.rz) < data.parameters.deadzone.toleranceRz;
     MRA_LOG_DEBUG("xyOk=%d RzOk=%d", xyOk, RzOk);
     // convergence criterion, especially useful for testing where overshoot can cause premature 'PASSED'
     static int tickCountTargetReached = 0;
@@ -26,7 +26,7 @@ void CheckTargetReached::execute(PathPlanningData &data)
     if (xyOk && RzOk)
     {
         tickCountTargetReached++;
-        if (tickCountTargetReached >= data.configPP.numExtraSettlingTicks)
+        if (tickCountTargetReached >= data.parameters.numExtraSettlingTicks)
         {
             data.resultStatus = MRA::Datatypes::ActionResult::PASSED;
             data.done = true;

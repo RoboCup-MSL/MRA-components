@@ -19,13 +19,13 @@ forbiddenArea makeForbiddenAreaFromLine(MRA::Geometry::Point const &src, MRA::Ge
     forbiddenArea result;
     result.id = 0;
     MRA::Geometry::Point point = src + perpendicular * 0.5;
-    result.points.push_back(vec2d(point.x, point.y));
+    result.points.push_back(MRA::Geometry::Point(point.x, point.y));
     point = src - perpendicular * 0.5;
-    result.points.push_back(vec2d(point.x, point.y));
+    result.points.push_back(MRA::Geometry::Point(point.x, point.y));
     point = dst - perpendicular * 0.5;
-    result.points.push_back(vec2d(point.x, point.y));
+    result.points.push_back(MRA::Geometry::Point(point.x, point.y));
     point = dst + perpendicular * 0.5;
-    result.points.push_back(vec2d(point.x, point.y));
+    result.points.push_back(MRA::Geometry::Point(point.x, point.y));
     return result;
 }
 
@@ -81,13 +81,13 @@ std::vector<obstacleResult> makeObstaclesFromPolygon(polygon const &poly, double
 void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
 {
     // commonly used
-    auto config = data.configPP.obstacleAvoidance;
+    auto config = data.parameters.obstacleAvoidance;
     MRA::Geometry::Point r(data.robot.position.x, data.robot.position.y);
     MRA::Geometry::Point b(99, 99); // far outside field == ignore
-    if (data.balls.size())
+    if (data.ball.valid)
     {
-        b.x = data.balls.at(0).position.x;
-        b.y = data.balls.at(0).position.y;
+        b.x = data.ball.position.x;
+        b.y = data.ball.position.y;
     }
 
     // add to data.calculatedObstacles
@@ -145,13 +145,13 @@ void CalculateObstacles::execute(PathPlanningData &data)
     data.calculatedForbiddenAreas = data.forbiddenAreas;
     MRA_LOG_DEBUG("#calculatedForbiddenAreas: %d", (int)data.calculatedForbiddenAreas.size());
     MRA_LOG_DEBUG("#calculatedObstacles: %d", (int)data.calculatedObstacles.size());
-    auto config = data.configPP.obstacleAvoidance;
+    auto config = data.parameters.obstacleAvoidance;
     MRA::Geometry::Point r(data.robot.position.x, data.robot.position.y);
     MRA::Geometry::Point b(99, 99); // far outside field == ignore
-    if (data.balls.size())
+    if (data.ball.valid)
     {
-        b.x = data.balls.at(0).position.x;
-        b.y = data.balls.at(0).position.y;
+        b.x = data.ball.position.x;
+        b.y = data.ball.position.y;
     }
 
     // static forbidden areas
@@ -160,7 +160,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
         for (auto it = data.forbiddenAreas.begin(); it != data.forbiddenAreas.end(); ++it)
         {
             // ignore forbidden area if robot is inside, otherwise it cannot escape
-            if (!it->isPointInside(vec2d(r.x, r.y)))
+            if (!it->isPointInside(MRA::Geometry::Point(r.x, r.y)))
             {
                 auto areaObstacles = makeObstaclesFromPolygon(*it, config.generatedObstacleSpacing);
                 MRA_LOG_DEBUG("adding %d calculated obstacles from area %d", (int)areaObstacles.size(), it->id);
@@ -182,8 +182,8 @@ void CalculateObstacles::execute(PathPlanningData &data)
         {
             // convert from robotState
             obstacleResult obst;
-            obst.position = vec2d(it->position.x, it->position.y);
-            obst.velocity = vec2d(it->velocity.x, it->velocity.y);
+            obst.position = MRA::Geometry::Point(it->position.x, it->position.y);
+            obst.velocity = MRA::Geometry::Point(it->velocity.x, it->velocity.y);
             // handle the obstacle
             handleObstacle(obst, data);
         }
@@ -203,13 +203,13 @@ void CalculateObstacles::execute(PathPlanningData &data)
             double distanceObst2Ball = (MRA::Geometry::Point(obst.position.x, obst.position.y) - b).size();
             if (distanceObst2Ball < config.ballClearance)
             {
-                obst.velocity = vec2d(0.0, 0.0);
+                obst.velocity = MRA::Geometry::Point(0.0, 0.0);
             }
             // also ignore its velocity (not position!) in case our robot has the ball
             // we are probably not driving too fast, so let them bump into us, then a free kick might be awarded
             if (data.robot.hasBall)
             {
-                obst.velocity = vec2d(0.0, 0.0);
+                obst.velocity = MRA::Geometry::Point(0.0, 0.0);
             }
             // handle the obstacle
             handleObstacle(obst, data);

@@ -68,10 +68,11 @@ void CheckTargetValid::execute(PathPlanningData &data)
 
     // allow target position in TTA for park/substitute
     bool targetInsideTTA = false;
-    if (cEnvironmentField::getInstance().isPositionInArea(target.x, target.y, A_TTA))
-    {
-        targetInsideTTA = true;
-    }
+    // TODO
+    // if (cEnvironmentField::getInstance().isPositionInArea(target.x, target.y, A_TTA))
+    // {
+    //     targetInsideTTA = true;
+    // }
 
     // check option: what to do if target is outside of field
     mode = data.parameters.boundaries.targetOutsideField;
@@ -79,8 +80,11 @@ void CheckTargetValid::execute(PathPlanningData &data)
     {
         double fieldMarginX = data.parameters.boundaries.fieldMarginX;
         double fieldMarginY = data.parameters.boundaries.fieldMarginY;
-        double fieldLength = cEnvironmentField::getInstance().getLength();
-        double fieldWidth = cEnvironmentField::getInstance().getWidth();
+        // TODO
+        // double fieldLength = cEnvironmentField::getInstance().getLength();
+        // double fieldWidth = cEnvironmentField::getInstance().getWidth();
+        double fieldLength = 18.0;
+        double fieldWidth = 12;
         double limit = fieldWidth * 0.5 + fieldMarginX;
         if (fabs(target.x) > limit && !targetInsideTTA)
         {

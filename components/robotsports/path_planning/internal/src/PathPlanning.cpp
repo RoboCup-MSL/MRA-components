@@ -83,7 +83,7 @@ void PathPlanning::calculate(double ts,
     algorithms.push_back(new EscapeForbiddenAreas());
     algorithms.push_back(new CalculateObstacles()); // opponents + teammembers + forbiddenAreas + projectedSpeedVectors
     algorithms.push_back(new AvoidObstacles());
-    //algorithms.push_back(new Shielding());
+    algorithms.push_back(new Shielding());
     algorithms.push_back(new ForwardDriving());
 
     // initially, the path consists of just the given target

@@ -10,7 +10,7 @@
 
 void RequireWorldModelActive::execute(PathPlanningData &data)
 {
-    bool wmActive = (data.robot.status == robotStatusEnum::INPLAY);
+    bool wmActive = data.robot.active;
     if (!wmActive)
     {
         data.resultStatus = MRA::Datatypes::ActionResult::FAILED;

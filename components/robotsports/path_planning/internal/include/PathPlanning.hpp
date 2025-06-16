@@ -21,14 +21,6 @@ enum class BoundaryOptionEnum
     CLIP
 };
 
-enum class robotStatusEnum
-{
-    UNKNOWN,
-    INITIALIZING, // before having a valid loc
-    INPLAY,       // valid loc + inplay button = participating in team
-    OUTOFPLAY     // button toggled off
-};
-
 struct wayPoint
 {
     MRA::Geometry::Pose pos;
@@ -100,11 +92,11 @@ typedef struct path_planner_parameters_s {
 
 typedef struct robotState_s
 {
-    robotStatusEnum    status;
+    bool                active = false;
     // rtime              timestamp;
-    MRA::Geometry::Pose position;
-    MRA::Geometry::Pose velocity;
-    bool                hasBall;
+    MRA::Geometry::Pose position = {};
+    MRA::Geometry::Pose velocity = {};
+    bool                hasBall = false;
     // vec2d              ballAcquired; // only filled in when having ball, for dribble rule
     // int                robotId;
     // teamIdType         teamId;
@@ -234,6 +226,7 @@ typedef struct path_planner_diagnostics_s
     std::vector<forbiddenArea> forbiddenAreas;
     MRA::Geometry::Pose   distanceToSubTargetRCS; // for kstplot_motion
     int                   numCalculatedObstacles;
+    bool                  stop; 
 } path_planner_diagnostics_t;
 
 #include <cmath>

@@ -44,7 +44,6 @@ void PathPlanning::calculate(double ts,
     MRA_LOG_DEBUG("nominalFrequency=%.1f dt=%.4fs", data.configEx.frequency, data.dt);
 
     // get inputs from input interface
-    // getInputs();
     // get and store data
     motionSetpoint_t sp = r_input.motionSetpoint;
     data.target.pos = MRA::Geometry::Pose();
@@ -100,6 +99,7 @@ void PathPlanning::calculate(double ts,
 
     data.traceOutputs();
     // Output of PathPlanning is the first wayPoint / subTarget
+    r_output.status = data.resultStatus;
     if (data.stop)
     {
         r_output.velocitySetpointValid = true;
@@ -128,6 +128,7 @@ void PathPlanning::calculate(double ts,
     r_diagnostics.distanceToSubTargetRCS.y = data.deltaPositionRcs.y;
     r_diagnostics.distanceToSubTargetRCS.rz = data.deltaPositionRcs.rz;
     r_diagnostics.numCalculatedObstacles = data.calculatedObstacles.size();
+    r_diagnostics.stop = data.stop;
 
     MRA_LOG_DEBUG("result=%s", enum2str(result));
 }

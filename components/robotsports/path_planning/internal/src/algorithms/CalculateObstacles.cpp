@@ -9,14 +9,14 @@
 #include "PathPlanningAlgorithms.hpp"
 #include "logging.hpp"
 
-forbiddenArea makeForbiddenAreaFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst)
+forbiddenArea_t makeForbiddenAreaFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst)
 {
     double WIDTH = 0.3;
     MRA::Geometry::Point p(dst - src);
     MRA::Geometry::Pose perpendicular(p.x, p.y);
     Rotate(perpendicular, M_PI * 0.5);
     Normalize(perpendicular, WIDTH);
-    forbiddenArea result;
+    forbiddenArea_t result;
     result.id = 0;
     MRA::Geometry::Point point = src + perpendicular * 0.5;
     result.points.push_back(MRA::Geometry::Point(point.x, point.y));
@@ -29,10 +29,10 @@ forbiddenArea makeForbiddenAreaFromLine(MRA::Geometry::Point const &src, MRA::Ge
     return result;
 }
 
-std::vector<obstacleResult> makeObstaclesFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst, double step)
+std::vector<obstacleResult_t> makeObstaclesFromLine(MRA::Geometry::Point const &src, MRA::Geometry::Point const &dst, double step)
 {
-    std::vector<obstacleResult> result;
-    obstacleResult obst;
+    std::vector<obstacleResult_t> result;
+    obstacleResult_t obst;
     MRA::Geometry::Point t = dst;
     // insert final point
     obst.position.x = t.x;
@@ -53,9 +53,9 @@ std::vector<obstacleResult> makeObstaclesFromLine(MRA::Geometry::Point const &sr
     return result;
 }
 
-std::vector<obstacleResult> makeObstaclesFromPolygon(polygon const &poly, double step)
+std::vector<obstacleResult_t> makeObstaclesFromPolygon(polygon const &poly, double step)
 {
-    std::vector<obstacleResult> result;
+    std::vector<obstacleResult_t> result;
     // place obstacles on each side, not inside the interior
     for (int it = 0; it < (int)poly.points.size(); ++it)
     {
@@ -78,7 +78,7 @@ std::vector<obstacleResult> makeObstaclesFromPolygon(polygon const &poly, double
     return result;
 }
 
-void handleObstacle(obstacleResult const &obstacle, PathPlanningData &data)
+void handleObstacle(obstacleResult_t const &obstacle, PathPlanningData &data)
 {
     // commonly used
     auto config = data.parameters.obstacleAvoidance;
@@ -181,7 +181,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
         for (auto it = data.teamMembers.begin(); it != data.teamMembers.end(); ++it)
         {
             // convert from robotState
-            obstacleResult obst;
+            obstacleResult_t obst;
             obst.position = MRA::Geometry::Point(it->position.x, it->position.y);
             obst.velocity = MRA::Geometry::Point(it->velocity.x, it->velocity.y);
             // handle the obstacle
@@ -197,7 +197,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
         for (auto it = data.obstacles.begin(); it != data.obstacles.end(); ++it)
         {
             // handle the obstacle
-            obstacleResult obst = *it;
+            obstacleResult_t obst = *it;
             // ignore its velocity vector in case this obstacle is close to the ball
             // to prevent our robots from being 'too afraid' of the opponent
             double distanceObst2Ball = (MRA::Geometry::Point(obst.position.x, obst.position.y) - b).size();

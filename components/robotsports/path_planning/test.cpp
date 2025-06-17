@@ -73,14 +73,6 @@ TEST(RobotsportsPathPlanningTest, native_inactive_shouldFail)
 
 const double PATH_PLANNING_NUMERICAL_TOLERANCE = 1e-6;
 
-// PathPlanning pathPlanningSetup(ppCFI *ppci, exCFI *exci, OutputInterface *output)
-// {
-//     TRACE_FUNCTION("");
-//     auto pp = PathPlanning(ppci, exci, NULL, output);
-//     pp.prepare();
-//     return pp;
-// }
-
 path_planner_parameters_t getDefaultParameters() {
     path_planner_parameters_t params = {};
 
@@ -133,7 +125,7 @@ TEST(RobotsportsPathPlanningTest, native_onTarget_shouldPass)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::PASSED);
-    EXPECT_EQ(diagnostics.stop, false);
+    EXPECT_EQ(state.stop, false);
     EXPECT_EQ(output.robotPositionSetpoint.x, input.myRobotState.position.x);
     EXPECT_EQ(output.robotPositionSetpoint.y, input.myRobotState.position.y);
     EXPECT_EQ(output.robotPositionSetpoint.rz, input.myRobotState.position.rz);
@@ -160,7 +152,7 @@ TEST(RobotsportsPathPlanningTest, native_simpleMove_shouldMoveForward)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(diagnostics.stop, false);
+    EXPECT_EQ(state.stop, false);
     EXPECT_EQ(output.robotPositionSetpoint.x,  input.myRobotState.position.x);
     EXPECT_EQ(output.robotPositionSetpoint.y,  input.myRobotState.position.y);
     EXPECT_EQ(output.robotPositionSetpoint.rz, input.myRobotState.position.rz);
@@ -188,7 +180,7 @@ TEST(RobotsportsPathPlanningTest, native_stop)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::PASSED);
-    EXPECT_EQ(diagnostics.stop, true);
+    EXPECT_EQ(state.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_closebyXYnotRz_shouldContinue)
@@ -209,7 +201,7 @@ TEST(RobotsportsPathPlanningTest, native_closebyXYnotRz_shouldContinue)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(diagnostics.stop, true);
+    EXPECT_EQ(state.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_closebyRznotXY_shouldContinue)
@@ -230,340 +222,463 @@ TEST(RobotsportsPathPlanningTest, native_closebyRznotXY_shouldContinue)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(diagnostics.stop, true);
+    EXPECT_EQ(state.stop, true);
 }
 
-// // boundary limiters
-// TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::STOP_AND_FAIL;
-//     pp.data.target.pos = MRA::Geometry::Pose(99, 99, 0);
+// boundary limiters
+TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    params.boundaries.targetOutsideField = BoundaryOptionEnum::STOP_AND_FAIL;
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 99.0;
+    input.motionSetpoint.position.y = 99.0;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::FAILED);
-//     EXPECT_EQ(pp.data.stop, true);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
-//     pp.data.configPP.boundaries.fieldMarginX = 0.9; // TODO stub environmentField
-//     pp.data.target.pos = MRA::Geometry::Pose(99, 0, 0);
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
+    EXPECT_EQ(state.stop, true);
+}
 
-//     // Act
-//     auto result = pp.calculate();
+TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)\
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 6.9, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.y, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    params.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
+    params.boundaries.fieldMarginX = 0.9; // TODO stub environmentField
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 99.0;
 
-// TEST(RobotsportsPathPlanningTest, native_targetY_OutOfBounds_shouldClip)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
-//     pp.data.configPP.boundaries.fieldMarginY = 0.4; // TODO stub environmentField
-//     pp.data.target.pos = MRA::Geometry::Pose(0, 99, 0);
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Act
-//     auto result = pp.calculate();
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x,  6.9, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.y,  0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.y, 9.4, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+TEST(RobotsportsPathPlanningTest, native_targetY_OutOfBounds_shouldClip)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+    
+    params.boundaries.targetOutsideField = BoundaryOptionEnum::CLIP;
+    params.boundaries.fieldMarginY = 0.4; // TODO stub environmentField
+    
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.y = 99.0;
 
-// TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_notAllowed)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOnOwnHalf = BoundaryOptionEnum::STOP_AND_FAIL;
-//     pp.data.target.pos = MRA::Geometry::Pose(0.0, -6.0, 0.0);
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Act
-//     auto result = pp.calculate();
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::FAILED);
-//     EXPECT_EQ(pp.data.stop, true);
-// }
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 9.4, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-// TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOnOwnHalf = BoundaryOptionEnum::CLIP;
-//     pp.data.target.pos = MRA::Geometry::Pose(1.0, -6.0, 0.0);
+TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_notAllowed)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+    params.boundaries.targetOnOwnHalf = BoundaryOptionEnum::STOP_AND_FAIL;
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.y = -6.0;
 
-//     // Act
-//     auto result = pp.calculate();
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.y, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_EQ(state.stop, true);
+}
 
-// TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::STOP_AND_FAIL;
-//     pp.data.target.pos = MRA::Geometry::Pose(0.0, 6.0, 0.0);
+TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    params.boundaries.targetOnOwnHalf = BoundaryOptionEnum::CLIP;
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.y = -6.0;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::FAILED);
-//     EXPECT_EQ(pp.data.stop, true);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_clip)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.configPP.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::CLIP;
-//     pp.data.target.pos = MRA::Geometry::Pose(1.0, 6.0, 0.0);
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Act
-//     auto result = pp.calculate();
+TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+    
+    params.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::STOP_AND_FAIL;
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.y = 6.0;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.y, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// // forbidden areas
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
+    EXPECT_EQ(state.stop, true);
+}
 
-// TEST(RobotsportsPathPlanningTest, native_targetInForbiddenArea_shouldFail)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(0.0, 6.0, 0.0);
-//     forbiddenArea f; // construct a forbidden area around the target (penalty marker)
-//     f.points.push_back(vec2d(-1.0,  5.0));
-//     f.points.push_back(vec2d(-1.0,  7.0));
-//     f.points.push_back(vec2d( 1.0,  7.0));
-//     f.points.push_back(vec2d( 1.0,  5.0));
-//     pp.data.forbiddenAreas.push_back(f);
+TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_clip)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    params.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::CLIP;
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 1.0;
+    input.motionSetpoint.position.y = 6.0;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::FAILED);
-//     EXPECT_EQ(pp.data.stop, true);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// TEST(RobotsportsPathPlanningTest, native_currentInForbiddenArea_shouldMoveOut)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.robot.position = MRA::Geometry::Pose(0.0, 6.0, 0.0);
-//     forbiddenArea f; // construct a forbidden area around the target (penalty marker)
-//     f.points.push_back(vec2d(-1.0,  5.0));
-//     f.points.push_back(vec2d(-1.0,  7.0));
-//     f.points.push_back(vec2d( 1.0,  7.0));
-//     f.points.push_back(vec2d( 1.0,  5.0));
-//     pp.data.forbiddenAreas.push_back(f);
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Act
-//     auto result = pp.calculate();
+// forbidden areas
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.y, 0.0, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+TEST(RobotsportsPathPlanningTest, native_targetInForbiddenArea_shouldFail)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-// // obstacle avoidance
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.y = 6.0;
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_teammember_left)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.1, 0.0);
-//     robotState r;
-//     r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
-//     pp.data.teamMembers.push_back(r);
+    forbiddenArea_t f; // construct a forbidden area around the target (penalty marker)
+    f.points.push_back(MRA::Geometry::Point(-1.0,  5.0));
+    f.points.push_back(MRA::Geometry::Point(-1.0,  7.0));
+    f.points.push_back(MRA::Geometry::Point( 1.0,  7.0));
+    f.points.push_back(MRA::Geometry::Point( 1.0,  5.0));
+    input.forbiddenAreas.push_back(f);
 
-//     // Act
-//     auto result = pp.calculate();
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 2.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, pp.data.configPP.obstacleAvoidance.subTargetDistance, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
+    EXPECT_EQ(state.stop, true);
+}
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_teammember_right)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.1, 0.0);
-//     robotState r;
-//     r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
-//     pp.data.teamMembers.push_back(r);
+TEST(RobotsportsPathPlanningTest, native_currentInForbiddenArea_shouldMoveOut)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    input.myRobotState.position = MRA::Geometry::Pose(0.0, 6.0);
+    forbiddenArea_t f; // construct a forbidden area around the target (penalty marker)
+    f.points.push_back(MRA::Geometry::Point(-1.0,  5.0));
+    f.points.push_back(MRA::Geometry::Point(-1.0,  7.0));
+    f.points.push_back(MRA::Geometry::Point( 1.0,  7.0));
+    f.points.push_back(MRA::Geometry::Point( 1.0,  5.0));
+    input.forbiddenAreas.push_back(f);
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 2.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, -pp.data.configPP.obstacleAvoidance.subTargetDistance, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_moving_teammember)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.3, 0.0);
-//     pp.data.target.vel = MRA::Geometry::Pose(0.0, 2.0, 0.0);
-//     robotState r;
-//     r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
-//     pp.data.teamMembers.push_back(r);
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Act
-//     auto result = pp.calculate();
+// obstacle avoidance
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 2.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, -pp.data.configPP.obstacleAvoidance.subTargetDistance, NUMERICAL_TOLERANCE);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+TEST(RobotsportsPathPlanningTest, native_avoid_teammember_left)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_obstacle)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
-//     obstacleResult obst;
-//     obst.position = vec2d(2.0, -0.1);
-//     pp.data.obstacles.push_back(obst);
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.y = 0.1;
+    robotState_t r;
+    r.position = MRA::Geometry::Pose(2.0, 0.0);
+    input.teamRobotState.push_back(r);
 
-//     // Act
-//     auto result = pp.calculate();
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 2.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, obst.position.y + pp.data.configPP.obstacleAvoidance.subTargetDistance, 0.1);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 2.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, params.obstacleAvoidance.subTargetDistance, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_left)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
-//     obstacleResult obst;
-//     obst.position = vec2d(1.5, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(1.5, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(1.5,  0.3); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0,  0.3); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5,  0.3); pp.data.obstacles.push_back(obst);
+TEST(RobotsportsPathPlanningTest, native_avoid_teammember_right)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.y = -0.1;
+    robotState_t r;
+    r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
+    input.teamRobotState.push_back(r);
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.5, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, 1.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_right)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, -1.0, 0.0);
-//     obstacleResult obst;
-//     obst.position = vec2d(1.5, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(1.5, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(1.5,  0.3); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0,  0.3); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5, -0.5); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5, -0.1); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.5,  0.3); pp.data.obstacles.push_back(obst);
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 2.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, -params.obstacleAvoidance.subTargetDistance, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Act
-//     auto result = pp.calculate();
+TEST(RobotsportsPathPlanningTest, native_avoid_moving_teammember)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.5, 0.5);
-//     EXPECT_NEAR(subtarget.pos.y, -1.0, 0.5);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.y = -0.3;
+    // WAS, but this is robot, not a moving teammate
+    // input.motionSetpoint.velocity = MRA::Geometry::Pose();
+    // input.motionSetpoint.velocity.y = 2.0;
+
+    robotState_t r;
+    r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
+    r.velocity = MRA::Geometry::Pose(0.0, 2.0, 0.0);
+    input.teamRobotState.push_back(r);
+
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 2.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, -params.obstacleAvoidance.subTargetDistance, PATH_PLANNING_NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
+
+TEST(RobotsportsPathPlanningTest, native_avoid_obstacle)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    obstacleResult_t obst;
+    obst.position = MRA::Geometry::Point(2.0, -0.1);
+    input.obstacles.push_back(obst);
+
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 2.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, obst.position.y + params.obstacleAvoidance.subTargetDistance, 0.1);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
+
+TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_left)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    obstacleResult_t obst;
+    obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(1.5, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(1.5,  0.3); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0,  0.3); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5,  0.3); input.obstacles.push_back(obst);
+
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.5, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 1.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
+
+TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_right)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.x = -1.0;
+
+    obstacleResult_t obst;
+    obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(1.5, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(1.5,  0.3); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.0,  0.3); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5, -0.5); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5, -0.1); input.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(2.5,  0.3); input.obstacles.push_back(obst);
+
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.5, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, -1.0, 0.5);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
 /*
 TEST(RobotsportsPathPlanningTest, native_avoid_obstacles_jailed) // TODO: disabled for now; undefined behavior.. robot should perhaps just stop?
 {
     // Arrange
     auto pp = defaultPathPlanningSetup();
-    pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.0, 0.0);
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
     obstacleResult obst;
-    obst.position = vec2d(-0.4, -0.4); pp.data.obstacles.push_back(obst);
-    obst.position = vec2d(-0.4,  0.4); pp.data.obstacles.push_back(obst);
-    obst.position = vec2d( 0.4,  0.4); pp.data.obstacles.push_back(obst);
-    obst.position = vec2d( 0.4, -0.4); pp.data.obstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(-0.4, -0.4); input.obbstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point(-0.4,  0.4); input.obbstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point( 0.4,  0.4); input.obbstacles.push_back(obst);
+    obst.position = MRA::Geometry::Point( 0.4, -0.4); input.obbstacles.push_back(obst);
 
     // Iteration 1: robot exactly at center, move towards target
     pp.data.robot.position = MRA::Geometry::Pose(0.0, 0.0, 0.0);
-    auto result = pp.calculate();
-    EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
     auto subtarget = pp.data.path[0];
-    EXPECT_NEAR(subtarget.pos.x, 0.4, 0.1);
-    EXPECT_NEAR(subtarget.pos.y, 0.4, 0.1); // ! robot actually moves towards one of the obstacles ... TODO?
-    EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 0.4, 0.1);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 0.4, 0.1); // ! robot actually moves towards one of the obstacles ... TODO?
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
 
     // Iteration 2: robot on its way
     pp.data.robot.position = MRA::Geometry::Pose(0.2, 0.0, 0.0);
     result = pp.calculate();
-    EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
     subtarget = pp.data.path[0];
-    EXPECT_NEAR(subtarget.pos.x, 0.6, 0.2);
-    EXPECT_NEAR(subtarget.pos.y, 0.0, 0.2);
-    EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 0.6, 0.2);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, 0.2);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
 }
 */
 
@@ -615,80 +730,100 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacles_jailed) // TODO: disabl
 
 //     // Arrange
 //     auto pp = yamlPathPlanningSetup(yamlfile);
-//     pp.data.configPP.obstacleAvoidance.enabled = true; // make sure it is enabled, yaml might temporarily use false
-//     pp.data.configPP.forwardDriving.withoutBall.enabled = false; // prevent extra sub-targets
-//     EXPECT_GT(pp.data.configPP.obstacleAvoidance.subTargetDistance, 0.1); // sanity check if YAML was properly loaded
+//     params.obstacleAvoidance.enabled = true; // make sure it is enabled, yaml might temporarily use false
+//     params.forwardDriving.withoutBall.enabled = false; // prevent extra sub-targets
+//     EXPECT_GT(params.obstacleAvoidance.subTargetDistance, 0.1); // sanity check if YAML was properly loaded
 //     pp.data.robot.position.y = offsetY;
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, offsetY, 0.0);
+    // input.motionSetpoint.position = MRA::Geometry::Pose();
+    // input.motionSetpoint.position.x = 4.0;
+    // input.motionSetpoint.position.y = offsetY;
 //     obstacleResult obst;
-//     obst.position = vec2d(2.0, -0.5 * distanceBetweenObstacles); pp.data.obstacles.push_back(obst);
-//     obst.position = vec2d(2.0,  0.5 * distanceBetweenObstacles); pp.data.obstacles.push_back(obst);
+//     obst.position = MRA::Geometry::Point(2.0, -0.5 * distanceBetweenObstacles); input.obbstacles.push_back(obst);
+//     obst.position = MRA::Geometry::Point(2.0,  0.5 * distanceBetweenObstacles); input.obbstacles.push_back(obst);
 
 //     // Act
-//     auto result = pp.calculate();
+    // auto path_planning = PathPlanning();
+    // path_planning.calculate(ts, input, params, state, output, diagnostics);
 
 //     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     // either no extra subtarget (= no obstacle avoidance)
+//     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+//     //     // either no extra subtarget (= no obstacle avoidance)
 //     // or a subtarget inbetween both obstacles
-//     if (subtarget.pos.x > 3.0)
+//     if (output.robotPositionSetpoint.x > 3.0)
 //     {
-//         EXPECT_NEAR(subtarget.pos.x, 4.0, NUMERICAL_TOLERANCE);
-//         EXPECT_NEAR(subtarget.pos.y, offsetY, NUMERICAL_TOLERANCE);
+//         EXPECT_NEAR(output.robotPositionSetpoint.x, 4.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+//         EXPECT_NEAR(output.robotPositionSetpoint.y, offsetY, PATH_PLANNING_NUMERICAL_TOLERANCE);
 //     }
 //     else
 //     {
-//         EXPECT_NEAR(subtarget.pos.x, 2.0, 0.2);
-//         EXPECT_NEAR(subtarget.pos.y, 0.0, 0.25 * distanceBetweenObstacles);
+//         EXPECT_NEAR(output.robotPositionSetpoint.x, 2.0, 0.2);
+//         EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, 0.25 * distanceBetweenObstacles);
 //     }
 // }
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_forbidden_area_left)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, 0.3, 0.0);
-//     forbiddenArea f; // construct a forbidden area in between robot and target
-//     f.points.push_back(vec2d(1.0, -1.0));
-//     f.points.push_back(vec2d(1.0,  1.0));
-//     f.points.push_back(vec2d(3.0,  1.0));
-//     f.points.push_back(vec2d(3.0, -1.0));
-//     pp.data.forbiddenAreas.push_back(f);
+TEST(RobotsportsPathPlanningTest, native_avoid_forbidden_area_left)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
 
-//     // Act
-//     auto result = pp.calculate();
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.y = 0.3;
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.0, 0.8);
-//     EXPECT_NEAR(subtarget.pos.y, 1.0, 0.8);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+    forbiddenArea_t f; // construct a forbidden area in between robot and target
+    f.points.push_back(MRA::Geometry::Point(1.0, -1.0));
+    f.points.push_back(MRA::Geometry::Point(1.0,  1.0));
+    f.points.push_back(MRA::Geometry::Point(3.0,  1.0));
+    f.points.push_back(MRA::Geometry::Point(3.0, -1.0));
+    input.forbiddenAreas.push_back(f);
 
-// TEST(RobotsportsPathPlanningTest, native_avoid_forbidden_area_right)
-// {
-//     // Arrange
-//     auto pp = defaultPathPlanningSetup();
-//     pp.data.target.pos = MRA::Geometry::Pose(4.0, -0.3, 0.0);
-//     forbiddenArea f; // construct a forbidden area in between robot and target
-//     f.points.push_back(vec2d(1.0, -1.0));
-//     f.points.push_back(vec2d(1.0,  1.0));
-//     f.points.push_back(vec2d(3.0,  1.0));
-//     f.points.push_back(vec2d(3.0, -1.0));
-//     pp.data.forbiddenAreas.push_back(f);
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
 
-//     // Act
-//     auto result = pp.calculate();
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.0, 0.8);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, 1.0, 0.8);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
-//     // Assert
-//     EXPECT_EQ(result, actionResultTypeEnum::RUNNING);
-//     auto subtarget = pp.data.path.front();
-//     EXPECT_NEAR(subtarget.pos.x, 1.0, 0.8);
-//     EXPECT_NEAR(subtarget.pos.y, -1.0, 0.8);
-//     EXPECT_NEAR(subtarget.pos.Rz, 0.0, NUMERICAL_TOLERANCE);
-// }
+TEST(RobotsportsPathPlanningTest, native_avoid_forbidden_area_right)
+{
+    // Arrange
+    double ts = 0.0;
+    path_planner_input_t input  = getDefaultInput();
+    path_planner_parameters_t params = getDefaultParameters();
+    path_planner_state_t state;
+    path_planner_output_t output;
+    path_planner_diagnostics_t diagnostics;
+
+    input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.position.y = -0.3;
+
+    forbiddenArea_t f; // construct a forbidden area in between robot and target
+    f.points.push_back(MRA::Geometry::Point(1.0, -1.0));
+    f.points.push_back(MRA::Geometry::Point(1.0,  1.0));
+    f.points.push_back(MRA::Geometry::Point(3.0,  1.0));
+    f.points.push_back(MRA::Geometry::Point(3.0, -1.0));
+    input.forbiddenAreas.push_back(f);
+
+    // Act
+    auto path_planning = PathPlanning();
+    path_planning.calculate(ts, input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_NEAR(output.robotPositionSetpoint.x, 1.0, 0.8);
+    EXPECT_NEAR(output.robotPositionSetpoint.y, -1.0, 0.8);
+    EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
+}
 
 
 int main(int argc, char **argv)

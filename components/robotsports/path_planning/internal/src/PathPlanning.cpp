@@ -30,6 +30,7 @@ void PathPlanning::calculate(double ts,
                     path_planner_diagnostics_t& r_diagnostics)
 {
     data.reset();
+    data.stop = r_state.stop;
     data.parameters = r_params;
 
     // timestepping
@@ -47,21 +48,20 @@ void PathPlanning::calculate(double ts,
     // get and store data
     motionSetpoint_t sp = r_input.motionSetpoint;
     data.target.pos = MRA::Geometry::Pose();
-    data.stop = true;
     data.motionType = sp.motionType; 
-    // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
-    // {
-    data.target.pos.x = sp.position.x;
-    data.target.pos.y = sp.position.y;
-    data.target.pos.rz = sp.position.rz;
-    data.stop = false;
-    // }
+    // // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
+    // // {
+    // data.target.pos.x = sp.position.x;
+    // data.target.pos.y = sp.position.y;
+    // data.target.pos.rz = sp.position.rz;
+    // data.stop = false;
+    // // }
     data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
     data.forbiddenAreas = r_input.forbiddenAreas;
     data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
     data.robot = r_input.myRobotState;
     data.teamMembers = r_input.teamRobotState;
-    data.obstacles = r_input.obbstacles;
+    data.obstacles = r_input.obstacles;
     data.ball = r_input.ball;
 
     // calculate
@@ -120,6 +120,9 @@ void PathPlanning::calculate(double ts,
             r_output.motionType = motionTypeEnum::WITH_BALL;
         }
     }
+
+    // fill state
+    r_state.stop = data.stop;
 
     // fill diagnostics
     r_diagnostics.path = data.path;

@@ -55,7 +55,7 @@ void PathPlanningData::insertSubTarget(MRA::Geometry::Position const &pos, MRA::
     MRA_LOG_DEBUG("xyFar=%d RzFar=%d", xyFar, RzFar);
     if (xyFar || RzFar)
     {
-        wayPoint wp;
+        wayPoint_t wp = {};
         wp.pos.x = pos.x;
         wp.pos.y = pos.y;
         wp.pos.rz = pos.rz;
@@ -71,7 +71,7 @@ void PathPlanningData::insertSubTarget(MRA::Geometry::Position const &pos, MRA::
     }
 }
 
-void PathPlanningData::addForbiddenAreas(std::vector<forbiddenArea> const &newForbiddenAreas)
+void PathPlanningData::addForbiddenAreas(std::vector<forbiddenArea_t> const &newForbiddenAreas)
 {
     MRA_LOG_DEBUG("n=%d", (int)newForbiddenAreas.size());
     // give each one a unique id, for diagnostics, and to prevent visualizer confusion
@@ -81,7 +81,7 @@ void PathPlanningData::addForbiddenAreas(std::vector<forbiddenArea> const &newFo
     }
 }
 
-void PathPlanningData::addForbiddenArea(forbiddenArea const &newForbiddenArea)
+void PathPlanningData::addForbiddenArea(forbiddenArea_t const &newForbiddenArea)
 {
     // give each one a unique id, for diagnostics, and to prevent visualizer confusion
     auto f = newForbiddenArea;

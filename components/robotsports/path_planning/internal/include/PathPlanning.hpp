@@ -21,11 +21,57 @@ enum class BoundaryOptionEnum
     CLIP
 };
 
-struct wayPoint
+enum class ballPossessionTypeEnum
+{
+    UNKNOWN,
+    FIELD,
+    TEAM,
+    OPPONENT
+};
+
+enum class motionTypeEnum
+{
+    INVALID,
+    NORMAL,         // Default movement, as fast as possible without taking risks / bumping into obstacles
+    WITH_BALL,      // Default movement with ball, minimizing risk to lose the ball
+    ACCURATE,       // Sacrificing speed for accuracy, typically used in a setpiece
+    INTERCEPT,      // Moving sideways, limit rotation for highest chance of catching ball
+    SLOW,           // Slow movement for safety. Used for park. At the end of a match, when robots are parking, people often walk over the field between the robots.
+    SPRINT          // Higher speed, higher risk, sacrificing accuracy. May have overshoot and bump into obstacles. Do not use when near obstacles.
+};
+
+
+class polygon
+{
+    public:
+        std::vector<MRA::Geometry::Point>   points;
+
+        // this magic was found in geometry, polygon2D.cpp
+        // (original from internet somewhere??)
+        bool isPointInside(MRA::Geometry::Point const &p)
+        {
+            bool retVal = false;
+            size_t i, j, nvert = points.size();
+            if (nvert > 2)
+            {
+                for (i = 0, j = nvert - 1; i < nvert; j = i++)
+                {
+                    if (((points[i].y >= p.y ) != (points[j].y >= p.y) ) &&
+                        (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+                    {
+                        retVal = !retVal;
+                    }
+                }
+            }
+            return retVal;
+        }
+};
+
+typedef struct wayPoint_s
 {
     MRA::Geometry::Pose pos;
     MRA::Geometry::Pose vel;
-};
+} wayPoint_t;
 
 typedef struct ObstacleAvoidanceParameters_s
 {
@@ -103,104 +149,104 @@ typedef struct robotState_s
 } robotState_t;
 
 
-
-class polygon
-{
-    public:
-        std::vector<MRA::Geometry::Point>   points;
-
-        // this magic was found in geometry, polygon2D.cpp
-        // (original from internet somewhere??)
-        bool isPointInside(MRA::Geometry::Point const &p)
-        {
-            bool retVal = false;
-            size_t i, j, nvert = points.size();
-            if (nvert > 2)
-            {
-                for (i = 0, j = nvert - 1; i < nvert; j = i++)
-                {
-                    if (((points[i].y >= p.y ) != (points[j].y >= p.y) ) &&
-                        (p.x <= (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
-                    {
-                        retVal = !retVal;
-                    }
-                }
-            }
-            return retVal;
-        }
-};
-
-struct forbiddenArea: public polygon
+typedef struct forbiddenArea_s: public polygon
 {
     int id; // extra w.r.t. polygon
-};
+} forbiddenArea_t;
 
 typedef double rtime;
 
-enum class ballPossessionTypeEnum
-{
-    UNKNOWN,
-    FIELD,
-    TEAM,
-    OPPONENT
-};
-
-struct ballPossession
+typedef struct ballPossession_s
 {
     ballPossessionTypeEnum type;
     int                    robotId; // can be friendly or even opponent robot id (roadmap)
-};
+} ballPossession_t;
 
-struct ballResult
+typedef struct ballResult_s
 {
     bool                    valid;
     MRA::Geometry::Position position;
     MRA::Geometry::Velocity velocity;
     double                  confidence;
-    ballPossession          owner;
-};
+    ballPossession_t          owner;
+} ballResult_t;
 
-struct obstacleResult
+typedef struct obstacleResult_s
 {
     MRA::Geometry::Point position;
     MRA::Geometry::Point velocity;
     double               confidence = 0.0;
     int                  id = 0; // optional, if we ever want to track/identify opponents
-};
+} obstacleResult_t;
 
-enum class motionTypeEnum
+
+typedef struct path_planner_diagnostics_s
 {
-    INVALID,
-    NORMAL,         // Default movement, as fast as possible without taking risks / bumping into obstacles
-    WITH_BALL,      // Default movement with ball, minimizing risk to lose the ball
-    ACCURATE,       // Sacrificing speed for accuracy, typically used in a setpiece
-    INTERCEPT,      // Moving sideways, limit rotation for highest chance of catching ball
-    SLOW,           // Slow movement for safety. Used for park. At the end of a match, when robots are parking, people often walk over the field between the robots.
-    SPRINT          // Higher speed, higher risk, sacrificing accuracy. May have overshoot and bump into obstacles. Do not use when near obstacles.
-};
+    std::vector<wayPoint_t>      path; // can contain a single target, or no target, or even an extra intermediate (sub-)target
+    std::vector<forbiddenArea_t> forbiddenAreas;
+    MRA::Geometry::Pose          distanceToSubTargetRCS; // for kstplot_motion
+    int                          numCalculatedObstacles;
+    bool                         stop; 
+} path_planner_diagnostics_t;
+
+
+typedef struct motionSetpoint_s
+{
+    MRA::Datatypes::ActionResult  action;
+    MRA::Geometry::Position       position; // could be interpreted as a position (in case of move) or pose (when shooting)
+    motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
+} motionSetpoint_t;
+
+
+typedef struct path_planner_input_s
+{
+    motionSetpoint_t              motionSetpoint;
+    robotState_t                  myRobotState;
+    std::vector<robotState_t>     teamRobotState;
+    ballResult_t                  ball;
+    std::vector<obstacleResult_t> obstacles;
+
+    std::vector<forbiddenArea_t>  forbiddenAreas; // parameters ?
+} path_planner_input_t;
+
+
+typedef struct path_planner_output_s
+{
+    MRA::Datatypes::ActionResult status;
+    bool positionSetpointValid;
+    MRA::Geometry::Position robotPositionSetpoint;
+    bool velocitySetpointValid;
+    MRA::Geometry::Velocity robotVelocitySetpoint;
+    motionTypeEnum motionType;
+} path_planner_output_t;
+
+
+typedef struct path_planner_state_s {
+    bool stop = false;
+} path_planner_state_t;
 
 
 typedef struct PathPlanningData
 {
     // inputs
-    path_planner_parameters_t   parameters;
-    wayPoint                    target;  
-    double                      timestamp;   // was type: rtime
-    std::vector<forbiddenArea>  forbiddenAreas;
-    robotState_t                robot;
-    ballResult                  ball;
+    path_planner_parameters_t     parameters;
+    wayPoint_t                    target;  
+    double                        timestamp;   // was type: rtime
+    std::vector<forbiddenArea_t>  forbiddenAreas;
+    robotState_t                  robot;
+    ballResult_t                  ball;
     std::vector<robotState_t>     teamMembers;
-    std::vector<obstacleResult> obstacles; // only the ones from worldModel, see calculatedObstacles below
+    std::vector<obstacleResult_t> obstacles; // only the ones from worldModel, see calculatedObstacles below
 
     // calculation results
-    std::vector<wayPoint>         path;
-    MRA::Datatypes::ActionResult resultStatus;
-    std::vector<forbiddenArea>   calculatedForbiddenAreas; // = input + obstacle paths
-    std::vector<obstacleResult>  calculatedObstacles;
-    MRA::Geometry::Position      targetPositionFcs; // might be corrected with ball possession offset
-    MRA::Geometry::Position      currentPositionFcs; // might be corrected with ball possession offset
-    MRA::Geometry::Position      deltaPositionFcs; // delta of current position w.r.t. subtarget (=first waypoint)
-    MRA::Geometry::Position      deltaPositionRcs;
+    std::vector<wayPoint_t>       path;
+    MRA::Datatypes::ActionResult  resultStatus;
+    std::vector<forbiddenArea_t>  calculatedForbiddenAreas; // = input + obstacle paths
+    std::vector<obstacleResult_t> calculatedObstacles;
+    MRA::Geometry::Position       targetPositionFcs; // might be corrected with ball possession offset
+    MRA::Geometry::Position       currentPositionFcs; // might be corrected with ball possession offset
+    MRA::Geometry::Position       deltaPositionFcs; // delta of current position w.r.t. subtarget (=first waypoint)
+    MRA::Geometry::Position       deltaPositionRcs;
 
     // internal data
     double                      dt;
@@ -215,19 +261,34 @@ typedef struct PathPlanningData
     void traceOutputs();
     MRA::Geometry::Position getSubTarget() const;
     void insertSubTarget(MRA::Geometry::Position const &pos, MRA::Geometry::Velocity const &vel = MRA::Geometry::Velocity(0,0,0));
-    void addForbiddenAreas(std::vector<forbiddenArea> const &newForbiddenAreas);
-    void addForbiddenArea(forbiddenArea const &newForbiddenArea);
+    void addForbiddenAreas(std::vector<forbiddenArea_t> const &newForbiddenAreas);
+    void addForbiddenArea(forbiddenArea_t const &newForbiddenArea);
 } PathPlanningData_t;
 
 
-typedef struct path_planner_diagnostics_s
+class PathPlanning
 {
-    std::vector<wayPoint> path; // can contain a single target, or no target, or even an extra intermediate (sub-)target
-    std::vector<forbiddenArea> forbiddenAreas;
-    MRA::Geometry::Pose   distanceToSubTargetRCS; // for kstplot_motion
-    int                   numCalculatedObstacles;
-    bool                  stop; 
-} path_planner_diagnostics_t;
+public:
+    PathPlanning();
+    ~PathPlanning();
+
+
+    // raw calculation based on inputs
+    void calculate(double ts, 
+                    const path_planner_input_t& r_input, 
+                    const path_planner_parameters_t& r_params,
+                    path_planner_state_t& r_state,
+                    path_planner_output_t& r_output,
+                    path_planner_diagnostics_t& r_diagnostics);
+
+    // TODO: add an interface to provide (part of) the configuration
+    // example use case: interceptBall calculation needs robot speed capability (maxVelXY)
+
+    // having these public is convenient for test suite
+    PathPlanningData data;
+private:
+
+};
 
 #include <cmath>
 inline double project_angle_mpi_pi(double angle)
@@ -258,67 +319,6 @@ inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
     p /= hypot(p.x, p.y);
     p *= factor;
 }
-
-typedef struct motionSetpoint_s
-{
-    MRA::Datatypes::ActionResult  action;
-    MRA::Geometry::Position       position; // could be interpreted as a position (in case of move) or pose (when shooting)
-    motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
-} motionSetpoint_t;
-
-
-typedef struct path_planner_input_s
-{
-    motionSetpoint_t            motionSetpoint;
-    robotState_t                myRobotState;
-    std::vector<robotState_t>   teamRobotState;
-    ballResult                  ball;
-    std::vector<obstacleResult> obbstacles;
-
-    std::vector<forbiddenArea>  forbiddenAreas; // parameters ?
-} path_planner_input_t;
-
-
-typedef struct path_planner_output_s
-{
-    MRA::Datatypes::ActionResult status;
-    bool positionSetpointValid;
-    MRA::Geometry::Position robotPositionSetpoint;
-    bool velocitySetpointValid;
-    MRA::Geometry::Velocity robotVelocitySetpoint;
-    motionTypeEnum motionType;
-} path_planner_output_t;
-
-
-
-typedef struct path_planner_state_s {
-
-} path_planner_state_t;
-
-
-class PathPlanning
-{
-public:
-    PathPlanning();
-    ~PathPlanning();
-
-
-    // raw calculation based on inputs
-    void calculate(double ts, 
-                    const path_planner_input_t& r_input, 
-                    const path_planner_parameters_t& r_params,
-                    path_planner_state_t& r_state,
-                    path_planner_output_t& r_output,
-                    path_planner_diagnostics_t& r_diagnostics);
-
-    // TODO: add an interface to provide (part of) the configuration
-    // example use case: interceptBall calculation needs robot speed capability (maxVelXY)
-
-    // having these public is convenient for test suite
-    PathPlanningData data;
-private:
-
-};
 
 #endif
 

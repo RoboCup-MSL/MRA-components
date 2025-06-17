@@ -24,7 +24,7 @@ typedef struct
     double radius = 0.0;
 } pp_obstacle_struct_t;
 
-void convertAndAddObstacles(std::vector<pp_obstacle_struct_t> &dst, std::vector<obstacleResult> const &src)
+void convertAndAddObstacles(std::vector<pp_obstacle_struct_t> &dst, std::vector<obstacleResult_t> const &src)
 {
     for (auto it = src.begin(); it != src.end(); ++it)
     {

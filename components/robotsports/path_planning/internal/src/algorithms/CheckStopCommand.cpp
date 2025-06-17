@@ -16,7 +16,7 @@ void CheckStopCommand::execute(PathPlanningData &data)
         data.path.clear();
         
         // create wayPoint on robot itself
-        wayPoint stopPosition = wayPoint();
+        wayPoint_t stopPosition = {};
         stopPosition.pos = data.robot.position;
         stopPosition.vel = MRA::Geometry::Pose(0.0, 0.0, 0.0);
         data.path.push_back(stopPosition);

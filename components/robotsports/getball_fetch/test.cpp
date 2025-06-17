@@ -15,7 +15,7 @@ using namespace MRA;
 
 
 // Basic tick shall run OK and return error_value 0.
-TEST(RobotspotsGetballFetchTest, basicTick)
+TEST(RobotsportsGetballFetchTest, basicTick)
 {
     // Arrange
     auto m = RobotsportsGetballFetch::RobotsportsGetballFetch();

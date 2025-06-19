@@ -7,7 +7,7 @@ builtin_interfaces/Time time
 mra_common_msgs/Player robot
 
 # Ball (allow maximum one ball in the field/test; if there are more, then WorldModel should provide the closest one)
-mra_common_msgs/Ball ball
+mra_common_msgs/Ball[] balls
 
 # Teammates (a mix of robots and humans)
 mra_common_msgs/Player[] teammates
@@ -19,3 +19,4 @@ mra_common_msgs/Player[] opponents
 Obstacle[] obstacles
 
 # TODO: goal posts
+

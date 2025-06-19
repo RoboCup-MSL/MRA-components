@@ -42,7 +42,7 @@ void PathPlanning::calculate(double ts,
     {
         data.dt = 1.0 / 20.0;
     }
-    MRA_LOG_DEBUG("nominalFrequency=%.1f dt=%.4fs", data.configEx.frequency, data.dt);
+    MRA_LOG_DEBUG("nominalFrequency=%.1f dt=%.4fs", data.parameters.frequency, data.dt);
 
     // get inputs from input interface
     // get and store data
@@ -51,10 +51,10 @@ void PathPlanning::calculate(double ts,
     data.motionType = sp.motionType; 
     // // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
     // // {
-    // data.target.pos.x = sp.position.x;
-    // data.target.pos.y = sp.position.y;
-    // data.target.pos.rz = sp.position.rz;
-    // data.stop = false;
+    data.target.pos.x = sp.position.x;
+    data.target.pos.y = sp.position.y;
+    data.target.pos.rz = sp.position.rz;
+    data.stop = false;
     // // }
     data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
     data.forbiddenAreas = r_input.forbiddenAreas;
@@ -133,6 +133,6 @@ void PathPlanning::calculate(double ts,
     r_diagnostics.numCalculatedObstacles = data.calculatedObstacles.size();
     r_diagnostics.stop = data.stop;
 
-    MRA_LOG_DEBUG("result=%s", enum2str(result));
+    MRA_LOG_DEBUG("r_output.status=%d", r_output.status);
 }
 

@@ -37,8 +37,8 @@ void CheckTargetReached::execute(PathPlanningData &data)
         tickCountTargetReached = 0;
         data.resultStatus = MRA::Datatypes::ActionResult::RUNNING;
 
-        MRA_LOG_DEBUG("xyOK=%d -> deltaPositionFcs=%6.2f < toleranceXY=%6.2f", xyOk, data.deltaPositionFcs.xy().size(), data.configPP.deadzone.toleranceXY);
-        MRA_LOG_DEBUG("RzOK=%d -> deltaPositionFcs=%8.4f < toleranceRz=%8.4f", RzOk, fabs(deltaPositionFcs.phi), data.configPP.deadzone.toleranceRz);
+        MRA_LOG_DEBUG("xyOK=%d -> deltaPositionFcs=%6.2f < toleranceXY=%6.2f", xyOk, data.deltaPositionFcs.size(), data.parameters.deadzone.toleranceXY);
+        MRA_LOG_DEBUG("RzOK=%d -> deltaPositionFcs=%8.4f < toleranceRz=%8.4f", RzOk, fabs(deltaPositionFcs.rz), data.parameters.deadzone.toleranceRz);
     }
 }
 

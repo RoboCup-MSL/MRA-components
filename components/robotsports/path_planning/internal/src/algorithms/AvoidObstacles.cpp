@@ -59,7 +59,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     MRA::Geometry::Position target = data.getSubTarget();
     std::string msg = "target: ";
     msg.append(target.toString());
-    MRA_LOG_DEBUG(msg.c_str());
+    MRA_LOG_DEBUG("%s", msg.c_str());
     auto config = data.parameters.obstacleAvoidance;
 
     // check if functionality is enabled
@@ -76,7 +76,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     std::vector<pp_obstacle_struct_t> obstacles;
     convertAndAddObstacles(obstacles, data.calculatedObstacles); // calculated by CalculateObstacles
 
-    MRA_LOG_DEBUG("Starting algorithm with nr_obs: %d", obstacles.size());
+    MRA_LOG_DEBUG("Starting algorithm with nr_obs: %lu", obstacles.size());
 
     MRA::Geometry::Position subTarget = target;
     bool calculatedSubTarget = false;
@@ -88,7 +88,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     {
         std::vector<pp_obstacle_struct_t> B;
         {
-            MRA_LOG_DEBUG("cXYTrajectory#Step1", "");
+            MRA_LOG_DEBUG("cXYTrajectory#Step1");
             // 1. Determine B = Set of all obstacles in the direct path from robot position to target position, taking also the diameter of the obstacles and the robot into account.
             for (int i = 0; i < (int)obstacles.size(); i++)
             {
@@ -124,7 +124,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
         int B_idx = -1;
         {
-            MRA_LOG_DEBUG("cXYTrajectory#Step2", "");
+            MRA_LOG_DEBUG("cXYTrajectory#Step2");
             // 2. Determine f = The obstacle from B that is the nearest to the robot
             double minDist = 100.0;
 
@@ -163,7 +163,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             std::set<pp_obstacle_struct_t, posval_compare> G_set;
             G_set.insert(B[B_idx]);
             {
-                MRA_LOG_DEBUG("cXYTrajectory#Step3", "");
+                MRA_LOG_DEBUG("cXYTrajectory#Step3");
                 while (true)
                 {
                     size_t G_size = G_set.size();
@@ -198,7 +198,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             {
                 MRA_LOG_ERROR("ERROR: G_set may not be larger than obstacles!");
             }
-            MRA_LOG_DEBUG("Computed step 3. G_set.size() = %d", G_set.size());
+            MRA_LOG_DEBUG("Computed step 3. G_set.size() = %lu", G_set.size());
 
             // Convert the set to a vector.
             std::vector<pp_obstacle_struct_t> G;
@@ -232,7 +232,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             std::vector<pp_obstacle_struct_t> G_min;
             std::vector<pp_obstacle_struct_t> G_side_to_use;
             {
-                MRA_LOG_DEBUG("cXYTrajectory#Step4", "");
+                MRA_LOG_DEBUG("cXYTrajectory#Step4");
                 for (int i = 0; i < (int)G.size(); i++)
                 {
                     // Determine if this obstacle belongs in the positive group or negative group.
@@ -291,7 +291,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             int G_idx = -1;
 
             {
-                MRA_LOG_DEBUG("cXYTrajectory#Step5", "");
+                MRA_LOG_DEBUG("cXYTrajectory#Step5");
                 for (size_t i = 0; i < G_side_to_use.size(); i++)
                 {
                     // Determine the sign from equation (7)
@@ -326,7 +326,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
             if (G_idx != -1)
             {
-                MRA_LOG_DEBUG("cXYTrajectory#Step6", "");
+                MRA_LOG_DEBUG("cXYTrajectory#Step6");
                 // Equation (8) -- G_idx == j
                 MRA::Geometry::Point rightPart = ((targetXY - curPosXY) / (targetXY - curPosXY).size()) * (MRA::Geometry::Point(G_side_to_use[G_idx].location.x, G_side_to_use[G_idx].location.y) - curPosXY).size();
                 MRA::Geometry::Point multipliedMatrix = MRA::Geometry::Point( ( (cos(alpha_j)*rightPart.x) - (sin(alpha_j)*rightPart.y) ) , ( (sin(alpha_j)*rightPart.x) + (cos(alpha_j)*rightPart.y) ) );

@@ -25,8 +25,8 @@ void PathPlanningData::reset()
 
 void PathPlanningData::traceInputs()
 {
-    MRA_LOG_DEBUG("robotPos=[%6.2f, %6.2f, %6.2f] robotVel=[%6.2f, %6.2f, %6.2f]", robot.position.x, robot.position.y, robot.position.Rz, robot.velocity.x, robot.velocity.y, robot.velocity.Rz);
-    MRA_LOG_DEBUG("stop=%d targetPos=[%6.2f, %6.2f, %6.2f] motionType=%s", stop, target.pos.x, target.pos.y, target.pos.Rz, enum2str(motionType));
+    MRA_LOG_DEBUG("robotPos=[%6.2f, %6.2f, %6.2f] robotVel=[%6.2f, %6.2f, %6.2f]", robot.position.x, robot.position.y, robot.position.rz, robot.velocity.x, robot.velocity.y, robot.velocity.rz);
+    MRA_LOG_DEBUG("stop=%d targetPos=[%6.2f, %6.2f, %6.2f] motionType=%d", stop, target.pos.x, target.pos.y, target.pos.rz, motionType);
 }
 
 void PathPlanningData::traceOutputs()
@@ -34,12 +34,12 @@ void PathPlanningData::traceOutputs()
     auto subtarget = path.begin();
     if (subtarget != path.end())
     {
-        MRA_LOG_DEBUG("result=%-8s  ROBOT_POSVEL_SETPOINT=( pos=[%6.2f, %6.2f, %6.2f], vel=[%6.2f, %6.2f, %6.2f], motionType=%s )", enum2str(resultStatus), subtarget->pos.x, subtarget->pos.y, subtarget->pos.Rz, subtarget->vel.x, subtarget->vel.y, subtarget->vel.Rz, enum2str(motionType));
+        MRA_LOG_DEBUG("result=%-8d  ROBOT_POSVEL_SETPOINT=( pos=[%6.2f, %6.2f, %6.2f], vel=[%6.2f, %6.2f, %6.2f], motionType=%d )", this->resultStatus, subtarget->pos.x, subtarget->pos.y, subtarget->pos.rz, subtarget->vel.x, subtarget->vel.y, subtarget->vel.rz, motionType);
     }
     else
     {
         std::string err = "No subtarget defined in PathPlanning. `path` in PathPlanningData must always result in a wayPoint.";
-        MRA_LOG_DEBUG(err.c_str());
+        MRA_LOG_DEBUG("%s", err.c_str());
         throw std::runtime_error(err.c_str());
     }
     
@@ -63,7 +63,7 @@ void PathPlanningData::insertSubTarget(MRA::Geometry::Position const &pos, MRA::
         wp.vel.y = vel.y;
         wp.vel.rz = vel.rz;
         path.insert(path.begin(), wp);
-        MRA_LOG_DEBUG("adding subtarget %s %s, path size is now %d", pos.tostr(), vel.tostr(), (int)path.size());
+        MRA_LOG_DEBUG("adding subtarget %s %s, path size is now %d", pos.toString().c_str(), vel.toString().c_str(), (int)path.size());
     }
     else
     {

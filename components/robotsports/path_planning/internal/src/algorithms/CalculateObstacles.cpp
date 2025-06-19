@@ -156,7 +156,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
 
     // static forbidden areas
     {
-        MRA_LOG_DEBUG("forbiddenAreas", "");
+        MRA_LOG_DEBUG("forbiddenAreas");
         for (auto it = data.forbiddenAreas.begin(); it != data.forbiddenAreas.end(); ++it)
         {
             // ignore forbidden area if robot is inside, otherwise it cannot escape
@@ -177,7 +177,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
 
     // add teammembers
     {
-        MRA_LOG_DEBUG("teammembers", "");
+        MRA_LOG_DEBUG("teammembers");
         for (auto it = data.teamMembers.begin(); it != data.teamMembers.end(); ++it)
         {
             // convert from robotState
@@ -193,7 +193,7 @@ void CalculateObstacles::execute(PathPlanningData &data)
 
     // handle opponents
     {
-        MRA_LOG_DEBUG("opponents", "");
+        MRA_LOG_DEBUG("opponents");
         for (auto it = data.obstacles.begin(); it != data.obstacles.end(); ++it)
         {
             // handle the obstacle

@@ -29,7 +29,7 @@ enum class ballPossessionTypeEnum
     OPPONENT
 };
 
-enum class motionTypeEnum
+enum motionTypeEnum
 {
     INVALID,
     NORMAL,         // Default movement, as fast as possible without taking risks / bumping into obstacles
@@ -319,6 +319,30 @@ inline void Normalize(MRA::Geometry::Pose& p, double factor = 1.0)
     p /= hypot(p.x, p.y);
     p *= factor;
 }
+
+#include <memory>
+#include <string>
+#include <sstream>
+#include <variant>
+
+#undef MRA_LOG_CRITICAL
+#define MRA_LOG_CRITICAL(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
+
+#undef MRA_LOG_ERROR
+#define MRA_LOG_ERROR(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
+
+#undef MRA_LOG_WARNING
+#define MRA_LOG_WARNING(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
+
+#undef MRA_LOG_INFO
+#define MRA_LOG_INFO(...) fprintf(stderr, __VA_ARGS__ ); fprintf(stderr, "\n")
+
+#undef MRA_LOG_DEBUG
+#define MRA_LOG_DEBUG(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
+
+#ifndef _MRA_LIBRARIES_LOGGING_HPP
+#define _MRA_LIBRARIES_LOGGING_HPP
+#endif
 
 #endif
 

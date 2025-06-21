@@ -222,7 +222,6 @@ typedef struct path_planner_output_s
 
 
 typedef struct path_planner_state_s {
-    bool stop = false;
 } path_planner_state_t;
 
 

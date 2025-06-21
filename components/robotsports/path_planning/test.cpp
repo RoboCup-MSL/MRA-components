@@ -126,7 +126,7 @@ TEST(RobotsportsPathPlanningTest, native_onTarget_shouldPass)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::PASSED);
-    EXPECT_EQ(state.stop, false);
+    EXPECT_EQ(diagnostics.stop, false);
     EXPECT_EQ(output.robotPositionSetpoint.x, input.myRobotState.position.x);
     EXPECT_EQ(output.robotPositionSetpoint.y, input.myRobotState.position.y);
     EXPECT_EQ(output.robotPositionSetpoint.rz, input.myRobotState.position.rz);
@@ -147,16 +147,14 @@ TEST(RobotsportsPathPlanningTest, native_simpleMove_shouldMoveForward)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 1.0;
-    state.stop = false;
+    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
 
     // Assert
-    // TODO: originally expected:  (correct?)
-    // EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::PASSED);
-    EXPECT_EQ(state.stop, false);
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_EQ(diagnostics.stop, false);
 
     EXPECT_NEAR(output.robotPositionSetpoint.x,  input.motionSetpoint.position.x, PATH_PLANNING_NUMERICAL_TOLERANCE);
     EXPECT_NEAR(output.robotPositionSetpoint.y,  input.motionSetpoint.position.y, PATH_PLANNING_NUMERICAL_TOLERANCE);
@@ -181,7 +179,7 @@ TEST(RobotsportsPathPlanningTest, native_stop)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::PASSED);
-    EXPECT_EQ(state.stop, true);
+    EXPECT_EQ(diagnostics.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_closebyXYnotRz_shouldContinue)
@@ -249,7 +247,7 @@ TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
-    EXPECT_EQ(state.stop, true);
+    EXPECT_EQ(diagnostics.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)
@@ -328,7 +326,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_notAllowed)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
-    EXPECT_EQ(state.stop, true);
+    EXPECT_EQ(diagnostics.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
@@ -380,7 +378,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
-    EXPECT_EQ(state.stop, true);
+    EXPECT_EQ(diagnostics.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_clip)
@@ -439,7 +437,7 @@ TEST(RobotsportsPathPlanningTest, native_targetInForbiddenArea_shouldFail)
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
-    EXPECT_EQ(state.stop, true);
+    EXPECT_EQ(diagnostics.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_currentInForbiddenArea_shouldMoveOut)

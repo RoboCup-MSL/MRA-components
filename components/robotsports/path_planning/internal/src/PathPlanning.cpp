@@ -30,7 +30,6 @@ void PathPlanning::calculate(double ts,
                     path_planner_diagnostics_t& r_diagnostics)
 {
     data.reset();
-    data.stop = r_state.stop;
     data.parameters = r_params;
 
     // timestepping
@@ -49,6 +48,7 @@ void PathPlanning::calculate(double ts,
     motionSetpoint_t sp = r_input.motionSetpoint;
     data.target.pos = MRA::Geometry::Pose();
     data.motionType = sp.motionType; 
+    data.stop = true;
     if (sp.move_action) // for any other action: do nothing
     {
         data.target.pos.x = sp.position.x;
@@ -122,7 +122,7 @@ void PathPlanning::calculate(double ts,
     }
 
     // fill state
-    r_state.stop = data.stop;
+    // < currently empty >
 
     // fill diagnostics
     r_diagnostics.path = data.path;

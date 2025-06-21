@@ -68,9 +68,15 @@ TEST(RobotsportsPathPlanningTest, native_inactive_shouldFail)
  path_planner_input_t getDefaultInput() {
     path_planner_input_t input  = {};
     input.myRobotState.active = true;
-    input.myRobotState.position = MRA::Geometry::Pose();
-    input.myRobotState.velocity = MRA::Geometry::Pose();
+    input.myRobotState.position = {};
+    input.myRobotState.velocity = {};
     input.myRobotState.hasBall = false;
+    input.motionSetpoint.positionValid = true;
+    input.motionSetpoint.position = {};
+    input.motionSetpoint.velocityValid = false;
+    input.motionSetpoint.velocity = {};
+    input.motionSetpoint.move_action = true;
+
     return input;
  }
 
@@ -147,7 +153,6 @@ TEST(RobotsportsPathPlanningTest, native_simpleMove_shouldMoveForward)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 1.0;
-    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
@@ -173,6 +178,7 @@ TEST(RobotsportsPathPlanningTest, native_stop)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 1.0;
+    input.motionSetpoint.move_action = false; // force stop inside
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
@@ -194,7 +200,6 @@ TEST(RobotsportsPathPlanningTest, native_closebyXYnotRz_shouldContinue)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.rz = 1.0;
-    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
@@ -215,7 +220,6 @@ TEST(RobotsportsPathPlanningTest, native_closebyRznotXY_shouldContinue)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 1.0;
-    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
@@ -239,7 +243,6 @@ TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 99.0;
     input.motionSetpoint.position.y = 99.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -264,7 +267,6 @@ TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)
     params.boundaries.fieldMarginX = 0.9; // TODO stub environmentField
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 99.0;
-    input.motionSetpoint.move_action = true;
     
     // Act
     auto path_planning = PathPlanning();
@@ -292,7 +294,6 @@ TEST(RobotsportsPathPlanningTest, native_targetY_OutOfBounds_shouldClip)
     
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 99.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -318,7 +319,6 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_notAllowed)
     params.boundaries.targetOnOwnHalf = BoundaryOptionEnum::STOP_AND_FAIL;
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = -6.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -343,7 +343,6 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 1.0;
     input.motionSetpoint.position.y = -6.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -370,7 +369,6 @@ TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
     params.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::STOP_AND_FAIL;
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 6.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -395,7 +393,6 @@ TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_clip)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 1.0;
     input.motionSetpoint.position.y = 6.0;
-    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -422,7 +419,6 @@ TEST(RobotsportsPathPlanningTest, native_targetInForbiddenArea_shouldFail)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 6.0;
-    input.motionSetpoint.move_action = true;
 
     forbiddenArea_t f; // construct a forbidden area around the target (penalty marker)
     f.points.push_back(MRA::Geometry::Point(-1.0,  5.0));
@@ -484,7 +480,6 @@ TEST(RobotsportsPathPlanningTest, native_avoid_teammember_left)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
     input.motionSetpoint.position.y = 0.1;
-    input.motionSetpoint.move_action = true;
     robotState_t r;
     r.position = MRA::Geometry::Pose(2.0, 0.0);
     input.teamRobotState.push_back(r);
@@ -513,7 +508,6 @@ TEST(RobotsportsPathPlanningTest, native_avoid_teammember_right)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
     input.motionSetpoint.position.y = -0.1;
-    input.motionSetpoint.move_action = true;
     robotState_t r;
     r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
     input.teamRobotState.push_back(r);
@@ -574,7 +568,6 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
-    input.motionSetpoint.move_action = true;
 
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(2.0, -0.1);
@@ -603,8 +596,7 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_left)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
-    input.motionSetpoint.move_action = true;
-
+    
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);
     obst.position = MRA::Geometry::Point(1.5, -0.1); input.obstacles.push_back(obst);
@@ -640,7 +632,6 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_right)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
     input.motionSetpoint.position.y = -1.0;
-    input.motionSetpoint.move_action = true;
 
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);

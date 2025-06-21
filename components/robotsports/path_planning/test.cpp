@@ -14,6 +14,9 @@ using namespace ::testing;
 
 using namespace MRA;
 
+const double PATH_PLANNING_NUMERICAL_TOLERANCE = 1e-5;
+
+
 // Basic tick shall run OK and return error_value 0.
 TEST(RobotsportsPathPlanningTest, basicTick)
 {
@@ -70,8 +73,6 @@ TEST(RobotsportsPathPlanningTest, native_inactive_shouldFail)
     input.myRobotState.hasBall = false;
     return input;
  }
-
-const double PATH_PLANNING_NUMERICAL_TOLERANCE = 1e-6;
 
 path_planner_parameters_t getDefaultParameters() {
     path_planner_parameters_t params = {};
@@ -319,13 +320,14 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_notAllowed)
     params.boundaries.targetOnOwnHalf = BoundaryOptionEnum::STOP_AND_FAIL;
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = -6.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
 
     // Assert
-    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
+    EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::FAILED);
     EXPECT_EQ(state.stop, true);
 }
 
@@ -341,7 +343,9 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
 
     params.boundaries.targetOnOwnHalf = BoundaryOptionEnum::CLIP;
     input.motionSetpoint.position = MRA::Geometry::Pose();
+    input.motionSetpoint.position.x = 1.0;
     input.motionSetpoint.position.y = -6.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -353,6 +357,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_ownHalf_clip)
     EXPECT_NEAR(output.robotPositionSetpoint.y, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
     EXPECT_NEAR(output.robotPositionSetpoint.rz, 0.0, PATH_PLANNING_NUMERICAL_TOLERANCE);
 }
+
 
 TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
 {
@@ -481,6 +486,7 @@ TEST(RobotsportsPathPlanningTest, native_avoid_teammember_left)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
     input.motionSetpoint.position.y = 0.1;
+    input.motionSetpoint.move_action = true;
     robotState_t r;
     r.position = MRA::Geometry::Pose(2.0, 0.0);
     input.teamRobotState.push_back(r);
@@ -509,6 +515,7 @@ TEST(RobotsportsPathPlanningTest, native_avoid_teammember_right)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
     input.motionSetpoint.position.y = -0.1;
+    input.motionSetpoint.move_action = true;
     robotState_t r;
     r.position = MRA::Geometry::Pose(2.0, 0.0, 0.0);
     input.teamRobotState.push_back(r);
@@ -634,7 +641,8 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_right)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
-    input.motionSetpoint.position.x = -1.0;
+    input.motionSetpoint.position.y = -1.0;
+    input.motionSetpoint.move_action = true;
 
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);

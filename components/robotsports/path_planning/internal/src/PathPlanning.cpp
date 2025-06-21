@@ -49,13 +49,13 @@ void PathPlanning::calculate(double ts,
     motionSetpoint_t sp = r_input.motionSetpoint;
     data.target.pos = MRA::Geometry::Pose();
     data.motionType = sp.motionType; 
-    // // if (sp.action == actionTypeEnum::MOVE) // for any other action: do nothing
-    // // {
-    data.target.pos.x = sp.position.x;
-    data.target.pos.y = sp.position.y;
-    data.target.pos.rz = sp.position.rz;
-    data.stop = false;
-    // // }
+    if (sp.move_action) // for any other action: do nothing
+    {
+        data.target.pos.x = sp.position.x;
+        data.target.pos.y = sp.position.y;
+        data.target.pos.rz = sp.position.rz;
+        data.stop = false;
+    }
     data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
     data.forbiddenAreas = r_input.forbiddenAreas;
     data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas

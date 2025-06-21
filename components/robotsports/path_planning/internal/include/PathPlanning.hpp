@@ -192,7 +192,7 @@ typedef struct path_planner_diagnostics_s
 
 typedef struct motionSetpoint_s
 {
-    MRA::Datatypes::ActionResult  action;
+    bool                          move_action;
     MRA::Geometry::Position       position; // could be interpreted as a position (in case of move) or pose (when shooting)
     motionTypeEnum                motionType; // different move types (e.g., normal, accurate (setpiece), intercept)
 } motionSetpoint_t;

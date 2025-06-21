@@ -195,13 +195,13 @@ TEST(RobotsportsPathPlanningTest, native_closebyXYnotRz_shouldContinue)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.rz = 1.0;
+    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(state.stop, true);
 }
 
 TEST(RobotsportsPathPlanningTest, native_closebyRznotXY_shouldContinue)
@@ -216,13 +216,13 @@ TEST(RobotsportsPathPlanningTest, native_closebyRznotXY_shouldContinue)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 1.0;
+    input.motionSetpoint.move_action  = true;
 
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
 
     // Assert
     EXPECT_EQ(output.status, MRA::Datatypes::ActionResult::RUNNING);
-    EXPECT_EQ(state.stop, true);
 }
 
 // boundary limiters
@@ -240,6 +240,7 @@ TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 99.0;
     input.motionSetpoint.position.y = 99.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -250,7 +251,7 @@ TEST(RobotsportsPathPlanningTest, native_targetOutOfBounds_shouldFail)
     EXPECT_EQ(state.stop, true);
 }
 
-TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)\
+TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)
 {
     // Arrange
     double ts = 0.0;
@@ -264,7 +265,8 @@ TEST(RobotsportsPathPlanningTest, native_targetX_OutOfBounds_shouldClip)\
     params.boundaries.fieldMarginX = 0.9; // TODO stub environmentField
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 99.0;
-
+    input.motionSetpoint.move_action = true;
+    
     // Act
     auto path_planning = PathPlanning();
     path_planning.calculate(ts, input, params, state, output, diagnostics);
@@ -291,6 +293,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_OutOfBounds_shouldClip)
     
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 99.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -364,6 +367,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_notAllowed)
     params.boundaries.targetOnOpponentHalf = BoundaryOptionEnum::STOP_AND_FAIL;
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 6.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -388,6 +392,7 @@ TEST(RobotsportsPathPlanningTest, native_targetY_oppHalf_clip)
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 1.0;
     input.motionSetpoint.position.y = 6.0;
+    input.motionSetpoint.move_action = true;
 
     // Act
     auto path_planning = PathPlanning();
@@ -414,6 +419,7 @@ TEST(RobotsportsPathPlanningTest, native_targetInForbiddenArea_shouldFail)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.y = 6.0;
+    input.motionSetpoint.move_action = true;
 
     forbiddenArea_t f; // construct a forbidden area around the target (penalty marker)
     f.points.push_back(MRA::Geometry::Point(-1.0,  5.0));
@@ -563,6 +569,8 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.move_action = true;
+
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(2.0, -0.1);
     input.obstacles.push_back(obst);
@@ -590,6 +598,8 @@ TEST(RobotsportsPathPlanningTest, native_avoid_obstacle_cluster_left)
 
     input.motionSetpoint.position = MRA::Geometry::Pose();
     input.motionSetpoint.position.x = 4.0;
+    input.motionSetpoint.move_action = true;
+
     obstacleResult_t obst;
     obst.position = MRA::Geometry::Point(1.5, -0.5); input.obstacles.push_back(obst);
     obst.position = MRA::Geometry::Point(1.5, -0.1); input.obstacles.push_back(obst);

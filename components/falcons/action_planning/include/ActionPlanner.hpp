@@ -15,8 +15,8 @@ public:
     void tick(
         const types::WorldState &world_state,
         const types::ActionInput &action_input,
-        types::ActionResult &action_result_msg,
-        types::Targets &targets_msg
+        types::ActionResult &action_result,
+        types::Targets &targets
     );
 
 private:

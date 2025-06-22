@@ -8,41 +8,44 @@ ActionGetBall::ActionGetBall()
 {
 }
 
-void ActionGetBall::tick(const types::WorldState& world_state, const types::Settings& settings)
+void ActionGetBall::tick(
+    const types::WorldState& world_state,
+    const types::Settings& settings,
+    types::ActionResult& action_result,
+    types::Targets& targets)
 {
-    // Reset verdict and result
-    verdict_.clear();
-    actionresult_ = types::ActionResult::ACTIONRESULT_INVALID;
+    // Unpack inputs/settings
+    double action_radius = settings["radius"].as<double>();
 
     // Example: always enable ballhandlers (if output msg supports it)
     // output.bh_enabled = true;
 
     // Check if robot has the ball
     if (world_state.robot.hasball) {
-        actionresult_ = types::ActionResult::ACTIONRESULT_PASSED;
-        verdict_ = "robot has the ball";
+        action_result.status = types::ActionResult::ACTIONRESULT_PASSED;
+        action_result.details = "robot has the ball";
         return;
     }
 
     // Fail if robot is inactive
     if (!world_state.robot.active) {
-        actionresult_ = types::ActionResult::ACTIONRESULT_FAILED;
-        verdict_ = "robot is inactive";
+        action_result.status = types::ActionResult::ACTIONRESULT_FAILED;
+        action_result.details = "robot is inactive";
         return;
     }
 
     // Fail if no ball
     if (!world_state.balls.size()) {
-        actionresult_ = types::ActionResult::ACTIONRESULT_FAILED;
-        verdict_ = "robot lost track of the ball";
+        action_result.status = types::ActionResult::ACTIONRESULT_FAILED;
+        action_result.details = "robot lost track of the ball";
         return;
     }
 
     // Fail if teammate has the ball
     for (const auto& teammate : world_state.teammates) {
         if (teammate.hasball) {
-            actionresult_ = types::ActionResult::ACTIONRESULT_FAILED;
-            verdict_ = "teammate got the ball";
+            action_result.status = types::ActionResult::ACTIONRESULT_FAILED;
+            action_result.details = "teammate got the ball";
             return;
         }
     }
@@ -51,19 +54,18 @@ void ActionGetBall::tick(const types::WorldState& world_state, const types::Sett
     double dx = world_state.balls[0].pose.position.x - world_state.robot.pose.position.x;
     double dy = world_state.balls[0].pose.position.y - world_state.robot.pose.position.y;
     double dist = std::sqrt(dx*dx + dy*dy);
-    double action_radius = settings.radius;
-    if (settings.radius < 0.1) {
-        actionresult_ = types::ActionResult::ACTIONRESULT_FAILED;
-        verdict_ = "invalid configuration, settings.radius too small";
+    if (action_radius < 0.1) {
+        action_result.status = types::ActionResult::ACTIONRESULT_FAILED;
+        action_result.details = "invalid configuration, settings.radius too small";
         return;
     }
-    if (dist > settings.radius) {
-        actionresult_ = types::ActionResult::ACTIONRESULT_FAILED;
-        verdict_ = "ball too far away";
+    if (dist > action_radius) {
+        action_result.status = types::ActionResult::ACTIONRESULT_FAILED;
+        action_result.details = "ball too far away";
         return;
     }
 
     // Otherwise, keep running
-    actionresult_ = types::ActionResult::ACTIONRESULT_RUNNING;
-    verdict_ = "fetching ball";
+    action_result.status = types::ActionResult::ACTIONRESULT_RUNNING;
+    action_result.details = "fetching ball";
 }

@@ -20,11 +20,11 @@ void ActionPlanner::finish_previous_action(uint8_t /*prev_action_type*/)
 void ActionPlanner::tick(
     const types::WorldState &world_state,
     const types::ActionInput &action_input,
-    types::ActionResult &action_result_msg,
-    types::Targets &targets_msg
+    types::ActionResult &action_result,
+    types::Targets &targets
 ) {
     TRACE_FUNCTION();
-/*
+
     // Check if the action type has changed
     uint8_t current_action_type = action_input.type;
     if (current_action_type != prev_action_type_) {
@@ -36,15 +36,11 @@ void ActionPlanner::tick(
     auto it = actions_.find(current_action_type);
     if (it != actions_.end()) {
         auto &action = it->second;
-        action->tick(world_state, dummy_input);
-
-        // Fill result messages
-        action_result_msg.result = action->getActionResult();
-        action_result_msg.verdict = action->getVerdict();
-        // TODO: fill targets_msg as needed
+        types::Settings settings; // TODO: fill from configuration defaults + optional action input
+        action->tick(world_state, settings, action_result, targets);
     } else {
         // Unknown action: set result to invalid
-        action_result_msg.result = types::ActionResult::ACTIONRESULT_INVALID;
-        action_result_msg.verdict = "Unknown action type";
-    }*/
+        action_result.status = types::ActionResult::ACTIONRESULT_INVALID;
+        action_result.details = "unknown action type";
+    }
 }

@@ -6,6 +6,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # Include directories
 include_directories(include)
@@ -23,6 +24,8 @@ ament_target_dependencies(mra_falcons_action_planning_node
   mra_common_msgs
   mra_tracing
 )
+
+target_link_libraries(mra_falcons_action_planning_node yaml-cpp)
 
 # Install the executable
 install(TARGETS

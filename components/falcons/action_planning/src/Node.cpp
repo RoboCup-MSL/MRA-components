@@ -38,10 +38,11 @@ void ActionPlanningROS::handle_action_input(const types::ActionInput::SharedPtr 
 
 void ActionPlanningROS::tick() {
     TRACE_FUNCTION();
-    //TODO
-    //mra_falcons_msgs::msg::Setpoints setpoints_msg;
-    //planner_->tick(world_state_, setpoints_msg);
-    //publisher_targets_->publish(setpoints_msg);
+    types::Targets targets_msg;
+    types::ActionResult action_result_msg;
+    planner_->tick(world_state_, action_input_, action_result_msg, targets_msg);
+    publisher_targets_->publish(targets_msg);
+    publisher_action_result_->publish(action_result_msg);
 }
 
 // main function

@@ -46,7 +46,7 @@ void PathPlanning::calculate(double ts,
     // get inputs from input interface
     // get and store data
     motionSetpoint_t sp = r_input.motionSetpoint;
-    data.target.pos = MRA::Geometry::Pose();
+    data.target.pos = {};
     data.motionType = sp.motionType; 
     data.stop = true;
     if (sp.move_action) // for any other action: do nothing
@@ -56,7 +56,7 @@ void PathPlanning::calculate(double ts,
         data.target.pos.rz = sp.position.rz;
         data.stop = false;
     }
-    data.target.vel = MRA::Geometry::Pose(); // nonzero input velocity is not yet supported on external interface
+    data.target.vel = {}; // nonzero input velocity is not yet supported on external interface
     data.forbiddenAreas = r_input.forbiddenAreas;
     data.addForbiddenAreas(data.forbiddenAreas); // add to calculatedForbiddenAreas
     data.robot = r_input.myRobotState;
@@ -104,7 +104,7 @@ void PathPlanning::calculate(double ts,
     {
         r_output.velocitySetpointValid = true;
         r_output.positionSetpointValid = false;
-        r_output.robotVelocitySetpoint = MRA::Geometry::Pose(0.0, 0.0, 0.0);
+        r_output.robotVelocitySetpoint = {};
         r_output.motionType = motionTypeEnum::NORMAL;
     }
     else

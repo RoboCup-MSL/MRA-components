@@ -10,11 +10,9 @@
 
 
 #include "PathPlanningAlgorithms.hpp"
-// #include "cDiagnostics.hpp"
 #include "logging.hpp"
 
 // internal constants, types and utilities
-
 typedef struct
 {
     MRA::Geometry::Point location;
@@ -70,7 +68,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
     }
 
     // get other data
-    MRA::Geometry::Position currPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
+    MRA::Geometry::Position currPos(data.robot.position.x, data.robot.position.y, 0.0, 0.0, 0.0, data.robot.position.rz);
 
     // get calculated obstacles, convert to internal type
     std::vector<pp_obstacle_struct_t> obstacles;
@@ -94,6 +92,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             {
                 // Pre-compute a_i and b_i for all obstacles, and store in the struct for later reuse.
                 MRA::Geometry::Point obstVec = MRA::Geometry::Point(obstacles[i].location.x, obstacles[i].location.y);
+                MRA_LOG_DEBUG("obstVec at: %s", obstVec.toString().c_str());
                 // TODO: Jurge
                 MRA::Geometry::Point tgtCur = (targetXY - curPosXY);
                 MRA::Geometry::Point obstCur = (obstVec - curPosXY);
@@ -113,8 +112,8 @@ void AvoidObstacles::execute(PathPlanningData &data)
                     ( fabs(obstacles[i].b_i) < (config.robotRadius + obstacles[i].radius) )) // r_r + r_i
                 {
                     B.push_back(obstacles[i]);
-                    //TRACE("DIST FROM LINE: %6.2f", obstacles[i].b_i);
-                    //TRACE("OBST IN PATH: X: %6.2f, Y: %6.2f", obstVec.x, obstVec.y);
+                    /*TRACE*/ MRA_LOG_DEBUG("DIST FROM LINE: %6.2f", obstacles[i].b_i);
+                    /*TRACE*/ MRA_LOG_DEBUG("OBST IN PATH: X: %6.2f, Y: %6.2f", obstVec.x, obstVec.y);
                 }
 
             }
@@ -144,7 +143,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
 
         if (B_idx != -1)
         {
-            //TRACE("NEAREST OBST: X: %6.2f, Y: %6.2f", B[B_idx].location.x, B[B_idx].location.y);
+            /*TRACE*/ MRA_LOG_DEBUG("NEAREST OBST: X: %6.2f, Y: %6.2f", B[B_idx].location.x, B[B_idx].location.y);
 
             // 3. Determine G = The set of transitive obstacles that are within the range of 2r_r of each other, starting from f.
             //    "In our approach, the group G will be avoided instead of object f only, otherwise the robot could get stuck in the group G."
@@ -175,7 +174,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                             // Compute distance between obstacle in G and all obstacles.
                             double dist = std::hypot(fabs(itG->location.x - obstacles[j].location.x), fabs(itG->location.y - obstacles[j].location.y));
 
-                            //TRACE("Dist between (%6.2f,%6.2f) and (%6.2f,%6.2f) is %6.2f", itG->location.x, itG->location.y, obstacles[j].location.x, obstacles[j].location.y, dist);
+                            /*TRACE*/ MRA_LOG_DEBUG("Dist between (%6.2f,%6.2f) and (%6.2f,%6.2f) is %6.2f", itG->location.x, itG->location.y, obstacles[j].location.x, obstacles[j].location.y, dist);
 
                             // Distance is from center of obstacles.
                             // First subtract the radius from each obstacle, and see if the robot's diameter fits through the gap.
@@ -205,7 +204,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
             for (itG = G_set.begin(); itG != G_set.end(); ++itG)
             {
                 G.push_back(*itG);
-                //TRACE("OBST IN G: X: %6.2f, Y: %6.2f", itG->location.x, itG->location.y);
+                /*TRACE*/ MRA_LOG_DEBUG("OBST IN G: X: %6.2f, Y: %6.2f", itG->location.x, itG->location.y);
             }
 
             // 4. Compute distance between line (robot -> target) and every object i in G:
@@ -260,20 +259,20 @@ void AvoidObstacles::execute(PathPlanningData &data)
                     }
                 }
 
-                //TRACE("b+_max = %6.2f , b-_max = %6.2f", bp_max, bm_max);
+                /*TRACE*/ MRA_LOG_DEBUG("b+_max = %6.2f , b-_max = %6.2f", bp_max, bm_max);
 
                 // Equation (6c)
                 if (bp_max >= bm_max)
                 {
                     // go for minus side of G
                     G_side_to_use = G_min;
-                    //TRACE("GOING FOR MINUS SIDE OF G");
+                    /*TRACE*/ MRA_LOG_DEBUG("GOING FOR MINUS SIDE OF G");
                 }
                 else
                 {
                     // go for plus side of G
                     G_side_to_use = G_plus;
-                    //TRACE("GOING FOR PLUS SIDE OF G");
+                    /*TRACE*/ MRA_LOG_DEBUG("GOING FOR PLUS SIDE OF G");
                 }
 
                 // Always consider obstacles on the line robot -> target
@@ -305,7 +304,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                     double first_term = atan(G_side_to_use[i].b_i / G_side_to_use[i].a_i);
                     double distBetweenObstAndRobot = (MRA::Geometry::Point(G_side_to_use[i].location.x, G_side_to_use[i].location.y)-curPosXY).size();
                     double second_term = sign*asin( fmax( fmin( config.subTargetDistance/distBetweenObstAndRobot, 0.99), -0.99) ); // asin's argument must be in [-1 < x < 1]
-                    //TRACE("first_term: %6.4f, second_term: %6.4f, sign: %6.4f, distBetweenObstAndRobot: %6.4f", first_term, second_term, sign, distBetweenObstAndRobot);
+                    /*TRACE*/ MRA_LOG_DEBUG("first_term: %6.4f, second_term: %6.4f, sign: %6.4f, distBetweenObstAndRobot: %6.4f", first_term, second_term, sign, distBetweenObstAndRobot);
 
                     // Equation (7)
                     double alpha = first_term + second_term;
@@ -318,7 +317,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                         G_idx = i;
                     }
 
-                    //TRACE("(%6.2f,%6.2f) angle is %6.2f", G_side_to_use[i].location.x, G_side_to_use[i].location.y, alpha);
+                    /*TRACE*/ MRA_LOG_DEBUG("(%6.2f,%6.2f) angle is %6.2f", G_side_to_use[i].location.x, G_side_to_use[i].location.y, alpha);
                 }
             }
 
@@ -332,8 +331,8 @@ void AvoidObstacles::execute(PathPlanningData &data)
                 MRA::Geometry::Point multipliedMatrix = MRA::Geometry::Point( ( (cos(alpha_j)*rightPart.x) - (sin(alpha_j)*rightPart.y) ) , ( (sin(alpha_j)*rightPart.x) + (cos(alpha_j)*rightPart.y) ) );
                 MRA::Geometry::Point subtarget(curPosXY.x + multipliedMatrix.x, curPosXY.y + multipliedMatrix.y);
 
-                //TRACE("subtarget pre-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
-                //TRACE("currPos pre-extend: x %6.2f, y %6.2f", currPos.x, currPos.y);
+                /*TRACE*/ MRA_LOG_DEBUG("subtarget pre-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
+                /*TRACE*/ MRA_LOG_DEBUG("currPos pre-extend: x %6.2f, y %6.2f", currPos.x, currPos.y);
 
                 // Put the subtarget further away to prevent the robot from slowing down for the subtarget
                 MRA::Geometry::Point diffSubTargetCurPos(subtarget - curPosXY);
@@ -341,7 +340,7 @@ void AvoidObstacles::execute(PathPlanningData &data)
                 subtarget = subtarget + (diffSubTargetCurPos * config.subTargetExtensionFactor);
                 // ROADMAP: replace this trick with velocity control making use of target.velocity
 
-                //TRACE("subtarget post-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
+                /*TRACE*/ MRA_LOG_DEBUG("subtarget post-extend: x %6.2f, y %6.2f", subtarget.x, subtarget.y);
 
                 subTarget.x = subtarget.x;
                 subTarget.y = subtarget.y;

@@ -21,7 +21,7 @@ MRA::Geometry::Position addRcsToFcs(MRA::Geometry::Position const &posRcs, MRA::
 MRA::Geometry::Position faceTowards(MRA::Geometry::Position const &current, double targetX, double targetY)
 {
     MRA::Geometry::Position result = current;
-    result.rz = std::atan2(targetY - current.y, targetX - current.x);
+    result.rz = std::atan2(targetY - current.y, targetX - current.x) - 0.5 * M_PI;;
     return result;
 }
 

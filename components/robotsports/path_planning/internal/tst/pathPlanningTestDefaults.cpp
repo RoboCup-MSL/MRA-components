@@ -69,10 +69,10 @@ PathPlanning pathPlanningSetup(ppCFI *ppci, exCFI *exci, OutputInterface *output
     pp.prepare();
     pp.data.robot.status = robotStatusEnum::INPLAY;
     pp.data.robot.hasBall = false;
-    pp.data.robot.position = MRA::Geometry::Pose(0, 0, 0);
-    pp.data.robot.velocity = MRA::Geometry::Pose(0, 0, 0);
-    pp.data.target.pos = MRA::Geometry::Pose(0, 0, 0);
-    pp.data.target.vel = MRA::Geometry::Pose(0, 0, 0);
+    pp.data.robot.position = {};
+    pp.data.robot.velocity = {};
+    pp.data.target.pos = {};
+    pp.data.target.vel = {};
     return pp;
 }
 

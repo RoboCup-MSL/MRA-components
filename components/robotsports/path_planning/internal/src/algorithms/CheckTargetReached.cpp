@@ -12,7 +12,7 @@ void CheckTargetReached::execute(PathPlanningData &data)
 {
     // get delta - TODO simplify
     MRA::Geometry::Position targetPos = data.getSubTarget();
-    MRA::Geometry::Position robotPos(data.robot.position.x, data.robot.position.y, data.robot.position.rz);
+    MRA::Geometry::Position robotPos(data.robot.position.x, data.robot.position.y, 0.0, 0.0, 0.0, data.robot.position.rz);
     MRA::Geometry::Position deltaPositionFcs = targetPos - robotPos;
     deltaPositionFcs.rz = project_angle_mpi_pi(deltaPositionFcs.rz);
     // compare with tolerances

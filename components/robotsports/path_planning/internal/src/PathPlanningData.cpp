@@ -16,8 +16,8 @@ void PathPlanningData::reset()
     calculatedObstacles.clear();
     calculatedForbiddenAreas.clear();
     resultStatus = MRA::Datatypes::ActionResult::INVALID;
-    deltaPositionFcs = MRA::Geometry::Position(0.0, 0.0, 0.0);
-    deltaPositionRcs = MRA::Geometry::Position(0.0, 0.0, 0.0);
+    deltaPositionFcs = {};
+    deltaPositionRcs = {};
     done = false;
     motionType = motionTypeEnum::INVALID;
     stop = false;

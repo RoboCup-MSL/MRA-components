@@ -4,21 +4,29 @@ project(mra_falcons_action_planning)
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(mra_falcons_action_fetch_ball REQUIRED)
-find_package(mra_falcons_action_base REQUIRED)
+find_package(mra_common_msgs REQUIRED)
+find_package(mra_tracing REQUIRED)
+#find_package(mra_falcons_action_base REQUIRED)
+#find_package(mra_falcons_action_get_ball REQUIRED)
 
 # Include directories
 include_directories(include)
 
 # Create the executable
-add_executable(mra_falcons_action_planning_node src/action_planning_node.cpp)
+add_executable(mra_falcons_action_planning_node src/Node.cpp)
 
 # Link libraries
 ament_target_dependencies(mra_falcons_action_planning_node
   rclcpp
-  mra_falcons_action_fetch_ball
-  mra_falcons_action_base
+  mra_common_msgs
+  mra_tracing
+  #mra_falcons_action_get_ball
+  #mra_falcons_action_base
 )
+target_link_libraries(mra_falcons_action_planning_node
+  mra_tracing
+)
+target_link_directories(mra_falcons_action_planning_node PRIVATE ${mra_tracing_DIR}/../../../lib)
 
 # Install the executable
 install(TARGETS

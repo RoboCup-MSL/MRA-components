@@ -10,8 +10,10 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>mra_common_msgs</depend>
+  <depend>mra_tracing</depend>
   <depend>mra_falcons_action_base</depend>
-  <depend>mra_falcons_action_fetch_ball</depend>
+  <depend>mra_falcons_action_get_ball</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

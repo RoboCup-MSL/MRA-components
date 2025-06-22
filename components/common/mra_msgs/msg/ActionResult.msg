@@ -4,3 +4,6 @@ uint8 ACTIONRESULT_INVALID=0
 uint8 ACTIONRESULT_FAILED=1
 uint8 ACTIONRESULT_RUNNING=2
 uint8 ACTIONRESULT_PASSED=3
+
+uint8 status # above enum
+string details # explanation for failure, or additional info

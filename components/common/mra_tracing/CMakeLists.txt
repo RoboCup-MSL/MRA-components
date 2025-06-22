@@ -5,15 +5,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-include_directories(include)
-
-# Find dependencies
-find_package(ament_cmake REQUIRED)
-
-# Create a library for tracing
+# Use target_include_directories for modern CMake
 add_library(mra_tracing
   src/tracing.cpp
 )
+target_include_directories(mra_tracing PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
 
 # Install headers
 install(DIRECTORY include/
@@ -26,6 +28,6 @@ install(TARGETS mra_tracing
 )
 
 ament_export_include_directories(include)
-#ament_export_libraries(mra_tracing)
+ament_export_libraries(mra_tracing)
 
 ament_package()

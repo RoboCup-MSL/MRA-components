@@ -23,10 +23,6 @@ ament_target_dependencies(mra_falcons_action_planning_node
   #mra_falcons_action_get_ball
   #mra_falcons_action_base
 )
-target_link_libraries(mra_falcons_action_planning_node
-  mra_tracing
-)
-target_link_directories(mra_falcons_action_planning_node PRIVATE ${mra_tracing_DIR}/../../../lib)
 
 # Install the executable
 install(TARGETS

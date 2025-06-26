@@ -2,6 +2,7 @@
 #include <std_msgs/msg/empty.hpp>
 #include "mra_falcons_configuration/ros_config.hpp"
 #include "mra_common_msgs/msg/action.hpp"
+#include "mra_common_msgs/msg/action_type.hpp"
 #include "mra_common_msgs/msg/world_state.hpp"
 #include "mra_tracing/tracing.hpp"
 
@@ -32,13 +33,27 @@ private:
     // TODO: also handle action_planning result
 
     void tick() {
-        TRACE_FUNCTION();
 
-        // TODO: MVP: randomly select one of the following actions for 10 ticks.
-        auto action_msg = mra_common_msgs::msg::Action();
+        // MVP implementation: cycle through available actions
+        static int ticks_remaining = 0;
+        static auto action_msg = mra_common_msgs::msg::Action();
+        TRACE_FUNCTION_INPUTS(ticks_remaining, action_msg.type);
+        if (--ticks_remaining <= 0) {
+            // Cycle through a few actions
+            if (action_msg.type == mra_common_msgs::msg::ActionType::ACTION_GETBALL) {
+                action_msg.type = mra_common_msgs::msg::ActionType::ACTION_STOP;
+            } else if (action_msg.type == mra_common_msgs::msg::ActionType::ACTION_STOP) {
+                action_msg.type = mra_common_msgs::msg::ActionType::ACTION_MOVE;
+            } else {
+                action_msg.type = mra_common_msgs::msg::ActionType::ACTION_GETBALL;
+            }
+            // Reset the tick counter
+            ticks_remaining = 10;
+        }
 
         // Publish the world_state message
         publisher_action_->publish(action_msg);
+        TRACE_FUNCTION_OUTPUTS(ticks_remaining, action_msg.type);
     }
 
     rclcpp::Publisher<mra_common_msgs::msg::Action>::SharedPtr publisher_action_;

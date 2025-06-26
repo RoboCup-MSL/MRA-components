@@ -40,7 +40,7 @@ void ActionPlanner::tick(
             prev_it->second->finalize();
         }
         // Take a snapshot of the config at this moment (from YAML + ROS params)
-        types::Settings base_config = configurator_->get_scope(action->getName());
+        types::Settings base_config = configurator_->get_scope("action_" + action->getName());
         action->initialize(base_config);
         prev_action_type_ = current_action_type;
     }

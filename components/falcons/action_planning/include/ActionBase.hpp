@@ -4,6 +4,7 @@
 #include <memory>
 #include <cstdint>
 #include <nlohmann/json.hpp>
+#include "mra_tracing/tracing.hpp"
 #include "Types.hpp"
 #include "Configuration.hpp"
 
@@ -20,11 +21,16 @@ public:
     virtual ~ActionBase() = default;
 
     // Called once at action startup, based on yaml / ROS params
-    virtual void initialize(const types::Settings& config) { config_ = config; }
+    virtual void initialize(const types::Settings& config)
+    {
+        TRACE_FUNCTION_INPUTS(config);
+        config_ = config;
+    }
 
     // Called every tick, to apply actionparams from input as overrule
     types::Settings mergeConfig(std::string actionparams = "")
     {
+        TRACE_FUNCTION_INPUTS(config_, actionparams);
         types::Settings tick_config = config_;
         /*
         if (!actionparams.empty()) {
@@ -38,6 +44,7 @@ public:
             }
         }
         */
+        TRACE_FUNCTION_OUTPUTS(tick_config);
         return tick_config;
     }
 

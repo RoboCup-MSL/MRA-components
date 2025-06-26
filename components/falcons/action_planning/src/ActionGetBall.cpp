@@ -1,4 +1,5 @@
 #include "ActionGetBall.hpp"
+#include "mra_tracing/tracing.hpp"
 #include <cmath>
 
 using namespace falcons::action_planning;
@@ -14,6 +15,7 @@ void ActionGetBall::tick(
     types::ActionResult& action_result,
     types::Targets& targets)
 {
+    TRACE_FUNCTION_INPUTS(settings);
     // Unpack inputs/settings
     double action_radius = settings["radius"].as<double>();
 

@@ -8,6 +8,10 @@
 #include <stdexcept>
 #include <variant>
 
+#ifndef MISSING_YAML_CPP
+#include <yaml-cpp/yaml.h>
+#endif
+
 namespace MRA {
 namespace tracing {
 
@@ -75,6 +79,14 @@ public:
             throw std::runtime_error("cannot convert output variable " + varname + " to string");
         }
     }
+#ifndef MISSING_YAML_CPP
+    void add_input(std::string const &varname, YAML::Node const &value) {
+        add_input(varname, YAML::Dump(value));
+    }
+    void add_output(std::string const &varname, YAML::Node const &value) {
+        add_output(varname, YAML::Dump(value));
+    }
+#endif
     // flushers
     void flush_input();
     void flush_output(timestamp_t const &timestamp);

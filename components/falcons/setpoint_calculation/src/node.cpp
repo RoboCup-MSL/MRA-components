@@ -1,5 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/empty.hpp>
+#include "mra_falcons_configuration/ros_config.hpp"
 #include "mra_common_msgs/msg/targets.hpp"
 #include "mra_common_msgs/msg/world_state.hpp"
 #include "mra_falcons_msgs/msg/setpoints.hpp"
@@ -12,7 +13,6 @@ public:
         std::string ns = this->get_namespace();
         TRACE_FUNCTION_INPUTS(ns);
         // publishers
-        int FALCONS_ROS_QOS = 10; // TODO: this magic should go to some central header file
         publisher_setpoints_ = this->create_publisher<mra_falcons_msgs::msg::Setpoints>("setpoints", FALCONS_ROS_QOS);
         // subscribers
         subscriber_targets_ = this->create_subscription<mra_common_msgs::msg::Targets>(

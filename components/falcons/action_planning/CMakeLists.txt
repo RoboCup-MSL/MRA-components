@@ -4,6 +4,7 @@ project(mra_falcons_action_planning)
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(mra_falcons_configuration REQUIRED)
 find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 find_package(yaml-cpp REQUIRED)
@@ -21,6 +22,7 @@ add_executable(mra_falcons_action_planning_node
 # Link libraries
 ament_target_dependencies(mra_falcons_action_planning_node
   rclcpp
+  mra_falcons_configuration
   mra_common_msgs
   mra_tracing
 )

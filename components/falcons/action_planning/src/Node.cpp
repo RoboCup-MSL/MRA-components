@@ -1,4 +1,5 @@
 #include "Node.hpp"
+#include "mra_falcons_configuration/ros_config.hpp"
 #include "mra_tracing/tracing.hpp"
 
 using namespace falcons::action_planning;
@@ -10,9 +11,8 @@ ActionPlanningROS::ActionPlanningROS()
     TRACE_FUNCTION_INPUTS(ns);
 
     // publishers
-    int queue_size = 10;
-    publisher_targets_ = this->create_publisher<types::Targets>("targets", queue_size);
-    publisher_action_result_ = this->create_publisher<types::ActionResult>("action_result", queue_size);
+    publisher_targets_ = this->create_publisher<types::Targets>("targets", FALCONS_ROS_QOS);
+    publisher_action_result_ = this->create_publisher<types::ActionResult>("action_result", FALCONS_ROS_QOS);
 
     // configuration and planner
     //std::string config_file = "action_planning.yaml";
@@ -23,11 +23,11 @@ ActionPlanningROS::ActionPlanningROS()
 
     // subscribers
     subscriber_world_state_ = this->create_subscription<types::WorldState>(
-        "world_state", queue_size,
+        "world_state", FALCONS_ROS_QOS,
         std::bind(&ActionPlanningROS::handle_world_state, this, std::placeholders::_1)
     );
     subscriber_action_ = this->create_subscription<types::ActionInput>(
-        "action", queue_size,
+        "action", FALCONS_ROS_QOS,
         std::bind(&ActionPlanningROS::handle_action_input, this, std::placeholders::_1)
     );
 }

@@ -1,5 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/empty.hpp>
+#include "mra_falcons_configuration/ros_config.hpp"
 #include "mra_common_msgs/msg/action.hpp"
 #include "mra_common_msgs/msg/world_state.hpp"
 #include "mra_tracing/tracing.hpp"
@@ -11,7 +12,6 @@ public:
         std::string ns = this->get_namespace();
         TRACE_FUNCTION_INPUTS(ns);
         // publishers
-        int FALCONS_ROS_QOS = 10; // TODO: this magic should go to some central header file
         publisher_action_ = this->create_publisher<mra_common_msgs::msg::Action>("action", FALCONS_ROS_QOS);
         // subscribers
         subscriber_world_state_ = this->create_subscription<mra_common_msgs::msg::WorldState>(

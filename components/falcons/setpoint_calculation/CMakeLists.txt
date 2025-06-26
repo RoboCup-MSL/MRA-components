@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(mra_falcons_configuration REQUIRED)
 find_package(mra_common_msgs REQUIRED)
 find_package(mra_falcons_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -16,6 +17,7 @@ find_package(mra_tracing REQUIRED)
 # Add the executable for the ROS node
 add_executable(${PROJECT_NAME}_node src/node.cpp)
 ament_target_dependencies(${PROJECT_NAME}_node
+  mra_falcons_configuration
   mra_common_msgs
   mra_falcons_msgs
   rclcpp

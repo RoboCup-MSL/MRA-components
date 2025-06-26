@@ -35,14 +35,13 @@ ActionPlanningROS::ActionPlanningROS()
 void ActionPlanningROS::handle_world_state(const types::WorldState::SharedPtr msg) {
     TRACE_FUNCTION();
     world_state_ = *msg;
-    tick();
 }
 
 void ActionPlanningROS::handle_action_input(const types::ActionInput::SharedPtr msg) {
     TRACE_FUNCTION();
     action_input_ = *msg;
     // TODO: guard against race condition with arrival of new world_state? if teamplay would be fast
-    //tick();
+    tick();
 }
 
 void ActionPlanningROS::tick() {

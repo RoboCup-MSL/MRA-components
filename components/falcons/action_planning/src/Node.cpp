@@ -5,14 +5,22 @@ using namespace falcons::action_planning;
 
 ActionPlanningROS::ActionPlanningROS()
     : rclcpp::Node("mra_falcons_action_planning")
-    , planner_(std::make_unique<ActionPlanner>())
 {
     std::string ns = this->get_namespace();
     TRACE_FUNCTION_INPUTS(ns);
+
     // publishers
-    int queue_size = 10; // TODO: make configurable?
+    int queue_size = 10;
     publisher_targets_ = this->create_publisher<types::Targets>("targets", queue_size);
     publisher_action_result_ = this->create_publisher<types::ActionResult>("action_result", queue_size);
+
+    // configuration and planner
+    //std::string config_file = "action_planning.yaml";
+    // TODO: a generic ConfigurationROS facility should know where to find this, for now we overrule
+    std::string config_file = "/workspace/MRA/components/falcons/action_planning/config/params.yaml";
+    configurator_ = std::make_unique<ConfigurationROS>(this, config_file);
+    planner_ = std::make_unique<ActionPlanner>(std::move(configurator_));
+
     // subscribers
     subscriber_world_state_ = this->create_subscription<types::WorldState>(
         "world_state", queue_size,
@@ -27,13 +35,14 @@ ActionPlanningROS::ActionPlanningROS()
 void ActionPlanningROS::handle_world_state(const types::WorldState::SharedPtr msg) {
     TRACE_FUNCTION();
     world_state_ = *msg;
+    tick();
 }
 
 void ActionPlanningROS::handle_action_input(const types::ActionInput::SharedPtr msg) {
     TRACE_FUNCTION();
     action_input_ = *msg;
     // TODO: guard against race condition with arrival of new world_state? if teamplay would be fast
-    tick();
+    //tick();
 }
 
 void ActionPlanningROS::tick() {

@@ -3,6 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "Types.hpp"
 #include "ActionPlanner.hpp"
+#include "Configuration.hpp"
 
 namespace falcons::action_planning
 {
@@ -23,6 +24,10 @@ private:
 
     // the planner
     std::unique_ptr<ActionPlanner> planner_;
+
+    // configurator
+    std::unique_ptr<ConfigurationROS> configurator_;
+    types::Settings settings_;
 
     // subscribers
     rclcpp::Subscription<types::WorldState>::SharedPtr subscriber_world_state_;

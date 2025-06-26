@@ -2,9 +2,10 @@
 
 #include <string>
 #include <memory>
-#include <type_traits>
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include "Types.hpp"
+#include "Configuration.hpp"
 
 namespace falcons::action_planning
 {
@@ -18,33 +19,44 @@ public:
 
     virtual ~ActionBase() = default;
 
-    // Called once at startup or config reload
-    virtual void initialize(const types::Settings& config) { config_ = config; };
+    // Called once at action startup, based on yaml / ROS params
+    virtual void initialize(const types::Settings& config) { config_ = config; }
 
-    // Called every tick with new input
+    // Called every tick, to apply actionparams from input as overrule
+    types::Settings mergeConfig(std::string actionparams = "")
+    {
+        types::Settings tick_config = config_;
+        /*
+        if (!actionparams.empty()) {
+            try {
+                nlohmann::json overrule_json = nlohmann::json::parse(actionparams);
+                for (auto it = overrule_json.begin(); it != overrule_json.end(); ++it) {
+                    tick_config[it.key()] = it.value();
+                }
+            } catch (const nlohmann::json::parse_error& e) {
+                // Handle JSON parsing error, e.g., log it
+            }
+        }
+        */
+        return tick_config;
+    }
+
+    // Called every tick
     virtual void tick(
         const types::WorldState& world_state,
-        const types::Settings& input,
+        const types::Settings& settings, // potentially overruled by tick input.actionparams
         types::ActionResult& action_result,
         types::Targets& targets
     ) = 0;
 
-    // Convenience overload for tick without custom settings
-    void tick(const types::WorldState& world_state, types::ActionResult& action_result, types::Targets& targets)
-    {
-        tick(world_state, config_, action_result, targets);
-    }
+    virtual void finalize() {} // TODO: dump action data to file
 
-    // Called at shutdown or when action is finished
-    virtual void finalize() {}
-
-    // Getters
     std::string getName() const { return name_; }
 
 protected:
     std::string name_;
-    uint8_t type_; // Use ActionType constants
-    types::Settings config_; // Static configuration settings for the action
-}; // class ActionBase
+    uint8_t type_;
+    types::Settings config_;
+};
 
 } // namespace falcons::action_planning

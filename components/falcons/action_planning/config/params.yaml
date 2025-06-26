@@ -1,0 +1,15 @@
+action_move:
+  target:
+    x: 0.0
+    y: 0.0
+    rz: 0.0
+action_get_ball:
+  radius:
+    description: "Action radius around the robot, ignore balls if too far away"
+    value: 6.0
+    min: 0.0
+    max: 20.0
+action_shoot:
+  target:
+    x: 0.0
+    y: 10.0

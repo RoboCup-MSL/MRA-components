@@ -12,7 +12,7 @@ public:
     ActionGetBall();
     void tick(const
         types::WorldState& world_state,
-        const types::Settings& settings,
+        const types::Settings& settings, // potentially overruled by tick input.actionparams
         types::ActionResult& action_result,
         types::Targets& targets
     ) override;

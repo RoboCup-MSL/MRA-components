@@ -3,7 +3,7 @@ action_move:
     x: 0.0
     y: 0.0
     rz: 0.0
-action_get_ball:
+action_getball:
   radius:
     description: "Action radius around the robot, ignore balls if too far away"
     value: 6.0

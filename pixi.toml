@@ -21,8 +21,11 @@ scripts = ["install/setup.sh"]
 [tasks]
 refresh = "rm -rf ./log; rm -rf ./build; rm -rf ./install"
 build = "colcon build --symlink-install"
+test = "colcon test --ctest-args tests"
+test_results = "colcon test-result --all --verbose"
 # set RMW_IMPLEMENTATION="rmw_cyclonedds_cpp" : solve 1 second init delay by switching to CycloneDDS
 #sim = { cmd= "ros2 launch simulation launch.py num_robots_team_A:=5 num_robots_team_B:=5 timeout:=10", env = { RMW_IMPLEMENTATION= "rmw_cyclonedds_cpp"} }
+
 
 [dependencies]
 cmake = ">=4.0.3,<5"

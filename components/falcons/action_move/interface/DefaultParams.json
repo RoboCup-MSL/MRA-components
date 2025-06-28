@@ -1,7 +1,0 @@
-{
-    "activeStop": true,
-    "tolerances": {
-        "xy": 0.01,
-        "rz": 0.001
-    }
-}

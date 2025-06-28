@@ -1,8 +1,0 @@
-{
-    "captureRadius": 3.0,
-    "ballSpeedThreshold": 0.4,
-    "baselineY": -8.8,
-    "maxMoveX": 0.7,
-    "homeDistance": 2.0,
-    "homePosYoffset": 0.9
-}

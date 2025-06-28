@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package MRA.FalconsActionCatchBall;
-
-message State
-{
-    bool ballWasMovingFastEnough = 1; // needed to prevent returning FAILED at start of action, when ball pass is about to happen
-}

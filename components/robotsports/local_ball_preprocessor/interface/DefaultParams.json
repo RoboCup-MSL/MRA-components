@@ -1,7 +1,0 @@
-{
-    "BMsigma_omnivision_camera": 0.8,
-    "BMsigma_front_camera": 0.2,
-    "suppress_omni": true,
-    "ball_min_confidence": 0.05,
-    "min_height_in_air": 0.2
-}              

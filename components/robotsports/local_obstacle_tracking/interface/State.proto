@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package MRA.RobotsportsLocalObstacleTracking;
-
-message State
-{
-    bool is_initialized = 1; // is component initialized  
-}
-

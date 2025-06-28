@@ -7,9 +7,18 @@
 #include <vector>
 #include <stdexcept>
 #include <variant>
+#include <type_traits>
 
-#ifndef MISSING_YAML_CPP
+#define HAVE_YAML_CPP
+#ifdef HAVE_YAML_CPP
 #include <yaml-cpp/yaml.h>
+#include "converters.hpp" // yaml_to_json
+#endif
+
+#define HAVE_ROS2
+#ifdef HAVE_ROS2
+#include <rosidl_runtime_cpp/traits.hpp>
+#include "converters.hpp" // rosmsg_to_json
 #endif
 
 namespace MRA {
@@ -79,12 +88,26 @@ public:
             throw std::runtime_error("cannot convert output variable " + varname + " to string");
         }
     }
-#ifndef MISSING_YAML_CPP
+#ifdef HAVE_YAML_CPP
+    // specializations for yaml
     void add_input(std::string const &varname, YAML::Node const &value) {
-        add_input(varname, YAML::Dump(value));
+        add_input(varname, yaml_to_json(value));
     }
     void add_output(std::string const &varname, YAML::Node const &value) {
-        add_output(varname, YAML::Dump(value));
+        add_output(varname, yaml_to_json(value));
+    }
+#endif
+#ifdef HAVE_ROS2
+    // specializations for ROS messages
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_input(std::string const &varname, const MsgT &msg) {
+        add_input(varname, rosmsg_to_json(msg));
+    }
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_output(std::string const &varname, const MsgT &msg) {
+        add_output(varname, rosmsg_to_json(msg));
     }
 #endif
     // flushers

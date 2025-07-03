@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>mra_falcons_configuration</depend>
+  <depend>mra_falcons_velocity_control</depend>
   <depend>mra_common_msgs</depend>
   <depend>mra_falcons_msgs</depend>
   <depend>mra_tracing</depend>

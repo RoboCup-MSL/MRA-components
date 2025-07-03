@@ -14,6 +14,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(mra_falcons_velocity_control REQUIRED)
 
 # Create the setpoint calculation library
 add_library(setpoint_calculation
@@ -23,6 +24,7 @@ ament_target_dependencies(setpoint_calculation
   mra_common_msgs
   mra_falcons_msgs
   mra_tracing
+  mra_falcons_velocity_control
 )
 target_link_libraries(setpoint_calculation yaml-cpp)
 target_include_directories(setpoint_calculation PUBLIC

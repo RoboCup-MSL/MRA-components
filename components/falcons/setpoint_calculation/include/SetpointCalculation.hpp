@@ -4,6 +4,8 @@
 #include "mra_common_msgs/msg/targets.hpp"
 #include "mra_common_msgs/msg/world_state.hpp"
 #include "mra_falcons_msgs/msg/setpoints.hpp"
+#include "VelocityControl.hpp"
+#include <memory>
 
 class SetpointCalculation {
 public:
@@ -22,8 +24,10 @@ public:
     );
 
 private:
-    // Private member variables for internal state if needed
-    // TODO: Add any internal state variables here
+    // VelocityControl component for velocity processing
+    std::unique_ptr<VelocityControl> velocity_control_;
+
+    // TODO: Add any other internal state variables here
 };
 
 #endif // SETPOINT_CALCULATION_HPP

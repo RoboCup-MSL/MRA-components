@@ -13,6 +13,7 @@ find_package(mra_falcons_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # Create the setpoint calculation library
 add_library(setpoint_calculation
@@ -23,6 +24,7 @@ ament_target_dependencies(setpoint_calculation
   mra_falcons_msgs
   mra_tracing
 )
+target_link_libraries(setpoint_calculation yaml-cpp)
 target_include_directories(setpoint_calculation PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>

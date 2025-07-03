@@ -9,6 +9,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
+find_package(yaml-cpp REQUIRED)
+
+# Note: mra_tracing exposes yaml-cpp in its headers, so client packages
+# that use TRACE_FUNCTION_INPUTS with ROS messages must also:
+# 1. find_package(yaml-cpp REQUIRED)
+# 2. target_link_libraries(<target> yaml-cpp)
 
 # Use target_include_directories for modern CMake
 add_library(mra_tracing
@@ -17,7 +23,9 @@ add_library(mra_tracing
 ament_target_dependencies(mra_tracing
   rosidl_runtime_cpp
   rclcpp
+  yaml-cpp
 )
+
 target_include_directories(mra_tracing PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -30,10 +38,18 @@ install(DIRECTORY include/
 
 # Install the library
 install(TARGETS mra_tracing
+  EXPORT mra_tracing_targets
   DESTINATION lib
+)
+
+# Export targets
+install(EXPORT mra_tracing_targets
+  DESTINATION share/${PROJECT_NAME}/cmake
 )
 
 ament_export_include_directories(include)
 ament_export_libraries(mra_tracing)
+ament_export_targets(mra_tracing_targets)
+ament_export_dependencies(rosidl_runtime_cpp rclcpp yaml-cpp)
 
 ament_package()

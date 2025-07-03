@@ -14,8 +14,23 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 
+# Create the setpoint calculation library
+add_library(setpoint_calculation
+  src/SetpointCalculation.cpp
+)
+ament_target_dependencies(setpoint_calculation
+  mra_common_msgs
+  mra_falcons_msgs
+  mra_tracing
+)
+target_include_directories(setpoint_calculation PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 # Add the executable for the ROS node
 add_executable(${PROJECT_NAME}_node src/node.cpp)
+target_link_libraries(${PROJECT_NAME}_node setpoint_calculation)
 ament_target_dependencies(${PROJECT_NAME}_node
   mra_falcons_configuration
   mra_common_msgs
@@ -25,9 +40,24 @@ ament_target_dependencies(${PROJECT_NAME}_node
   mra_tracing
 )
 
+# Install headers
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+# Install the library
+install(TARGETS setpoint_calculation
+  DESTINATION lib
+)
+
+# Install the executable
 install(TARGETS ${PROJECT_NAME}_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Export the library
+ament_export_include_directories(include)
+ament_export_libraries(setpoint_calculation)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

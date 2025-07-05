@@ -9,15 +9,18 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 # Use target_include_directories for modern CMake
 add_library(velocity_control
   src/VelocityControl.cpp
   src/VelocityControlAlgorithms.cpp
+  src/VelocityControlConvert.cpp
 )
 ament_target_dependencies(velocity_control
   rosidl_runtime_cpp
   rclcpp
+  geometry_msgs
 )
 target_include_directories(velocity_control PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

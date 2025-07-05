@@ -67,23 +67,6 @@ private:
         const mra_common_msgs::msg::ShootingTarget& shoot_target,
         const mra_common_msgs::msg::WorldState& world_state
     );
-
-    // Utility functions for data conversion
-
-    /**
-     * Convert ROS2 pose to internal VelocityControl position
-     */
-    VelocityControlTypes::Position2D convertPoseToPosition2D(const geometry_msgs::msg::Pose& pose);
-
-    /**
-     * Convert ROS2 twist to internal VelocityControl velocity
-     */
-    VelocityControlTypes::Velocity2D convertTwistToVelocity2D(const geometry_msgs::msg::Twist& twist);
-
-    /**
-     * Convert internal VelocityControl velocity to ROS2 twist
-     */
-    geometry_msgs::msg::Twist convertVelocity2DToTwist(const VelocityControlTypes::Velocity2D& velocity);
 };
 
 #endif // SETPOINT_CALCULATION_HPP

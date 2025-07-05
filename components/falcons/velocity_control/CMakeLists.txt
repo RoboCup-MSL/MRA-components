@@ -13,6 +13,7 @@ find_package(rosidl_runtime_cpp REQUIRED)
 # Use target_include_directories for modern CMake
 add_library(velocity_control
   src/VelocityControl.cpp
+  src/VelocityControlAlgorithms.cpp
 )
 ament_target_dependencies(velocity_control
   rosidl_runtime_cpp

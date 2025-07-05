@@ -42,6 +42,8 @@ ament_export_libraries(velocity_control)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)
@@ -49,6 +51,19 @@ if(BUILD_TESTING)
   # comment the line when this package is in a git repo and when
   # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
+
+  # Add gtest
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_velocity_control.cpp
+  )
+
+  if(TARGET ${PROJECT_NAME}_test)
+    target_link_libraries(${PROJECT_NAME}_test velocity_control)
+    target_include_directories(${PROJECT_NAME}_test PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include
+    )
+  endif()
+
   ament_lint_auto_find_test_dependencies()
 endif()
 

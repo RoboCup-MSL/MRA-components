@@ -32,7 +32,6 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    mra_action_base
     yaml-cpp
 )
 

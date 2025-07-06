@@ -12,7 +12,7 @@ public:
         : node_(node)
         , teamplay_node_()
     {
-        // Get our namespace
+        // Get our namespace for tracing
         std::string ns = node_->get_namespace();
         TRACE_FUNCTION_INPUTS(ns);
 
@@ -29,13 +29,18 @@ public:
 private:
     void handleWorldState(const mra_common_msgs::msg::WorldState::SharedPtr msg)
     {
-        TRACE_FUNCTION();
+        // Trace meaningful message data
+        TRACE_FUNCTION_INPUTS(msg);
 
         // Process through core teamplay logic
-        auto action = teamplay_node_.processWorldState(*msg);
+        teamplay_node_.feedWorldState(*msg);
+        teamplay_node_.tick();
+        auto action = teamplay_node_.getAction();
 
         // Publish the action
         publisher_action_->publish(action);
+
+        TRACE_FUNCTION_OUTPUTS(action);
     }
 
     rclcpp::Node* node_;
@@ -48,7 +53,6 @@ TeamplayRosNode::TeamplayRosNode()
     : Node("teamplay")
     , _impl(std::make_unique<Implementation>(this))
 {
-    TRACE_FUNCTION();
 }
 
 TeamplayRosNode::~TeamplayRosNode() = default;

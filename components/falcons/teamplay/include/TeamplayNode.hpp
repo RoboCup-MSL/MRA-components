@@ -17,11 +17,21 @@ public:
     ~TeamplayNode();
 
     /**
-     * Process world state input and generate action decision
+     * Feed world state input to the teamplay system
      * @param world_state Current world state from ROS2 message
+     */
+    void feedWorldState(const WorldState& world_state);
+
+    /**
+     * Execute one tick of the teamplay logic
+     */
+    void tick();
+
+    /**
+     * Get the current action decision
      * @return Action decision to be published
      */
-    Action processWorldState(const WorldState& world_state);
+    Action getAction() const;
 
     /**
      * Reset the teamplay state

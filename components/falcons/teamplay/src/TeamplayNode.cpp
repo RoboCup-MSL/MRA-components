@@ -1,4 +1,5 @@
 #include "TeamplayNode.hpp"
+#include "ActionChoice.hpp"
 #include "mra_tracing/tracing.hpp"
 
 namespace falcons
@@ -8,63 +9,67 @@ class TeamplayNode::Implementation
 {
 public:
     Implementation()
-        : ticks_remaining_(0)
+        : action_choice_()
+        , current_world_state_()
         , current_action_()
     {
-        current_action_.type = ActionType::ACTION_GETBALL;
     }
 
-    Action processWorldState(const WorldState& world_state)
+    void feedWorldState(const WorldState& world_state)
     {
-        // MVP implementation: cycle through available actions
-        TRACE_FUNCTION_INPUTS(ticks_remaining_, current_action_.type);
+        TRACE_FUNCTION_INPUTS(world_state);
+        current_world_state_ = world_state;
+    }
 
-        if (--ticks_remaining_ <= 0)
-        {
-            // Cycle through a few actions
-            if (current_action_.type == ActionType::ACTION_GETBALL)
-            {
-                current_action_.type = ActionType::ACTION_STOP;
-            }
-            else if (current_action_.type == ActionType::ACTION_STOP)
-            {
-                current_action_.type = ActionType::ACTION_MOVE;
-            }
-            else
-            {
-                current_action_.type = ActionType::ACTION_GETBALL;
-            }
-            // Reset the tick counter
-            ticks_remaining_ = 10;
-        }
+    void tick()
+    {
+        TRACE_FUNCTION();
 
-        TRACE_FUNCTION_OUTPUTS(ticks_remaining_, current_action_.type);
+        // For now, we just use the action choice logic
+        // TODO: In the future, this could analyze current_world_state_ to make smarter decisions
+        current_action_ = action_choice_.getCurrentAction();
+
+        TRACE_FUNCTION_OUTPUTS(current_action_.type);
+    }
+
+    Action getAction() const
+    {
         return current_action_;
     }
 
     void reset()
     {
-        TRACE_FUNCTION();
-        ticks_remaining_ = 0;
-        current_action_.type = ActionType::ACTION_GETBALL;
+        action_choice_.reset();
+        current_world_state_ = WorldState();
+        current_action_ = Action();
     }
 
 private:
-    int ticks_remaining_;
+    ActionChoice action_choice_;
+    WorldState current_world_state_;
     Action current_action_;
 };
 
 TeamplayNode::TeamplayNode()
     : _impl(std::make_unique<Implementation>())
 {
-    TRACE_FUNCTION();
 }
 
 TeamplayNode::~TeamplayNode() = default;
 
-Action TeamplayNode::processWorldState(const WorldState& world_state)
+void TeamplayNode::feedWorldState(const WorldState& world_state)
 {
-    return _impl->processWorldState(world_state);
+    _impl->feedWorldState(world_state);
+}
+
+void TeamplayNode::tick()
+{
+    _impl->tick();
+}
+
+Action TeamplayNode::getAction() const
+{
+    return _impl->getAction();
 }
 
 void TeamplayNode::reset()

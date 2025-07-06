@@ -12,9 +12,11 @@ find_package(mra_common_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # Create library for Teamplay components
 add_library(${PROJECT_NAME}_lib
+    src/ActionChoice.cpp
     src/TeamplayNode.cpp
     src/TeamplayRosNode.cpp
 )
@@ -30,6 +32,10 @@ ament_target_dependencies(${PROJECT_NAME}_lib
     rclcpp
     std_msgs
     mra_tracing
+)
+
+target_link_libraries(${PROJECT_NAME}_lib
+    yaml-cpp
 )
 
 # Add the executable for the ROS node
@@ -65,7 +71,7 @@ install(TARGETS ${PROJECT_NAME}_node
 
 # Export targets
 ament_export_targets(${PROJECT_NAME}_libTargets HAS_LIBRARY_TARGET)
-ament_export_dependencies(mra_falcons_configuration mra_common_msgs rclcpp std_msgs mra_tracing)
+ament_export_dependencies(mra_falcons_configuration mra_common_msgs rclcpp std_msgs mra_tracing yaml-cpp)
 ament_export_include_directories(include)
 
 if(BUILD_TESTING)

@@ -1,22 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>mra_falcons_world_model</name>
-  <version>0.1.0</version>
-  <description>The WorldModel component for the Falcons ROS 2 project.</description>
-  <maintainer email="maintainer@example.com">Your Name</maintainer>
-  <license>MIT</license>
+    <name>mra_falcons_world_model</name>
+    <version>0.1.0</version>
+    <description>WorldModel component for the Falcons robot system</description>
+    <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
+    <license>MIT</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
-  <build_depend>rclcpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>falcons_msgs</build_depend>
-  <build_depend>mra_falcons_configuration</build_depend>
-  <build_depend>mra_common_msgs</build_depend>
-  <build_depend>mra_tracing</build_depend>
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>falcons_msgs</exec_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
+    <depend>rclcpp</depend>
+    <depend>std_msgs</depend>
+    <depend>falcons_msgs</depend>
+    <depend>mra_falcons_configuration</depend>
+    <depend>mra_common_msgs</depend>
+    <depend>mra_tracing</depend>
+    <depend>geometry_msgs</depend>
+    <depend>builtin_interfaces</depend>
+    <depend>yaml-cpp</depend>
+
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+    <test_depend>ament_cmake_gtest</test_depend>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
 </package>

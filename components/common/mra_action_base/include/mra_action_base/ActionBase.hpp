@@ -5,17 +5,16 @@
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include "mra_tracing/tracing.hpp"
-#include "Types.hpp"
-#include "Configuration.hpp"
+#include "ActionTypes.hpp"
 
-namespace falcons::action_planning
+namespace mra::common::action_base
 {
 
 class ActionBase
 {
 public:
     ActionBase(const std::string& name, uint8_t type)
-    : name_(name), type_(type)
+        : name_(name), type_(type)
     {}
 
     virtual ~ActionBase() = default;
@@ -66,4 +65,4 @@ protected:
     types::Settings config_;
 };
 
-} // namespace falcons::action_planning
+} // namespace mra::common::action_base

@@ -1,15 +1,16 @@
 #include "mra_tracing/tracing.hpp"
 #include "ActionPlanner.hpp"
-#include "ActionGetBall.hpp"
+#include "ActionGetball.hpp"
 #include <nlohmann/json.hpp>
 
 using namespace falcons::action_planning;
+namespace types = mra::common::action_base::types;
 
 ActionPlanner::ActionPlanner(std::unique_ptr<ConfigurationROS> configurator)
 : configurator_(std::move(configurator))
 {
     // Register all available actions here
-    actions_[types::ActionType::ACTION_GETBALL] = std::make_unique<ActionGetBall>();
+    actions_[types::ActionType::ACTION_GETBALL] = std::make_unique<falcons::action_getball::ActionGetball>();
     // TODO: add more actions, e.g. ACTION_STOP, ACTION_MOVE, etc.
     prev_action_type_ = types::ActionType::ACTION_INVALID;
 }

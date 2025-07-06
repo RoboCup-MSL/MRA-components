@@ -1,12 +1,14 @@
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>
-#include "Types.hpp"
+#include "mra_action_base/ActionTypes.hpp"
 #include "ActionPlanner.hpp"
 #include "Configuration.hpp"
 
 namespace falcons::action_planning
 {
+
+namespace types = mra::common::action_base::types;
 
 class ActionPlanningROS : public rclcpp::Node {
 public:

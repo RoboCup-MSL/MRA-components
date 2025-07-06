@@ -3,6 +3,7 @@
 #include "mra_tracing/tracing.hpp"
 
 using namespace falcons::action_planning;
+namespace types = mra::common::action_base::types;
 
 ActionPlanningROS::ActionPlanningROS()
     : rclcpp::Node("mra_falcons_action_planning")

@@ -12,9 +12,6 @@ find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
-# Include directories
-include_directories(include)
-
 # Create library
 add_library(${PROJECT_NAME}
     src/ActionGetball.cpp
@@ -38,11 +35,6 @@ target_link_libraries(${PROJECT_NAME}
 # Install headers
 install(DIRECTORY include/
     DESTINATION include/
-)
-
-# Also install headers under package-specific path for better namespace
-install(FILES include/ActionGetball.hpp
-    DESTINATION include/mra_falcons_action_getball/
 )
 
 # Install library

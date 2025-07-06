@@ -4,7 +4,7 @@
     <name>mra_action_base</name>
     <version>1.0.0</version>
     <description>Common base class for MRA actions</description>
-    <maintainer email="mra@example.com">MRA Team</maintainer>
+    <maintainer email="jan.feitsma@gmail.com">Jan Feitsma</maintainer>
     <license>MIT</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
@@ -12,6 +12,9 @@
     <depend>mra_common_msgs</depend>
     <depend>mra_tracing</depend>
     <depend>yaml-cpp</depend>
+
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
 
     <export>
         <build_type>ament_cmake</build_type>

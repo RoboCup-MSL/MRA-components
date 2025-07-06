@@ -11,9 +11,6 @@ find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
-# Include directories
-include_directories(include)
-
 # Create library
 add_library(${PROJECT_NAME}
     src/ActionBase.cpp
@@ -29,7 +26,9 @@ ament_target_dependencies(${PROJECT_NAME}
     mra_tracing
 )
 
-target_link_libraries(${PROJECT_NAME} yaml-cpp)
+target_link_libraries(${PROJECT_NAME}
+    yaml-cpp
+)
 
 # Install headers
 install(DIRECTORY include/

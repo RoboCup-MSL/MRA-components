@@ -13,8 +13,6 @@
 namespace falcons
 {
 
-// Direct typedefs of ROS types - if migrating away from ROS,
-// just replace these with equivalent types
 using Time = builtin_interfaces::msg::Time;
 using Pose = geometry_msgs::msg::Pose;
 using Twist = geometry_msgs::msg::Twist;

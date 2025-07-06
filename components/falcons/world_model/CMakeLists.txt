@@ -36,11 +36,12 @@ ament_target_dependencies(${PROJECT_NAME}_lib
   geometry_msgs
   builtin_interfaces
 )
+target_link_libraries(${PROJECT_NAME}_lib yaml-cpp) # workaround mra_tracing export dealing
 
-# Add the executable for world_model_node
-add_executable(world_model_node src/main_node.cpp)
-target_link_libraries(world_model_node ${PROJECT_NAME}_lib)
-ament_target_dependencies(world_model_node
+# Add the executable for mra_falcons_world_model_node
+add_executable(mra_falcons_world_model_node src/main_node.cpp)
+target_link_libraries(mra_falcons_world_model_node ${PROJECT_NAME}_lib)
+ament_target_dependencies(mra_falcons_world_model_node
   falcons_msgs
   mra_falcons_configuration
   mra_common_msgs
@@ -49,7 +50,7 @@ ament_target_dependencies(world_model_node
   mra_tracing
 )
 
-install(TARGETS world_model_node
+install(TARGETS mra_falcons_world_model_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -44,7 +44,7 @@ private:
 
     void handleFeedback(const falcons_msgs::msg::Feedback::SharedPtr msg)
     {
-        TRACE_FUNCTION();
+        TRACE_FUNCTION_INPUTS(msg);
 
         // Use current time since feedback doesn't have timestamp
         Time timestamp = _node->now();
@@ -52,12 +52,12 @@ private:
         // Process with WorldModel using ROS types directly
         _world_model->processFeedback(msg->velocity, timestamp);
 
-        // No publishing here - this is tied into vision callback
+        // No publishing here - that is tied into vision callback, according to execution architecture
     }
 
     void handleVisionObjects(const mra_common_msgs::msg::VisionObjects::SharedPtr msg)
     {
-        TRACE_FUNCTION();
+        TRACE_FUNCTION_INPUTS(msg);
 
         // Process with WorldModel using ROS types directly
         _world_model->processVision(msg->objects, msg->timestamp);
@@ -73,11 +73,13 @@ private:
         // Get current world state (already a ROS2 message)
         WorldState world_state_msg = _world_model->getWorldState();
         _publisher_world_state->publish(world_state_msg);
+
+        TRACE_FUNCTION_OUTPUTS(world_state_msg);
     }
 };
 
 WorldModelRosNode::WorldModelRosNode()
-    : Node("world_model"), _impl(std::make_unique<Implementation>(this))
+    : Node("mra_falcons_world_model"), _impl(std::make_unique<Implementation>(this))
 {
 }
 

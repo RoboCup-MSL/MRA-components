@@ -109,6 +109,44 @@ public:
     add_output(std::string const &varname, const MsgT &msg) {
         add_output(varname, rosmsg_to_json(msg));
     }
+    // specializations for ROS message pointers
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_input(std::string const &varname, const MsgT* msg) {
+        if (msg) {
+            add_input(varname, rosmsg_to_json(*msg));
+        } else {
+            add_input(varname, std::string("null"));
+        }
+    }
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_output(std::string const &varname, const MsgT* msg) {
+        if (msg) {
+            add_output(varname, rosmsg_to_json(*msg));
+        } else {
+            add_output(varname, std::string("null"));
+        }
+    }
+    // specializations for ROS message shared_ptr
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_input(std::string const &varname, const std::shared_ptr<MsgT> &msg) {
+        if (msg) {
+            add_input(varname, rosmsg_to_json(*msg));
+        } else {
+            add_input(varname, std::string("null"));
+        }
+    }
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_output(std::string const &varname, const std::shared_ptr<MsgT> &msg) {
+        if (msg) {
+            add_output(varname, rosmsg_to_json(*msg));
+        } else {
+            add_output(varname, std::string("null"));
+        }
+    }
 #endif
     // flushers
     void flush_input();

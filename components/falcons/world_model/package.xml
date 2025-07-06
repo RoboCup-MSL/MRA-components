@@ -1,5 +1,5 @@
 <package format="3">
-  <name>world_model</name>
+  <name>mra_falcons_world_model</name>
   <version>0.1.0</version>
   <description>The WorldModel component for the Falcons ROS 2 project.</description>
   <maintainer email="maintainer@example.com">Your Name</maintainer>

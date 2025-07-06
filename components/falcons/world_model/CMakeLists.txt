@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(world_model)
+project(mra_falcons_world_model)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -14,10 +14,6 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
 
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-
 # Add the executable for world_model_node
 add_executable(world_model_node src/world_model_node.cpp)
 ament_target_dependencies(world_model_node
@@ -28,15 +24,10 @@ ament_target_dependencies(world_model_node
   std_msgs
   mra_tracing
 )
-target_link_libraries(world_model_node
-  mra_tracing
-)
 
 install(TARGETS world_model_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
-target_link_directories(world_model_node PRIVATE ${mra_tracing_DIR}/../../../lib)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

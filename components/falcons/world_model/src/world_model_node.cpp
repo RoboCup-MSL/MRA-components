@@ -1,95 +1,96 @@
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/empty.hpp>
 #include "mra_falcons_configuration/ros_config.hpp"
 #include "mra_common_msgs/msg/world_state.hpp"
 #include "mra_common_msgs/msg/vision_objects.hpp"
 #include "falcons_msgs/msg/feedback.hpp"
 #include "mra_tracing/tracing.hpp"
 
-void count_primes_below(int lim)
-{
-    TRACE_FUNCTION_INPUTS(lim);
-    int count = 0;
-    for (int i = 2; i < lim; ++i) {
-        bool is_prime = true;
-        for (int j = 2; j * j <= i; ++j) {
-            if (i % j == 0) {
-                is_prime = false;
-                break;
-            }
-        }
-        if (is_prime) {
-            count++;
-        }
-    }
-    TRACE_FUNCTION_OUTPUTS(count);
-}
+#include "WorldModelNode.hpp"
+#include "WorldModelConvert.hpp"
 
-class WorldModel : public rclcpp::Node {
+class WorldModel : public rclcpp::Node
+{
 public:
-    WorldModel() : Node("world_model") {
-        // Get our namespace
+    WorldModel() : Node("world_model")
+    {
         std::string ns = this->get_namespace();
         TRACE_FUNCTION_INPUTS(ns);
+
+        // Create the core WorldModel component
+        _world_model = std::make_unique<falcons::WorldModelNode>();
+
         // Publisher for world_state
-        publisher_world_state_ = this->create_publisher<mra_common_msgs::msg::WorldState>("world_state", FALCONS_ROS_QOS);
+        _publisher_world_state = this->create_publisher<mra_common_msgs::msg::WorldState>(
+            "world_state", FALCONS_ROS_QOS);
+
         // Subscriber for feedback
-        subscriber_feedback_ = this->create_subscription<falcons_msgs::msg::Feedback>(
+        _subscriber_feedback = this->create_subscription<falcons_msgs::msg::Feedback>(
             "feedback", FALCONS_ROS_QOS,
             [this](const falcons_msgs::msg::Feedback::SharedPtr msg) {
-                this->handle_feedback(msg);
+                this->handleFeedback(msg);
             });
 
         // Subscriber for vision_objects
-        subscriber_vision_objects_ = this->create_subscription<mra_common_msgs::msg::VisionObjects>(
+        _subscriber_vision_objects = this->create_subscription<mra_common_msgs::msg::VisionObjects>(
             "vision", FALCONS_ROS_QOS,
             [this](const mra_common_msgs::msg::VisionObjects::SharedPtr msg) {
-                this->handle_vision_objects(msg);
+                this->handleVisionObjects(msg);
             });
     }
 
 private:
-    falcons_msgs::msg::Feedback _feedback;
-    mra_common_msgs::msg::VisionObjects _vision_objects;
+    std::unique_ptr<falcons::WorldModelNode> _world_model;
+    rclcpp::Publisher<mra_common_msgs::msg::WorldState>::SharedPtr _publisher_world_state;
+    rclcpp::Subscription<falcons_msgs::msg::Feedback>::SharedPtr _subscriber_feedback;
+    rclcpp::Subscription<mra_common_msgs::msg::VisionObjects>::SharedPtr _subscriber_vision_objects;
 
-    void handle_feedback(const falcons_msgs::msg::Feedback::SharedPtr msg) {
+    void handleFeedback(const falcons_msgs::msg::Feedback::SharedPtr msg)
+    {
         TRACE_FUNCTION();
-        // Process feedback message
-        _feedback = *msg;
+
+        // Convert ROS2 message to internal type
+        falcons::OdometryData odometry = falcons::WorldModelConvert::fromFeedback(*msg);
+
+        // Process with WorldModel
+        _world_model->processFeedback(odometry);
+
+        // Publish updated world state
+        publishWorldState();
     }
 
-    void handle_vision_objects(const mra_common_msgs::msg::VisionObjects::SharedPtr msg) {
+    void handleVisionObjects(const mra_common_msgs::msg::VisionObjects::SharedPtr msg)
+    {
         TRACE_FUNCTION();
-        // Process vision_objects message
-        _vision_objects = *msg;
-        // Trigger the tick function
-        tick();
+
+        // Convert ROS2 message to internal types
+        std::vector<falcons::VisionLandmark> landmarks =
+            falcons::WorldModelConvert::fromVisionObjects(*msg);
+
+        // Use message timestamp
+        auto timestamp = falcons::WorldModelConvert::fromRosTime(msg->timestamp);
+
+        // Process with WorldModel
+        _world_model->processVision(landmarks, timestamp);
+
+        // Publish updated world state
+        publishWorldState();
     }
 
-    void tick() {
+    void publishWorldState()
+    {
         TRACE_FUNCTION();
-        // Create and populate the world_state message
-        auto world_state_msg = mra_common_msgs::msg::WorldState();
-        count_primes_below(120000);
-        // TODO: Populate world_state_msg with the current world state data
-        /*
-        world_state_msg.position_x = ...;
-        world_state_msg.position_y = ...;
-        world_state_msg.orientation = ...;
-        world_state_msg.is_active = ...;
-        world_state_msg.detected_objects = ...;
-        */
 
-        // Publish the world_state message
-        publisher_world_state_->publish(world_state_msg);
+        // Get current world state
+        falcons::WorldModelState state = _world_model->getWorldState();
+
+        // Convert to ROS2 message and publish
+        auto world_state_msg = falcons::WorldModelConvert::toWorldState(state);
+        _publisher_world_state->publish(world_state_msg);
     }
-
-    rclcpp::Publisher<mra_common_msgs::msg::WorldState>::SharedPtr publisher_world_state_;
-    rclcpp::Subscription<falcons_msgs::msg::Feedback>::SharedPtr subscriber_feedback_;
-    rclcpp::Subscription<mra_common_msgs::msg::VisionObjects>::SharedPtr subscriber_vision_objects_;
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<WorldModel>());
     rclcpp::shutdown();

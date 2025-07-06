@@ -1,10 +1,8 @@
-#ifndef WORLD_MODEL_NODE_HPP
-#define WORLD_MODEL_NODE_HPP
+#pragma once
 
 #include "WorldModelTypes.hpp"
-#include "LocalizationFusion.hpp"
 #include <memory>
-#include <chrono>
+#include <vector>
 
 namespace falcons
 {
@@ -21,23 +19,24 @@ public:
 
     /**
      * Process vision objects input
-     * @param landmarks Vision landmarks converted from ROS2 message
+     * @param vision_objects Vision objects from ROS2 message
      * @param timestamp Time of the observation
      */
-    void processVision(const std::vector<VisionLandmark>& landmarks,
-                      const std::chrono::system_clock::time_point& timestamp);
+    void processVision(const std::vector<VisionObject>& vision_objects,
+                      const Time& timestamp);
 
     /**
      * Process odometry feedback input
-     * @param odometry Odometry data converted from ROS2 message
+     * @param velocity Odometry velocity from ROS2 message
+     * @param timestamp Time of the measurement
      */
-    void processFeedback(const OdometryData& odometry);
+    void processFeedback(const Twist& velocity, const Time& timestamp);
 
     /**
      * Get the current world state
-     * @return Current world state including robot pose
+     * @return Current world state as ROS2 message
      */
-    WorldModelState getWorldState() const;
+    WorldState getWorldState() const;
 
     /**
      * Reset the world model state
@@ -50,5 +49,3 @@ private:
 };
 
 } // namespace falcons
-
-#endif // WORLD_MODEL_NODE_HPP

@@ -13,15 +13,17 @@ find_package(mra_common_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 
 # Include directories
 include_directories(include)
 
 # Create library for WorldModel components
 add_library(${PROJECT_NAME}_lib
-    src/LocalizationFusion.cpp
-    src/WorldModelNode.cpp
-    src/WorldModelConvert.cpp
+  src/LocalizationFusion.cpp
+  src/WorldModelNode.cpp
+  src/WorldModelRosNode.cpp
 )
 
 ament_target_dependencies(${PROJECT_NAME}_lib
@@ -31,10 +33,12 @@ ament_target_dependencies(${PROJECT_NAME}_lib
   rclcpp
   std_msgs
   mra_tracing
+  geometry_msgs
+  builtin_interfaces
 )
 
 # Add the executable for world_model_node
-add_executable(world_model_node src/world_model_node.cpp)
+add_executable(world_model_node src/main_node.cpp)
 target_link_libraries(world_model_node ${PROJECT_NAME}_lib)
 ament_target_dependencies(world_model_node
   falcons_msgs

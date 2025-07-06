@@ -2,6 +2,7 @@
 #define LOCALIZATION_FUSION_HPP
 
 #include "WorldModelTypes.hpp"
+#include <vector>
 #include <memory>
 
 namespace falcons
@@ -20,16 +21,20 @@ public:
 
     /**
      * Process new localization input and update pose estimate
-     * @param input Combined vision and odometry data
-     * @return Updated robot pose with confidence
+     * @param vision_objects Vision objects from camera
+     * @param odometry_velocity Current velocity from odometry
+     * @param timestamp Time of the measurement
+     * @return Updated robot pose
      */
-    RobotPose tick(const LocalizationInput& input);
+    Pose tick(const std::vector<VisionObject>& vision_objects,
+              const Twist& odometry_velocity,
+              const Time& timestamp);
 
     /**
      * Get the current best pose estimate
      * @return Current robot pose
      */
-    RobotPose getCurrentPose() const;
+    Pose getCurrentPose() const;
 
     /**
      * Reset the localization state (e.g., when robot is repositioned)

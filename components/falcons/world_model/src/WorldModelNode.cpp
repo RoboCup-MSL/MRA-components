@@ -13,10 +13,10 @@ public:
         reset();
     }
 
-    void processVision(const std::vector<VisionLandmark>& landmarks,
-                      const std::chrono::system_clock::time_point& timestamp)
+    void processVision(const std::vector<VisionObject>& vision_objects,
+                      const Time& timestamp)
     {
-        _pending_landmarks = landmarks;
+        _pending_vision_objects = vision_objects;
         _vision_timestamp = timestamp;
         _has_vision_data = true;
 
@@ -27,16 +27,17 @@ public:
         }
     }
 
-    void processFeedback(const OdometryData& odometry)
+    void processFeedback(const Twist& velocity, const Time& timestamp)
     {
-        _pending_odometry = odometry;
+        _pending_velocity = velocity;
+        _odometry_timestamp = timestamp;
         _has_odometry_data = true;
 
         // Always trigger tick on odometry (vision is optional)
         tick();
     }
 
-    WorldModelState getWorldState() const
+    WorldState getWorldState() const
     {
         return _current_state;
     }
@@ -44,51 +45,51 @@ public:
     void reset()
     {
         _localization_fusion->reset();
-        _current_state = WorldModelState();
+        _current_state = WorldState();
         _has_vision_data = false;
         _has_odometry_data = false;
-        _pending_landmarks.clear();
+        _pending_vision_objects.clear();
     }
 
 private:
     std::unique_ptr<LocalizationFusion> _localization_fusion;
-    WorldModelState _current_state;
+    WorldState _current_state;
 
     // Pending data for processing
-    std::vector<VisionLandmark> _pending_landmarks;
-    OdometryData _pending_odometry;
-    std::chrono::system_clock::time_point _vision_timestamp;
+    std::vector<VisionObject> _pending_vision_objects;
+    Twist _pending_velocity;
+    Time _vision_timestamp;
+    Time _odometry_timestamp;
     bool _has_vision_data = false;
     bool _has_odometry_data = false;
 
     void tick()
     {
-        // Create localization input
-        LocalizationInput input;
-        input.timestamp = _pending_odometry.timestamp;
-        input.odometry = _pending_odometry;
-
-        // Add vision data if available
-        if (_has_vision_data)
+        // Determine which timestamp to use (latest available)
+        Time processing_timestamp = _odometry_timestamp;
+        if (_has_vision_data && timeToSeconds(_vision_timestamp) > timeToSeconds(_odometry_timestamp))
         {
-            input.landmarks = _pending_landmarks;
-            // Use vision timestamp if it's more recent
-            if (_vision_timestamp > input.timestamp)
-            {
-                input.timestamp = _vision_timestamp;
-            }
+            processing_timestamp = _vision_timestamp;
         }
 
-        // Process localization
-        RobotPose updated_pose = _localization_fusion->tick(input);
+        // Process localization with ROS types directly
+        Pose updated_pose = _localization_fusion->tick(
+            _has_vision_data ? _pending_vision_objects : std::vector<VisionObject>(),
+            _pending_velocity,
+            processing_timestamp
+        );
 
-        // Update world state
-        _current_state.timestamp = input.timestamp;
-        _current_state.robot_pose = updated_pose;
+        // Update world state with ROS types directly
+        _current_state.time = processing_timestamp;
+        _current_state.robot.pose = updated_pose;
 
-        // Reset pending data flags
+        // Reset vision data flag (odometry is kept for next iteration)
         _has_vision_data = false;
-        // Keep odometry data available for next tick
+    }
+
+    double timeToSeconds(const Time& time)
+    {
+        return time.sec + time.nanosec * 1e-9;
     }
 };
 
@@ -99,18 +100,18 @@ WorldModelNode::WorldModelNode()
 
 WorldModelNode::~WorldModelNode() = default;
 
-void WorldModelNode::processVision(const std::vector<VisionLandmark>& landmarks,
-                                  const std::chrono::system_clock::time_point& timestamp)
+void WorldModelNode::processVision(const std::vector<VisionObject>& vision_objects,
+                                  const Time& timestamp)
 {
-    _impl->processVision(landmarks, timestamp);
+    _impl->processVision(vision_objects, timestamp);
 }
 
-void WorldModelNode::processFeedback(const OdometryData& odometry)
+void WorldModelNode::processFeedback(const Twist& velocity, const Time& timestamp)
 {
-    _impl->processFeedback(odometry);
+    _impl->processFeedback(velocity, timestamp);
 }
 
-WorldModelState WorldModelNode::getWorldState() const
+WorldState WorldModelNode::getWorldState() const
 {
     return _impl->getWorldState();
 }

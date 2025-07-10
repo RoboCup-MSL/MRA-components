@@ -147,6 +147,25 @@ public:
             add_output(varname, std::string("null"));
         }
     }
+    // specializations for ROS message const shared_ptr
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_input(std::string const &varname, const std::shared_ptr<const MsgT> &msg) {
+        if (msg) {
+            add_input(varname, rosmsg_to_json(*msg));
+        } else {
+            add_input(varname, std::string("null"));
+        }
+    }
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_output(std::string const &varname, const std::shared_ptr<const MsgT> &msg) {
+        if (msg) {
+            add_output(varname, rosmsg_to_json(*msg));
+        } else {
+            add_output(varname, std::string("null"));
+        }
+    }
 #endif
     // flushers
     void flush_input();

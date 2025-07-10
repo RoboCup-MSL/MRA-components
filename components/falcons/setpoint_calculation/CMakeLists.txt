@@ -12,6 +12,7 @@ find_package(mra_common_msgs REQUIRED)
 find_package(mra_falcons_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(message_filters REQUIRED)
 find_package(mra_tracing REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(mra_falcons_velocity_control REQUIRED)
@@ -52,6 +53,7 @@ ament_target_dependencies(${PROJECT_NAME}_node
     mra_falcons_msgs
     rclcpp
     std_msgs
+    message_filters
     mra_tracing
 )
 

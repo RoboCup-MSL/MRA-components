@@ -1,9 +1,7 @@
-#ifndef LOCALIZATION_FUSION_HPP
-#define LOCALIZATION_FUSION_HPP
+#pragma once
 
 #include "WorldModelTypes.hpp"
 #include <vector>
-#include <memory>
 
 namespace falcons
 {
@@ -42,10 +40,18 @@ public:
     void reset();
 
 private:
-    class Implementation;
-    std::unique_ptr<Implementation> _impl;
+    // Helper methods
+    void updatePoseFromOdometry(const Twist& velocity, const Time& timestamp);
+    void correctPoseFromVision(const std::vector<VisionObject>& vision_objects);
+    double timeToSeconds(const Time& time);
+    double quaternionToYaw(const geometry_msgs::msg::Quaternion& q);
+    geometry_msgs::msg::Quaternion yawToQuaternion(double yaw);
+
+    // Member variables
+    Pose _current_pose;
+    Time _last_timestamp;
+    bool _has_previous_timestamp = false;
+    double _confidence = 0.0;
 };
 
 } // namespace falcons
-
-#endif // LOCALIZATION_FUSION_HPP

@@ -75,6 +75,8 @@ private:
         _publisher_world_state->publish(world_state_msg);
 
         TRACE_FUNCTION_OUTPUTS(world_state_msg);
+        // Tracing: this might be the only place where world_state is published in full,
+        // for other functions it is more compact to just refer to the ID
     }
 };
 

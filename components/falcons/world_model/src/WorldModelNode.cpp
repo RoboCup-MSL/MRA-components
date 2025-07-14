@@ -35,14 +35,12 @@ public:
         _pending_velocity = velocity;
         _odometry_timestamp = timestamp;
         _has_odometry_data = true;
-        // Always trigger tick on odometry (vision is optional)
-        tick();
     }
 
     WorldState getWorldState() const
     {
         TRACE_FUNCTION();
-        TRACE_FUNCTION_OUTPUTS(_current_state);
+        TRACE_FUNCTION_OUTPUTS(_current_state.id);
         return _current_state;
     }
 
@@ -70,7 +68,8 @@ private:
 
     void tick()
     {
-        TRACE_FUNCTION();
+        _current_state.id++;
+        TRACE_FUNCTION_INPUTS(_current_state.id);
         // Determine which timestamp to use (latest available)
         Time processing_timestamp = _odometry_timestamp;
         if (_has_vision_data && timeToSeconds(_vision_timestamp) > timeToSeconds(_odometry_timestamp))
@@ -88,7 +87,7 @@ private:
         _current_state.robot.pose = updated_pose;
         // Reset vision data flag (odometry is kept for next iteration)
         _has_vision_data = false;
-        TRACE_FUNCTION_OUTPUTS(_current_state);
+        TRACE_FUNCTION_OUTPUTS(_current_state.id);
     }
 
     double timeToSeconds(const Time& time)
@@ -122,7 +121,7 @@ WorldState WorldModelNode::getWorldState() const
 {
     TRACE_FUNCTION();
     auto result = _impl->getWorldState();
-    TRACE_FUNCTION_OUTPUTS(result);
+    TRACE_FUNCTION_OUTPUTS(result.id);
     return result;
 }
 

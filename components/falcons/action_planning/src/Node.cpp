@@ -22,36 +22,30 @@ ActionPlanningROS::ActionPlanningROS()
     configurator_ = std::make_unique<ConfigurationROS>(this, config_file);
     planner_ = std::make_unique<ActionPlanner>(std::move(configurator_));
 
-    // subscribers
-    subscriber_world_state_ = this->create_subscription<types::WorldState>(
-        "world_state", FALCONS_ROS_QOS,
-        std::bind(&ActionPlanningROS::handle_world_state, this, std::placeholders::_1)
-    );
-    subscriber_action_ = this->create_subscription<types::ActionInput>(
-        "action", FALCONS_ROS_QOS,
-        std::bind(&ActionPlanningROS::handle_action_input, this, std::placeholders::_1)
-    );
+    // synchronized subscribers using message_filters
+    world_state_sub_.subscribe(this, "world_state", FALCONS_ROS_QOS.get_rmw_qos_profile());
+    action_input_sub_.subscribe(this, "action", FALCONS_ROS_QOS.get_rmw_qos_profile());
+    sync_ = std::make_shared<message_filters::TimeSynchronizer<types::WorldState, types::ActionInput>>(
+        world_state_sub_, action_input_sub_, 10);
+    sync_->registerCallback(std::bind(&ActionPlanningROS::synchronized_callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void ActionPlanningROS::handle_world_state(const types::WorldState::SharedPtr msg) {
-    TRACE_FUNCTION_INPUTS(msg->id);
-    world_state_ = *msg;
-}
+void ActionPlanningROS::synchronized_callback(const types::WorldState::ConstSharedPtr& world_state_msg,
+                                            const types::ActionInput::ConstSharedPtr& action_input_msg)
+{
+    TRACE_FUNCTION_INPUTS(world_state_msg->id, action_input_msg);
 
-void ActionPlanningROS::handle_action_input(const types::ActionInput::SharedPtr msg) {
-    TRACE_FUNCTION();
-    action_input_ = *msg;
-    // TODO: guard against race condition with arrival of new world_state? if teamplay would be fast
-    tick();
-}
-
-void ActionPlanningROS::tick() {
-    TRACE_FUNCTION();
     types::Targets targets_msg;
     types::ActionResult action_result_msg;
-    planner_->tick(world_state_, action_input_, action_result_msg, targets_msg);
+
+    // Call the planner with synchronized inputs
+    planner_->tick(*world_state_msg, *action_input_msg, action_result_msg, targets_msg);
+
+    // Publish results
     publisher_targets_->publish(targets_msg);
     publisher_action_result_->publish(action_result_msg);
+
+    TRACE_FUNCTION_OUTPUTS(targets_msg, action_result_msg);
 }
 
 // main function

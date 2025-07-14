@@ -8,6 +8,7 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(message_filters REQUIRED)
 find_package(mra_falcons_configuration REQUIRED)
 find_package(mra_common_msgs REQUIRED)
 find_package(mra_tracing REQUIRED)
@@ -27,6 +28,7 @@ add_executable(mra_falcons_action_planning_node
 # Link libraries
 ament_target_dependencies(mra_falcons_action_planning_node
     rclcpp
+    message_filters
     mra_falcons_configuration
     mra_common_msgs
     mra_tracing

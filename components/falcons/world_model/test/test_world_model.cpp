@@ -158,9 +158,8 @@ TEST_F(WorldModelNodeTest, ProcessFeedback)
 
     WorldState state = world_model->getWorldState();
 
-    // Should have updated timestamp
-    EXPECT_EQ(state.time.sec, timestamp.sec);
-    EXPECT_EQ(state.time.nanosec, timestamp.nanosec);
+    // Should not have ticked
+    EXPECT_EQ(state.id, 0);
 }
 
 TEST_F(WorldModelNodeTest, ProcessVision)
@@ -178,6 +177,7 @@ TEST_F(WorldModelNodeTest, ProcessVision)
     WorldState state = world_model->getWorldState();
 
     // Should have processed the vision data successfully
+    EXPECT_EQ(state.id, 1);
     EXPECT_EQ(state.time.sec, timestamp.sec);
     EXPECT_EQ(state.time.nanosec, timestamp.nanosec);
 }

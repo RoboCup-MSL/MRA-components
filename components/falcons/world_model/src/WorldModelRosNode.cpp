@@ -81,6 +81,7 @@ private:
 WorldModelRosNode::WorldModelRosNode()
     : Node("mra_falcons_world_model"), _impl(std::make_unique<Implementation>(this))
 {
+    TRACE_FUNCTION();
 }
 
 WorldModelRosNode::~WorldModelRosNode() = default;

@@ -34,7 +34,7 @@ ActionPlanningROS::ActionPlanningROS()
 }
 
 void ActionPlanningROS::handle_world_state(const types::WorldState::SharedPtr msg) {
-    TRACE_FUNCTION();
+    TRACE_FUNCTION_INPUTS(msg->id);
     world_state_ = *msg;
 }
 

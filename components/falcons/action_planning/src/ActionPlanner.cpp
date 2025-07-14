@@ -21,7 +21,7 @@ void ActionPlanner::tick(
     types::ActionResult &action_result,
     types::Targets &targets
 ) {
-    TRACE_FUNCTION_INPUTS(world_state, action_input);
+    TRACE_FUNCTION_INPUTS(world_state.id, action_input);
 
     uint8_t current_action_type = action_input.type;
     auto it = actions_.find(current_action_type);

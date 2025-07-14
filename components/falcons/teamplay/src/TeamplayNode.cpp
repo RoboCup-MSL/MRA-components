@@ -17,7 +17,7 @@ public:
 
     void feedWorldState(const WorldState& world_state)
     {
-        TRACE_FUNCTION_INPUTS(world_state);
+        TRACE_FUNCTION_INPUTS(world_state.id);
         current_world_state_ = world_state;
     }
 
@@ -39,6 +39,7 @@ public:
 
     void reset()
     {
+        TRACE_FUNCTION();
         action_choice_.reset();
         current_world_state_ = WorldState();
         current_action_ = Action();

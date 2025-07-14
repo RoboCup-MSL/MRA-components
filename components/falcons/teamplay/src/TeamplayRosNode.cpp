@@ -30,7 +30,7 @@ private:
     void handleWorldState(const mra_common_msgs::msg::WorldState::SharedPtr msg)
     {
         // Trace meaningful message data
-        TRACE_FUNCTION_INPUTS(msg);
+        TRACE_FUNCTION_INPUTS(msg->id);
 
         // Process through core teamplay logic
         teamplay_node_.feedWorldState(*msg);

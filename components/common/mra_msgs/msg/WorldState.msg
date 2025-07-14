@@ -1,5 +1,8 @@
 # WorldState.msg, as produced by WorldModel (or simulator)
 
+# A running counter
+int32 id
+
 # Absolute timestamp
 builtin_interfaces/Time time
 

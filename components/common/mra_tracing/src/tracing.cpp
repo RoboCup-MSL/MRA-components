@@ -2,10 +2,19 @@
 #include <unistd.h>
 #include <mutex>
 #include <filesystem>
+#include <fstream>
+#include <atomic>
+#include <cstdlib>
 
 #define MAX_LINE_LENGTH 4096
 
 using namespace MRA::tracing;
+
+// Global variables for trace metadata
+static std::atomic<bool> g_header_written{false};
+
+// Forward declaration
+void write_trace_header();
 
 FunctionRecord::FunctionRecord(SourceLoc loc)
     : loc_(loc)
@@ -165,6 +174,8 @@ std::string format_time_point(timestamp_t const &timestamp, const char *format)
 
 void dispatch_trace_line(timestamp_t const &timestamp, SourceLoc const &loc, std::string const &details)
 {
+    // Write header if this is the first trace line
+    write_trace_header();
     // sanitize string, e.g. replace newlines with '\n'
     std::string s = sanitize(details);
     // prevent overflow
@@ -194,4 +205,67 @@ void FunctionRecord::flush_output(timestamp_t const &timestamp)
 {
     std::string js = convert_to_json(output_data_);
     dispatch_trace_line(timestamp, loc_, std::string("< ") + js.c_str());
+}
+
+void write_trace_header()
+{
+    if (g_header_written.exchange(true)) {
+        return; // Header already written
+    }
+    std::string trace_filename = determine_trace_filename("");
+    if (trace_filename.empty()) {
+        return; // No trace file
+    }
+    // Check if file exists and is non-empty
+    bool file_exists = std::filesystem::exists(trace_filename);
+    bool file_empty = true;
+    if (file_exists) {
+        std::ifstream file(trace_filename);
+        file_empty = file.peek() == std::ifstream::traits_type::eof();
+    }
+    // Only write header if file is new or empty
+    if (!file_exists || file_empty) {
+        pid_t pid = getpid();
+        // Try to detect ROS namespace from environment
+        std::string ros_namespace = "";
+        const char* env_namespace = std::getenv("ROS_NAMESPACE");
+        if (env_namespace != nullptr) {
+            ros_namespace = std::string(env_namespace);
+        }
+        // Get the command line with arguments
+        std::string cmd_line = "";
+        std::ifstream cmdline("/proc/self/cmdline");
+        if (cmdline.is_open()) {
+            std::string arg;
+            bool first = true;
+            while (std::getline(cmdline, arg, '\0')) {
+                if (!first) {
+                    cmd_line += " ";
+                } else {
+                    first = false;
+                }
+                cmd_line += arg;
+            }
+        }
+        // Build header JSON
+        std::string header_json = "{\"pid\":" + std::to_string(pid);
+        if (!ros_namespace.empty()) {
+            header_json += ",\"ros_namespace\":\"" + ros_namespace + "\"";
+        }
+        if (!cmd_line.empty()) {
+            header_json += ",\"command_line\":\"" + cmd_line + "\"";
+        }
+        header_json += "}";
+        // Write header directly to file
+        static std::mutex mtx;
+        std::lock_guard<std::mutex> lock(mtx);
+        FILE *fp = fopen(trace_filename.c_str(), "a");
+        if (fp != nullptr) {
+            fputs("# ", fp);
+            fputs(header_json.c_str(), fp);
+            fputs("\n", fp);
+            fflush(fp);
+            fclose(fp);
+        }
+    }
 }

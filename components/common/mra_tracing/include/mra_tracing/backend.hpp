@@ -167,6 +167,86 @@ public:
         }
     }
 #endif
+    // specializations for std::vector (excluding ROS messages which have their own specialization)
+#ifdef HAVE_ROS2
+    template<typename T>
+    std::enable_if_t<!rosidl_generator_traits::is_message<T>::value, void>
+    add_input(std::string const &varname, const std::vector<T> &vec) {
+#else
+    template<typename T>
+    void add_input(std::string const &varname, const std::vector<T> &vec) {
+#endif
+        std::ostringstream oss;
+        oss << "[";
+        for (size_t i = 0; i < vec.size(); ++i) {
+            if (i > 0) oss << ", ";
+            if constexpr (std::is_arithmetic_v<T>) {
+                oss << vec[i];
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                oss << "\"" << vec[i] << "\"";
+            } else if constexpr (std::is_same_v<T, bool>) {
+                oss << (vec[i] ? "true" : "false");
+            } else {
+                // For complex types, try to use operator<<
+                oss << vec[i];
+            }
+        }
+        oss << "]";
+        add_input(varname, oss.str());
+    }
+#ifdef HAVE_ROS2
+    template<typename T>
+    std::enable_if_t<!rosidl_generator_traits::is_message<T>::value, void>
+    add_output(std::string const &varname, const std::vector<T> &vec) {
+#else
+    template<typename T>
+    void add_output(std::string const &varname, const std::vector<T> &vec) {
+#endif
+        std::ostringstream oss;
+        oss << "[";
+        for (size_t i = 0; i < vec.size(); ++i) {
+            if (i > 0) oss << ", ";
+            if constexpr (std::is_arithmetic_v<T>) {
+                oss << vec[i];
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                oss << "\"" << vec[i] << "\"";
+            } else if constexpr (std::is_same_v<T, bool>) {
+                oss << (vec[i] ? "true" : "false");
+            } else {
+                // For complex types, try to use operator<<
+                oss << vec[i];
+            }
+        }
+        oss << "]";
+        add_output(varname, oss.str());
+    }
+#ifdef HAVE_ROS2
+    // specializations for std::vector of ROS messages
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_input(std::string const &varname, const std::vector<MsgT> &vec) {
+        std::ostringstream oss;
+        oss << "[";
+        for (size_t i = 0; i < vec.size(); ++i) {
+            if (i > 0) oss << ", ";
+            oss << rosmsg_to_json(vec[i]);
+        }
+        oss << "]";
+        add_input(varname, oss.str());
+    }
+    template<typename MsgT>
+    std::enable_if_t<rosidl_generator_traits::is_message<MsgT>::value, void>
+    add_output(std::string const &varname, const std::vector<MsgT> &vec) {
+        std::ostringstream oss;
+        oss << "[";
+        for (size_t i = 0; i < vec.size(); ++i) {
+            if (i > 0) oss << ", ";
+            oss << rosmsg_to_json(vec[i]);
+        }
+        oss << "]";
+        add_output(varname, oss.str());
+    }
+#endif
     // flushers
     void flush_input();
     void flush_output(timestamp_t const &timestamp);

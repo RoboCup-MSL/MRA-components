@@ -24,7 +24,7 @@ mra_falcons_msgs::msg::Setpoints SetpointCalculation::process(
     const mra_common_msgs::msg::Targets& targets,
     const mra_common_msgs::msg::WorldState& world_state)
 {
-    TRACE_FUNCTION_INPUTS(targets, world_state);
+    TRACE_FUNCTION_INPUTS(targets, world_state.id);
 
     auto setpoints_msg = mra_falcons_msgs::msg::Setpoints();
 
@@ -48,7 +48,7 @@ mra_common_msgs::msg::MovementTarget SetpointCalculation::callPathPlanning(
     const mra_common_msgs::msg::MovementTarget& unsafe_target,
     const mra_common_msgs::msg::WorldState& world_state)
 {
-    TRACE_FUNCTION_INPUTS(unsafe_target, world_state);
+    TRACE_FUNCTION_INPUTS(unsafe_target, world_state.id);
 
     // For now, return the unsafe target as-is (no obstacle avoidance)
     auto safe_target = unsafe_target;
@@ -61,7 +61,7 @@ geometry_msgs::msg::Twist SetpointCalculation::callVelocityControl(
     const mra_common_msgs::msg::MovementTarget& safe_target,
     const mra_common_msgs::msg::WorldState& world_state)
 {
-    TRACE_FUNCTION_INPUTS(safe_target, world_state);
+    TRACE_FUNCTION_INPUTS(safe_target, world_state.id);
 
     // Convert ROS2 messages to internal VelocityControl types
     VelocityControlTypes::VelocityControlInput vc_input;
@@ -105,7 +105,7 @@ mra_falcons_msgs::msg::Kicker SetpointCalculation::callShootPlanning(
     const mra_common_msgs::msg::ShootingTarget& shoot_target,
     const mra_common_msgs::msg::WorldState& world_state)
 {
-    TRACE_FUNCTION_INPUTS(shoot_target, world_state);
+    TRACE_FUNCTION_INPUTS(shoot_target, world_state.id);
 
     mra_falcons_msgs::msg::Kicker kicker_setpoints;
 

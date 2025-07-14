@@ -39,7 +39,7 @@ private:
     void synchronized_callback(const mra_common_msgs::msg::Targets::ConstSharedPtr& targets_msg,
                               const mra_common_msgs::msg::WorldState::ConstSharedPtr& world_state_msg)
     {
-        TRACE_FUNCTION_INPUTS(targets_msg, world_state_msg);
+        TRACE_FUNCTION_INPUTS(targets_msg, world_state_msg->id);
         // Use the setpoint calculation library to process the data
         auto setpoints_msg = setpoint_calculation_->process(*targets_msg, *world_state_msg);
         publisher_setpoints_->publish(setpoints_msg);

@@ -142,21 +142,39 @@ void append_to_tracefile(std::string const &filename, std::string const &line)
     }
 }
 
-// TODO: static variable(s) to speedup?
+// Static variables for optimization
+static std::string g_trace_dir = "";
+static bool g_trace_dir_initialized = false;
+static bool g_tracing_enabled = false;
 
 std::string determine_trace_filename(std::string const &loc_filename)
 {
-    // we cannot write to /tmp because of docker container permissions
-    // reuse log folder as produced by ros2
-    // it is assumed that the launch script creates the folder and symlink
     (void)loc_filename; // prevent unused variable warning
-    std::string log_folder = "/workspace/log/latest";
-    // check if the folder exists - if not, problem in launch script
-    if (!std::filesystem::exists(log_folder)) {
+
+    // Initialize trace directory once
+    if (!g_trace_dir_initialized) {
+        g_trace_dir_initialized = true;
+
+        // Try MRA_TRACING_DIR environment variable first
+        const char* env_trace_dir = std::getenv("MRA_TRACING_DIR");
+        if (env_trace_dir != nullptr) {
+            g_trace_dir = std::string(env_trace_dir);
+        } else {
+            // Fallback to /tmp/mra_tracing
+            g_trace_dir = "/tmp/mra_tracing";
+        }
+
+        // Check if the directory exists - if not, disable tracing
+        g_tracing_enabled = std::filesystem::exists(g_trace_dir) && std::filesystem::is_directory(g_trace_dir);
+    }
+
+    // Return empty string if tracing is disabled (optimization for no-op)
+    if (!g_tracing_enabled) {
         return "";
     }
-    pid_t pid = getpid(); // get pid
-    std::string result = log_folder + "/process_" + std::to_string(pid) + ".trace";
+
+    pid_t pid = getpid();
+    std::string result = g_trace_dir + "/process_" + std::to_string(pid) + ".trace";
     return result;
 }
 
@@ -174,6 +192,12 @@ std::string format_time_point(timestamp_t const &timestamp, const char *format)
 
 void dispatch_trace_line(timestamp_t const &timestamp, SourceLoc const &loc, std::string const &details)
 {
+    // Early return if tracing is disabled (optimization for no-op)
+    std::string trace_filename = determine_trace_filename(loc.filename);
+    if (trace_filename.empty()) {
+        return;
+    }
+
     // Write header if this is the first trace line
     write_trace_header();
     // sanitize string, e.g. replace newlines with '\n'
@@ -192,7 +216,7 @@ void dispatch_trace_line(timestamp_t const &timestamp, SourceLoc const &loc, std
     std::string loc_str = std::string(loc.filename) + ":" + std::to_string(loc.line) + "," + loc.funcname;
     std::string line = timestamp_str + " " + loc_str + " " + s;
     // append to file
-    append_to_tracefile(determine_trace_filename(loc.filename), line);
+    append_to_tracefile(trace_filename, line);
 }
 
 void FunctionRecord::flush_input()

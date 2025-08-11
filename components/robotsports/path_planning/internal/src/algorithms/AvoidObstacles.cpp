@@ -50,6 +50,13 @@ struct posval_compare // for std::set
 
 
 // obstacle avoidance algorithm
+double dotproduct(const MRA::Geometry::Point& a, const MRA::Geometry::Point& b) {
+    return (a.x*b.x + a.y*b.y);
+}
+
+double CrossProduct(const MRA::Geometry::Point& a, const MRA::Geometry::Point& b) {
+    return (a.x*b.y) - (a.y*b.x);
+}
 
 void AvoidObstacles::execute(PathPlanningData &data)
 {
@@ -93,18 +100,27 @@ void AvoidObstacles::execute(PathPlanningData &data)
                 // Pre-compute a_i and b_i for all obstacles, and store in the struct for later reuse.
                 MRA::Geometry::Point obstVec = MRA::Geometry::Point(obstacles[i].location.x, obstacles[i].location.y);
                 MRA_LOG_DEBUG("obstVec at: %s", obstVec.toString().c_str());
-                // TODO: Jurge
                 MRA::Geometry::Point tgtCur = (targetXY - curPosXY);
                 MRA::Geometry::Point obstCur = (obstVec - curPosXY);
 
-                obstacles[i].a_i = (tgtCur.x*obstCur.x + tgtCur.y*obstCur.y) / (targetXY - curPosXY).size();
+                obstacles[i].a_i = ((tgtCur.x*obstCur.x) + (tgtCur.y*obstCur.y)) / (targetXY - curPosXY).size();
                 // where (tgtCur.x*obstCur.x + tgtCur.y*obstCur.y) : vector2d(a) * vector2d(b)
 
-                obstacles[i].b_i = (tgtCur.x*obstCur.y + tgtCur.y*obstCur.x) / (targetXY - curPosXY).size();
-                //where  (tgtCur.x*obstCur.y + tgtCur.y*obstCur.x) : vector2d(a).CrossProduct(vector2d(b))
+                obstacles[i].b_i = ((tgtCur.x*obstCur.y) - (tgtCur.y*obstCur.x)) / (targetXY - curPosXY).size();
+                //where  (tgtCur.x*obstCur.y) - (tgtCur.y*obstCur.x) : vector2d(a).CrossProduct(vector2d(b))
+
+
+                // obstacles[i].a_i = ((target.xy() - currPos.xy()) * (obstVec - currPos.xy())) / (target.xy() - currPos.xy()).size();
+                // obstacles[i].b_i = ((target.xy() - currPos.xy()).CrossProduct((obstVec - currPos.xy()))) / (target.xy() - currPos.xy()).size();
+
 
                 obstacles[i].radius = config.obstacleRadius;
                 // ROADMAP: vision/worldModel might know radius better at some point
+                MRA_LOG_DEBUG("cXYTrajectory#Step1::obstVec at: X: %6.2f, Y: %6.2f\n", obstVec.x, obstVec.y);
+                MRA_LOG_DEBUG("cXYTrajectory#Step1::obstVec at: obstacles[%d]: a_i: %6.2f, b_i: %6.2f, radius: %6.2f\n", i, obstacles[i].a_i, obstacles[i].b_i, obstacles[i].radius);
+                MRA_LOG_DEBUG("cXYTrajectory#Step1::(targetXY - curPosXY).size(): %6.2f\n", (targetXY - curPosXY).size());
+                MRA_LOG_DEBUG("cXYTrajectory#Step1::(tgtCur.x*obstCur.x + tgtCur.y*obstCur.y): %6.2f\n", (tgtCur.x*obstCur.x + tgtCur.y*obstCur.y));
+                MRA_LOG_DEBUG("cXYTrajectory#Step1::(tgtCur.x*obstCur.y + tgtCur.y*obstCur.x): %6.2f\n", (tgtCur.x*obstCur.y + tgtCur.y*obstCur.x));
 
                 // Equation (4) from the paper.
                 if (( 0 < obstacles[i].a_i ) &&

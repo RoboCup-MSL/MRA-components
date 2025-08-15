@@ -22,6 +22,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y python3-dev
         sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libboost-dev
+
 
     - name: Run code generator
       run: ./MRA-codegen.py -e
@@ -46,6 +48,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y python3-dev
         sudo apt-get install -y libopencv-dev
+        sudo apt-get install -y libboost-dev
 
     - name: Run code generator
       run: ./MRA-codegen.py -e

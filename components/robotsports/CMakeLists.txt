@@ -19,6 +19,9 @@ endif()
 if(BUILD_ROBOTSPORTS_OBSTACLE_TRACKING)
     add_subdirectory(obstacle_tracking)
 endif()
+if(BUILD_ROBOTSPORTS_PATH_PLANNING)
+    add_subdirectory(path_planning)
+endif()
 if(BUILD_ROBOTSPORTS_PROVE_IS_ALIVE)
     add_subdirectory(prove_is_alive)
 endif()
@@ -38,6 +41,7 @@ target_link_libraries(MRA-components-robotsports
     $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},MRA-components-robotsports-local-ball-tracking,>
     $<IF:${BUILD_ROBOTSPORTS_LOCAL_OBSTACLE_TRACKING},MRA-components-robotsports-local-obstacle-tracking,>
     $<IF:${BUILD_ROBOTSPORTS_OBSTACLE_TRACKING},MRA-components-robotsports-obstacle-tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_PATH_PLANNING},MRA-components-robotsports-path-planning,>
     $<IF:${BUILD_ROBOTSPORTS_PROVE_IS_ALIVE},MRA-components-robotsports-prove-is-alive,>
     $<IF:${BUILD_ROBOTSPORTS_ROBOT_STRATEGY},MRA-components-robotsports-robot-strategy,>
     $<IF:${BUILD_ROBOTSPORTS_VELOCITY_CONTROL},MRA-components-robotsports-velocity-control,>
@@ -51,6 +55,7 @@ target_link_directories(MRA-components-robotsports PUBLIC
     $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},${MRA_BINARY_DIR}/components/robotsports/local_ball_tracking,>
     $<IF:${BUILD_ROBOTSPORTS_LOCAL_BALL_TRACKING},${MRA_BINARY_DIR}/components/robotsports/local_obstacle_tracking,>
     $<IF:${BUILD_ROBOTSPORTS_OBSTACLE_TRACKING},${MRA_BINARY_DIR}/components/robotsports/obstacle_tracking,>
+    $<IF:${BUILD_ROBOTSPORTS_PATH_PLANNING},${MRA_BINARY_DIR}/components/robotsports/path_planning,>
     $<IF:${BUILD_ROBOTSPORTS_PROVE_IS_ALIVE},${MRA_BINARY_DIR}/components/robotsports/prove_is_alive,>
     $<IF:${BUILD_ROBOTSPORTS_ROBOT_STRATEGY},${MRA_BINARY_DIR}/components/robotsports/robot_strategy,>
     $<IF:${BUILD_ROBOTSPORTS_VELOCITY_CONTROL},${MRA_BINARY_DIR}/components/robotsports/velocity_control,>

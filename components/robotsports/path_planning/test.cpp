@@ -484,7 +484,7 @@ TEST(RobotsportsPathPlanningTest, avoid_teammember_left)
     input.motionSetpoint.position.y = 0.1;
     robotState_t r;
     r.position = {};
-    r.position.y = 2.0;
+    r.position.x = 2.0;
     r.active = true;
     input.teamRobotState.push_back(r);
 

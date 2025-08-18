@@ -22,6 +22,20 @@ std::string convert_proto_to_json_str(T const &tproto)
     return result;
 }
 
+template <typename T>
+std::string convert_proto_to_json_str_pretty(T const &tproto, unsigned indent=4)
+{
+    // convert to json string and apply pretty formating on it.
+    std::string json_string = convert_proto_to_json_str(tproto);
+    try {
+        nlohmann::json j = nlohmann::json::parse(json_string);
+        return j.dump(indent);
+    }
+    catch (nlohmann::json::parse_error& e) {
+        throw std::runtime_error("json parse error on string: " + json_string);
+    }
+}
+
 template <typename T> // TODO: rework this one, it isn't pretty and too magic.
 void convert_json_to_proto(nlohmann::json const &j, std::string key, T &tproto)
 {

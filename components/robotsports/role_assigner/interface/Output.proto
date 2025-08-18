@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package MRA.RobotsportsRoleAssigner;
+
+import "datatypes/PosVel.proto";
+import "datatypes/Point.proto";
+import "datatypes/DynamicRole.proto";
+
+enum PathPurpose {
+    GOTO_BALL = 0;   // path to the ball
+    DRIBBLE = 1;   // path with ball
+    SUPPORT_DEFENSE = 2;  // path to defending position
+    SUPPORT_ATTACK = 3;  // path to atttacking position
+    PREPARE_RESTART = 4;  // path to restarting position
+    GOTO_TARGET_POSITION = 5;  // path to arbitrary position
+    SWEEPER = 6; // path to sweeper position (main defender)
+    GOTO_TARGET_POSITION_SLOW = 7; // slowly drive to arbitrary position
+    PRIORITY_BLOCK = 8; // path to blocking position for main attack (
+    GOALKEEPER_PURPOSE = 9;  // path for goalie
+};
+
+message PathPiece {
+    double x = 1;   // [FCS]
+    double y = 2;   // [FCS]
+    double cost = 3;  // cost to this path piece from the previous path piece
+    PathPurpose target = 4; // from enum-type planner_target_e
+};
+
+message DefendInfo {
+    int32 trackingId = 1; // trackingid from obstacle tracking of the opponent to defend
+    double dist_from_defending_id = 2;  // distance to stay to the opponent to defend
+    bool between_ball_and_defending_pos = 3; // true: defend between defending pos and ball, otherwise between defending_pos and own goal
+};
+
+message Assignment {
+    int32 robotId = 1;  // robotId of robot for the assignment
+    MRA.Datatypes.DynamicRole role = 2;   // assigned role
+    MRA.Datatypes.Point target = 4; // target position for player
+    repeated PathPiece path = 5;    // rough x-y path to target
+    int32 role_rank = 6;  // order of role assignment (discuss: can be removed if list of assignments is in order of assignment
+    PathPurpose purpose = 7;  // purpose of path (intension how to execute the path
+    DefendInfo defend_info = 8; // object to defend, this field can be absent
+    bool is_pass_desitination = 9; // is player the destination of a pass
+};
+
+message Output
+{
+    repeated Assignment assignments = 1;
+}
+
+

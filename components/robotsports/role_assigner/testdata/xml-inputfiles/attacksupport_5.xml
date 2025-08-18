@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>improve attack supporter JIRA-545 Clipboard-5.png</tns:Description>
+  <tns:Options svgOutputFileName="output_team/attacksupport_5.svg" autoAssignGoalie="false" preferredSetplayKicker="1" preferredSetplayReceiver="2" />
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="-3" y="-5"/>
+  <tns:Team id="1" trackingId="1" x="-3.25" y="-5.2" hasBall="true"/>
+  <tns:Team id="2" trackingId="2" x="-1.5" y="-5.0"/>
+  <tns:Opponent trackingId="11" x="-4.0" y="-5.5"/>
+  <tns:Opponent trackingId="12" x="-0.5" y="-0.9"/>
+  <tns:PickupPosition x="-3" y="-5" ts="0.1" valid="true" />
+  <tns:SituationInfo passing_required="true" ball_status="OWNED_BY_PLAYER">
+  	<tns:PassData valid="false"/>
+  </tns:SituationInfo>
+ </tns:Situation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

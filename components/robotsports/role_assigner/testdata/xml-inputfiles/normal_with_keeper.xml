@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>Testcase for Crashing waterfall during RoboCup European 2016</tns:Description>
+  <tns:Options svgOutputFileName="output_team/normal_with_keeper.svg"/>
+  <tns:GameState>Normal</tns:GameState>
+  <tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+  <tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+  <tns:Ball x="2.62618" y="0.004218" velx="-0.921862" vely="-0.40396"/>
+  <tns:Team id="1" trackingId="1" x="-6.46358" y="-6.92918" rz="-1.42959" velx="0.745363" vely="1.3017" velrz="0.961922"/>
+  <tns:Team id="2" trackingId="2" x="-6.411" y="-2.051" rz="-1.534" velx="0.5" vely="-0.5" velrz="0" isGoalie="true"/>
+  <tns:Team id="3" trackingId="3" x="-6.494" y="-2.977" rz="-1.571" velx="0" vely="0" velrz="0"/>
+  <tns:Team id="4" trackingId="4" x="-6.424" y="-3.958" rz="-1.574" velx="1.407" vely="0.519" velrz="0"/>
+  <tns:Team id="5" trackingId="5" x="-6.543" y="-6.031" rz="-1.567" velx="0.477" vely="0.579" velrz="0"/>
+  <tns:SituationInfo passing_required="true" ball_status="FREE">
+    <tns:PassData valid="false"/>
+  </tns:SituationInfo>
+<!-- 
+game_state_e: 1
+ball: Position:  x:  2.62618 y:  0.004218 rz:  0 lin vel: x: -0.921862 y: -0.40396 rot vel: 0 valid: 1
+myTeam size: 5
+myTeam[0]: Position:  x:  -6.46358 y:  -6.92918 rz:  -1.42959 lin vel: x: 0.745363 y: 1.3017 rot vel: 0.961922 valid: 1
+myTeam[1]: Position:  x:  -6.411 y:  -2.051 rz:  -1.534 lin vel: x: 0.5 y: -0.5 rot vel: 0 valid: 1
+myTeam[2]: Position:  x:  -6.494 y:  -2.977 rz:  -1.571 lin vel: x: 0 y: 0 rot vel: 0 valid: 1
+myTeam[3]: Position:  x:  -6.424 y:  -3.958 rz:  -1.574 lin vel: x: 1.407 y: 0.519 rot vel: 0 valid: 1
+myTeam[4]: Position:  x:  -6.543 y:  -6.031 rz:  -1.567 lin vel: x: 0.477 y: 0.579 rot vel: 0 valid: 1
+opponents size: 0
+controlBallByPlayer: -1
+teamTypes size: 5
+TeamType[0] = 1 FIELD_PLAYER
+TeamType[1] = 2 GOALIE
+TeamType[2] = 1 FIELD_PLAYER
+TeamType[3] = 1 FIELD_PLAYER
+TeamType[4] = 1 FIELD_PLAYER
+m_plannerOptions: calculateAllPaths = 0
+minimumEdgeLength = 0.3
+maximumEdgeLength = 4
+minimumDistanceToEndPoint = 3
+nrVerticesFirstCircle = 6
+firstCircleRadius = 0.8
+VerticesSecondCircle  = 4
+secondCircleRadius  = 1.6
+safetyFactor  = 1
+addBarierVertices  = 1
+addUniformVertices  = 1
+manDefenseBetweenBallAndPlayer = 0
+nrSweeperWhenDefending  = 1
+nrSweeperWhenAttacking  = 1
+dist_before_penalty_area_for_sweeper = 0.75
+uniform_x_interval  = 2
+uniform_y_interval  = 2
+startingVelocityPenaltyFactor = 1
+distToapplyBallApproachVertices  = 12
+addBallApproachVertices  = 1
+ballApproachVerticesRadius  = 0.6
+ballApproachNumberOfVertices  = 8
+grid_size  = 0.5
+nrDynamicPlannerIterations = 0
+maxPossibleLinearSpeed = 0.2
+interceptionInfluenceDistance = 1.5
+interceptionDistancePenaltyFactor = 4
+grid_close_to_ball_normal_penalty = 17000
+grid_close_to_ball_normal_radius = 4.5
+grid_close_to_ball_restart_normal_penalty = 17000
+grid_close_to_ball_restart_normal_radius = 3.5
+grid_close_to_ball_restart_penalty_penalty = 17000
+grid_close_to_ball_restart_penalty_radius = 3.5
+grid_close_to_ball_restart_dropball_penalty = 17000
+grid_close_to_ball_restart_dropball_radius = 1.5
+grid_opponent_goal_clearance_x = 7
+grid_opponent_goal_clearance_y = 2.5
+svgOutputFileName = 
+svgDefaultTargetColor  = red
+svgBallColor = orange
+svgOriginalTargetColor = darkred
+svgTeamColor =  magenta
+svgOpponentColor =  = cyan
+svgDrawVelocity = 1
+svgDrawEdges = 0
+saveGridDataToFile = 0
+svgRobotPlanner = 0
+
+
+   -->  
+ </tns:Situation>
+
+
+
+
+
+
+
+
+
+
+
+

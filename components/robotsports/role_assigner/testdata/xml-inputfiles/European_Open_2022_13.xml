@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:Situation xmlns:tns="http://www.robotsports.nl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robotsports.nl ../../test/StrategyTester.xsd">
+  <tns:Description>intercept rolling ball, should not sent robot outside the field</tns:Description>
+  <tns:Options svgOutputFileName="output_team//European_Open_2022_13.svg"/>
+	<tns:GameState>Normal</tns:GameState>
+	<tns:AttackFormation>FORMATION_112</tns:AttackFormation>
+	<tns:DefenseFormation>FORMATION_112</tns:DefenseFormation>
+	<tns:Ball x="2.58" y="-4.14" velx="0.12" vely="1.27"/>
+	<tns:Team id="1" trackingId="1" x="1.391" y="-4.720" rz="-0.857" velx="1.544" vely="0.047" velrz="-0.661"     previous_result_present="true"  previous_result_ts="44768.7" previous_result_x="6.10937" previous_result_y="-2.42878" previous_result_dynamic_role="INTERCEPTOR"/>
+	<tns:Team id="2" trackingId="2" x="0.252" y="-8.690" rz="-0.230" velx="-0.049" vely="-0.083" velrz="0.000"  isGoalie="true"     previous_result_present="true"  previous_result_ts="44769.3" previous_result_x="0" previous_result_y="-8.49" previous_result_dynamic_role="GOALKEEPER"/>
+	<tns:Team id="3" trackingId="3" x="0.474" y="-6.685" rz="-0.624" velx="0.799" vely="-0.162" velrz="0.000"     previous_result_present="true"  previous_result_ts="44768.8" previous_result_x="0.75" previous_result_y="-6.75" previous_result_dynamic_role="SWEEPER"/>
+	<tns:Team id="4" trackingId="4" x="0.109" y="-3.483" rz="-2.119" velx="-0.025" vely="-0.706" velrz="0.000"     previous_result_present="true"  previous_result_ts="44768.9" previous_result_x="-0.123" previous_result_y="-3.59" previous_result_dynamic_role="DEFENDER"/>
+	<tns:Opponent trackingId="11" x="0.229" y="-0.569" rz="0.000" velx="0.685" vely="0.875" velrz="0.000" />
+	<tns:PickupPosition x="0.000" y="0.000" ts="44768.809" valid="false" />
+	<tns:SituationInfo passing_required="true" ball_status="FREE">
+		<tns:PassData valid="false"/>
+	</tns:SituationInfo>
+
+</tns:Situation>

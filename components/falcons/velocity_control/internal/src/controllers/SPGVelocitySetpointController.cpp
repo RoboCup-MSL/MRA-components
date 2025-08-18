@@ -44,19 +44,27 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data)
     // The final average angle between the two is then currentPosFCS.Rz + deltaAngle
 
     float w_pos = data.config.spg().weightfactorclosedlooppos();
-    double deltaRz = MRA::Geometry::wrap_pi(data.previousPositionSetpointFcs.rz - data.currentPositionFcs.rz) * w_pos;
+    float w_vel = data.config.spg().weightfactorclosedloopvel();
+    double deltaRz = 0.0;
+    if (data.state.has_velocitysetpointfcs()) {
+        deltaRz = MRA::Geometry::wrap_pi(data.previousPositionSetpointFcs.rz - data.currentPositionFcs.rz) * w_pos;
+    }
     double weightedRz = data.currentPositionFcs.rz + deltaRz;
 
-    Position2D weightedCurrentPositionFCS = data.currentPositionFcs * w_pos + data.previousPositionSetpointFcs * (1.0-w_pos);
-    weightedCurrentPositionFCS.rz = weightedRz;
-    float w_vel = data.config.spg().weightfactorclosedloopvel();
-    Velocity2D weightedCurrentVelocityFCS = data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0-w_vel);
+    Position2D weightedCurrentPositionFCS = data.currentPositionFcs;
+    if (data.state.has_velocitysetpointfcs()) {
+        weightedCurrentPositionFCS = data.currentPositionFcs * w_pos + data.previousPositionSetpointFcs * (1.0-w_pos);
+    }
 
+    weightedCurrentPositionFCS.rz = weightedRz;
+    Velocity2D weightedCurrentVelocityFCS = data.currentVelocityFcs;
+    if (data.state.has_velocitysetpointfcs()) {
+        weightedCurrentVelocityFCS = data.currentVelocityFcs * w_vel + data.previousVelocitySetpointFcs * (1.0-w_vel);
+    }
     _deltaPositionRCS = Position2D(data.targetPositionFcs).transformFcsToRcs(weightedCurrentPositionFCS);
     _deltaPositionRCS.rz = MRA::Geometry::wrap_pi(data.targetPositionFcs.rz - weightedCurrentPositionFCS.rz);
     _currentVelocityRCS = Velocity2D(weightedCurrentVelocityFCS).transformFcsToRcs(weightedCurrentPositionFCS);
     _targetVelocityRCS = Velocity2D(data.targetVelocityFcs).transformFcsToRcs(weightedCurrentPositionFCS);
-
 
     Position2D resultPosition;
     Velocity2D resultVelocity;
@@ -90,7 +98,6 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data)
     {
         result = calculateSPG(data, spgLimits, resultPosition, resultVelocity);
     }
-
 
     // check if motor limits are not exceeded.
     /* disabled - in MRA context, we must not depend on vtClient
@@ -130,7 +137,6 @@ bool SPGVelocitySetpointController::calculate(VelocityControlData &data)
 bool SPGVelocitySetpointController::isDofAccelerating(const VelocityControlData &data, const Velocity2D& resultVelocity, int dof, float threshold)
 {
     // To check if a DOF is accelerating, we should look if the _currentVelocityRCS -> resultVelocity is "moving away from zero".
-
     std::vector<double> currentVelocity;
     currentVelocity.push_back(_currentVelocityRCS.x);
     currentVelocity.push_back(_currentVelocityRCS.y);
@@ -141,21 +147,15 @@ bool SPGVelocitySetpointController::isDofAccelerating(const VelocityControlData 
     newVelocity.push_back(resultVelocity.y);
     newVelocity.push_back(resultVelocity.rz);
 
-
-    if (currentVelocity.at(dof) < 0.0)
-    {
+    if (currentVelocity.at(dof) < 0.0) {
         // newVelocity - currentVelocity < threshold
         // e.g., -2.0 - -1.0 = -1.0 < (-threshold)
         return (newVelocity.at(dof) - currentVelocity.at(dof)) < (-threshold);
-    }
-    else if (currentVelocity.at(dof) > 0.0)
-    {
+    } else if (currentVelocity.at(dof) > 0.0) {
         // newVelocity - currentVelocity > threshold
         // e.g., 2.0 - 1.0 = 1.0 > threshold
         return (newVelocity.at(dof) - currentVelocity.at(dof)) > threshold;
-    }
-    else
-    {
+    } else {
         // currentVelocity == 0.0
         return abs(newVelocity.at(dof)) > threshold;
     }

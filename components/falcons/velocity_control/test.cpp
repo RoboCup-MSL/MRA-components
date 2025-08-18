@@ -237,10 +237,272 @@ TEST(FalconsVelocityControlTest, bugLargeXYJump)
     // the problem was: output: {"velocity":{"x":-100,"y":-40}}
 }
 
-int main(int argc, char **argv)
-{
+
+// Section: basic moves, stateless
+TEST(FalconsVelocityControlTest, moveYwhenRotated) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(3.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.5*M_PI);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_setpoint()->mutable_position()->set_x(-1.0);
+    input.mutable_setpoint()->mutable_position()->set_y(5.0);
+    input.mutable_setpoint()->mutable_position()->set_rz(0.5*M_PI);
+    // input.mutable_setpoint()->mutable_position()->set_rz(0.0);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "state in: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    int error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    // Assert
+    // difference between the FCS positions is only in Y direction
+    // but player is rotated 90 degrees on the field
+    // Then in RCS this is a X change
+    EXPECT_EQ(error_value, 0);
+    EXPECT_FLOAT_EQ(output.velocity().x(), 0.025);
+    EXPECT_FLOAT_EQ(output.velocity().y(), 0.0);
+    EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
+}
+
+// Section: basic moves, stateless
+TEST(FalconsVelocityControlTest, velocityYwhenRotated) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(1.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(3.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-0.5*M_PI);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    input.mutable_setpoint()->mutable_velocity()->set_x(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(0.0);
+    // input.mutable_setpoint()->mutable_position()->set_rz(0.0);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    // std::cout << "input: " << MRA::convert_proto_to_json_str(input) << std::endl << std::flush;
+    // std::cout << "state in: " << MRA::convert_proto_to_json_str(state) << std::endl << std::flush;
+    int error_value = m.tick(input, params, state, output, diagnostics);
+    // std::cout << "state: out: " << MRA::convert_proto_to_json_str(params) << std::endl << std::flush;
+    // std::cout << "diagnostics: out: " << MRA::convert_proto_to_json_str(diagnostics) << std::endl << std::flush;
+    // std::cout << "output: " << MRA::convert_proto_to_json_str(output) << std::endl << std::flush;
+
+    // Assert
+    // difference between the FCS positions is only in Y direction
+    // but player is rotated 90 degrees on the field
+    // Then in RCS this is a X change
+    EXPECT_EQ(error_value, 0);
+    EXPECT_FLOAT_EQ(output.velocity().x(), -0.025);
+    EXPECT_NEAR(output.velocity().y(), 0.0, 1e-15);
+    EXPECT_FLOAT_EQ(output.velocity().rz(), 0.0);
+}
+
+
+TEST(FalconsVelocityControlTest, velocityOnly) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(1.0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.25);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_LT(output.velocity().x(), 0.0);  // negative x direction (exact number is not checked)
+    EXPECT_GT(output.velocity().y(), 0.0);  // positive y direction (exact number is not checked)
+    EXPECT_GT(output.velocity().rz(), 0.0); // positive rz direction (exact number is not checked)
+}
+
+TEST(FalconsVelocityControlTest, velocityXmin) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(-1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_LT(output.velocity().x(), 0.0);
+    EXPECT_EQ(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+TEST(FalconsVelocityControlTest, velocityXplus) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_x(1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_GT(output.velocity().x(), 0.0);
+    EXPECT_EQ(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+
+TEST(FalconsVelocityControlTest, velocityYmin) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(-1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_LT(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+TEST(FalconsVelocityControlTest, velocityYplus) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_y(+1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_GT(output.velocity().y(), 0.0);
+    EXPECT_EQ(output.velocity().rz(), 0.0);
+}
+
+TEST(FalconsVelocityControlTest, velocityRz) {
+    // Arrange
+    auto m = FalconsVelocityControl::FalconsVelocityControl();
+    auto input = FalconsVelocityControl::Input();
+    auto output = FalconsVelocityControl::Output();
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(-1.00);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(-6.50);
+    // input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(-1.57);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_x(0.00);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_position()->set_rz(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_x(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_y(0.0);
+    input.mutable_worldstate()->mutable_robot()->mutable_velocity()->set_rz(0.0);
+    input.mutable_setpoint()->mutable_velocity()->set_rz(1.0);
+    input.mutable_worldstate()->mutable_robot()->set_active(true);
+    auto params = m.defaultParams();
+    auto state = FalconsVelocityControl::State();
+    auto diagnostics = FalconsVelocityControl::Diagnostics();
+
+    // Act
+    int error_value = m.tick(input, params, state, output, diagnostics);
+
+    // Assert
+    EXPECT_EQ(error_value, 0);
+    EXPECT_EQ(diagnostics.controlmode(), MRA::FalconsVelocityControl::VEL_ONLY);
+    EXPECT_EQ(output.velocity().x(), 0.0);
+    EXPECT_EQ(output.velocity().y(), 0.0);
+    EXPECT_GT(output.velocity().rz(), 0.0);
+}
+
+int main(int argc, char **argv) {
     InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();
     return r;
 }
+
 

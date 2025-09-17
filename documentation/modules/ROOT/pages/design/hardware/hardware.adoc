@@ -18,7 +18,7 @@ The following hardware interfaces are defined:
 * timestamp (clock)
 
 .hardware package overview
-plantuml::{modelsdir}/mra_hardware_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_hardware_layer.puml[format=svg]
 
 
 

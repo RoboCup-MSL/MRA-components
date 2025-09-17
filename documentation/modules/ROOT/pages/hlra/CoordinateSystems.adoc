@@ -1,0 +1,53 @@
+ifndef::imagedir[]
+:imagedir: ../../images
+endif::[]
+
+== Coordinate Systems
+
+There are two relevant coordinate systems:
+
+* <<Field Coordinate System (FCS)>>
+* <<Robot Coordinate System (RCS)>>
+
+=== Robot Coordinate System (RCS)
+
+The Robot Coordinate System is defined in REP-0120 - Coordinate Frames for Humanoid Robots (more info: link:https://www.ros.org/reps/rep-0120.html[REP-0120])
+
+follows the right system principle;
+
+* the Robot Coordinate System is defined as viewed from the middle of the object towards the front of the robot (for a humanoid robot this is the front of the waist)
+* the 'XY' plane is coincident with the ground;
+* the origin of the coordinate system is coincident with the center of the robot;
+* the x-axis is positive towards the front of the object;
+* the y-axis is coincident with the center of the object and positive to the left;
+* the z-axis is positive above the ground;
+
+In the figure <<RCS_figure>> the x- and y-axis of an object (robot) are shown when the object has an angle q wrt the Field Coordinate System (capital X an Y axis)
+
+[#RCS_figure]
+.Robot Coordinate System
+image::{imagedir}/robot_coordinate_system_converted.png[]
+
+
+
+=== Field Coordinate System (FCS)
+
+Most data regarding robots, obstacles or ball are to be defined in a three-dimensional Cartesian coordinate system defined according to the following rules (see figure <<FCS_figure>>):
+
+[#FCS_figure]
+.Field Coordinate System
+image::{imagedir}/Humanoid_League_Field_CS.svg[]
+
+* the Field coordinate system is defined as viewed from the own side of the field;
+* the Field coordinate system follows the right system principle;
+* the 'XY' plane is coincident with the field floor;
+* the origin of the coordinate system is coincident with the center of the field;
+* the x-axis is positive towards the opponent goal;
+* the y-axis is coincident with the center of the mid-field line and positive to the left;
+* the z-axis is positive above the ground;
+* angles are measured from the X-axis, or from any other line parallel to the 'X' axis, in the counter.
+clockwise direction, and are defined in the interval [0..2π];
+* angle arithmetic uses (mod 2π).
+
+
+

@@ -4,7 +4,7 @@ endif::[]
 == World model
 
 .behavior overview
-plantuml::{modelsdir}/mra_worldmodel_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_worldmodel_layer.puml[format=svg]
 
 ===  Local obstacle tracker
 Track an obstacle using only the local (vision) sensors for it. +

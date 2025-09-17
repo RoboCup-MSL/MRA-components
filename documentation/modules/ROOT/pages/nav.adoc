@@ -6,11 +6,11 @@
 [plantuml]
 .components overview
 ----
-include::{modelsdir}/mra_overview_layers.puml[Start order (Happy flow) Sequence diagram]
+include::{modelsdir}/hlra_overview_layers.puml[Start order (Happy flow) Sequence diagram]
 ----
 
 == Conceptual
-* xref:mra/mra.adoc[Conceptual]
+* xref:hlra/hlra.adoc[Conceptual]
 
 == Design
 * xref:design/design.adoc[Design]

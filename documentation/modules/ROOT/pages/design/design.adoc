@@ -5,7 +5,7 @@ endif::[]
 == Design
 
 .components overview
-plantuml::{modelsdir}/mra_overview_layers.puml[format=svg]
+plantuml::{modelsdir}/hlra_overview_layers.puml[format=svg]
 
 <<<
 include::sideline.adoc[leveloffset=+1]

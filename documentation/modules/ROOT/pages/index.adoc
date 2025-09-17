@@ -1,4 +1,4 @@
-= MSL Reference Architecture
+= Humanoind League Reference Architecture (HLRA)
 :doctype: book
 :icons: font
 :title-page:
@@ -21,12 +21,12 @@ toc::[]
 
 
 :sectnums:
-include::mra/mra.adoc[leveloffset=+1]
+include::hlra/hlra.adoc[leveloffset=+1]
 
-include::mra/mra_components.adoc[leveloffset=+1]
+include::hlra/hlra_components.adoc[leveloffset=+1]
 
 include::design/design.adoc[Design]
 
-include::mra/roadmap.adoc[Roadmap]
+include::hlra/roadmap.adoc[Roadmap]
 
-include::mra/interface_definition_language_evaluation.adoc[IDLs]
+include::hlra/interface_definition_language_evaluation.adoc[IDLs]

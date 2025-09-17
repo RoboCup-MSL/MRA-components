@@ -6,7 +6,7 @@ info about sideline
 
 
 .sideline overview
-plantuml::{modelsdir}/mra_sideline_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_sideline_layer.puml[format=svg]
 
 The sideline package contains the components which are executed on the sideline controller.
 

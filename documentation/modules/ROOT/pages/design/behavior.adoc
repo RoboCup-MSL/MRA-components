@@ -4,7 +4,7 @@ endif::[]
 == Behavior
 
 .behavior overview
-plantuml::{modelsdir}/mra_behaviors_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_behaviors_layer.puml[format=svg]
 
 The behavior is the layer which controls the actuators of the robots.
 

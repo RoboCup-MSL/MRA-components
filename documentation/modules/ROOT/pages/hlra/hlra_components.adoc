@@ -1,8 +1,8 @@
-= MRA Components
+= Humanoid League Reference Architecture Components
 
 == C4 model
 
-The link:https://www.c4model.com[C4 model] is used do described the MSL reference architecture.
+The link:https://www.c4model.com[C4 model] is used do described the Humanoid League reference architecture.
 
 The C4 model is... +
 1. A set of hierarchical abstractions (software systems, containers, components, and code). +
@@ -20,15 +20,12 @@ To increase re-usability the following recommendations should be applied.
 
 * Plug and play modules; Modules should be designed that it is easy to  replace a module be another implementation of the same module.
 * License: software should have a license that supports use of (pure) open software and proprietary software (closed). Usage of an open software license is recommended, but the license should not exclude the interaction with proprietary software.
-* Multiple operating systems support (at least Linux Ubuntu) is preferred.
-* Multiple programming languages support is preferred:
+* ROS2 will be used as framwork for the Humanoid League Reference Architecture. ROS2 is a middleware suite, which is used by many robots, include commercial available humanoid robots.
+* Components are published as ROS2 components. ROS2 components can be combined in a single process with the lower overhead and optionally more efficient communication.  +
+(source: https://docs.ros.org/en/humble/Concepts/Intermediate/About-Composition.html).
+* An interface for multiple programming languages is preferred:
 	** C++ (high performance)
-	** C (high performance)
 	** Python (rapid prototyping, AI)
-
-== Terminology
-=== Middleware
-Middleware is a type of computer software that provides services to software applications beyond those available from the operating system. It can be described as "software glue" (link:https://en.wikipedia.org/wiki/Middleware[WikiPedia])
 
 === Hierarchy
 
@@ -45,8 +42,7 @@ A container is essentially a context or boundary inside which some code is execu
 ==== Component
 A component is a grouping of related functionality encapsulated behind a well-defined interface. Aspects such as how those components are packaged.
 
-
-include::mra_standard_data_definitions.adoc[]
+include::hlra_standard_data_definitions.adoc[]
 
 include::CoordinateSystems.adoc[]
 

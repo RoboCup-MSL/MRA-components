@@ -1,0 +1,22 @@
+ifndef::imagedir[]
+:imagedir: ../../images
+endif::[]
+
+== Function Mock-up Interface (Component Interface)
+
+The interface of an algorithm is not defined, but it can be useful to use an interface for the component that matches to a standard for modelling. Such interface is the Functional Mock-up Interface (FMI)
+
+
+More on FMI can be found at:
+
+* link:https://en.wikipedia.org/wiki/Functional_Mock-up_Interface[Wikipedia]
+* link:https://fmi-standard.org/docs/3.0/[FMI standard]
+
+For the HLRA the FMI definition is a bit customized.
+
+
+image::{imagedir}/FMI_MRA.png[]
+
+By describing the component using the FMI definition a component is middleware independent. An adapter for ROS2 can be used to support easy porting the component to another middleware.
+
+

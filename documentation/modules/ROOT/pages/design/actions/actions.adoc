@@ -5,7 +5,7 @@ endif::[]
 == Actions
 
 .actions overview
-plantuml::{modelsdir}/mra_actions_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_actions_layer.puml[format=svg]
 
 Actions are independent pieces of behaviors that are be executed by the robot
 

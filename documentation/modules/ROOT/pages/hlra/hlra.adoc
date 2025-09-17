@@ -1,0 +1,126 @@
+ifndef::modelsdir[]
+:modelsdir: ../../models
+endif::[]
+= Humanoid League Reference Architecture
+
+The Humanoid League Reference Architecture (HLRA) is intended to increase the reuse of developments between the Humanoid League teams. It is a continuation of a Mid-Size League initiative to accelerate the development.
+
+== Re-usability
+Re-usability can help to increase the development speed of Humanoid League.
+
+**Advantages:**
+
+* Re-use of proven concepts of other teams; focus on own strength instead of do everything a bit.
+* Get more balanced games between existing HSL teams.
+* New Humanoid League teams can faster participate and start at a competitive level.
+
+**Rationale:**
+
+* In the Mid-Size League the re-use of software was very limited in the period of more than 20 years. The Humanoid League should avoid this pitfall. +
+* Re-use (software) clearly worked in other leagues: simulation league, standard platform league
+* Avoiding that new Humanoid League teams need too much time to be able to play, starting on a  competitive level.
+
+== Humanoid League
+In the Humanoid League, autonomous robots with a human-like body plan and human-like senses play soccer against each other. Unlike humanoid robots outside the Humanoid League the task of perception and world modeling is not simplified by using non-human like range sensors. In addition to soccer competitions technical challenges take place. Dynamic walking, running, and kicking the ball while maintaining balance, visual perception of the ball, other players, and the field, self-localization, and team play are among the many research issues investigated in the Humanoid League. Several of the best autonomous humanoid robots in the world compete in the RoboCup Humanoid League
+
+(source: link:https://humanoid.robocup.org/[https://humanoid.robocup.org/])
+
+The HSL league has its own website: https://humanoid.robocup.org/
+
+== Standardisation within Humanoid League
+There is no mandatory standard to be followed within the Humanoid League.
+Standardisation has big advances for the league; it can help to accelerated innovation.
+
+=== Hardware Standardisation
+Via the Humanoid League rules the design of the humanoid robots is restricted to avoid non-human like robots. Within these restrictions there is significant freedom to design a robot, which lead to a variety of different humanoid robots.
+
+The commonality in hardware is taken into account, but own versions or different concepts should be supported by the software standard.
+
+
+=== Software Standardisation
+In the period till 2023 source code of the software was often published by MSL team, but this did not result in reuse of software. In Humanoid league only the top 3 must publish their code. It does not specify the quality of the published code.
+
+Most software was not designed for sharing:
+
+* Limited documentation
+* Strong coupling with the specific hardware
+
+#Via the MSL rules all the teams must#:
+
+* follow the instructions from the link:https://github.com/RoboCup-MSL/RefBox[MSL Refbox].
+* Log data during the game via MSL logging protocol link:https://msl.robocup.org/requirements[ (WM Data Struct)].
+
+The link:https://github.com/RoboCup-MSL/MixedTeamProtocol[MSL Mixed-Team protocol] is created to be able to play with different teams as a single team. This protocol is created by Falcons and Robotsports. It was demonstrated as a technical challenge at RoboCup 2021 (link:https://www.youtube.com/watch?v=PfD_qd239Z4&t=4330s[movie] / link:https://robotsports.nl/images/2021/RoboCup2021_MSL_Technical_challenge_Falcons_and_VDL_robotsports_MixedTeam_Protocol.pdf[presentation]).
+
+Most initiatives are published in the link:https://github.com/RoboCup-MSL[RoboCup-MSL repository] on GitHub
+
+== Scope Humanoid League Reference Architecture
+The scope of Humanoid League Reference Architecture is limited to software.
+
+The scope of the Humanoid League Reference architecture is depicted in the <<HL_Reference_Architecture_System_Context_Diagram>>.
+
+[#HL_Reference_Architecture_System_Context_Diagram]
+.Humanoid League Reference Architecture System Context Diagram
+plantuml::{modelsdir}/hlra_system_context_diagram.puml[format=svg]
+
+== What is interesting to share
+If a module is well-designed, tested and documented it is better sharable.
+For Humanoid League teams the following candidates for sharing and reuse have been identified:
+
+* Object Tracking
+* Self localization
+* Team strategy (comply to all Humanoid League rules)
+* Actions
+* AI developments
+* Hardware abstraction layer:
+	** eyes
+	** head
+	** legs
+	** arms
+* Calibration tools
+* Simulator
+
+== Humanoid League Reference Architecture platform
+The "HLRA platform" is an online platform that acts as a central place where components can be uploaded and downloaded.
+#It is proposed to have one repository called "HLRA" in a github project.#
+
+There is a distinction between HLRA users and HLRA developers.
+
+* *HLRA users*: the HLRA user simply import one or more components from the HLRA platform and use it for their robots as an imported piece of software.
+* *HLRA developers*: they are creating and / or improving HLRA components or HLRA infrastructure software which will become available for all HLRA users.  By sharing the developments the Humanoid League teams can improve their team via the HLRA Platform.
+
+&nbsp;
+
+REQ-PLAT-01::
+It shall be possible (and "easy") for users to integrate HLRA components in their team software repository. +
+*Rationale*: usability is key to success of this initiative.
+
+REQ-PLAT-02::
+HLRA developers must have a way to make components depend on standard libraries +
+*Rationale*: reuse existing code / functionality. +
+*Example*: dependency on opencv +
+
+REQ-PLAT-03::
+HLRA developers must have a way to make components depend on other components. +
+*Rationale*: reuse, modularity, testability +
+*Examples*: getball can depend on multiple specific getball-* components.
+
+[#REQ-PLAT-04]
+REQ-PLAT-04::
+HLRA developers must have a way to make components depend on Humanoid League-shared libraries. +
+*Rationale*: reuse existing code / functionality, prevent re-implementation +
+*Examples* : basic common data types (refbox commands, WorldState), common geometrical operations
+
+REQ-PLAT-05::
+ A HLRA components shall be independent or only depending on HLRA components and/or generic general purposes components (portability). +
+*Rationale*: If a HLRA components will not be portable if it depends on a team-specific implementations. +
+*Note*: developers should instead consider to contribute to Humanoid League-shared libraries. +
+*Roadmap*: consider static library linking, component packaging.
+
+
+DEC-PLAT-01::
+It is decided to support teams embedding HLRA as git subrepository.
+
+DEC-PLAT-02::
+It is decided to provide support for the ROS2.
+* link:https://https://www.ros.org/[ROS2]

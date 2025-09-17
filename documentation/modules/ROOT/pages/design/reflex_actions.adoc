@@ -8,7 +8,7 @@ When the selected behavior approach requires reactive behavior reflex actions ar
 In this package the reflex actions are defined.
 
 .Reflex actions overview
-plantuml::{modelsdir}/mra_reflex_layer.puml[format=svg]
+plantuml::{modelsdir}/hlra_reflex_layer.puml[format=svg]
 
 
 In the reflex actions reactive adjustments are implemented. These adjustments modify to output of the  actions to achieve behavior on a lower level to avoid complexity in the actions.

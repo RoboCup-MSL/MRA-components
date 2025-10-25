@@ -49,17 +49,17 @@ include::CoordinateSystems.adoc[]
 include::FMI.adoc[]
 
 == Component properties
-Each MRA component will describe the runtime frequency where it was designed for.
+Each HLRA component will describe the runtime frequency where it was designed for.
 The frequency is important to deal with reactivity of the component and tuning sensitivity.
 
 Each component has three attributes
 
-* Input
-* Output
+* Inputs
+* Outputs
 * Parameters
 
-The contents of the attributes varies per MRA component.
-Each MRA component variant must have the same input and output. This is an essential requirement to be able to replace an MRA component variant by another variant. The parameter can vary per variant.
+The contents of the attributes varies per HLRA component.
+Each HLRA component variant must have the same inputs and outputs. This is an essential requirement to be able to replace an HLRA component variant by another variant. The parameter can vary per variant.
 
 
 REQ-CMP-01::
@@ -84,30 +84,20 @@ REQ-CMP-03::
 It must be possible to upgrade one component (incl. its interface), while not having to upgrade its connected ones. +
 *Rationale*: locality of change. Instead of forcing developers to do simple/useless tasks, the standard/engine shall take care of it.
 
-REQ-CMP-04::
-It shall be possible to exchange components without requiring specific platforms / middleware. +
-*Rationale*: this allow support of C++, Matlab and python; known programming languages for MSL robots. +
-It makes MRA middleware independent, MRA can be used in environment which is using ROS or RTDB or any other middleware.
-
-
 
 == Data Definition Format
 
 The interface must be described so that is portable (programming language independent) and support backwards compatibility. Data types must unambiguous.
-This can be achieved by using link:https://protobuf.dev/[Protocol buffers]
-Or an alternative.
+This can be achieved by using ROS2 messages.
 
 REQ-DDF-01::
-The Data definition format of the MSL Reference architecture must support serialization. Serialization is the process of translating a data structure or object state into a format that can be stored or transmitted +
-*Rationale*  Serialization allow Logging and store the data in a database.
+The Data definition format of the Humanoid League Reference architecture must support serialization. Serialization is the process of translating a data structure or object state into a format that can be stored or transmitted +
+*Rationale*  Serialization allow Logging and store the data in a database, also usefull for testing purposes.
 
-REQ-DDF-02::
-The Data Definition Format shall be compatible with or extendable towards: ROS, RTDB, FMI. +
-*Rationale*: Supporting multiple middleware makes the adaption of the MSL Reference architecture easier for teams
+* rclcpp::Serialization Class Reference: https://docs.ros.org/en/humble/p/rclcpp/generated/classrclcpp_1_1Serialization.html
 
-DEC-SD-03::
-MSL Reference Architecture will use Google Protobuf (v3) for defining data types. +
-*Justification* : it is widely used, mature, supports backwards compatibility. Code can easily be generated from it.
+* rclcpp::SerializedMessage Class Reference: https://docs.ros.org/en/humble/p/rclcpp/generated/classrclcpp_1_1SerializedMessage.html
+
 
 == Testability
 Setup component test: each component should have design for testing
@@ -117,23 +107,23 @@ Setup component test: each component should have design for testing
 
 TIP: Component Tests from a component which are using only the (public) external interfaces might be used to verify working of a component without or limited component tests.
 
-== MSL Reference Architecture Repository
+== Humanoid League Reference Architecture Repository
 
 [#OpenIssue-03]
 ====
 OpenIssue-03:: Agree on repository, component dependencies, versioning of components and interface
 ====
 
-The MSL Reference Architecture Repository will contain the basic  definitions for the standard. For each component as defined by the MSL Reference Architecture there will repository available.
-Within the specific MRA component repository multiple variants can be published. Each variant must be self-contained.
+The Humanoid League Reference Architecture Repository will contain the basic  definitions for the standard. For each component as defined by the Humanoid League Reference Architecture there will repository available.
+Within the specific HLRA component repository multiple variants can be published. Each variant must be self-contained.
 
 REQ-REP-01::
-There must be a central repository for MSL software datatypes.
+There must be a central repository for HLRA software datatypes.
 *Rationale*: A central repository cand to ensure consistency, correctness and provide the software datatype to teams.
 
-DEC-REP-01::
-The MSL Reference architecture will be hosted on a public repository within the link:https://github.com/RoboCup-MSL[RoboCup-MSL repository] on GitHub. The datatypes will be defined in: MRA-datatypes. +
-*Justification*: MSL gitHub repository is already available and used for sharing source code between MSL teams.
+DEC-REP-01:: #TODO
+The Humanoid League Reference architecture will be hosted on a public repository within the link:https://github.com/RoboCup-MSL[RoboCup-MSL repository] on GitHub. The datatypes will be defined in: HLRA-datatypes. +
+*Justification*: MSL gitHub repository is already available and used for sharing source code between MSL teams.#
 
 == Component interface
 The interface of a component has a version. This allows to have multiple variants of a component interface.
@@ -141,8 +131,8 @@ The Inputs and Outputs of a component are standardized for an interface version.
 
 == Versioning
 
-From an MRA component multiple variants can exist. A variant created by Team X and a variant created by Team Y. For a variant a multiple versions can exists. +
-Eg.: MRA/GetBall/v1/Falcons_v1
+From an HLRA component multiple variants can exist. A variant created by Team X and a variant created by Team Y. For a variant a multiple versions can exists. +
+Eg.: HLRA/GetBall/v1/Falcons_v1
 
 This allows providing multiple implementations of a component.
 

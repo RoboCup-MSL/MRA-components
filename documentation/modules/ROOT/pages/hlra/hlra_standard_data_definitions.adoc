@@ -7,7 +7,7 @@ The choice for ROS2 implies to use as much as ROS2 default definitions and widel
 
 * link:https://docs.ros.org/en/humble/Tutorials/Demos/Logging-and-logger-configuration.html[Logging] #TODO#
 
-* usage of tf2: link:https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Tf2-Main.html[tf2 ] is the transform library that maintains a hierarchical, time-buffered tree of coordinate frames, allowing robots to track and transform points, vectors, and poses between any two frames (e.g., base, head, gripper, world) within a robotic system.
+* usage of tf2: link:https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Tf2-Main.html[tf2] is the transform library that maintains a hierarchical, time-buffered tree of coordinate frames, allowing robots to track and transform points, vectors, and poses between any two frames (e.g., base, head, gripper, world) within a robotic system.
 Including:
 ** REP-0103 - Standard Units of Measure and Coordinate Conventions (more info: link:https://www.ros.org/reps/rep-0103.html[REP-0103])
 ** REP-0105 - Coordinate Frames for Mobile Platforms (more info:  link:https://www.ros.org/reps/rep-0105.html[REP-0105])

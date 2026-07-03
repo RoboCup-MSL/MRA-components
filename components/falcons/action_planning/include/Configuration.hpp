@@ -93,7 +93,6 @@ private:
         rcl_interfaces::msg::ParameterDescriptor desc;
 
         // If this is a map, check for description/min/max
-        const YAML::Node* value_node_ptr = nullptr;
         if (node.IsMap()) {
             if (node["description"] && node["description"].IsDefined())
                 desc.description = node["description"].as<std::string>();

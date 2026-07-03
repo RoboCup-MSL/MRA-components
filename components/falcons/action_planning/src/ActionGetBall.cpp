@@ -13,7 +13,7 @@ void ActionGetBall::tick(
     const types::WorldState& world_state,
     const types::Settings& settings,
     types::ActionResult& action_result,
-    types::Targets& targets)
+    [[maybe_unused]] types::Targets& targets)
 {
     TRACE_FUNCTION_INPUTS(settings);
     // Unpack inputs/settings

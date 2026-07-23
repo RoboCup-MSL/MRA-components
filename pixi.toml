@@ -10,7 +10,7 @@
 
 [workspace]
 authors = ["Jurge vanEijck <jurge.van.eijck@gmail.com>"]
-channels = ["robostack-humble", "conda-forge"]
+channels = ["robostack-jazzy", "conda-forge"]
 name = "MRA-components"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
@@ -23,28 +23,30 @@ refresh = "rm -rf ./log; rm -rf ./build; rm -rf ./install"
 build = "colcon build --symlink-install"
 test = "colcon test --ctest-args tests"
 test_results = "colcon test-result --all --verbose"
+test-all = "colcon test --ctest-args tests;colcon test-result --all --verbose"
+
+
 # set RMW_IMPLEMENTATION="rmw_cyclonedds_cpp" : solve 1 second init delay by switching to CycloneDDS
 #sim = { cmd= "ros2 launch simulation launch.py num_robots_team_A:=5 num_robots_team_B:=5 timeout:=10", env = { RMW_IMPLEMENTATION= "rmw_cyclonedds_cpp"} }
 
 
 [dependencies]
+compilers = ">=1.11.0,<2"
 colcon-common-extensions = ">=0.3.0,<0.4"
-compilers = ">=1.9.0,<2"
 make = ">=4.4.1,<5"
-ninja = ">=1.13.0,<2"
+ninja = ">=1.13.2,<2"
 pkg-config = ">=0.29.2,<0.30"
-ros-humble-ament-cmake-auto = ">=1.3.11,<2"
-ros-humble-ament-cmake-clang-format = ">=0.12.11,<0.13.0"
-ros-humble-ament-lint-auto = ">=0.12.11,<0.13"
-ros-humble-builtin-interfaces = ">=1.2.1, <1.3"
-ros-humble-desktop = ">=0.10.0,<0.11"
-ros-humble-geometry-msgs = ">=4.2.4,<4.3.0"
-ros-humble-rosidl-default-generators = ">=1.2.0, <1.3.0"
-ros-humble-rosidl-default-runtime = ">=1.2.0, <1.3.0"
-ros-humble-rclcpp = ">=16.0.11,<17"
-ros-humble-pluginlib = ">=5.1.0,<6"
-ros-humble-rmw-cyclonedds-cpp = ">=1.3.4,<2"
-ros-humble-ament-cmake-python = ">=1.3.11,<2"
-cmake = "3.26.*"
-
+ros-jazzy-ament-cmake-auto = ">=2.5.6,<3"
+ros-jazzy-ament-cmake-clang-format = ">=0.17.5,<0.18"
+ros-jazzy-ament-lint-auto = ">=0.17.5,<0.18"
+ros-jazzy-builtin-interfaces = ">=2.0.3,<3"
+ros-jazzy-desktop = ">=0.11.0,<0.12"
+ros-jazzy-geometry-msgs = ">=5.3.7,<6"
+ros-jazzy-rosidl-default-generators = ">=1.6.0,<2"
+ros-jazzy-rosidl-default-runtime = ">=1.6.0,<2"
+ros-jazzy-rclcpp = ">=28.1.18,<29"
+ros-jazzy-pluginlib = ">=5.4.5,<6"
+ros-jazzy-rmw-cyclonedds-cpp = ">=2.2.3,<3"
+ros-jazzy-ament-cmake-python = ">=2.5.6,<3"
+cmake = ">=4.4.0,<5"
 

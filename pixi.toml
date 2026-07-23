@@ -25,10 +25,9 @@ test = "colcon test --ctest-args tests"
 test_results = "colcon test-result --all --verbose"
 test-all = "colcon test --ctest-args tests;colcon test-result --all --verbose"
 
-
+uncrustify = {cmd = "ament_uncrustify --reformat {{ FILENAME }}", args = [{ arg="FILENAME" }]}
 # set RMW_IMPLEMENTATION="rmw_cyclonedds_cpp" : solve 1 second init delay by switching to CycloneDDS
 #sim = { cmd= "ros2 launch simulation launch.py num_robots_team_A:=5 num_robots_team_B:=5 timeout:=10", env = { RMW_IMPLEMENTATION= "rmw_cyclonedds_cpp"} }
-
 
 [dependencies]
 compilers = ">=1.11.0,<2"
@@ -49,4 +48,5 @@ ros-jazzy-pluginlib = ">=5.4.5,<6"
 ros-jazzy-rmw-cyclonedds-cpp = ">=2.2.3,<3"
 ros-jazzy-ament-cmake-python = ">=2.5.6,<3"
 cmake = ">=4.4.0,<5"
+cppcheck = ">=2.21.0,<3"
 
